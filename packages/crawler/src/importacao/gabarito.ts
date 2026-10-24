@@ -221,8 +221,15 @@ export function parseGabarito(texto: string): ResultadoGabarito {
 /** Escolhe o gabarito do cargo (único bloco, ou o de nome mais parecido com `cargo`). */
 export function escolherGabarito(r: ResultadoGabarito, cargo?: string | null): GabaritoCargo {
   if (!r.gabaritos.length) throw new Error('O gabarito não tem respostas legíveis.');
-  if (r.gabaritos.length === 1) return r.gabaritos[0]!;
   const nomes = r.gabaritos.map((g) => g.cargo ?? '(sem nome)');
+  if (r.gabaritos.length === 1) {
+    const unico = r.gabaritos[0]!;
+    // Bloco único com nome de outro cargo (ex.: retificação só de um cargo): não serve.
+    if (cargo && unico.cargo && similaridade(unico.cargo, cargo) < 0.34) {
+      throw new Error(`O gabarito só tem o cargo "${unico.cargo}", que não é "${cargo}".`);
+    }
+    return unico;
+  }
   if (!cargo) {
     throw new Error(
       `O gabarito tem ${r.gabaritos.length} cargos. Informe --cargo com um destes: ${nomes.join('; ')}.`,

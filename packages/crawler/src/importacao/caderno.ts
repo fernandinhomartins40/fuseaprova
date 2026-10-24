@@ -37,6 +37,8 @@ export interface SecaoCaderno {
 }
 
 export interface ResultadoCaderno {
+  /** Cargo impresso na capa ("CARGO: ADVOGADO SUAS I"), quando houver. */
+  cargo: string | null;
   questoes: QuestaoExtraida[];
   secoes: SecaoCaderno[];
   avisos: string[];
@@ -141,6 +143,9 @@ export function dividirAlternativasNaLinha(primeira: Letra, resto: string): Alte
 const RE_INICIO_APOIO =
   /^(Leia|Texto\b|TEXTO\b|Observe|Considere o (texto|trecho|gr[áa]fico|quadro|tabela)|Analise o (texto|trecho)|Instru[çc][ãa]o)/;
 
+const RE_CITA_TEXTO =
+  /\b(d?o|n?o|ao|pelo) texto\b|\b(d?o|n?o) (trecho|excerto|fragmento)\b|\bo autor\b|\ba autora\b|\bpar[áa]grafo\b/i;
+
 const RE_IMAGEM =
   /\b(figura|imagem|gr[áa]fico|charge|tirinha|ilustra[çc][ãa]o|mapa|quadro abaixo|tabela abaixo|tabela a seguir)\b/i;
 
@@ -199,7 +204,13 @@ export function parseCaderno(texto: string): ResultadoCaderno {
   const avisos: string[] = [];
   const secoes: SecaoCaderno[] = [];
   const montadas: { q: QuestaoEmMontagem; apoio: BlocoApoio | null }[] = [];
-  const apoios: { de: number; ate: number; texto: string; explicito: boolean }[] = [];
+  const apoios: {
+    de: number;
+    ate: number;
+    texto: string;
+    explicito: boolean;
+    extras?: number[];
+  }[] = [];
   const faixas: { de: number; ate: number; disciplina: SlugDisciplina }[] = [];
 
   let formato: { padded: boolean; sep: string } | null = null;
@@ -360,9 +371,26 @@ export function parseCaderno(texto: string): ResultadoCaderno {
         : 'O caderno não tem títulos de seção; classifique a disciplina de cada questão no painel.',
     );
   }
+  // Texto de apoio sem "questões X a Y" (Matelândia 2025): vale também para as questões
+  // seguintes da mesma seção que falam "do texto", até começar outro texto.
+  for (const a of apoios) {
+    if (a.explicito) continue;
+    const i0 = montadas.findIndex(({ q }) => q.numero === a.de);
+    if (i0 < 0) continue;
+    const secao = montadas[i0]!.q.secao;
+    for (let i = i0 + 1; i < montadas.length; i++) {
+      const q = montadas[i]!.q;
+      if (q.secao !== secao || apoios.some((b) => b !== a && b.de === q.numero)) break;
+      const texto = [...q.enunciado, ...q.alternativas.flatMap((x) => x.linhas)].join(' ');
+      if (RE_CITA_TEXTO.test(texto)) (a.extras ??= []).push(q.numero);
+    }
+  }
+
   const questoes: QuestaoExtraida[] = montadas.map(({ q }) => {
     const avisosQ: string[] = [];
-    const apoioQ = apoios.filter((a) => q.numero >= a.de && q.numero <= a.ate);
+    const apoioQ = apoios.filter(
+      (a) => (q.numero >= a.de && q.numero <= a.ate) || a.extras?.includes(q.numero),
+    );
     const textoApoio = apoioQ.length ? apoioQ.map((a) => a.texto).join('\n\n') : null;
     if (apoioQ.some((a) => !a.explicito))
       avisosQ.push('texto de apoio sem indicação das questões; confira');
@@ -399,7 +427,16 @@ export function parseCaderno(texto: string): ResultadoCaderno {
   }
   if (!questoes.length)
     avisos.push('Nenhuma questão encontrada (o padrão é "01." e alternativas "A)" a "E)").');
-  return { questoes, secoes, avisos };
+  return { cargo: cargoDaCapa(linhas), questoes, secoes, avisos };
+}
+
+/** "CARGO: ADVOGADO SUAS I" na capa → "ADVOGADO SUAS I". */
+export function cargoDaCapa(linhas: string[]): string | null {
+  for (const l of linhas.slice(0, 60)) {
+    const m = /^\s*CARGO\s*:\s*(.+?)\s*$/i.exec(l);
+    if (m) return limparEspacos(m[1]!);
+  }
+  return null;
 }
 
 /** Pontuação de qualidade de uma extração (para escolher entre texto normal e -layout). */

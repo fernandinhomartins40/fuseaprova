@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
+  cargoDaCapa,
   detectarSecao,
   disciplinaPadraoFau,
   dividirAlternativasNaLinha,
@@ -56,6 +57,24 @@ describe('parser do caderno', () => {
   it('extrai as 8 questões em ordem, ignorando a lista numerada da capa', () => {
     expect(r.questoes.map((x) => x.numero)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
     expect(r.avisos).toEqual([]);
+  });
+
+  it('texto sem "questões X a Y" vale para as seguintes que citam o texto (Matelândia 2025)', () => {
+    const alt = 'A) a\nB) b\nC) c\nD) d\nE) e\n';
+    const r2 = parseCaderno(
+      'LÍNGUA PORTUGUESA\n\nTítulo da notícia\n\nCorpo da notícia sobre o gás.\n\n' +
+        `01) Com base no texto, assinale:\n${alt}\n` +
+        `02) Assinale a palavra com dígrafo:\n${alt}\n` +
+        `03) O tipo textual predominante no texto é:\n${alt}`,
+    );
+    expect(r2.questoes.map((q) => Boolean(q.textoApoio))).toEqual([true, false, true]);
+  });
+
+  it('lê o cargo da capa', () => {
+    expect(cargoDaCapa(['PREFEITURA DE TOLEDO', '   CARGO: ADVOGADO   SUAS I  '])).toBe(
+      'ADVOGADO SUAS I',
+    );
+    expect(cargoDaCapa(['sem cargo aqui'])).toBeNull();
   });
 
   it('separa enunciado e alternativas A–E', () => {
@@ -248,7 +267,11 @@ describe('parser do gabarito definitivo', () => {
       escolherGabarito({ gabaritos: [], definitivo: true, preliminar: false, avisos: [] }),
     ).toThrow();
     const unico = parseGabarito(fixture('gabarito_pares.txt'));
-    expect(escolherGabarito(unico, 'qualquer').cargo).toBe('TÉCNICO EM ENFERMAGEM');
+    expect(escolherGabarito(unico, 'Técnico de Enfermagem').cargo).toBe('TÉCNICO EM ENFERMAGEM');
+    expect(escolherGabarito(unico).cargo).toBe('TÉCNICO EM ENFERMAGEM');
+    // Bloco único de outro cargo não serve (Toledo 2024: a retificação pós-recurso só tinha
+    // Técnico Desportivo I, e as respostas foram parar no caderno de Advogado SUAS I).
+    expect(() => escolherGabarito(unico, 'Advogado SUAS I')).toThrow(/só tem o cargo/);
   });
 });
 

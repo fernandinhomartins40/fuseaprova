@@ -34,6 +34,7 @@ import {
 } from './confronto.js';
 import { escolherGabarito, parseGabarito, type ResultadoGabarito } from './gabarito.js';
 import { lerTexto, type OpcoesPdf } from './pdf.js';
+import { chaveComparacao } from '../util/texto.js';
 
 /** Caminho de um PDF (ou .txt já extraído) ou o texto pronto. */
 export type FonteTexto = string | { texto: string; nome?: string };
@@ -191,12 +192,23 @@ export async function importarProva(o: OpcoesImportar): Promise<ResumoImportacao
     if (!caderno.questoes.length) throw new Error('Nenhuma questão encontrada no caderno.');
 
     const gabarito = await extrairGabarito(o.gabarito, o.pdf);
-    const bloco = escolherGabarito(gabarito, o.cargo ?? prova.cargo);
+    // O cargo da capa do caderno vale mais que o informado: um concurso pode ter
+    // "Advogado" e "Advogado SUAS I" no mesmo gabarito.
+    const cargoAlvo = caderno.cargo ?? o.cargo ?? prova.cargo;
+    const bloco = escolherGabarito(gabarito, cargoAlvo);
     const preliminar = o.preliminar
       ? escolherGabarito(await extrairGabarito(o.preliminar, o.pdf), bloco.cargo ?? o.cargo)
       : null;
     const confronto = confrontar(caderno.questoes, bloco, preliminar);
     const avisos = [...caderno.avisos, ...gabarito.avisos];
+    if (
+      caderno.cargo &&
+      bloco.cargo &&
+      chaveComparacao(caderno.cargo) !== chaveComparacao(bloco.cargo)
+    )
+      avisos.push(
+        `O cargo do caderno (${caderno.cargo}) não é igual ao do gabarito (${bloco.cargo}); confira.`,
+      );
     if (gabarito.preliminar && !o.simular) {
       throw new Error(
         'O arquivo passado em --gabarito é o gabarito PRELIMINAR. Use o definitivo (PRD 7.4).',
@@ -230,7 +242,8 @@ export async function importarProva(o: OpcoesImportar): Promise<ResumoImportacao
           if (!disc)
             throw new Error(`Disciplina ${q.disciplina ?? DISCIPLINA_PADRAO} não cadastrada.`);
           // D9: anulada sem letra grava gabarito null (o banco só aceita null em `anulada`).
-          const letra = item.resposta.letra ?? (item.status === 'anulada' ? null : item.letraPreliminar);
+          const letra =
+            item.resposta.letra ?? (item.status === 'anulada' ? null : item.letraPreliminar);
           if (!letra && item.status !== 'anulada') continue;
           const valores = {
             provaOrigemId: prova.id,
