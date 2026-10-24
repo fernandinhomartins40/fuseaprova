@@ -1,0 +1,44 @@
+# dependências
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+build/
+*.tsbuildinfo
+.turbo/
+dev-dist/
+
+# ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# testes
+coverage/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# banco local (PGlite em disco para dev sem Docker)
+.pglite/
+*.pglite/
+
+# coletor: PDFs e arquivos baixados
+/arquivos/
+packages/crawler/cache/
+
+# logs e SO
+*.log
+npm-debug.log*
+pnpm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# E2E: relatório visual gerado (pnpm e2e:relatorio)
+e2e/relatorio-visual/index.html
+e2e/relatorio-visual/img/

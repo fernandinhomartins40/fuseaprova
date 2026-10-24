@@ -1,0 +1,38 @@
+{
+  "name": "fuse-aprova",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "pnpm --filter @fuse/db generate",
+    "db:migrate": "pnpm --filter @fuse/db migrate",
+    "db:seed": "pnpm --filter @fuse/db seed",
+    "e2e": "pnpm --filter @fuse/e2e e2e",
+    "e2e:atualizar": "pnpm --filter @fuse/e2e e2e:atualizar",
+    "e2e:relatorio": "pnpm --filter @fuse/e2e relatorio"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@types/node": "^24.0.0",
+    "@vitest/coverage-v8": "3.2.4",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^16.0.0",
+    "prettier": "3.6.2",
+    "tsx": "4.20.6",
+    "turbo": "2.5.8",
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.46.0",
+    "vitest": "3.2.4"
+  }
+}

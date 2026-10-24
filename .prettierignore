@@ -1,0 +1,15 @@
+node_modules
+dist
+coverage
+pnpm-lock.yaml
+packages/db/drizzle
+design
+dados
+Fuse_Aprova_Assets_4K
+Guias_visuais
+Telas_referencia
+*.md
+e2e/relatorio-visual/index.html
+e2e/relatorio-visual/img
+e2e/playwright-report
+e2e/test-results
