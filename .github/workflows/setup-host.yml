@@ -1,0 +1,74 @@
+# =============================================================================
+# Fuse Aprova: configurar o nginx do HOST e o HTTPS (manual)
+#
+# Actions > "Configurar nginx do host e HTTPS" > Run workflow > e-mail.
+# Envia deploy/setup-host.sh e deploy/nginx-host/ para a VPS e roda o script:
+# instala o que faltar (docker, rsync, nginx, certbot, poppler-utils), cria o
+# site www.fuseaprova.com.br -> 127.0.0.1:3600 (+ 301 do apex, se ele
+# resolver para a VPS), roda `nginx -t` antes de recarregar e emite o
+# certificado com certbot --nginx. Pode rodar de novo com segurança.
+# Não mexe em sites de outros domínios, no sshd nem em outros containers.
+# =============================================================================
+name: Configurar nginx do host e HTTPS
+
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: E-mail para o Let's Encrypt (avisos de expiração do certificado)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# Na mesma fila do deploy: não reconfigura o nginx no meio de um deploy.
+concurrency:
+  group: fuseaprova-producao
+  cancel-in-progress: false
+
+env:
+  VPS_HOST: 72.60.10.112
+  VPS_USUARIO: root
+  VPS_HOST_FINGERPRINT: SHA256:6ZU1oyYcSKKrodyE2uYKme3ciSkCWFxfniTKCGn7NW8
+  DIR_REMOTO: /root/fuseaprova/deploy
+
+jobs:
+  setup:
+    name: Preparar o host
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Validar o e-mail
+        env:
+          EMAIL: ${{ inputs.email }}
+        run: |
+          set -euo pipefail
+          [[ "$EMAIL" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]] || { echo "::error::e-mail inválido"; exit 1; }
+
+      - uses: actions/checkout@v5
+
+      - name: Preparar SSH (chave de deploy + chave de host fixada)
+        uses: ./.github/actions/preparar-ssh
+        with:
+          host: ${{ env.VPS_HOST }}
+          usuario: ${{ env.VPS_USUARIO }}
+          impressao: ${{ env.VPS_HOST_FINGERPRINT }}
+          chave: ${{ secrets.FUSEAPROVA_DEPLOY_SSH_KEY }}
+
+      # tar pelo ssh (e não rsync): numa VPS nova o rsync ainda não existe;
+      # é este script que o instala. Só estes arquivos são escritos.
+      - name: Enviar setup-host.sh e o site do nginx
+        run: |
+          set -euo pipefail
+          sed -i 's/\r$//' deploy/setup-host.sh deploy/nginx-host/*
+          tar -C deploy -cf - setup-host.sh nginx-host \
+            | ssh vps "mkdir -p '$DIR_REMOTO' && tar -C '$DIR_REMOTO' --no-same-owner -xf - && chmod 755 '$DIR_REMOTO/setup-host.sh'"
+
+      - name: Rodar setup-host.sh
+        env:
+          EMAIL: ${{ inputs.email }}
+        run: |
+          set -euo pipefail
+          # O e-mail já foi validado acima (só caracteres seguros).
+          ssh vps "bash '$DIR_REMOTO/setup-host.sh' --email '$EMAIL'"

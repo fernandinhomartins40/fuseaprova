@@ -1,0 +1,230 @@
+# =============================================================================
+# Fuse Aprova: produção na VPS compartilhada (Docker Compose)
+#
+# Esta pasta (deploy/) é enviada por rsync pelo workflow de deploy para
+# /root/fuseaprova/deploy na VPS. Lá ela tem também:
+#   .env              variáveis e segredos (criado pelo deploy.sh; nunca vai
+#                     para o git e o rsync não o apaga)
+#   backup/           cópia de infra/backup/*.sh (montada pelo workflow)
+#
+# As imagens vêm do GHCR por DIGEST (repo@sha256:...), nunca por tag:
+#   FUSEAPROVA_API_IMAGE, FUSEAPROVA_WEB_IMAGE, FUSEAPROVA_WORKER_IMAGE
+# O deploy.sh grava as atuais no .env, então `docker compose ps/logs/exec`
+# funcionam a qualquer momento a partir desta pasta.
+#
+# Convivência com outros projetos da VPS (fusai, palmital e outros):
+# - nome de projeto, containers, rede e volume próprios, todos com o prefixo
+#   fuseaprova- (container_name fixo nos serviços que ficam no ar);
+# - limites de memória em todos os serviços (a VPS tem 2 vCPU e 7,8 GB
+#   compartilhados; o Fuse Aprova inteiro fica abaixo de ~1,6 GB);
+# - nenhuma porta pública: só o nginx publica, e só em 127.0.0.1:3600. O TLS
+#   e as portas 80/443 são do nginx do HOST, que faz proxy para cá;
+# - o postgres não publica porta nenhuma.
+#
+# Build local (sem GHCR), a partir da raiz do repositório:
+#   docker compose -f deploy/docker-compose.yml -f infra/docker-compose.build.yml build
+# =============================================================================
+
+name: fuseaprova
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-env-file: &env-file
+  - path: .env
+    required: true
+
+services:
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-bookworm
+    container_name: fuseaprova-postgres
+    restart: unless-stopped
+    mem_limit: 512m
+    # Postgres enxuto para uma VPS pequena e compartilhada.
+    command:
+      - postgres
+      - -c
+      - shared_buffers=128MB
+      - -c
+      - effective_cache_size=384MB
+      - -c
+      - work_mem=4MB
+      - -c
+      - maintenance_work_mem=64MB
+      - -c
+      - max_connections=40
+      - -c
+      - wal_buffers=4MB
+      - -c
+      - max_wal_size=512MB
+    env_file: *env-file
+    environment:
+      TZ: America/Sao_Paulo
+      PGTZ: America/Sao_Paulo
+      # POSTGRES_USER, POSTGRES_PASSWORD e POSTGRES_DB vêm do .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    shm_size: 128mb
+    # Sem `ports:` de propósito: o banco só existe na rede interna.
+    networks: [interna]
+    healthcheck:
+      # -h 127.0.0.1 evita "pronto" durante o initdb (que só ouve o socket).
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    logging: *logging
+
+  # ---------------------------------------------------------------------------
+  # Migrações Drizzle. Fica no perfil `ferramentas`: o `up -d` NÃO roda isto.
+  # Quem roda é o deploy.sh, depois do backup e antes de trocar as imagens
+  # (e pula com SKIP_MIGRATIONS=1 no rollback).
+  #   Manual: docker compose run --rm migrate
+  #   Seed:   docker compose run --rm migrate pnpm --filter ./packages/db run seed
+  migrate:
+    image: ${FUSEAPROVA_API_IMAGE:?defina FUSEAPROVA_API_IMAGE (o deploy.sh grava no .env)}
+    profiles: [ferramentas]
+    restart: "no"
+    mem_limit: 512m
+    env_file: *env-file
+    environment:
+      TZ: America/Sao_Paulo
+      NODE_ENV: production
+      NODE_OPTIONS: --max-old-space-size=384
+    command: ["pnpm", "--filter", "./packages/db", "run", "migrate"]
+    networks: [interna]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    logging: *logging
+
+  # ---------------------------------------------------------------------------
+  # Coletor FAU/PCI e importador de PDF (packages/crawler), sob demanda:
+  #   docker compose run --rm coletor fau:certames
+  #   docker compose run --rm coletor importar /srv/fuse/arquivos/... --gabarito ... --simular
+  coletor:
+    image: ${FUSEAPROVA_API_IMAGE:?defina FUSEAPROVA_API_IMAGE (o deploy.sh grava no .env)}
+    profiles: [ferramentas]
+    restart: "no"
+    init: true
+    mem_limit: 512m
+    env_file: *env-file
+    environment:
+      TZ: America/Sao_Paulo
+      NODE_ENV: production
+      NODE_OPTIONS: --max-old-space-size=384
+      ARQUIVOS_DIR: /srv/fuse/arquivos
+    entrypoint: ["node", "/app/packages/crawler/dist/cli.js"]
+    command: ["--ajuda"]
+    volumes:
+      - ${FUSEAPROVA_ARQUIVOS_HOST:-/root/fuseaprova/arquivos}:/srv/fuse/arquivos
+    networks: [interna]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    logging: *logging
+
+  # ---------------------------------------------------------------------------
+  api:
+    image: ${FUSEAPROVA_API_IMAGE:?defina FUSEAPROVA_API_IMAGE (o deploy.sh grava no .env)}
+    container_name: fuseaprova-api
+    restart: unless-stopped
+    init: true
+    mem_limit: 512m
+    env_file: *env-file
+    environment:
+      TZ: America/Sao_Paulo
+      NODE_ENV: production
+      NODE_OPTIONS: --max-old-space-size=384
+      HOST: 0.0.0.0
+      PORT: "3000"
+      # Caminho DENTRO do container (no host: /root/fuseaprova/arquivos).
+      ARQUIVOS_DIR: /srv/fuse/arquivos
+    volumes:
+      - ${FUSEAPROVA_ARQUIVOS_HOST:-/root/fuseaprova/arquivos}:/srv/fuse/arquivos
+    expose:
+      - "3000"
+    networks: [interna]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/saude').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    logging: *logging
+
+  # ---------------------------------------------------------------------------
+  worker:
+    image: ${FUSEAPROVA_WORKER_IMAGE:?defina FUSEAPROVA_WORKER_IMAGE (o deploy.sh grava no .env)}
+    container_name: fuseaprova-worker
+    restart: unless-stopped
+    init: true
+    # Inclui o pg_dump do backup das 03:30.
+    mem_limit: 384m
+    env_file: *env-file
+    environment:
+      TZ: America/Sao_Paulo
+      NODE_ENV: production
+      NODE_OPTIONS: --max-old-space-size=256
+      ARQUIVOS_DIR: /srv/fuse/arquivos
+      BACKUP_DIR: /srv/fuse/backups
+      BACKUP_SCRIPT: /app/infra/backup/backup.sh
+      KEEP_DAILY: "14"
+      KEEP_WEEKLY: "8"
+    volumes:
+      - ${FUSEAPROVA_ARQUIVOS_HOST:-/root/fuseaprova/arquivos}:/srv/fuse/arquivos
+      - ${FUSEAPROVA_BACKUPS_HOST:-/root/fuseaprova/backups}:/srv/fuse/backups
+    networks: [interna]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      # O worker não tem HTTP: saudável = o processo `node .../dist/index.js`
+      # vivo. O [x] impede o grep de achar a própria linha de comando.
+      test: ["CMD-SHELL", "grep -qa 'apps/worker/dist/inde[x]\\.js' /proc/[0-9]*/cmdline 2>/dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    logging: *logging
+
+  # ---------------------------------------------------------------------------
+  # nginx sem root com a PWA embutida (infra/docker/web.Dockerfile). Serve o
+  # estático e faz proxy de /api para api:3000. Publica SÓ em 127.0.0.1:3600;
+  # o nginx do host faz o TLS de www.fuseaprova.com.br e encaminha para cá.
+  nginx:
+    image: ${FUSEAPROVA_WEB_IMAGE:?defina FUSEAPROVA_WEB_IMAGE (o deploy.sh grava no .env)}
+    container_name: fuseaprova-nginx
+    restart: unless-stopped
+    mem_limit: 64m
+    environment:
+      TZ: America/Sao_Paulo
+    ports:
+      - "127.0.0.1:${FUSEAPROVA_PORTA:-3600}:8080"
+    networks: [interna]
+    depends_on:
+      api:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/nginx-saude"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    logging: *logging
+
+networks:
+  interna:
+    name: fuseaprova-interna
+
+volumes:
+  pgdata:
+    name: fuseaprova-pgdata

@@ -1,0 +1,72 @@
+# =============================================================================
+# Site do nginx do HOST para o Fuse Aprova
+# (/etc/nginx/sites-available/fuseaprova.com.br, link em sites-enabled)
+#
+# Instalado pelo deploy/setup-host.sh (workflow "Configurar nginx do host e
+# HTTPS"). Depois de instalado, o `certbot --nginx` acrescenta a este arquivo
+# os blocos `listen 443 ssl` e o redirecionamento HTTP -> HTTPS. Não edite na
+# VPS: mude aqui no repositório e rode o workflow de novo.
+#
+# - www.fuseaprova.com.br  -> 127.0.0.1:3600 (container nginx do projeto
+#                             fuseaprova, que serve a PWA e faz proxy de /api)
+# - fuseaprova.com.br      -> 301 para https://www.fuseaprova.com.br (o bloco
+#                             entre os marcadores APEX só fica se o domínio
+#                             apex resolver para esta VPS)
+#
+# Os nomes de map/upstream têm prefixo fuseaprova_ para não colidir com os
+# sites de outros projetos desta VPS.
+# =============================================================================
+
+# Websocket/upgrade quando pedido; senão Connection vazio (mantém o keepalive
+# com o upstream).
+map $http_upgrade $fuseaprova_connection_upgrade {
+    default upgrade;
+    ""      "";
+}
+
+upstream fuseaprova_app {
+    server 127.0.0.1:3600;
+    keepalive 16;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name www.fuseaprova.com.br;
+
+    server_tokens off;
+    # Sem log de acesso: as URLs de /recuperar/:token não vão para log.
+    access_log off;
+
+    # Upload de imagem do admin (a API limita em 2 MB).
+    client_max_body_size 10m;
+
+    location / {
+        proxy_pass http://fuseaprova_app;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $fuseaprova_connection_upgrade;
+        # SOBRESCREVE os cabeçalhos de IP com o IP real da conexão: o aluno
+        # não consegue forjar o IP que o rate limit da API enxerga.
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_connect_timeout 5s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+        proxy_next_upstream off;
+    }
+}
+
+# >>> APEX
+server {
+    listen 80;
+    listen [::]:80;
+    server_name fuseaprova.com.br;
+    server_tokens off;
+    access_log off;
+    return 301 https://www.fuseaprova.com.br$request_uri;
+}
+# <<< APEX

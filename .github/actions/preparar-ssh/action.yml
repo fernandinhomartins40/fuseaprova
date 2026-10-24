@@ -1,0 +1,98 @@
+# =============================================================================
+# Prepara o SSH do runner para a VPS com CHAVE (secret
+# FUSEAPROVA_DEPLOY_SSH_KEY) e chave de host FIXADA no repositório
+# (.github/vps_known_hosts). Usada por deploy.yml, rollback.yml e setup-host.yml.
+#
+# - grava a chave privada em ~/.ssh/fuseaprova_deploy (0600), sem eco no log;
+# - confere a impressão SHA256 de .github/vps_known_hosts contra
+#   VPS_HOST_FINGERPRINT e ABORTA se não bater (arquivo adulterado);
+# - cria o host `vps` no ~/.ssh/config: só a chave (IdentitiesOnly), sem
+#   senha (PasswordAuthentication no, BatchMode yes), StrictHostKeyChecking yes;
+# - faz o PRIMEIRO CONTATO numa tentativa só, com limite de 3 min. A Hostinger
+#   filtra os IPs de alguns runners do GitHub: se travar aqui, a solução é
+#   "Re-run all jobs" (outro runner, outro IP).
+# =============================================================================
+name: Preparar SSH da VPS
+description: chave de deploy + known_hosts fixado + primeiro contato com a VPS
+inputs:
+  host:
+    description: IP da VPS
+    required: true
+  usuario:
+    description: Usuário SSH
+    required: true
+  impressao:
+    description: Impressão SHA256 da chave ed25519 do host (VPS_HOST_FINGERPRINT)
+    required: true
+  chave:
+    description: Chave privada de deploy (passe secrets.FUSEAPROVA_DEPLOY_SSH_KEY)
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Instalar a chave e fixar a chave de host
+      shell: bash
+      env:
+        VPS_HOST: ${{ inputs.host }}
+        VPS_USUARIO: ${{ inputs.usuario }}
+        VPS_HOST_FINGERPRINT: ${{ inputs.impressao }}
+        CHAVE: ${{ inputs.chave }}
+      run: |
+        set -euo pipefail
+        if [ -z "${CHAVE:-}" ]; then
+          echo "::error title=Secret ausente::Crie a secret FUSEAPROVA_DEPLOY_SSH_KEY (chave privada de deploy) em Settings > Secrets and variables > Actions."
+          exit 1
+        fi
+        install -d -m 700 ~/.ssh
+        # printf em vez de echo: preserva as quebras de linha da chave e não
+        # passa a chave como argumento de processo visível.
+        ( umask 077; printf '%s\n' "$CHAVE" | tr -d '\r' > ~/.ssh/fuseaprova_deploy )
+        if ! ssh-keygen -y -f ~/.ssh/fuseaprova_deploy >/dev/null 2>&1; then
+          echo "::error title=Chave inválida::FUSEAPROVA_DEPLOY_SSH_KEY não é uma chave privada OpenSSH válida (ou tem senha)."
+          exit 1
+        fi
+
+        KH="$GITHUB_WORKSPACE/.github/vps_known_hosts"
+        [ -s "$KH" ] || { echo "::error::não achei .github/vps_known_hosts (faça o checkout antes)"; exit 1; }
+        recebida="$(ssh-keygen -lf "$KH" -E sha256 | awk '$4 == "(ED25519)" {print $2}' | head -n 1)"
+        if [ "$recebida" != "$VPS_HOST_FINGERPRINT" ]; then
+          echo "::error title=Chave de host diferente::.github/vps_known_hosts tem '$recebida', mas VPS_HOST_FINGERPRINT é '$VPS_HOST_FINGERPRINT'. Nada foi enviado. Se a VPS foi reinstalada, confira a impressão no console da Hostinger e atualize os dois."
+          exit 1
+        fi
+        install -m 600 "$KH" ~/.ssh/known_hosts
+
+        cat > ~/.ssh/config <<EOF
+        Host vps
+          HostName $VPS_HOST
+          User $VPS_USUARIO
+          Port 22
+          IdentityFile ~/.ssh/fuseaprova_deploy
+          IdentitiesOnly yes
+          PasswordAuthentication no
+          KbdInteractiveAuthentication no
+          PreferredAuthentications publickey
+          BatchMode yes
+          StrictHostKeyChecking yes
+          UserKnownHostsFile ~/.ssh/known_hosts
+          HostKeyAlgorithms ssh-ed25519
+          ConnectTimeout 30
+          ServerAliveInterval 30
+          ServerAliveCountMax 10
+          LogLevel ERROR
+        EOF
+        chmod 600 ~/.ssh/config
+        echo "chave de host conferida: $recebida"
+
+    - name: Primeiro contato (uma tentativa, 3 min)
+      shell: bash
+      run: |
+        set -euo pipefail
+        set +e
+        timeout 180 ssh vps 'echo "conectado em $(hostname) como $(whoami)"'
+        codigo=$?
+        set -e
+        case "$codigo" in
+          0) ;;
+          124) echo "::error title=VPS inacessível::A conexão SSH não terminou em 3 min. A Hostinger filtra os IPs de alguns runners do GitHub: use 'Re-run all jobs' para cair em outro runner. Se persistir, confira se a VPS está no ar."; exit 1 ;;
+          *) echo "::error title=Falha no SSH::ssh saiu com código $codigo. 'Permission denied (publickey)' = a chave pública de deploy não está no authorized_keys do root. 'Host key verification failed' = a VPS apresentou outra chave de host. 'Connection timed out/refused' = filtro de IP da Hostinger: use 'Re-run all jobs'."; exit 1 ;;
+        esac

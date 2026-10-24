@@ -1,0 +1,6 @@
+# Scripts e configs que rodam na VPS Linux precisam de LF, mesmo editados no Windows.
+*.sh          text eol=lf
+nginx/*.conf  text eol=lf
+*.Dockerfile  text eol=lf
+*.dockerignore text eol=lf
+*.yml         text eol=lf

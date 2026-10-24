@@ -1,0 +1,33 @@
+# =============================================================================
+# Override de BUILD LOCAL do Fuse Aprova (não vai para a VPS).
+#
+# Em produção as imagens vêm prontas do GHCR, por digest, e o compose é
+# deploy/docker-compose.yml. Este arquivo só acrescenta `build:` para gerar as
+# mesmas imagens numa máquina com Docker, a partir da RAIZ do repositório:
+#
+#   export FUSEAPROVA_API_IMAGE=fuseaprova-api:local \
+#          FUSEAPROVA_WORKER_IMAGE=fuseaprova-worker:local \
+#          FUSEAPROVA_WEB_IMAGE=fuseaprova-web:local
+#   docker compose -f deploy/docker-compose.yml -f infra/docker-compose.build.yml build
+#
+# Os caminhos relativos são resolvidos a partir de deploy/ (pasta do primeiro
+# arquivo), por isso o contexto é `..` (a raiz do repositório).
+# =============================================================================
+
+services:
+  migrate:
+    build: &api-build
+      context: ..
+      dockerfile: infra/docker/api.Dockerfile
+  coletor:
+    build: *api-build
+  api:
+    build: *api-build
+  worker:
+    build:
+      context: ..
+      dockerfile: infra/docker/worker.Dockerfile
+  nginx:
+    build:
+      context: ..
+      dockerfile: infra/docker/web.Dockerfile

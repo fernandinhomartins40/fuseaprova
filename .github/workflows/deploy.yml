@@ -1,0 +1,378 @@
+# =============================================================================
+# Fuse Aprova: testes, imagens e deploy na VPS
+#
+# push na main:  migrações -> testes -> imagens (GHCR, por digest) -> deploy
+#                -> verificação pública
+# pull request:  só migrações e testes (nada de imagem nem VPS)
+#
+# Única secret: FUSEAPROVA_DEPLOY_SSH_KEY (chave privada de deploy do root da
+# VPS; a chave de host fica fixada em .github/vps_known_hosts). O login no GHCR usa o
+# GITHUB_TOKEN automático (packages: write no build, packages: read na VPS).
+# Passo a passo do dono: docs/DEPLOY.md
+# =============================================================================
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Um deploy nunca é cancelado no meio: só os PRs cancelam a execução anterior.
+# rollback.yml usa o mesmo grupo, então deploy e rollback entram na mesma fila.
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('fuseaprova-pr-{0}', github.event.pull_request.number) || 'fuseaprova-producao' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  VPS_HOST: 72.60.10.112
+  VPS_USUARIO: root
+  # Impressão da chave ed25519 do host. Se a VPS for reinstalada, confira no
+  # console da Hostinger (ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub).
+  VPS_HOST_FINGERPRINT: SHA256:6ZU1oyYcSKKrodyE2uYKme3ciSkCWFxfniTKCGn7NW8
+  DIR_REMOTO: /root/fuseaprova/deploy
+  IMAGEM_PREFIXO: ghcr.io/fernandinhomartins40/fuseaprova
+  DOMINIO: www.fuseaprova.com.br
+  DOMINIO_APEX: fuseaprova.com.br
+  TZ: America/Sao_Paulo
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Migração já versionada é imutável: o banco de produção já a aplicou, e
+  # editar/remover o arquivo deixaria o histórico do Drizzle divergente.
+  # Só são aceitos arquivos NOVOS em packages/db/drizzle/ (e o _journal.json
+  # crescendo no fim). Válvula: "[migracao-revertida]" na mensagem do commit.
+  migracoes:
+    name: Migrações imutáveis
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Conferir que nenhuma migração versionada mudou
+        env:
+          EVENTO: ${{ github.event_name }}
+          ANTES: ${{ github.event.before }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          PASTA=packages/db/drizzle
+          JOURNAL="$PASTA/meta/_journal.json"
+
+          if [ "$EVENTO" = pull_request ]; then
+            BASE="$(git merge-base "origin/$BASE_REF" HEAD)"
+          elif [ "$EVENTO" = push ] && [ -n "$ANTES" ] && ! [[ "$ANTES" =~ ^0+$ ]] && git cat-file -e "$ANTES^{commit}" 2>/dev/null; then
+            BASE="$ANTES"
+          elif git rev-parse -q --verify HEAD^ >/dev/null; then
+            echo "::notice::Sem commit anterior do push (primeiro push, force-push ou execução manual): comparo com HEAD^."
+            BASE="$(git rev-parse HEAD^)"
+          else
+            echo "Primeiro commit do repositório: nada a comparar."
+            exit 0
+          fi
+          echo "comparando $BASE..HEAD em $PASTA"
+
+          problemas="$(git diff --no-renames --name-status "$BASE" HEAD -- "$PASTA" \
+                       | awk -v j="$JOURNAL" '$1 != "A" && !($1 == "M" && $2 == j)' || true)"
+
+          # O _journal.json só pode CRESCER: as entradas antigas continuam iguais.
+          if git cat-file -e "$BASE:$JOURNAL" 2>/dev/null; then
+            if [ ! -f "$JOURNAL" ]; then
+              problemas="$problemas"$'\n'"D	$JOURNAL"
+            elif ! git show "$BASE:$JOURNAL" | node -e '
+                   const fs = require("fs");
+                   const a = JSON.parse(fs.readFileSync(0, "utf8")).entries;
+                   const b = JSON.parse(fs.readFileSync(process.argv[1], "utf8")).entries;
+                   process.exit(JSON.stringify(a) === JSON.stringify(b.slice(0, a.length)) ? 0 : 1);
+                 ' "$JOURNAL"; then
+              problemas="$problemas"$'\n'"M	$JOURNAL (entradas antigas alteradas ou removidas)"
+            fi
+          fi
+          problemas="$(printf '%s\n' "$problemas" | sed '/^$/d')"
+
+          if [ -z "$problemas" ]; then
+            echo "ok: só migrações novas."
+            exit 0
+          fi
+          echo "Migrações já versionadas foram alteradas ou removidas:"
+          printf '  %s\n' "$problemas"
+          if git log --format=%B "$BASE..HEAD" | grep -qF '[migracao-revertida]'; then
+            echo "::warning title=Migração alterada::Liberado pela válvula [migracao-revertida]. Garanta que o banco de produção foi ajustado à mão."
+            exit 0
+          fi
+          echo "::error title=Migração alterada::Não edite nem apague migrações já versionadas: gere uma migração NOVA (pnpm db:generate). Se for mesmo intencional (ex.: revert de uma migração que nunca chegou à produção), coloque [migracao-revertida] na mensagem do commit."
+          exit 1
+
+  # ---------------------------------------------------------------------------
+  testes:
+    name: Lint, tipos e testes
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      # Versão do pnpm vem do campo packageManager do package.json da raiz.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Instalar dependências
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Tipos
+        run: pnpm typecheck
+
+      # Os testes de banco usam PGlite (Postgres em WebAssembly): sem serviço postgres.
+      - name: Testes
+        run: pnpm test
+
+  # ---------------------------------------------------------------------------
+  imagens:
+    name: Imagens (GHCR)
+    needs: [migracoes, testes]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      api: ${{ steps.refs.outputs.api }}
+      web: ${{ steps.refs.outputs.web }}
+      worker: ${{ steps.refs.outputs.worker }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      # O `source` liga o pacote do GHCR a este repositório (o GITHUB_TOKEN da
+      # VPS consegue ler) e o rótulo do projeto deixa o deploy.sh limpar só
+      # as imagens do Fuse Aprova.
+      - name: Build e push da api
+        id: api
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/docker/api.Dockerfile
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          tags: |
+            ${{ env.IMAGEM_PREFIXO }}-api:sha-${{ github.sha }}
+            ${{ env.IMAGEM_PREFIXO }}-api:main
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            com.fuseaprova.projeto=fuseaprova
+          cache-from: type=gha,scope=fuseaprova-api
+          cache-to: type=gha,mode=max,scope=fuseaprova-api
+
+      - name: Build e push do worker
+        id: worker
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/docker/worker.Dockerfile
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          tags: |
+            ${{ env.IMAGEM_PREFIXO }}-worker:sha-${{ github.sha }}
+            ${{ env.IMAGEM_PREFIXO }}-worker:main
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            com.fuseaprova.projeto=fuseaprova
+          cache-from: type=gha,scope=fuseaprova-worker
+          cache-to: type=gha,mode=max,scope=fuseaprova-worker
+
+      # Contato de suporte embutido no bundle (não é segredo): variáveis do
+      # repositório (Settings > Secrets and variables > Actions > Variables),
+      # opcionais. Vazias, a PWA usa o e-mail padrão e esconde o WhatsApp.
+      - name: Build e push da web (nginx + PWA)
+        id: web
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/docker/web.Dockerfile
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          build-args: |
+            VITE_SUPORTE_WHATSAPP=${{ vars.VITE_SUPORTE_WHATSAPP }}
+            VITE_SUPORTE_EMAIL=${{ vars.VITE_SUPORTE_EMAIL }}
+          tags: |
+            ${{ env.IMAGEM_PREFIXO }}-web:sha-${{ github.sha }}
+            ${{ env.IMAGEM_PREFIXO }}-web:main
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            com.fuseaprova.projeto=fuseaprova
+          cache-from: type=gha,scope=fuseaprova-web
+          cache-to: type=gha,mode=max,scope=fuseaprova-web
+
+      - name: Referências por digest
+        id: refs
+        env:
+          D_API: ${{ steps.api.outputs.digest }}
+          D_WEB: ${{ steps.web.outputs.digest }}
+          D_WORKER: ${{ steps.worker.outputs.digest }}
+        run: |
+          set -euo pipefail
+          for d in "$D_API" "$D_WEB" "$D_WORKER"; do
+            [[ "$d" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "::error::digest inválido: '$d'"; exit 1; }
+          done
+          {
+            echo "api=$IMAGEM_PREFIXO-api@$D_API"
+            echo "web=$IMAGEM_PREFIXO-web@$D_WEB"
+            echo "worker=$IMAGEM_PREFIXO-worker@$D_WORKER"
+          } | tee -a "$GITHUB_OUTPUT"
+
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: Deploy na VPS
+    needs: imagens
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: read
+    environment:
+      name: producao
+      url: https://www.fuseaprova.com.br
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Conferir que as imagens vêm por digest
+        env:
+          API: ${{ needs.imagens.outputs.api }}
+          WEB: ${{ needs.imagens.outputs.web }}
+          WORKER: ${{ needs.imagens.outputs.worker }}
+        run: |
+          set -euo pipefail
+          checar() {
+            [[ "$2" =~ ^ghcr\.io/fernandinhomartins40/fuseaprova-$1@sha256:[0-9a-f]{64}$ ]] \
+              || { echo "::error::imagem $1 não está por digest: '$2'"; exit 1; }
+          }
+          checar api "$API"; checar web "$WEB"; checar worker "$WORKER"
+          echo "ok: api, web e worker por digest"
+
+      - name: Preparar SSH (chave de deploy + chave de host fixada)
+        uses: ./.github/actions/preparar-ssh
+        with:
+          host: ${{ env.VPS_HOST }}
+          usuario: ${{ env.VPS_USUARIO }}
+          impressao: ${{ env.VPS_HOST_FINGERPRINT }}
+          chave: ${{ secrets.FUSEAPROVA_DEPLOY_SSH_KEY }}
+
+      # O pacote é deploy/ + infra/backup (em backup/). O .env da VPS nunca é
+      # enviado nem apagado (--exclude '.env*').
+      - name: Montar o pacote da VPS
+        run: |
+          set -euo pipefail
+          PACOTE="$RUNNER_TEMP/pacote"
+          rm -rf "$PACOTE" && mkdir -p "$PACOTE/backup"
+          cp -a deploy/. "$PACOTE/"
+          cp -a infra/backup/. "$PACOTE/backup/"
+          find "$PACOTE" -name '*.sh' -exec sed -i 's/\r$//' {} + -exec chmod 755 {} +
+          (cd "$PACOTE" && find . -type f | sort)
+
+      - name: Enviar o pacote (rsync)
+        run: |
+          set -euo pipefail
+          if ! ssh vps "mkdir -p '$DIR_REMOTO' && command -v rsync >/dev/null"; then
+            echo "::error title=rsync ausente na VPS::Rode antes o workflow 'Configurar nginx do host e HTTPS' (setup-host), que instala rsync, nginx e certbot."
+            exit 1
+          fi
+          rsync -az --delete --no-owner --no-group --exclude='.env*' \
+            -e ssh "$RUNNER_TEMP/pacote/" "vps:$DIR_REMOTO/"
+
+      - name: Rodar deploy.sh na VPS
+        env:
+          GHCR_TOKEN: ${{ github.token }}
+          API: ${{ needs.imagens.outputs.api }}
+          WEB: ${{ needs.imagens.outputs.web }}
+          WORKER: ${{ needs.imagens.outputs.worker }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTOR" =~ ^[A-Za-z0-9-]+(\[bot\])?$ ]] || { echo "::error::actor inesperado"; exit 1; }
+          # O token do GHCR vai pela ENTRADA PADRÃO (nunca na linha de comando);
+          # o deploy.sh faz login num DOCKER_CONFIG temporário e logout no trap.
+          printf '%s\n' "$GHCR_TOKEN" | ssh vps \
+            "cd '$DIR_REMOTO' && GHCR_LOGIN_STDIN=1 GHCR_USUARIO='$GITHUB_ACTOR' \
+             FUSEAPROVA_API_IMAGE='$API' FUSEAPROVA_WEB_IMAGE='$WEB' FUSEAPROVA_WORKER_IMAGE='$WORKER' \
+             DEPLOY_COMMIT='$GITHUB_SHA' bash ./deploy.sh"
+
+  # ---------------------------------------------------------------------------
+  # De fora, como um aluno. Se o DNS ainda não aponta para a VPS ou o HTTPS
+  # ainda não foi configurado (setup-host), só avisa. Se aponta, é rigoroso.
+  verificacao:
+    name: Verificação pública
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: DNS, HTTPS, saúde, cabeçalhos e 301 do apex
+        run: |
+          set -euo pipefail
+          resolve_para_vps() { getent ahostsv4 "$1" | awk '{print $1}' | sort -u | grep -qx "$VPS_HOST"; }
+
+          if ! resolve_para_vps "$DOMINIO"; then
+            echo "::warning title=DNS::$DOMINIO ainda não resolve para $VPS_HOST. O deploy foi feito; a verificação pública fica para depois."
+            exit 0
+          fi
+          if ! curl -sS -o /dev/null --max-time 15 "https://$DOMINIO/"; then
+            echo "::warning title=HTTPS::$DOMINIO aponta para a VPS, mas o HTTPS não respondeu. Rode o workflow 'Configurar nginx do host e HTTPS'."
+            exit 0
+          fi
+
+          # A partir daqui é rigoroso.
+          ok=0
+          for _ in $(seq 1 10); do
+            if curl -fsS --max-time 10 "https://$DOMINIO/api/saude" | jq -e '.ok == true' >/dev/null; then ok=1; break; fi
+            sleep 6
+          done
+          [ "$ok" = 1 ] || { echo "::error::https://$DOMINIO/api/saude não respondeu ok"; exit 1; }
+          echo "saúde ok"
+
+          cab="$(curl -fsS -D - -o "$RUNNER_TEMP/index.html" --max-time 15 "https://$DOMINIO/")"
+          grep -qi '^content-type: text/html' <<<"$cab" || { echo "::error::/ não é HTML"; exit 1; }
+          grep -qi "^content-security-policy: default-src 'self'" <<<"$cab" || { echo "::error::CSP ausente em /"; exit 1; }
+          grep -qi '^strict-transport-security:' <<<"$cab" || { echo "::error::HSTS ausente"; exit 1; }
+          grep -qi '^cache-control: no-cache' <<<"$cab" || { echo "::error::index.html deveria ser no-cache"; exit 1; }
+          grep -q 'id="root"' "$RUNNER_TEMP/index.html" || echo "::warning::index.html sem div#root (confira a PWA)"
+          curl -fsS -o /dev/null --max-time 10 "https://$DOMINIO/aprender" || { echo "::error::fallback SPA (/aprender) falhou"; exit 1; }
+          curl -fsSI --max-time 10 "https://$DOMINIO/sw.js" | grep -qi '^cache-control: no-cache' \
+            || { echo "::error::sw.js deveria ser no-cache"; exit 1; }
+          echo "página, cabeçalhos e PWA ok"
+
+          if resolve_para_vps "$DOMINIO_APEX"; then
+            if r="$(curl -sS -o /dev/null --max-time 15 -w '%{http_code} %{redirect_url}' "https://$DOMINIO_APEX/")"; then
+              case "$r" in
+                "301 https://$DOMINIO/"*) echo "apex ok: $r" ;;
+                *) echo "::error::https://$DOMINIO_APEX/ deveria dar 301 para https://$DOMINIO/ (veio: $r)"; exit 1 ;;
+              esac
+            else
+              echo "::warning title=Apex::$DOMINIO_APEX resolve para a VPS, mas o HTTPS dele falhou. Rode 'Configurar nginx do host e HTTPS' de novo para incluir o apex no certificado."
+            fi
+          else
+            echo "apex $DOMINIO_APEX não aponta para a VPS: 301 não verificado."
+          fi

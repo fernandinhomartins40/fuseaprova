@@ -1,0 +1,107 @@
+# =============================================================================
+# Fuse Aprova: rollback manual para as imagens de um commit anterior
+#
+# Actions > Rollback > Run workflow > SHA completo (40 caracteres) de um
+# commit da main que já passou pelo deploy (as imagens sha-<commit> existem
+# no GHCR). Acha as imagens por DIGEST e roda, na VPS, o deploy.sh que já
+# está lá com SKIP_MIGRATIONS=1 (sem backup e sem migração: o banco fica como
+# está, por isso as migrações precisam ser compatíveis com o código anterior).
+#
+# Mesma fila de concorrência do deploy.yml: nunca roda junto com um deploy.
+# =============================================================================
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: SHA completo (40 caracteres) do commit para onde voltar
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fuseaprova-producao
+  cancel-in-progress: false
+
+env:
+  VPS_HOST: 72.60.10.112
+  VPS_USUARIO: root
+  VPS_HOST_FINGERPRINT: SHA256:6ZU1oyYcSKKrodyE2uYKme3ciSkCWFxfniTKCGn7NW8
+  DIR_REMOTO: /root/fuseaprova/deploy
+  IMAGEM_PREFIXO: ghcr.io/fernandinhomartins40/fuseaprova
+
+jobs:
+  rollback:
+    name: Voltar para ${{ inputs.commit }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: read
+    environment:
+      name: producao
+      url: https://www.fuseaprova.com.br
+    steps:
+      - name: Validar o SHA
+        env:
+          COMMIT: ${{ inputs.commit }}
+        run: |
+          set -euo pipefail
+          [[ "$COMMIT" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::informe o SHA completo, 40 caracteres hexadecimais minúsculos (git log --format=%H)"; exit 1; }
+
+      # Só a ação de SSH e o known_hosts fixado (nada do código é enviado).
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: .github
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Achar as imagens sha-<commit> por digest
+        id: refs
+        env:
+          COMMIT: ${{ inputs.commit }}
+        run: |
+          set -euo pipefail
+          for nome in api web worker; do
+            tag="$IMAGEM_PREFIXO-$nome:sha-$COMMIT"
+            if ! digest="$(docker buildx imagetools inspect "$tag" --format '{{json .Manifest}}' | jq -r '.digest')"; then
+              echo "::error::não achei $tag no GHCR (esse commit passou pelo deploy?)"
+              exit 1
+            fi
+            [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "::error::digest inválido para $tag: '$digest'"; exit 1; }
+            echo "$nome=$IMAGEM_PREFIXO-$nome@$digest" | tee -a "$GITHUB_OUTPUT"
+          done
+
+      - name: Preparar SSH (chave de deploy + chave de host fixada)
+        uses: ./.github/actions/preparar-ssh
+        with:
+          host: ${{ env.VPS_HOST }}
+          usuario: ${{ env.VPS_USUARIO }}
+          impressao: ${{ env.VPS_HOST_FINGERPRINT }}
+          chave: ${{ secrets.FUSEAPROVA_DEPLOY_SSH_KEY }}
+
+      - name: Reimplantar com SKIP_MIGRATIONS=1
+        env:
+          GHCR_TOKEN: ${{ github.token }}
+          COMMIT: ${{ inputs.commit }}
+          API: ${{ steps.refs.outputs.api }}
+          WEB: ${{ steps.refs.outputs.web }}
+          WORKER: ${{ steps.refs.outputs.worker }}
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_ACTOR" =~ ^[A-Za-z0-9-]+(\[bot\])?$ ]] || { echo "::error::actor inesperado"; exit 1; }
+          if ! ssh vps "test -f '$DIR_REMOTO/deploy.sh'"; then
+            echo "::error::não há deploy.sh em $DIR_REMOTO na VPS. O rollback usa o script já instalado; faça um deploy antes."
+            exit 1
+          fi
+          printf '%s\n' "$GHCR_TOKEN" | ssh vps \
+            "cd '$DIR_REMOTO' && GHCR_LOGIN_STDIN=1 GHCR_USUARIO='$GITHUB_ACTOR' SKIP_MIGRATIONS=1 \
+             FUSEAPROVA_API_IMAGE='$API' FUSEAPROVA_WEB_IMAGE='$WEB' FUSEAPROVA_WORKER_IMAGE='$WORKER' \
+             DEPLOY_COMMIT='rollback-$COMMIT' bash ./deploy.sh"

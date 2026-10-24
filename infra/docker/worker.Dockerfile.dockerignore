@@ -1,0 +1,34 @@
+# Ignore usado SOMENTE pelo build de infra/docker/worker.Dockerfile (BuildKit).
+# Nunca mandar segredos, dependências locais ou artefatos para o contexto.
+.git
+**/node_modules
+**/dist
+**/.turbo
+**/coverage
+**/playwright-report
+**/test-results
+**/*.log
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Assets visuais pesados: não são usados pelo worker.
+Fuse_Aprova_Assets_4K
+Telas_referencia
+Guias_visuais
+design/png
+
+# Infra (exceto o que a imagem precisa) e dados de runtime locais.
+infra/*
+!infra/backup
+srv
+
+# Workflows, pacote da VPS e capturas do E2E: não entram na imagem.
+.github
+deploy
+apps/web/capturas
+e2e/relatorio-visual
+e2e/testes/__capturas__

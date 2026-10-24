@@ -1,0 +1,32 @@
+# Ignore usado SOMENTE pelo build de infra/docker/web.Dockerfile (BuildKit).
+.git
+.github
+**/node_modules
+**/dist
+**/.turbo
+**/coverage
+**/playwright-report
+**/test-results
+**/*.log
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Matrizes e referências de composição (não vão para o bundle; os WebP
+# gerados já estão em apps/web/src/assets/gerados).
+Fuse_Aprova_Assets_4K
+Telas_referencia
+Guias_visuais
+design
+apps/web/capturas
+e2e/relatorio-visual
+e2e/testes/__capturas__
+
+# Da infra, a imagem web só precisa da configuração do nginx.
+infra/*
+!infra/nginx
+deploy
+srv
