@@ -1,0 +1,4 @@
+/* Aplicado só nas capturas visuais: o confete é um canvas aleatório por cima da tela. */
+canvas {
+  visibility: hidden !important;
+}

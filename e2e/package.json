@@ -1,0 +1,24 @@
+{
+  "name": "@fuse/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "e2e": "playwright test",
+    "e2e:atualizar": "playwright test --update-snapshots",
+    "servidor": "tsx --conditions=@fuse/source servidor.ts",
+    "relatorio": "node relatorio-visual/gerar.mjs",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fuse/api": "workspace:*",
+    "@fuse/db": "workspace:*",
+    "@fuse/shared": "workspace:*",
+    "drizzle-orm": "0.44.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "axe-core": "^4.14.0"
+  }
+}
