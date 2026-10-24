@@ -1,0 +1,23 @@
+{
+  "name": "@fuse/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx watch --conditions=@fuse/source src/index.ts",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fuse/db": "workspace:*",
+    "@fuse/shared": "workspace:*",
+    "drizzle-orm": "0.44.7",
+    "node-cron": "^4.6.0",
+    "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "@types/web-push": "^3.6.4"
+  }
+}
