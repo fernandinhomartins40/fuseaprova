@@ -162,6 +162,9 @@ describe('parser do caderno', () => {
     ).toBeNull();
     expect(detectarSecao('A) LÍNGUA PORTUGUESA')).toBeNull();
     expect(detectarSecao('ABC')).toBeNull();
+    // Fim de parágrafo de um texto citado (caderno real de Ariranha do Ivaí, 2026).
+    expect(detectarSecao('portuguesa.”')).toBeNull();
+    expect(detectarSecao('Português')).toBe('portugues');
     expect(intervaloDoApoio('Leia o texto para responder às questões 03 a 05.')).toEqual([3, 5]);
     expect(intervaloDoApoio('para a questão 7')).toEqual([7, 7]);
     expect(intervaloDoApoio('questões 09 e 08')).toEqual([8, 9]);

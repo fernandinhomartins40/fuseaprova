@@ -73,8 +73,10 @@ export function detectarSecao(linha: string): SlugDisciplina | null {
     .trim();
   for (const [re, slug] of SECOES) {
     if (!re.test(k)) continue;
-    // Título: quase todo em maiúsculas, ou curto e exatamente o nome da seção.
-    if (maiusculas >= 0.7 || k.split(' ').length <= 4) return slug;
+    // Título: quase todo em maiúsculas, ou curto, com inicial maiúscula e sem pontuação de frase
+    // ("portuguesa.”" no fim de um parágrafo não é título).
+    if (maiusculas >= 0.7) return slug;
+    if (k.split(' ').length <= 4 && /^[A-ZÀ-Þ]/.test(t) && !/[.,;:!?”"]$/.test(t)) return slug;
   }
   return null;
 }
