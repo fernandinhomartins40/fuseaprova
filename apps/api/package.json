@@ -1,0 +1,46 @@
+{
+  "name": "@fuse/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx watch --conditions=@fuse/source src/index.ts",
+    "start": "node dist/index.js",
+    "cli": "node bin/cli.mjs",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^9.4.0",
+    "@fastify/helmet": "^11.1.1",
+    "@fastify/multipart": "^8.3.1",
+    "@fastify/rate-limit": "^9.1.0",
+    "@fuse/db": "workspace:*",
+    "@fuse/shared": "workspace:*",
+    "@node-rs/argon2": "^2.2.2",
+    "drizzle-orm": "0.44.7",
+    "fastify": "^4.29.1",
+    "nodemailer": "^7.0.13",
+    "web-push": "^3.6.7",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^7.0.12",
+    "@types/web-push": "^3.6.4"
+  },
+  "exports": {
+    ".": {
+      "@fuse/source": "./src/app.ts",
+      "types": "./dist/app.d.ts",
+      "default": "./dist/app.js"
+    },
+    "./teste": {
+      "@fuse/source": "./src/teste/index.ts",
+      "types": "./dist/teste/index.d.ts",
+      "default": "./dist/teste/index.js"
+    }
+  },
+  "main": "./dist/index.js"
+}

@@ -1,0 +1,167 @@
+/**
+ * E-mail (PRD 8.6): SMTP do próprio dono via nodemailer. Em dev/teste, um transporte em
+ * memória (e, em dev, um arquivo .html por e-mail na pasta temporária).
+ */
+import { mkdir, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import nodemailer from 'nodemailer';
+import { formatarDataBR, formatarReais, diaSP, horaMinutoSP, primeiroNome } from '@fuse/shared';
+import { AVISO_EDITAL, RODAPE_LEGAL } from '@fuse/shared';
+import type { Config } from '../config.js';
+
+export interface MensagemEmail {
+  para: string;
+  assunto: string;
+  html: string;
+  texto: string;
+}
+
+export interface Mailer {
+  enviar(m: MensagemEmail): Promise<void>;
+}
+
+export interface MailerMemoria extends Mailer {
+  enviados: MensagemEmail[];
+}
+
+export function criarMailerMemoria(opcoes: { pasta?: string } = {}): MailerMemoria {
+  const enviados: MensagemEmail[] = [];
+  return {
+    enviados,
+    async enviar(m) {
+      enviados.push(m);
+      if (opcoes.pasta) {
+        await mkdir(opcoes.pasta, { recursive: true });
+        const nome = `${Date.now()}-${m.assunto.replace(/[^\w]+/g, '-').slice(0, 40)}.html`;
+        await writeFile(join(opcoes.pasta, nome), m.html, 'utf8');
+      }
+    },
+  };
+}
+
+export function criarMailerSmtp(smtp: Config['smtp']): Mailer {
+  const transporte = nodemailer.createTransport({
+    host: smtp.host,
+    port: smtp.porta,
+    secure: smtp.porta === 465,
+    auth: smtp.usuario ? { user: smtp.usuario, pass: smtp.senha } : undefined,
+  });
+  return {
+    async enviar(m) {
+      await transporte.sendMail({
+        from: smtp.remetente,
+        to: m.para,
+        subject: m.assunto,
+        html: m.html,
+        text: m.texto,
+      });
+    },
+  };
+}
+
+/** SMTP se configurado; senão memória (dev grava os e-mails em $TMP/fuse-emails). */
+export function criarMailerPadrao(config: Config): Mailer {
+  if (config.smtp.host) return criarMailerSmtp(config.smtp);
+  return criarMailerMemoria(
+    config.ambiente === 'development' ? { pasta: join(tmpdir(), 'fuse-emails') } : {},
+  );
+}
+
+/* ------------------------------------------------------------- templates */
+
+// Paleta D1: petróleo, turquesa, laranja, marfim, texto.
+const COR = {
+  petroleo: '#00545D',
+  turquesa: '#008A92',
+  laranja: '#FF6A16',
+  marfim: '#FAF8F2',
+  texto: '#123F42',
+};
+
+function esc(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+}
+
+function layout(titulo: string, corpoHtml: string): string {
+  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${esc(titulo)}</title></head>
+<body style="margin:0;background:${COR.marfim};font-family:Arial,Helvetica,sans-serif;color:${COR.texto}">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${COR.marfim};padding:24px 0">
+<tr><td align="center">
+<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden">
+<tr><td style="background:${COR.petroleo};padding:20px 28px;font-size:26px;font-weight:bold">
+<span style="color:${COR.laranja}">fuse</span><span style="color:#ffffff">aprova</span></td></tr>
+<tr><td style="padding:28px;font-size:16px;line-height:1.5">
+<h1 style="margin:0 0 16px;font-size:22px;color:${COR.petroleo}">${esc(titulo)}</h1>
+${corpoHtml}
+</td></tr>
+<tr><td style="padding:16px 28px;background:${COR.marfim};font-size:12px;color:#5b6b6c">${esc(RODAPE_LEGAL)}</td></tr>
+</table></td></tr></table></body></html>`;
+}
+
+function botao(url: string, texto: string): string {
+  return `<p style="margin:24px 0"><a href="${esc(url)}" style="background:${COR.laranja};color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 22px;border-radius:12px;display:inline-block">${esc(texto)}</a></p>`;
+}
+
+export function emailBoasVindas(d: {
+  nome: string;
+  email: string;
+  valorCentavos: number;
+  pagoEm: Date;
+  cobrancaId: string;
+  appUrl: string;
+}): MensagemEmail {
+  const valor = formatarReais(d.valorCentavos);
+  const data = `${formatarDataBR(diaSP(d.pagoEm))} às ${horaMinutoSP(d.pagoEm)}`;
+  const nome = primeiroNome(d.nome);
+  const html = layout(
+    `Bem-vindo(a), ${nome}! Seu acesso está liberado.`,
+    `<p>Seu pagamento via Pix foi confirmado e o acesso completo ao Fuse Aprova já está liberado.</p>
+${botao(`${d.appUrl}/aprender`, 'COMEÇAR A ESTUDAR')}
+<h2 style="font-size:18px;color:${COR.turquesa};margin:24px 0 8px">Recibo</h2>
+<table role="presentation" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:15px">
+<tr><td>Produto</td><td><b>Fuse Aprova – acesso completo</b></td></tr>
+<tr><td>Valor</td><td><b>${esc(valor)}</b> (Pix, pagamento único)</td></tr>
+<tr><td>Data</td><td>${esc(data)}</td></tr>
+<tr><td>Cobrança</td><td>${esc(d.cobrancaId)}</td></tr>
+</table>
+<p style="margin-top:20px">${esc(AVISO_EDITAL)}</p>
+<p style="font-size:14px;color:#5b6b6c">Você tem 7 dias para desistir da compra com reembolso integral (CDC, art. 49).</p>`,
+  );
+  const texto = `Olá, ${nome}! Seu pagamento via Pix foi confirmado e o acesso ao Fuse Aprova está liberado.
+Recibo: Fuse Aprova – acesso completo · ${valor} · ${data} · cobrança ${d.cobrancaId}.
+${AVISO_EDITAL}
+Acesse: ${d.appUrl}/aprender`;
+  return { para: d.email, assunto: 'Pagamento confirmado: seu acesso ao Fuse Aprova', html, texto };
+}
+
+export function emailRecuperacao(d: { nome: string; email: string; link: string }): MensagemEmail {
+  const nome = primeiroNome(d.nome);
+  const html = layout(
+    'Crie uma nova senha',
+    `<p>Olá, ${esc(nome)}. Recebemos um pedido para criar uma nova senha na sua conta.</p>
+${botao(d.link, 'CRIAR NOVA SENHA')}
+<p>O link vale por 1 hora. Ao trocar a senha, as outras sessões abertas são encerradas.</p>
+<p style="font-size:14px;color:#5b6b6c">Se não foi você, ignore este e-mail: sua senha continua a mesma.</p>`,
+  );
+  const texto = `Olá, ${nome}. Para criar uma nova senha no Fuse Aprova, abra o link (vale por 1 hora): ${d.link}
+Se não foi você, ignore este e-mail.`;
+  return { para: d.email, assunto: 'Fuse Aprova: crie uma nova senha', html, texto };
+}
+
+export function emailReembolso(d: {
+  nome: string;
+  email: string;
+  valorCentavos: number;
+  cobrancaId: string;
+}): MensagemEmail {
+  const nome = primeiroNome(d.nome);
+  const valor = formatarReais(d.valorCentavos);
+  const html = layout(
+    'Reembolso confirmado',
+    `<p>Olá, ${esc(nome)}. O reembolso de <b>${esc(valor)}</b> (cobrança ${esc(d.cobrancaId)}) foi confirmado e o valor volta pelo Pix para a conta de origem.</p>
+<p>Com o estorno, o acesso ao Fuse Aprova foi encerrado. Obrigado por ter experimentado!</p>`,
+  );
+  const texto = `Olá, ${nome}. O reembolso de ${valor} (cobrança ${d.cobrancaId}) foi confirmado. O acesso ao Fuse Aprova foi encerrado.`;
+  return { para: d.email, assunto: 'Fuse Aprova: reembolso confirmado', html, texto };
+}

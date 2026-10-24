@@ -1,0 +1,168 @@
+/**
+ * /auth/* (PRD 5.2, 5.4, 5.5, 8.2).
+ */
+import { createHash } from 'node:crypto';
+import { and, eq, gt, isNull, or } from 'drizzle-orm';
+import type { FastifyRequest } from 'fastify';
+import { schema } from '@fuse/db';
+import {
+  MENSAGEM_RECUPERAR,
+  MENSAGENS_CADASTRO,
+  VALIDADE_LINK_SENHA_MS,
+  type ProximoPasso,
+  type SessaoResposta,
+} from '@fuse/shared/api';
+import type { Deps, Usuario } from '../contexto.js';
+import { definirCookieSessao, limparCookieSessao } from '../http/cookies.js';
+import { ehViolacaoUnica, falha } from '../http/erros.js';
+import type { Registrador } from '../http/registrar.js';
+import { emailRecuperacao } from '../integracoes/email.js';
+import { conferirSenha, gerarHashSenha } from '../servicos/senhas.js';
+import { abrirSessao, encerrarSessao, encerrarSessoesDoUsuario, gerarToken } from '../servicos/sessoes.js';
+import { concursoAtivo } from '../servicos/usuario.js';
+
+const { usuarios, redefinicoesSenha } = schema;
+
+export function proximoPasso(u: Pick<Usuario, 'papel' | 'acesso' | 'onboardingConcluidoEm'>): ProximoPasso {
+  if (u.papel === 'admin') return 'admin';
+  if (!u.acesso) return 'pagamento';
+  if (!u.onboardingConcluidoEm) return 'onboarding';
+  return 'trilha';
+}
+
+export function respostaSessao(u: Usuario): SessaoResposta {
+  return {
+    usuario: { id: u.id, nome: u.nome, email: u.email, papel: u.papel, acesso: u.acesso },
+    proximo: proximoPasso(u),
+  };
+}
+
+export async function iniciarSessao(
+  deps: Deps,
+  req: FastifyRequest,
+  reply: Parameters<typeof definirCookieSessao>[0],
+  usuarioId: string,
+  agora: Date,
+): Promise<void> {
+  const { token, expiraEm } = await abrirSessao(
+    deps.db,
+    deps.config.segredoSessao,
+    usuarioId,
+    { userAgent: req.headers['user-agent'], ip: req.ip },
+    agora,
+  );
+  definirCookieSessao(reply, deps.config, token, expiraEm);
+}
+
+const hashSimples = (t: string) => createHash('sha256').update(t).digest('hex');
+
+export function rotasAuth(r: Registrador): void {
+  r.rota('authCadastro', async ({ corpo, deps, req, reply, agora }) => {
+    const { db } = deps;
+    const existente = await db
+      .select({ email: usuarios.email, cpf: usuarios.cpf })
+      .from(usuarios)
+      .where(or(eq(usuarios.email, corpo.email), eq(usuarios.cpf, corpo.cpf)))
+      .limit(1);
+    const contaExistente = () => {
+      const msg = MENSAGENS_CADASTRO.contaExistente;
+      return falha('conta_existente', msg, { email: msg, cpf: msg });
+    };
+    if (existente.length) throw contaExistente();
+    const concurso = await concursoAtivo(db);
+    let novo: Usuario;
+    try {
+      [novo] = (await db
+        .insert(usuarios)
+        .values({
+          nome: corpo.nome,
+          email: corpo.email,
+          cpf: corpo.cpf,
+          celular: corpo.celular,
+          senhaHash: await gerarHashSenha(corpo.senha),
+          concursoId: concurso?.id ?? null,
+          aceiteTermosEm: agora,
+          versaoTermos: corpo.versaoTermos,
+          vidasAtualizadoEm: agora,
+          criadoEm: agora,
+        })
+        .returning()) as [Usuario];
+    } catch (e) {
+      if (ehViolacaoUnica(e)) throw contaExistente();
+      throw e;
+    }
+    await iniciarSessao(deps, req, reply, novo.id, agora);
+    reply.status(201);
+    return respostaSessao(novo);
+  });
+
+  r.rota('authLogin', async ({ corpo, deps, req, reply, agora }) => {
+    const [u] = await deps.db
+      .select()
+      .from(usuarios)
+      .where(and(eq(usuarios.email, corpo.email), isNull(usuarios.excluidoEm)))
+      .limit(1);
+    const ok = await conferirSenha(u?.senhaHash, corpo.senha);
+    if (!u || !ok) throw falha('credenciais_invalidas');
+    await iniciarSessao(deps, req, reply, u.id, agora);
+    return respostaSessao(u);
+  });
+
+  r.rota('authSair', async ({ usuario, deps, reply }) => {
+    await encerrarSessao(deps.db, usuario.sessaoId);
+    limparCookieSessao(reply, deps.config);
+    return { ok: true as const };
+  });
+
+  r.rota('authRecuperar', async ({ corpo, deps, agora }) => {
+    const [u] = await deps.db
+      .select()
+      .from(usuarios)
+      .where(and(eq(usuarios.email, corpo.email), isNull(usuarios.excluidoEm)))
+      .limit(1);
+    if (u) {
+      const token = gerarToken();
+      await deps.db.insert(redefinicoesSenha).values({
+        usuarioId: u.id,
+        tokenHash: hashSimples(token),
+        expiraEm: new Date(agora.getTime() + VALIDADE_LINK_SENHA_MS),
+        criadoEm: agora,
+      });
+      deps.enviarEmail(
+        emailRecuperacao({ nome: u.nome, email: u.email, link: `${deps.config.appUrl}/recuperar/${token}` }),
+      );
+    }
+    // Sempre a mesma resposta: não revela se o e-mail existe.
+    return { ok: true as const, mensagem: MENSAGEM_RECUPERAR };
+  });
+
+  r.rota('authRedefinir', async ({ corpo, deps, req, reply, agora }) => {
+    const { db } = deps;
+    const usuario = await db.transaction(async (tx) => {
+      const [red] = await tx
+        .select()
+        .from(redefinicoesSenha)
+        .where(
+          and(
+            eq(redefinicoesSenha.tokenHash, hashSimples(corpo.token)),
+            isNull(redefinicoesSenha.usadoEm),
+            gt(redefinicoesSenha.expiraEm, agora),
+          ),
+        )
+        .for('update');
+      if (!red) throw falha('token_invalido');
+      const [u] = await tx
+        .update(usuarios)
+        .set({ senhaHash: await gerarHashSenha(corpo.senha) })
+        .where(and(eq(usuarios.id, red.usuarioId), isNull(usuarios.excluidoEm)))
+        .returning();
+      if (!u) throw falha('token_invalido');
+      await tx.update(redefinicoesSenha).set({ usadoEm: agora }).where(eq(redefinicoesSenha.usuarioId, u.id));
+      // Redefinir encerra todas as outras sessões (PRD 5.5).
+      await encerrarSessoesDoUsuario(tx, u.id);
+      return u;
+    });
+    await iniciarSessao(deps, req, reply, usuario.id, agora);
+    return respostaSessao(usuario);
+  });
+}
