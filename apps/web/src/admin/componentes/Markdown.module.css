@@ -1,0 +1,20 @@
+.paragrafo {
+  margin: 0 0 0.6em;
+}
+
+.paragrafo:last-child {
+  margin-bottom: 0;
+}
+
+.lista {
+  margin: 0 0 0.6em;
+  padding-left: 1.2em;
+}
+
+.imagem {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 6px 0;
+  border-radius: 8px;
+}

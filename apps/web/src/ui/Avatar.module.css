@@ -1,0 +1,16 @@
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border-radius: 50%;
+  color: #fff;
+  font-family: var(--fa-font-body);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  user-select: none;
+}
+.suave {
+  background: #e6e3da;
+  color: var(--fa-ink);
+}

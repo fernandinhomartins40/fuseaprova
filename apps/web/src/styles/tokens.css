@@ -1,0 +1,162 @@
+/* Fuse Aprova — tokens de design (linguagem 4K, docs/DECISOES.md D1).
+   Paleta da marca: Guias_visuais/10_Paleta_de_cores.png. Papéis semânticos de
+   docs/DESIGN-SYSTEM.md (acerto verde, erro vermelho, seleção azul, simulado roxo, XP dourado).
+   Fontes auto-hospedadas (design/fonts), sem Google Fonts nem CDN. */
+
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/nunito-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/nunito-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 800;
+  font-display: swap;
+  src: url('../assets/fonts/nunito-latin-800-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Nunito';
+  font-weight: 900;
+  font-display: swap;
+  src: url('../assets/fonts/nunito-latin-900-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Baloo 2';
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/baloo-2-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Baloo 2';
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/baloo-2-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Baloo 2';
+  font-weight: 800;
+  font-display: swap;
+  src: url('../assets/fonts/baloo-2-latin-800-normal.woff2') format('woff2');
+}
+
+:root {
+  /* ---- Marca (D1) ---- */
+  --fa-petroleo: #00545d; /* marca e títulos */
+  --fa-petroleo-shade: #003a40;
+  --fa-turquesa: #008a92; /* ações e progresso (preenchimentos, ícones) */
+  --fa-turquesa-acao: #007c83; /* fundo de botão: branco ≈ 5,1:1 (AA) */
+  --fa-turquesa-soft: #e3f3f2;
+  --fa-turquesa-line: #8ccfcb;
+  --fa-laranja: #ff6a16; /* energia e destaques (formas, ícones) */
+  --fa-laranja-texto: #c44c0a; /* laranja para texto sobre marfim (AA em ≥ 18 px) */
+  --fa-laranja-forte: #b84308; /* laranja para texto pequeno (AA) */
+  --fa-laranja-soft: #ffede2;
+  --fa-laranja-line: #ffc29e;
+  --fa-caramelo: #c9874a; /* mascote */
+  --fa-marfim: #faf8f2; /* fundo principal */
+  --fa-texto: #123f42; /* leitura e navegação */
+
+  /* ---- Base ---- */
+  --fa-bg: var(--fa-marfim);
+  --fa-surface: #ffffff;
+  --fa-surface-soft: #f3f1ea;
+  --fa-ink: var(--fa-texto);
+  --fa-ink-2: #2e5457;
+  --fa-muted: #50696b; /* 5,9:1 sobre marfim */
+  --fa-faint: #7c8f90;
+  --fa-line: #e4e0d5;
+  --fa-line-forte: #cfcabc;
+  --fa-divider: #ece8de;
+
+  /* ---- Papéis semânticos ---- */
+  /* Ação principal (CONTINUAR, VERIFICAR, COMEÇAR) = turquesa da marca */
+  --fa-acao: var(--fa-turquesa-acao);
+  --fa-acao-shade: var(--fa-petroleo);
+
+  /* Acerto */
+  --fa-green: #15803d;
+  --fa-green-shade: #0f5f2d;
+  --fa-green-line: #6cc28c;
+  --fa-green-soft: #e6f4ea;
+
+  /* Erro / vidas */
+  --fa-red: #c9302c;
+  --fa-red-shade: #962220;
+  --fa-red-line: #f0a19e;
+  --fa-red-soft: #fcebea;
+  --fa-heart: #e5484d;
+
+  /* Seleção / gemas */
+  --fa-blue: #1d6fe0;
+  --fa-blue-shade: #1550a8;
+  --fa-blue-line: #7db4ff;
+  --fa-blue-soft: #eaf3ff;
+
+  /* XP / concluído / liga */
+  --fa-gold: #ffc233;
+  --fa-gold-shade: #d99a00;
+  --fa-gold-ink: #7a5000;
+  --fa-gold-soft: #fff5d6;
+
+  /* Simulado */
+  --fa-purple: #6d3fe0;
+  --fa-purple-shade: #4e25b8;
+  --fa-purple-soft: #f1ecff;
+  --fa-purple-line: #b7a2f5;
+
+  /* Bloqueado */
+  --fa-locked: #e7e4db;
+  --fa-locked-shade: #c9c4b6;
+  --fa-locked-ink: #7c8f90;
+
+  /* Disciplinas (barras e fundos de ícone, como em 04_Inicio e 12_Perfil) */
+  --fa-disc-portugues: #0e9a98;
+  --fa-disc-portugues-soft: #ddf2f0;
+  --fa-disc-matematica: #ff7a2e;
+  --fa-disc-matematica-soft: #ffe9dc;
+  --fa-disc-gerais: #3b82f6;
+  --fa-disc-gerais-soft: #e2edfe;
+  --fa-disc-especificos: #8b5cf6;
+  --fa-disc-especificos-soft: #eee8fe;
+
+  /* ---- Tipografia (Guias_visuais/11) ---- */
+  --fa-font-display: 'Baloo 2', system-ui, sans-serif;
+  --fa-font-body: 'Nunito', system-ui, sans-serif;
+  --fa-t-display: 40px; /* celebração */
+  --fa-t-titulo: 32px; /* título principal */
+  --fa-t-secao: 22px; /* título de seção */
+  --fa-t-corpo: 16px; /* texto e campos */
+  --fa-t-aux: 14px; /* informação auxiliar */
+  --fa-t-legenda: 13px;
+
+  /* ---- Raios ---- */
+  --fa-r-sm: 8px;
+  --fa-r-md: 12px;
+  --fa-r-lg: 16px;
+  --fa-r-xl: 20px;
+  --fa-r-2xl: 24px;
+  --fa-r-pill: 999px;
+
+  /* ---- Sombras ---- */
+  --fa-lift: 0 4px 0;
+  --fa-lift-sm: 0 3px 0;
+  --fa-sombra-cartao: 0 1px 2px rgba(18, 63, 66, 0.05), 0 4px 14px rgba(18, 63, 66, 0.05);
+  --fa-sombra-folha: 0 -8px 28px rgba(18, 63, 66, 0.14);
+
+  /* ---- Movimento ---- */
+  --fa-dur-botao: 80ms;
+  --fa-dur-folha: 200ms;
+  --fa-dur-barra: 300ms;
+
+  /* ---- Layout ---- */
+  --fa-coluna: 480px;
+  --fa-nav-altura: 74px;
+  --fa-foco: 0 0 0 3px var(--fa-blue);
+}

@@ -1,0 +1,79 @@
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.rotulo {
+  font-weight: 900;
+  font-size: 14.5px;
+  color: var(--fa-ink);
+}
+.caixa {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  border-radius: 14px;
+  border: 1.5px solid var(--fa-line-forte);
+  background: var(--fa-surface);
+  transition:
+    border-color 120ms,
+    box-shadow 120ms;
+}
+.caixa:focus-within {
+  border-color: var(--fa-turquesa);
+  box-shadow: 0 0 0 3px rgba(0, 138, 146, 0.18);
+}
+.comErro {
+  border-color: var(--fa-red);
+  background: #fffafa;
+}
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 50px;
+  padding: 0 16px;
+  border: 0;
+  background: transparent;
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--fa-ink);
+  border-radius: 14px;
+}
+.input:focus {
+  outline: none;
+}
+.input::placeholder {
+  color: var(--fa-faint);
+  font-weight: 600;
+}
+.olho {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--fa-petroleo);
+  border-radius: 12px;
+}
+.ajuda {
+  font-size: 13.5px;
+  color: var(--fa-muted);
+  font-weight: 600;
+}
+.erro {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  color: var(--fa-red-shade);
+  font-size: 13.5px;
+  font-weight: 800;
+}
+.erro svg {
+  flex: none;
+  margin-top: 1px;
+}
+.erro a {
+  color: inherit;
+}

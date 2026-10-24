@@ -1,0 +1,299 @@
+/* Cópia da tela 05 Pergunta (390 px), com a paleta D1. */
+.tela {
+  width: 390px;
+  max-width: 100%;
+  min-height: 640px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid var(--adm-borda, #d8e1df);
+  border-radius: 28px;
+  box-shadow: 0 10px 40px rgb(0 0 0 / 12%);
+  overflow: hidden;
+  font-family: 'Nunito', system-ui, sans-serif;
+  color: #123f42;
+}
+
+.topo {
+  height: 56px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+}
+
+.fechar {
+  color: #9aa0aa;
+  font-weight: 900;
+  font-size: 20px;
+}
+
+.progresso {
+  flex: 1;
+  height: 16px;
+  border-radius: 8px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.progressoCheio {
+  display: block;
+  width: 40%;
+  height: 100%;
+  border-radius: 8px;
+  background: #008a92;
+}
+
+.vidas {
+  font-weight: 900;
+  color: #dc2626;
+}
+
+.corpo {
+  flex: 1;
+  padding: 4px 18px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.linhaChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  background: #f3eeff;
+  color: #6d3fe0;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  padding: 4px 9px;
+  border-radius: 8px;
+}
+
+.chipAutoral {
+  background: #e3f3f4;
+  color: #00545d;
+}
+
+.disciplina {
+  font-size: 12px;
+  font-weight: 800;
+  color: #4f6d70;
+}
+
+.titulo {
+  margin: 0;
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 23px;
+  line-height: 1.15;
+}
+
+.apoio {
+  border-left: 4px solid #008a92;
+  background: #faf8f2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.linhaBalao {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.capi {
+  flex: none;
+  margin-top: 8px;
+}
+
+.balao {
+  flex: 1;
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 11px 13px;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.vazio {
+  color: #9aa0aa;
+  font-weight: 600;
+}
+
+.dica {
+  background: #fff6df;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #7a4d04;
+}
+
+.alternativas {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.alt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  box-sizing: border-box;
+  padding: 9px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 0 #e5e7eb;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.3;
+  color: #2d2f36;
+  text-align: left;
+  cursor: pointer;
+}
+
+.alt:focus-visible {
+  outline: 3px solid #ff6a16;
+  outline-offset: 2px;
+}
+
+.letra {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border: 2px solid #e5e7eb;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 14px;
+  color: #6b7079;
+}
+
+.altSelecionada {
+  border-color: #7db4ff;
+  background: #eaf3ff;
+  box-shadow: 0 4px 0 #7db4ff;
+  color: #1550a8;
+}
+
+.altSelecionada .letra {
+  border-color: #7db4ff;
+  color: #1d6fe0;
+}
+
+.altCorreta {
+  border-color: #58c27d;
+  background: #e6f4ea;
+  box-shadow: 0 4px 0 #58c27d;
+  color: #15803d;
+}
+
+.altErrada {
+  border-color: #f08a8a;
+  background: #fdecec;
+  box-shadow: 0 4px 0 #f08a8a;
+  color: #b91c1c;
+}
+
+.rodape {
+  flex: none;
+  padding: 14px 18px 22px;
+  border-top: 2px solid #eef0f3;
+  display: flex;
+  gap: 12px;
+}
+
+.botaoDica,
+.botaoVerificar,
+.botaoFolha {
+  height: 50px;
+  border-radius: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+}
+
+.botaoDica {
+  padding: 0 16px;
+  border: 2px solid #e5e7eb;
+  background: #ffffff;
+  box-shadow: 0 4px 0 #e5e7eb;
+  color: #b7791f;
+}
+
+.botaoVerificar {
+  flex: 1;
+  border: none;
+  background: #ff6a16;
+  box-shadow: 0 5px 0 #d9530a;
+  color: #ffffff;
+}
+
+.botaoVerificar:disabled {
+  background: #e5e7eb;
+  box-shadow: 0 5px 0 #d1d5db;
+  color: #9aa0aa;
+  cursor: not-allowed;
+}
+
+.folha {
+  flex: none;
+  padding: 16px 18px 22px;
+}
+
+.folhaAcerto {
+  background: #e6f4ea;
+  color: #15803d;
+}
+
+.folhaErro {
+  background: #fdecec;
+  color: #b91c1c;
+}
+
+.folhaTitulo {
+  font-family: 'Baloo 2', 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+}
+
+.folhaTexto {
+  margin-top: 6px;
+  color: #123f42;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.bolso {
+  margin-top: 8px;
+  color: #123f42;
+  font-size: 14px;
+}
+
+.botaoFolha {
+  width: 100%;
+  margin-top: 12px;
+  border: none;
+  background: #00545d;
+  color: #ffffff;
+}

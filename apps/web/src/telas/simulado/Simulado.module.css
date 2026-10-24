@@ -1,0 +1,192 @@
+.titulo {
+  font-size: var(--fa-t-titulo);
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+.heroi {
+  position: relative;
+  padding: 20px 18px;
+  border-radius: var(--fa-r-2xl);
+  background: var(--fa-purple);
+  box-shadow: 0 5px 0 var(--fa-purple-shade);
+  color: #fff;
+  overflow: hidden;
+}
+.heroiRotulo {
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #e6dcff;
+}
+.heroiTitulo {
+  color: #fff;
+  font-size: 26px;
+  font-weight: 800;
+  margin-top: 6px;
+  max-width: 82%;
+}
+.heroiIcone {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  opacity: 0.95;
+}
+.blocos {
+  list-style: none;
+  margin: 14px 0 12px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1.25fr;
+  gap: 6px;
+}
+.blocos li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 2px;
+  border-radius: 12px;
+  /* Escurece (e não clareia) o roxo: branco 10,5 px precisa de 4,5:1 (AA). */
+  background: rgba(30, 6, 90, 0.18);
+}
+.blocos .blocoGrande {
+  background: rgba(30, 6, 90, 0.3);
+}
+.blocos strong {
+  font-family: var(--fa-font-display);
+  font-size: 22px;
+  line-height: 1.1;
+}
+.blocos span {
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+.heroiNota {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f1ecff;
+}
+.andamento {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-purple-soft);
+  border: 1.5px solid var(--fa-purple-line);
+}
+.andamentoTitulo {
+  font-weight: 900;
+  color: var(--fa-purple-shade);
+}
+.andamentoSub {
+  font-size: 13.5px;
+  color: var(--fa-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.cargo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 16px 0 14px;
+}
+.cargoRotulo {
+  font-weight: 900;
+  font-size: 14.5px;
+}
+.selectCaixa {
+  position: relative;
+  display: block;
+}
+.selectCaixa select {
+  appearance: none;
+  width: 100%;
+  height: 54px;
+  padding: 0 44px 0 16px;
+  border-radius: 14px;
+  border: 1.5px solid var(--fa-line-forte);
+  background: var(--fa-surface);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--fa-ink);
+}
+.selectSeta {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--fa-ink-2);
+}
+.erro {
+  margin-bottom: 10px;
+  color: var(--fa-red-shade);
+  font-weight: 800;
+}
+.historico {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--fa-r-xl);
+  border: 1.5px solid var(--fa-line);
+  background: var(--fa-surface);
+  text-align: left;
+}
+.pct {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 52px;
+  border-radius: 14px;
+  font-family: var(--fa-font-display);
+  font-weight: 800;
+  font-size: 19px;
+}
+.pctOk {
+  background: var(--fa-green-soft);
+  color: var(--fa-green-shade);
+}
+.pctBaixo {
+  background: var(--fa-red-soft);
+  color: var(--fa-red-shade);
+}
+.itemTextos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.itemTitulo {
+  font-weight: 900;
+  font-size: 15.5px;
+}
+.itemSub {
+  font-size: 13.5px;
+  color: var(--fa-muted);
+  font-weight: 700;
+}
+.selo {
+  flex: none;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+.seloOk {
+  color: var(--fa-green-shade);
+}
+.seloBaixo {
+  color: var(--fa-red-shade);
+}

@@ -1,0 +1,113 @@
+.tela {
+  position: relative;
+  min-height: 100dvh;
+  padding: calc(18px + env(safe-area-inset-top)) 20px 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.fundo {
+  position: absolute;
+  inset: 120px -40px auto;
+  height: 340px;
+  border-radius: 50% 50% 40% 60%;
+  background: radial-gradient(ellipse at 60% 40%, #f3ece0 0%, rgba(243, 236, 224, 0) 70%);
+  z-index: 0;
+}
+.logo {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+.heroi {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+  min-height: 250px;
+}
+.capi {
+  justify-content: center;
+}
+.capi img {
+  height: 250px;
+  width: auto;
+}
+.faisca {
+  position: absolute;
+  right: 42px;
+  top: 10px;
+}
+.balao {
+  position: absolute;
+  left: 6px;
+  top: 30px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: var(--fa-surface);
+  border: 2px solid var(--fa-line);
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--fa-petroleo);
+  box-shadow: var(--fa-sombra-cartao);
+}
+.balao::after {
+  content: '';
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  background: var(--fa-surface);
+  border-right: 2px solid var(--fa-line);
+  border-top: 2px solid var(--fa-line);
+  transform: translateY(-50%) rotate(45deg);
+}
+.conteudo {
+  position: relative;
+  z-index: 1;
+  margin-top: -6px;
+}
+.titulo {
+  font-size: 31px;
+  font-weight: 800;
+  line-height: 1.08;
+  color: var(--fa-ink);
+  letter-spacing: -0.01em;
+}
+.destaque {
+  color: var(--fa-laranja-texto);
+}
+.subtitulo {
+  margin-top: 10px;
+  font-size: 17px;
+  color: var(--fa-ink-2);
+  font-weight: 600;
+}
+.chips {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chips > li > span {
+  background: #efece4;
+  border-color: transparent;
+  color: var(--fa-ink);
+}
+.acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.legal {
+  margin-top: 18px;
+  font-size: 12.5px;
+  color: var(--fa-muted);
+  text-align: center;
+  font-weight: 700;
+}

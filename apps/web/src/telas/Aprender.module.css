@@ -1,0 +1,183 @@
+.ola {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--fa-ink);
+}
+.titulo {
+  font-size: 28px;
+  font-weight: 800;
+  margin-top: 2px;
+}
+.estatisticas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+.proximo {
+  position: relative;
+  margin-top: 16px;
+  display: flex;
+  align-items: flex-end;
+  min-height: 186px;
+  padding: 18px 0 18px 18px;
+  border-radius: var(--fa-r-2xl);
+  background: radial-gradient(circle at 85% 30%, #0b6d74 0%, var(--fa-petroleo) 60%);
+  color: #fff;
+  overflow: hidden;
+}
+.proximoTexto {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+}
+.proximoRotulo {
+  font-size: 15px;
+  font-weight: 700;
+  color: #d7efed;
+}
+.proximoTitulo {
+  color: #fff;
+  font-size: 23px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+.proximoMeta {
+  display: flex;
+  gap: 16px;
+  margin: 8px 0 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #e4f4f3;
+}
+.proximoMeta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.proximoBotao {
+  min-height: 50px;
+  padding: 0 18px;
+  font-size: 16px;
+}
+.proximoCapi {
+  position: relative;
+  z-index: 0;
+  flex: none;
+  align-self: flex-end;
+  margin: 0 -14px -24px -24px;
+}
+.meta {
+  margin-top: 14px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  box-shadow: var(--fa-sombra-cartao);
+}
+.metaIcone {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: var(--fa-laranja-soft);
+}
+.metaCorpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.metaLinha {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.metaTitulo {
+  font-weight: 900;
+  font-size: 16px;
+}
+.metaValor {
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--fa-ink-2);
+}
+.secaoTitulo {
+  font-size: var(--fa-t-secao);
+  margin: 28px 0 14px;
+}
+.trilha {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.unidade {
+  display: flex;
+  flex-direction: column;
+}
+.secao {
+  margin-top: 18px;
+}
+.secaoRotulo {
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--fa-muted);
+  margin-bottom: 10px;
+}
+.fora {
+  color: var(--fa-laranja-forte);
+}
+.nos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.noLinha {
+  position: relative;
+}
+.capiLado {
+  position: absolute;
+  top: -20px;
+  width: 148px;
+}
+.capiDireita {
+  right: 0;
+}
+.capiEsquerda {
+  left: 0;
+}
+.capiLado > div {
+  align-items: center;
+}
+.capiLado > div > div {
+  font-size: 13.5px;
+  padding: 8px 10px;
+}
+.divisor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 30px 0 10px;
+  color: var(--fa-muted);
+  font-family: var(--fa-font-display);
+  font-weight: 700;
+  font-size: 17px;
+  text-align: center;
+}
+.divisor::before,
+.divisor::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  background: var(--fa-line);
+}

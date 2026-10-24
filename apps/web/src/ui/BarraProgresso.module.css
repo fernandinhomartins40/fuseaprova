@@ -1,0 +1,60 @@
+.trilho {
+  position: relative;
+  height: 14px;
+  border-radius: 8px;
+  background: var(--fa-divider);
+  overflow: hidden;
+}
+.fina {
+  height: 10px;
+}
+.preenchimento {
+  position: relative;
+  height: 100%;
+  border-radius: 8px;
+  background: var(--fa-turquesa);
+  transition: width var(--fa-dur-barra) ease-out;
+}
+.preenchimento::after {
+  content: '';
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 3px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.35);
+}
+.fina .preenchimento::after {
+  display: none;
+}
+.acao {
+  background: var(--fa-turquesa);
+}
+.acerto {
+  background: var(--fa-green);
+}
+.laranja {
+  background: var(--fa-laranja);
+}
+.azul {
+  background: var(--fa-blue);
+}
+.roxo {
+  background: var(--fa-purple);
+}
+.ouro {
+  background: var(--fa-gold);
+}
+.portugues {
+  background: var(--fa-disc-portugues);
+}
+.matematica {
+  background: var(--fa-disc-matematica);
+}
+.gerais {
+  background: var(--fa-disc-gerais);
+}
+.especificos {
+  background: var(--fa-disc-especificos);
+}

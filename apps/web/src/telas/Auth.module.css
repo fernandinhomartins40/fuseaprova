@@ -1,0 +1,73 @@
+.titulo {
+  font-size: var(--fa-t-titulo);
+  font-weight: 800;
+  color: var(--fa-ink);
+  margin-top: 6px;
+}
+.subtitulo {
+  margin-top: 6px;
+  font-size: 17px;
+  color: var(--fa-ink-2);
+  font-weight: 600;
+}
+.capi {
+  margin: 10px 0 4px;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+.aceite {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+}
+.aceite input {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  accent-color: var(--fa-turquesa-acao);
+}
+.erro {
+  color: var(--fa-red-shade);
+  font-weight: 800;
+  font-size: 14px;
+  background: var(--fa-red-soft);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.erro a {
+  color: inherit;
+}
+.sucesso {
+  color: var(--fa-green-shade);
+  font-weight: 800;
+  font-size: 14.5px;
+  background: var(--fa-green-soft);
+  border-radius: 12px;
+  padding: 12px;
+}
+.aviso {
+  font-size: 13.5px;
+  color: var(--fa-petroleo);
+  font-weight: 700;
+  background: var(--fa-turquesa-soft);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.rodape {
+  text-align: center;
+  font-size: 15px;
+  color: var(--fa-ink-2);
+  font-weight: 700;
+}
+.link {
+  align-self: flex-end;
+  font-size: 14.5px;
+}

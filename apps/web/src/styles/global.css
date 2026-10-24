@@ -1,0 +1,120 @@
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--fa-bg);
+  color: var(--fa-ink);
+  font-family: var(--fa-font-body);
+  font-weight: 600;
+  font-size: var(--fa-t-corpo);
+  line-height: 1.4;
+}
+
+body {
+  min-height: 100dvh;
+  overscroll-behavior-y: none;
+}
+
+#raiz {
+  max-width: var(--fa-coluna);
+  margin: 0 auto;
+  min-height: 100dvh;
+  background: var(--fa-bg);
+  position: relative;
+}
+
+@media (min-width: 520px) {
+  body {
+    background: #efebe0;
+  }
+  #raiz {
+    box-shadow:
+      0 0 0 1px var(--fa-line),
+      0 10px 40px rgba(18, 63, 66, 0.08);
+  }
+}
+
+/* Painel admin (desktop-first): ocupa a largura toda, fora da coluna de celular do app. */
+#raiz:has([data-painel-admin]) {
+  max-width: none;
+  box-shadow: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--fa-font-display);
+  color: var(--fa-ink);
+  margin: 0;
+  line-height: 1.12;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--fa-petroleo);
+  font-weight: 800;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+  object-fit: contain;
+}
+
+:focus-visible {
+  outline: 3px solid var(--fa-blue);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+main:focus {
+  outline: none;
+}

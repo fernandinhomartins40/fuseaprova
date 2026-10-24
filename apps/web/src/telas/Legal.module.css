@@ -1,0 +1,23 @@
+.texto {
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--fa-ink);
+}
+.texto h1 {
+  font-size: 26px;
+  font-weight: 800;
+}
+.texto h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 22px 0 6px;
+  color: var(--fa-petroleo);
+}
+.texto p + p {
+  margin-top: 8px;
+}
+.versao {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--fa-muted);
+}

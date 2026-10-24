@@ -1,0 +1,63 @@
+.banner {
+  display: flex;
+  align-items: stretch;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-petroleo);
+  box-shadow: 0 5px 0 var(--fa-petroleo-shade);
+  color: #fff;
+  overflow: hidden;
+  position: relative;
+}
+.banner::before {
+  content: '';
+  position: absolute;
+  right: 60px;
+  top: -40px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+}
+.texto {
+  flex: 1;
+  padding: 16px 18px;
+  position: relative;
+}
+.rotulo {
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #bfe6e3;
+}
+.coroa {
+  color: var(--fa-gold);
+}
+.titulo {
+  color: #fff;
+  font-size: 21px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.selo {
+  margin-top: 8px;
+}
+.guia {
+  flex: none;
+  width: 74px;
+  border: 0;
+  border-left: 2px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.guia:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.guiaTexto {
+  font-size: 12px;
+  font-weight: 900;
+}

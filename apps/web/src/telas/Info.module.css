@@ -1,0 +1,99 @@
+.pilha {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.titulo {
+  font-size: 26px;
+  font-weight: 800;
+}
+.subtitulo {
+  font-size: 19px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.rotulo {
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: var(--fa-muted);
+}
+.destaque {
+  font-family: var(--fa-font-display);
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--fa-petroleo);
+  margin-top: 2px;
+}
+.prova {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-weight: 800;
+  color: var(--fa-laranja-forte);
+}
+.textoMenor {
+  font-size: 14.5px;
+  color: var(--fa-muted);
+  margin-top: 6px;
+}
+.links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  text-decoration: none;
+  color: var(--fa-petroleo);
+}
+.dica {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.dicaTitulo {
+  font-weight: 900;
+  font-size: 16.5px;
+  color: var(--fa-ink);
+}
+.dicaTexto {
+  font-size: 15px;
+  line-height: 1.45;
+}
+.exemplo {
+  margin-top: 4px;
+  padding: 10px 12px;
+  border-left: 4px solid var(--fa-laranja);
+  background: var(--fa-laranja-soft);
+  border-radius: 0 10px 10px 0;
+  font-size: 14.5px;
+  font-weight: 700;
+}
+.secaoGuia {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.secaoCab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}

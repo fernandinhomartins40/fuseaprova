@@ -1,0 +1,42 @@
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  max-height: 38dvh;
+  overflow-y: auto;
+  text-align: left;
+}
+.cargo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 2px solid var(--fa-line);
+  background: var(--fa-surface);
+  font-weight: 800;
+  text-align: left;
+}
+.marcado {
+  border-color: var(--fa-blue-line);
+  background: var(--fa-blue-soft);
+  color: var(--fa-blue-shade);
+}
+.nome {
+  flex: 1;
+}
+.vagas {
+  font-size: 13px;
+  color: var(--fa-muted);
+}
+.vazio {
+  color: var(--fa-muted);
+}
+.erro {
+  margin-top: 10px;
+  color: var(--fa-red-shade);
+  font-weight: 800;
+}

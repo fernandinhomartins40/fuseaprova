@@ -1,0 +1,188 @@
+.engrenagem {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  border-radius: 14px;
+}
+.identidade {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.idTextos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nome {
+  font-size: 25px;
+  font-weight: 800;
+}
+.cargo,
+.orgao {
+  font-size: 15.5px;
+  color: var(--fa-ink-2);
+  font-weight: 700;
+}
+.selo {
+  align-self: flex-start;
+  margin-top: 8px;
+  font-size: 13px;
+}
+.grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+.cartao {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  box-shadow: var(--fa-sombra-cartao);
+}
+.cartaoTitulo {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.dominio {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.domLinha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.domIcone {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--fa-surface-soft);
+}
+.domIcone[data-fundo='portugues'] {
+  background: var(--fa-disc-portugues-soft);
+}
+.domIcone[data-fundo='matematica'] {
+  background: var(--fa-disc-matematica-soft);
+}
+.domIcone[data-fundo='gerais'] {
+  background: var(--fa-disc-gerais-soft);
+}
+.domIcone[data-fundo='especificos'] {
+  background: var(--fa-disc-especificos-soft);
+}
+.domCorpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.domNome {
+  font-weight: 900;
+  font-size: 15.5px;
+}
+.domValor {
+  flex: none;
+  min-width: 40px;
+  text-align: right;
+  font-weight: 800;
+  color: var(--fa-ink-2);
+}
+.conquistas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.conquista {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 6px;
+  border-radius: var(--fa-r-lg);
+  background: var(--fa-surface-soft);
+  border: 1.5px solid var(--fa-line);
+  text-align: center;
+  color: var(--fa-muted);
+}
+.conquista img {
+  filter: grayscale(1) opacity(0.6);
+}
+.obtida {
+  background: var(--fa-gold-soft);
+  border-color: var(--fa-gold);
+  color: var(--fa-gold-ink);
+}
+.obtida img {
+  filter: none;
+}
+.conqTitulo {
+  font-size: 12.5px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+.edital {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  box-shadow: var(--fa-sombra-cartao);
+  text-align: left;
+  color: var(--fa-ink);
+}
+.editalIcone {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--fa-turquesa-soft);
+}
+.editalTextos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.editalTitulo {
+  font-weight: 900;
+  font-size: 16.5px;
+}
+.editalStatus {
+  font-weight: 800;
+  color: var(--fa-petroleo);
+  font-size: 14.5px;
+}
+.editalDias {
+  font-weight: 900;
+  color: var(--fa-laranja-forte);
+  font-size: 14px;
+}
+.editalAviso {
+  font-size: 13.5px;
+  color: var(--fa-ink-2);
+}

@@ -1,0 +1,254 @@
+.pagina {
+  padding: calc(14px + env(safe-area-inset-top)) 18px 28px;
+  min-height: 100dvh;
+}
+.comNav {
+  padding-bottom: calc(var(--fa-nav-altura) + 28px + env(safe-area-inset-bottom));
+}
+.comRodape {
+  padding-bottom: 150px;
+}
+
+/* ---- cabeçalho das abas ---- */
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  margin: 0 -2px 8px;
+}
+.logo {
+  display: inline-flex;
+  border-radius: 10px;
+  margin-left: -6px;
+}
+.avatarLink {
+  text-decoration: none;
+  border-radius: 50%;
+  display: inline-flex;
+}
+
+/* ---- cabeçalho com voltar ---- */
+.voltar {
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  min-height: 56px;
+  margin: 0 -8px 10px;
+}
+.botaoIcone {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--fa-ink);
+  border-radius: 12px;
+}
+.voltarMeio {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 10px;
+}
+.voltarDireita {
+  display: flex;
+  justify-content: flex-end;
+}
+.voltarTitulo {
+  text-align: center;
+  font-family: var(--fa-font-display);
+  font-weight: 700;
+  font-size: 19px;
+}
+.etapaTexto {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+}
+.etapaBarra {
+  height: 10px;
+  border-radius: 6px;
+  background: var(--fa-divider);
+  overflow: hidden;
+}
+.etapaValor {
+  height: 100%;
+  border-radius: 6px;
+  background: var(--fa-turquesa);
+}
+
+/* ---- contadores ---- */
+.contadores {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0 14px;
+}
+.chipConcurso {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 5px;
+  border-radius: 12px;
+  border: 2px solid var(--fa-line);
+  background: var(--fa-surface);
+  text-decoration: none;
+  color: var(--fa-ink);
+  font-weight: 900;
+  font-size: 14px;
+  min-height: 40px;
+}
+.chipA {
+  background: var(--fa-petroleo);
+  color: #fff;
+  border-radius: 8px;
+  padding: 3px 7px;
+  font-size: 12.5px;
+}
+.chipB {
+  letter-spacing: 0.02em;
+}
+.chipDias {
+  font-size: 12px;
+  color: var(--fa-laranja-forte);
+}
+.contador {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--fa-font-display);
+  font-weight: 800;
+  font-size: 20px;
+}
+.numLaranja {
+  color: var(--fa-laranja-forte);
+}
+.numAzul {
+  color: var(--fa-blue-shade);
+}
+.numVermelho {
+  color: var(--fa-red-shade);
+}
+
+/* ---- estados ---- */
+.carregando {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 0;
+  color: var(--fa-muted);
+  font-weight: 800;
+}
+.giro {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 4px solid var(--fa-turquesa-soft);
+  border-top-color: var(--fa-turquesa);
+  animation: gira 0.9s linear infinite;
+}
+@keyframes gira {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.erroTela {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 40px 8px;
+  text-align: center;
+}
+.erroTexto {
+  font-weight: 800;
+  color: var(--fa-ink-2);
+}
+
+/* ---- blocos ---- */
+.tituloSecao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 26px 0 12px;
+}
+.tituloSecao h2 {
+  font-size: var(--fa-t-secao);
+  font-weight: 700;
+}
+.cartao {
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  border-radius: var(--fa-r-xl);
+  box-shadow: var(--fa-sombra-cartao);
+  padding: 16px;
+}
+.linha {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 72px;
+  padding: 12px 14px;
+  border-radius: var(--fa-r-xl);
+  border: 1.5px solid var(--fa-line);
+  background: var(--fa-surface);
+  box-shadow: var(--fa-sombra-cartao);
+  text-align: left;
+  color: var(--fa-ink);
+}
+button.linha:active {
+  transform: translateY(1px);
+}
+.linhaIcone {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--fa-surface-soft);
+}
+.linhaIcone[data-fundo='portugues'] {
+  background: var(--fa-disc-portugues-soft);
+}
+.linhaIcone[data-fundo='matematica'] {
+  background: var(--fa-disc-matematica-soft);
+}
+.linhaIcone[data-fundo='gerais'] {
+  background: var(--fa-disc-gerais-soft);
+}
+.linhaIcone[data-fundo='especificos'] {
+  background: var(--fa-disc-especificos-soft);
+}
+.linhaIcone[data-fundo='marca'] {
+  background: var(--fa-turquesa-soft);
+}
+.linhaIcone[data-fundo='laranja'] {
+  background: var(--fa-laranja-soft);
+}
+.linhaTextos {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.linhaTitulo {
+  font-weight: 900;
+  font-size: 16.5px;
+}
+.linhaSub {
+  font-size: 14px;
+  color: var(--fa-muted);
+  font-weight: 700;
+}
+.linhaChevron {
+  flex: none;
+  color: var(--fa-ink);
+}

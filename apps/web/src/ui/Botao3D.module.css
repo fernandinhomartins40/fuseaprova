@@ -1,0 +1,101 @@
+.botao {
+  --fundo: var(--fa-acao);
+  --sombra: var(--fa-acao-shade);
+  --tinta: #fff;
+  --borda: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 22px;
+  border-radius: 18px;
+  border: 2px solid var(--borda);
+  background: var(--fundo);
+  color: var(--tinta);
+  box-shadow: var(--fa-lift) var(--sombra);
+  font-family: var(--fa-font-body);
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  text-align: center;
+  transition:
+    transform var(--fa-dur-botao) ease-out,
+    box-shadow var(--fa-dur-botao) ease-out,
+    filter var(--fa-dur-botao);
+  user-select: none;
+  margin-bottom: 4px;
+}
+.bloco {
+  width: 100%;
+}
+.compacto {
+  min-height: 44px;
+  font-size: 15px;
+  border-radius: 14px;
+  padding: 0 16px;
+}
+.botao:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+.botao:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 var(--sombra);
+}
+.botao:disabled {
+  --fundo: var(--fa-locked);
+  --sombra: var(--fa-locked-shade);
+  --tinta: #5f7173;
+  --borda: transparent;
+  cursor: not-allowed;
+}
+.carregando:disabled {
+  --fundo: var(--fa-acao);
+  --sombra: var(--fa-acao-shade);
+  --tinta: #fff;
+  opacity: 0.85;
+  cursor: progress;
+}
+.icone {
+  display: inline-flex;
+  flex: none;
+}
+.texto {
+  display: inline-block;
+}
+
+.primario {
+  --fundo: var(--fa-acao);
+}
+.acerto {
+  --fundo: var(--fa-green);
+  --sombra: var(--fa-green-shade);
+}
+.secundario {
+  --fundo: var(--fa-surface);
+  --sombra: var(--fa-line-forte);
+  --tinta: var(--fa-petroleo);
+  --borda: var(--fa-petroleo);
+}
+.perigo {
+  --fundo: var(--fa-red);
+  --sombra: var(--fa-red-shade);
+}
+.roxo {
+  --fundo: var(--fa-purple);
+  --sombra: var(--fa-purple-shade);
+}
+.azul {
+  --fundo: var(--fa-blue);
+  --sombra: var(--fa-blue-shade);
+}
+.laranja {
+  --fundo: var(--fa-laranja-forte);
+  --sombra: #8a3206;
+}
+.claro {
+  --fundo: #fff;
+  --sombra: rgba(0, 0, 0, 0.2);
+  --tinta: var(--fa-petroleo);
+}

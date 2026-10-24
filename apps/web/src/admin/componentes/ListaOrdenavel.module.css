@@ -1,0 +1,79 @@
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+  padding: 10px 12px;
+  background: var(--adm-branco);
+  border: 1px solid var(--adm-borda);
+  border-radius: var(--adm-raio);
+}
+
+.arrastando {
+  opacity: 0.45;
+}
+
+.sobre {
+  border-color: var(--adm-laranja);
+  box-shadow: 0 0 0 2px var(--adm-laranja-claro);
+}
+
+.alca {
+  cursor: grab;
+  color: var(--adm-borda-forte);
+  font-weight: 900;
+  letter-spacing: -2px;
+  padding-top: 4px;
+  user-select: none;
+}
+
+.conteudo {
+  min-width: 0;
+}
+
+.setas {
+  display: flex;
+  gap: 4px;
+}
+
+.seta {
+  width: 30px;
+  height: 30px;
+  border: 2px solid var(--adm-borda);
+  border-radius: 8px;
+  background: var(--adm-branco);
+  color: var(--adm-petroleo);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.seta:hover:not(:disabled) {
+  border-color: var(--adm-turquesa);
+}
+
+.seta:focus-visible {
+  outline: 3px solid var(--adm-laranja);
+  outline-offset: 1px;
+}
+
+.seta:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.anuncio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

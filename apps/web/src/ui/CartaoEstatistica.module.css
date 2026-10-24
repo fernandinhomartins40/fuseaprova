@@ -1,0 +1,41 @@
+.cartao {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--fa-r-lg);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  box-shadow: var(--fa-sombra-cartao);
+  min-width: 0;
+}
+.icone {
+  flex: none;
+}
+.textos {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.valor {
+  font-family: var(--fa-font-display);
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 1.1;
+  color: var(--fa-ink);
+  white-space: nowrap;
+}
+.legenda {
+  font-size: 13px;
+  color: var(--fa-muted);
+  font-weight: 700;
+}
+.vertical {
+  flex-direction: column;
+  text-align: center;
+  gap: 6px;
+  padding: 14px 8px;
+}
+.vertical .textos {
+  align-items: center;
+}

@@ -1,0 +1,68 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border-radius: var(--fa-r-sm);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  background: var(--fa-surface-soft);
+  color: var(--fa-ink-2);
+  border: 1px solid var(--fa-line);
+}
+.grande {
+  font-size: 15px;
+  padding: 9px 16px;
+  border-radius: var(--fa-r-pill);
+  font-weight: 800;
+  letter-spacing: 0;
+  gap: 8px;
+}
+.icone {
+  display: inline-flex;
+}
+.neutro {
+  background: var(--fa-surface-soft);
+}
+.marca {
+  background: var(--fa-turquesa-soft);
+  color: var(--fa-petroleo);
+  border-color: var(--fa-turquesa-line);
+}
+.laranja {
+  background: var(--fa-laranja-soft);
+  color: var(--fa-laranja-forte);
+  border-color: var(--fa-laranja-line);
+}
+.acerto {
+  background: var(--fa-green-soft);
+  color: var(--fa-green-shade);
+  border-color: var(--fa-green-line);
+}
+.erro {
+  background: var(--fa-red-soft);
+  color: var(--fa-red-shade);
+  border-color: var(--fa-red-line);
+}
+.ouro {
+  background: var(--fa-gold-soft);
+  color: var(--fa-gold-ink);
+  border-color: var(--fa-gold);
+}
+.roxo {
+  background: var(--fa-purple-soft);
+  color: var(--fa-purple-shade);
+  border-color: var(--fa-purple-line);
+}
+.azul {
+  background: var(--fa-blue-soft);
+  color: var(--fa-blue-shade);
+  border-color: var(--fa-blue-line);
+}
+.claro {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.32);
+}

@@ -1,0 +1,246 @@
+.titulo {
+  font-size: 30px;
+  font-weight: 800;
+}
+.subtitulo {
+  margin-top: 6px;
+  font-size: 16.5px;
+  color: var(--fa-ink-2);
+}
+.oferta {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  box-shadow: var(--fa-sombra-cartao);
+}
+.ofertaTopo {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.coroa {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  background: var(--fa-turquesa-soft);
+}
+.rotulo {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: var(--fa-petroleo);
+}
+.preco {
+  font-family: var(--fa-font-display);
+  font-weight: 800;
+  font-size: 36px;
+  line-height: 1.05;
+  color: var(--fa-ink);
+}
+.precoSub {
+  font-size: 15px;
+  color: var(--fa-ink-2);
+}
+.beneficios {
+  list-style: none;
+  padding: 0;
+  margin: 14px 0 0;
+  display: grid;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+}
+.beneficios li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.check {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--fa-laranja);
+  color: #fff;
+  flex: none;
+}
+.qr {
+  margin-top: 14px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border-radius: var(--fa-r-xl);
+  background: #f1efe8;
+  border: 1.5px solid var(--fa-line);
+}
+.qrImagem,
+.qrVazio {
+  flex: none;
+  width: 140px;
+  height: 140px;
+  border-radius: 12px;
+  background: #fff;
+  padding: 6px;
+}
+.qrVazio {
+  background: repeating-linear-gradient(45deg, #fff 0 8px, #f3f1ea 8px 16px);
+}
+.qrTexto {
+  font-size: 14.5px;
+  color: var(--fa-ink-2);
+  font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.expira {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--fa-red-soft);
+  color: var(--fa-red-shade);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+.gerando {
+  color: var(--fa-muted);
+}
+.copia {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.copiaRotulo {
+  font-weight: 900;
+  font-size: 14.5px;
+}
+.copiaLinha {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.copiaCampo {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 12px;
+  border-radius: 14px;
+  border: 1.5px solid var(--fa-line-forte);
+  background: var(--fa-surface);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+  text-overflow: ellipsis;
+}
+.status {
+  margin-top: 12px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: var(--fa-r-xl);
+  background: #f1efe8;
+  border: 1.5px solid var(--fa-line);
+}
+.giro {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 4px solid var(--fa-turquesa-soft);
+  border-top-color: var(--fa-turquesa);
+  animation: gira 1s linear infinite;
+  margin-top: 2px;
+}
+@keyframes gira {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.statusTitulo {
+  font-weight: 900;
+  font-size: 17px;
+  color: var(--fa-petroleo);
+}
+.statusTexto {
+  font-size: 14.5px;
+  color: var(--fa-ink-2);
+  font-weight: 700;
+}
+.caixaErro {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-red-soft);
+  border: 1.5px solid var(--fa-red-line);
+}
+.expirado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--fa-font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--fa-red-shade);
+}
+.aviso {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--fa-petroleo);
+  font-weight: 700;
+  background: var(--fa-turquesa-soft);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.legal {
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: var(--fa-muted);
+  text-align: center;
+  font-weight: 700;
+}
+.sair {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 14px;
+}
+.linkBotao {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--fa-petroleo);
+  font-weight: 800;
+  text-decoration: underline;
+  min-height: 44px;
+}
+.celebracao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+}
+.tituloPago {
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--fa-green-shade);
+}
+.textoPago {
+  font-size: 17px;
+  color: var(--fa-ink-2);
+}

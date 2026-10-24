@@ -1,0 +1,11 @@
+.confete {
+  position: fixed;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--fa-coluna);
+  height: 100dvh;
+  pointer-events: none;
+  z-index: 40;
+}

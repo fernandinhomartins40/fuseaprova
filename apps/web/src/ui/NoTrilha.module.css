@@ -1,0 +1,144 @@
+.posicao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100px;
+  margin: 0 auto;
+  position: relative;
+}
+.envoltorio {
+  position: relative;
+  width: 100px;
+  height: 92px;
+  display: grid;
+  place-items: center;
+}
+.anel {
+  position: absolute;
+  inset: -6px 0 0;
+  width: 100px;
+  height: 100px;
+  transform: rotate(-90deg);
+}
+.anelTrilho {
+  fill: none;
+  stroke: var(--fa-laranja-soft);
+  stroke-width: 7;
+}
+.anelValor {
+  fill: none;
+  stroke: var(--fa-laranja);
+  stroke-width: 7;
+  stroke-linecap: round;
+}
+.no {
+  --fundo: var(--fa-locked);
+  --sombra: var(--fa-locked-shade);
+  --tinta: var(--fa-locked-ink);
+  position: relative;
+  width: 76px;
+  height: 70px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--fundo);
+  color: var(--tinta);
+  box-shadow: 0 7px 0 var(--sombra);
+  display: grid;
+  place-items: center;
+  transition: transform var(--fa-dur-botao);
+  margin-bottom: 7px;
+}
+.no:active:not(:disabled) {
+  transform: translateY(5px);
+  box-shadow: 0 2px 0 var(--sombra);
+}
+.no:disabled {
+  cursor: not-allowed;
+}
+.icone {
+  display: inline-flex;
+}
+.concluida {
+  --fundo: var(--fa-gold);
+  --sombra: var(--fa-gold-shade);
+  --tinta: #fff;
+}
+.atual {
+  --fundo: var(--fa-laranja);
+  --sombra: #c24b07;
+  --tinta: #fff;
+}
+.bloqueada {
+  --fundo: var(--fa-locked);
+}
+.bau {
+  border-radius: 20px;
+}
+.bau.bloqueada {
+  --fundo: var(--fa-locked);
+}
+.bau.concluida {
+  --fundo: var(--fa-gold-soft);
+  --sombra: var(--fa-gold);
+}
+.bau.atual {
+  --fundo: var(--fa-gold-soft);
+  --sombra: var(--fa-gold-shade);
+  animation: balanca 1.6s ease-in-out infinite;
+}
+.desafio.concluida {
+  --fundo: var(--fa-gold);
+  --tinta: #fff;
+}
+.desafio.atual {
+  --fundo: var(--fa-petroleo);
+  --sombra: var(--fa-petroleo-shade);
+  --tinta: var(--fa-gold);
+}
+@keyframes balanca {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-4deg);
+  }
+  75% {
+    transform: rotate(4deg);
+  }
+}
+.balao {
+  position: relative;
+  margin-bottom: 10px;
+  padding: 7px 14px;
+  border-radius: 14px;
+  background: var(--fa-surface);
+  border: 2px solid var(--fa-line);
+  color: var(--fa-laranja-forte);
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  animation: flutua 1.8s ease-in-out infinite;
+}
+.balao::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 12px;
+  height: 12px;
+  background: var(--fa-surface);
+  border-right: 2px solid var(--fa-line);
+  border-bottom: 2px solid var(--fa-line);
+  transform: translateX(-50%) rotate(45deg);
+}
+@keyframes flutua {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}

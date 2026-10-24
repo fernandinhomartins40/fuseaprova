@@ -1,0 +1,136 @@
+.folha {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: 100%;
+  max-width: var(--fa-coluna);
+  transform: translateX(-50%);
+  z-index: 30;
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+  border-radius: 24px 24px 0 0;
+  box-shadow: var(--fa-sombra-folha);
+  animation: subir var(--fa-dur-folha) ease-out both;
+  max-height: 78dvh;
+  overflow-y: auto;
+}
+@keyframes subir {
+  from {
+    transform: translate(-50%, 100%);
+  }
+  to {
+    transform: translate(-50%, 0);
+  }
+}
+.acerto {
+  background: var(--fa-green-soft);
+  border-top: 2px solid var(--fa-green-line);
+}
+.erro {
+  background: var(--fa-red-soft);
+  border-top: 2px solid var(--fa-red-line);
+}
+.cartao {
+  margin-bottom: 12px;
+}
+.topo {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.status {
+  flex: 1;
+  min-width: 0;
+}
+.titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+  font-weight: 800;
+}
+.acerto .titulo {
+  color: var(--fa-green-shade);
+}
+.erro .titulo {
+  color: var(--fa-red-shade);
+}
+.iconeTitulo {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #fff;
+  flex: none;
+}
+.acerto .iconeTitulo {
+  background: var(--fa-green);
+}
+.erro .iconeTitulo {
+  background: var(--fa-red);
+}
+.selos {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 6px 0 8px;
+}
+.selos:empty {
+  display: none;
+}
+.xp {
+  font-family: var(--fa-font-display);
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--fa-gold-ink);
+  background: var(--fa-gold-soft);
+  border: 1.5px solid var(--fa-gold);
+  border-radius: var(--fa-r-sm);
+  padding: 0 8px;
+}
+.explicacao {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fa-ink);
+  line-height: 1.45;
+  margin-top: 6px;
+}
+.mascote {
+  flex: none;
+  margin-top: -6px;
+  margin-right: -6px;
+}
+.dicaBolso {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: var(--fa-r-lg);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  font-size: 14.5px;
+}
+.dicaBolso strong {
+  display: block;
+  font-weight: 900;
+  color: var(--fa-petroleo);
+  margin-bottom: 2px;
+}
+.linhaRevisao {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: var(--fa-r-lg);
+  background: rgba(255, 255, 255, 0.65);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+}
+.rodape {
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+}
