@@ -1,0 +1,51 @@
+Administrador;2024;Câmara de São João do Triunfo/PR;administrador-camara-de-sao-joao-do-triunfo-pr-fau-unicentro-2024
+Administrador;2023;UNIOESTE;administrador-unioeste-fau-unicentro-2023
+Administrador;2019;IFPR;administrador-ifpr-fau-unicentro-2019
+Administrador;2017;E-Paraná;administrador-e-parana-fau-unicentro-2017
+Administrador;2016;Pref. Piraquara/PR;administrador-prefeitura-piraquara-pr-fau-unicentro-2016
+Administrador;2016;JUCEPAR;administrador-jucepar-fau-unicentro-2016
+Advogado;2026;Pref. Terra Roxa/PR;advogado-prefeitura-terra-roxa-pr-fau-unicentro-2026
+Advogado;2025;Pref. Três Barras do Paraná/PR;advogado-prefeitura-tres-barras-do-parana-pr-fau-unicentro-2025
+Advogado;2025;Pref. Toledo/PR;advogado-prefeitura-toledo-pr-fau-unicentro-2025
+Advogado;2025;Câmara de Matelândia/PR;advogado-camara-de-matelandia-pr-fau-unicentro-2025
+Advogado;2025;Pref. Céu Azul/PR;advogado-prefeitura-ceu-azul-pr-fau-unicentro-2025
+Advogado;2024;Pref. Wenceslau Braz/PR;advogado-prefeitura-wenceslau-braz-pr-fau-unicentro-2024
+Advogado;2024;Pref. Prudentópolis/PR;advogado-prefeitura-prudentopolis-pr-fau-unicentro-2024
+Advogado;2023;Pref. Imbituva/PR;advogado-prefeitura-imbituva-pr-fau-unicentro-2023
+Advogado;2023;UNIOESTE;advogado-unioeste-fau-unicentro-2023
+Advogado;2017;E-Paraná;advogado-e-parana-fau-unicentro-2017
+Advogado;2017;Pref. Apucarana/PR;advogado-prefeitura-apucarana-pr-fau-unicentro-2017
+Advogado;2017;Câmara Mato Rico/PR;advogado-camara-mato-rico-pr-fau-unicentro-2017
+Advogado;2016;CISGAP - Guarapuava - Pinhão e Turvo;advogado-cisgap-guarapuava-pinhao-e-turvo-fau-unicentro-2016
+Advogado;2016;Instituto de Previdência - Prudentópolis/PR;advogado-instituto-de-previdencia-prudentopolis-pr-fau-unicentro-2016
+Advogado;2016;Pref. Godoy Moreira/PR;advogado-prefeitura-godoy-moreira-pr-fau-unicentro-2016
+Advogado;2016;Câmara de Ibiporã/PR;advogado-camara-de-ibipora-pr-fau-unicentro-2016
+Advogado;2015;Câmara de Rebouças/PR;advogado-camara-de-reboucas-pr-fau-unicentro-2015
+Advogado;2015;Câmara de São João do Ivaí/PR;advogado-camara-de-sao-joao-do-ivai-pr-fau-unicentro-2015
+Advogado;2014;Câmara de Prudentópolis;advogado-camara-de-prudentopolis-fau-unicentro-2014
+Agente Administrativo;2026;Pref. Terra Roxa/PR;agente-administrativo-prefeitura-terra-roxa-pr-fau-unicentro-2026
+Agente Administrativo;2025;Pref. Porto Barreiro/PR;agente-administrativo-prefeitura-porto-barreiro-pr-fau-unicentro-2025
+Agente Administrativo;2025;Pref. Pinhalão/PR;agente-administrativo-prefeitura-pinhalao-pr-fau-unicentro-2025
+Agente Administrativo;2025;Pref. Quarto Centenário/PR;agente-administrativo-prefeitura-quarto-centenario-pr-fau-unicentro-2025
+Agente Administrativo;2024;Pref. Wenceslau Braz/PR;agente-administrativo-prefeitura-wenceslau-braz-pr-fau-unicentro-2024
+Agente Administrativo;2024;Pref. Prudentópolis/PR;agente-administrativo-prefeitura-prudentopolis-pr-fau-unicentro-2024
+Agente Administrativo;2023;Pref. Dois Vizinhos/PR;agente-administrativo-prefeitura-dois-vizinhos-pr-fau-unicentro-2023
+Agente Administrativo;2022;Pref. Coronel Vivida/PR;agente-administrativo-prefeitura-coronel-vivida-pr-fau-unicentro-2022
+Agente Administrativo;2017;Câmara de Clevelândia/PR;agente-administrativo-camara-de-clevelandia-pr-fau-unicentro-2017
+Agente Administrativo;2016;Instituto de Previdência - Prudentópolis/PR;agente-administrativo-instituto-de-previdencia-prudentopolis-pr-fau-unicentro-2016
+Agente Administrativo;2016;Pref. Imbituva/PR;agente-administrativo-prefeitura-imbituva-pr-fau-unicentro-2016
+Agente Administrativo;2015;Pref. Campo Mourão/PR;agente-administrativo-prefeitura-campo-mourao-pr-fau-unicentro-2015
+Agente Administrativo I;2023;Pref. Imbituva/PR;agente-administrativo-i-prefeitura-imbituva-pr-fau-unicentro-2023
+Agente Administrativo II;2023;Pref. Imbituva/PR;agente-administrativo-ii-prefeitura-imbituva-pr-fau-unicentro-2023
+Agente Adminstrativo III;2026;Pref. Ariranha do Ivaí/PR;agente-adminstrativo-iii-prefeitura-ariranha-do-ivai-pr-fau-unicentro-2026
+Agente Comunitário de Saúde;2026;Pref. Terra Roxa/PR;agente-comunitario-de-saude-prefeitura-terra-roxa-pr-fau-unicentro-2026
+Agente Comunitário de Saúde;2025;Pref. Céu Azul/PR;agente-comunitario-de-saude-prefeitura-ceu-azul-pr-fau-unicentro-2025
+Agente Comunitário de Saúde;2025;Pref. Pinhalão/PR;agente-comunitario-de-saude-prefeitura-pinhalao-pr-fau-unicentro-2025
+Agente Comunitário de Saúde;2024;Pref. Prudentópolis/PR;agente-comunitario-de-saude-prefeitura-prudentopolis-pr-fau-unicentro-2024
+Agente Comunitário de Saúde;2024;Pref. Salto do Lontra/PR;agente-comunitario-de-saude-prefeitura-salto-do-lontra-pr-fau-unicentro-2024
+Agente Comunitário de Saúde;2024;Pref. Wenceslau Braz/PR;agente-comunitario-de-saude-prefeitura-wenceslau-braz-pr-fau-unicentro-2024
+Agente Comunitário de Saúde;2024;Pref. Nova Laranjeiras/PR;agente-comunitario-de-saude-prefeitura-nova-laranjeiras-pr-fau-unicentro-2024
+Agente Comunitário de Saúde;2023;Pref. Tijucas do Sul/PR;agente-comunitario-de-saude-prefeitura-tijucas-do-sul-pr-fau-unicentro-2023
+Agente Comunitário de Saúde;2023;Pref. Ampére/PR;agente-comunitario-de-saude-prefeitura-ampere-pr-fau-unicentro-2023
+Agente Comunitário de Saúde;2023;Pref. Imbituva/PR;agente-comunitario-de-saude-prefeitura-imbituva-pr-fau-unicentro-2023
+Assistente Social;2024;Pref. Senador Salgado Filho/RS;assistente-social-prefeitura-senador-salgado-filho-rs-fau-unicentro-2024

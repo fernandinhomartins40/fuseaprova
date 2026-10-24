@@ -1,0 +1,8 @@
+Fuse Aprova — kit completo
+
+Assets: PNGs com canal alfa e maior dimensão de 4096 px, via ampliação.
+Inclui 37 assets do kit, mais a nova geração independente do mascote de corpo inteiro.
+A nova geração é uma variante adicional; as seis poses anteriores permanecem juntas como conjunto consistente.
+Telas_referencia: 12 mockups na resolução original, usados como referência de composição; não são telas 4K transparentes.
+Guias_visuais: paleta e orientações de marca, com fundo para leitura.
+O catálogo é apenas uma visualização. Os PNGs de mascote, marca, ícones e elementos têm transparência real.

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fuse Aprova · Cadastro</title>
+<style>
+@font-face{font-family:'Nunito';font-weight:600;font-display:swap;src:url('fonts/nunito-latin-600-normal.woff2') format('woff2')}
+@font-face{font-family:'Nunito';font-weight:700;font-display:swap;src:url('fonts/nunito-latin-700-normal.woff2') format('woff2')}
+@font-face{font-family:'Nunito';font-weight:800;font-display:swap;src:url('fonts/nunito-latin-800-normal.woff2') format('woff2')}
+@font-face{font-family:'Nunito';font-weight:900;font-display:swap;src:url('fonts/nunito-latin-900-normal.woff2') format('woff2')}
+@font-face{font-family:'Baloo 2';font-weight:600;font-display:swap;src:url('fonts/baloo-2-latin-600-normal.woff2') format('woff2')}
+@font-face{font-family:'Baloo 2';font-weight:700;font-display:swap;src:url('fonts/baloo-2-latin-700-normal.woff2') format('woff2')}
+@font-face{font-family:'Baloo 2';font-weight:800;font-display:swap;src:url('fonts/baloo-2-latin-800-normal.woff2') format('woff2')}
+html{background:#E9EBEF}body{margin:0;min-height:100vh;display:grid;place-items:center}
+body>div{box-shadow:0 10px 40px rgba(0,0,0,.18);border-radius:28px}
+
+body{margin:0}
+.campo{display:flex;flex-direction:column;gap:6px;min-width:0}
+.campo label{font-size:14px;font-weight:900;color:#2D2F36}
+.campo input{width:100%;min-width:0;height:50px;box-sizing:border-box;border:2px solid #E5E7EB;border-radius:14px;background:#F7F8FA;padding:0 14px;font-family:'Nunito';font-weight:700;font-size:16px;color:#2D2F36}
+.campo small{font-size:12px;font-weight:700;color:#6B7079}
+
+</style>
+</head>
+<body>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFFFFF; font-family: 'Nunito', system-ui, sans-serif; color: #2D2F36; display: flex; flex-direction: column; overflow: hidden">
+
+  <header style="height: 60px; flex: none; display: flex; align-items: center; gap: 14px; padding: 0 16px">
+    <a href="01-BoasVindas.html" aria-label="Voltar" style="width: 40px; height: 40px; display: grid; place-items: center">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#9AA0AA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+    </a>
+    <div role="progressbar" aria-label="Etapa 1 de 2" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="flex: 1; height: 16px; border-radius: 8px; background: #E5E7EB; overflow: hidden">
+      <div style="width: 50%; height: 100%; background: #15803D; border-radius: 8px; position: relative"><span style="position: absolute; left: 8px; right: 8px; top: 4px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.35)"></span></div>
+    </div>
+    <span style="font-size: 13px; font-weight: 900; color: #6B7079">1 de 2</span>
+  </header>
+
+  <main style="flex: 1; padding: 8px 24px 0; display: flex; flex-direction: column; gap: 14px; overflow: hidden">
+    <div style="display: flex; align-items: flex-end; gap: 10px">
+      <svg width="76" height="70" viewBox="0 0 120 110" aria-hidden="true">
+        <ellipse cx="60" cy="80" rx="44" ry="26" fill="#A86B3C"/>
+        <rect x="22" y="18" width="76" height="62" rx="30" fill="#BC7E4A"/>
+        <ellipse cx="34" cy="22" rx="8" ry="7" fill="#8E5631"/><ellipse cx="86" cy="22" rx="8" ry="7" fill="#8E5631"/>
+        <rect x="36" y="48" width="48" height="30" rx="15" fill="#946038"/>
+        <ellipse cx="52" cy="58" rx="3" ry="2.3" fill="#3A2416"/><ellipse cx="68" cy="58" rx="3" ry="2.3" fill="#3A2416"/>
+        <path d="M52 68q8 7 16 0" stroke="#3A2416" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <circle cx="44" cy="40" r="5.6" fill="#1F1A17"/><circle cx="76" cy="40" r="5.6" fill="#1F1A17"/>
+        <circle cx="46" cy="38" r="1.9" fill="#FFFFFF"/><circle cx="78" cy="38" r="1.9" fill="#FFFFFF"/>
+        <path d="M24 78q36 16 72 0l-2 9q-34 15-68 0z" fill="#D9480F"/>
+      </svg>
+      <div style="flex: 1; background: #FFFFFF; border: 2px solid #E5E7EB; border-radius: 16px; padding: 10px 12px; font-weight: 800; font-size: 15px; line-height: 1.35; margin-bottom: 14px">Vamos criar sua conta. O CPF é usado só na cobrança Pix.</div>
+    </div>
+
+    <h1 style="margin: 0; font-family: 'Baloo 2'; font-weight: 700; font-size: 26px; line-height: 1.15">Crie sua conta</h1>
+
+    <form style="display: flex; flex-direction: column; gap: 12px" onsubmit="return false">
+      <div class="campo"><label for="nome">Nome completo</label><input id="nome" value="Marina Souza" autocomplete="name"></div>
+      <div class="campo"><label for="email">E-mail</label><input id="email" type="email" value="marina@email.com" autocomplete="email"></div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+        <div class="campo"><label for="cpf">CPF</label><input id="cpf" inputmode="numeric" placeholder="000.000.000-00"></div>
+        <div class="campo"><label for="cel">Celular</label><input id="cel" inputmode="tel" placeholder="(42) 9 0000-0000"></div>
+      </div>
+      <div class="campo"><label for="senha">Senha</label><input id="senha" type="password" value="12345678" autocomplete="new-password"><small>Mínimo de 8 caracteres</small></div>
+    </form>
+  </main>
+
+  <footer style="flex: none; padding: 14px 24px 28px; display: flex; flex-direction: column; gap: 12px; border-top: 2px solid #EEF0F3">
+    <a href="03-Pagamento.html" style="height: 54px; border-radius: 16px; background: #15803D; box-shadow: 0 5px 0 #0F5F2D; color: #FFFFFF; font-weight: 900; font-size: 15px; letter-spacing: .04em; display: grid; place-items: center; text-decoration: none">CRIAR CONTA E IR PARA O PAGAMENTO</a>
+    <p style="margin: 0; font-size: 12px; font-weight: 700; color: #6B7079; text-align: center; line-height: 1.4">Ao continuar, você aceita os <a href="#" style="color: #1D6FE0">Termos de uso</a> e a <a href="#" style="color: #1D6FE0">Política de privacidade</a>.</p>
+  </footer>
+</div>
+</body>
+</html>

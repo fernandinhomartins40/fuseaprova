@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fuse Aprova · Liga Palmital</title>
+<style>
+@font-face{font-family:'Nunito';font-weight:600;font-display:swap;src:url('fonts/nunito-latin-600-normal.woff2') format('woff2')}
+@font-face{font-family:'Nunito';font-weight:700;font-display:swap;src:url('fonts/nunito-latin-700-normal.woff2') format('woff2')}
+@font-face{font-family:'Nunito';font-weight:800;font-display:swap;src:url('fonts/nunito-latin-800-normal.woff2') format('woff2')}
+@font-face{font-family:'Nunito';font-weight:900;font-display:swap;src:url('fonts/nunito-latin-900-normal.woff2') format('woff2')}
+@font-face{font-family:'Baloo 2';font-weight:600;font-display:swap;src:url('fonts/baloo-2-latin-600-normal.woff2') format('woff2')}
+@font-face{font-family:'Baloo 2';font-weight:700;font-display:swap;src:url('fonts/baloo-2-latin-700-normal.woff2') format('woff2')}
+@font-face{font-family:'Baloo 2';font-weight:800;font-display:swap;src:url('fonts/baloo-2-latin-800-normal.woff2') format('woff2')}
+html{background:#E9EBEF}body{margin:0;min-height:100vh;display:grid;place-items:center}
+body>div{box-shadow:0 10px 40px rgba(0,0,0,.18);border-radius:28px}
+
+body{margin:0}
+.nav a{justify-self:center;width:54px;height:50px;border-radius:14px;display:grid;place-items:center;border:2px solid transparent;box-sizing:border-box}
+.nav a[aria-current]{border-color:#FFD66B;background:#FFF6DB}
+.lin{display:flex;align-items:center;gap:10px;height:44px;padding:0 10px;border-radius:12px}
+.lin .p{width:22px;text-align:center;font-weight:900;font-size:15px;color:#15803D}
+.lin .av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:13px;color:#FFFFFF;flex:none}
+.lin .nm{flex:1;font-weight:800;font-size:15px}
+.lin .xp{font-weight:900;font-size:14px;color:#6B7079}
+
+</style>
+</head>
+<body>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFFFFF; font-family: 'Nunito', system-ui, sans-serif; color: #2D2F36; display: flex; flex-direction: column; overflow: hidden">
+
+  <header style="height: 60px; flex: none; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid #EEF0F3">
+    <span style="font-family: 'Baloo 2'; font-weight: 700; font-size: 20px">Liga</span>
+  </header>
+
+  <main style="flex: 1; padding: 14px 14px 0; display: flex; flex-direction: column; gap: 10px; overflow: hidden">
+    <section style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center">
+      <svg width="64" height="70" viewBox="0 0 24 26" role="img" aria-label="Escudo da Liga Palmital">
+        <path d="M12 1l10 3.6v7.2c0 6.4-4.3 11.4-10 13.6C6.3 23.2 2 18.2 2 11.8V4.6z" fill="#FFC233"/>
+        <path d="M12 1l10 3.6v7.2c0 6.4-4.3 11.4-10 13.6z" fill="#E5A400"/>
+        <path d="M12 7l1.9 3.9 4.3.6-3.1 3 .7 4.3L12 16.8l-3.8 2 .7-4.3-3.1-3 4.3-.6z" fill="#FFFFFF"/>
+      </svg>
+      <span style="font-family: 'Baloo 2'; font-weight: 800; font-size: 24px; line-height: 1.05">Liga Palmital</span>
+      <span style="font-size: 14px; font-weight: 700; color: #6B7079">Os 3 primeiros sobem de liga · <b style="color: #C2410C">termina em 3 dias</b></span>
+    </section>
+
+    <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0">
+      <li class="lin"><span class="p"><svg width="22" height="22" viewBox="0 0 24 24" aria-label="1º"><circle cx="12" cy="12" r="10" fill="#FFC233"/><text x="12" y="16.5" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="12" fill="#5C3D00">1</text></svg></span><span class="av" style="background: #D9480F">RT</span><span class="nm">Rafael T.</span><span class="xp">1.380 XP</span></li>
+      <li class="lin"><span class="p"><svg width="22" height="22" viewBox="0 0 24 24" aria-label="2º"><circle cx="12" cy="12" r="10" fill="#C9CDD3"/><text x="12" y="16.5" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="12" fill="#2D2F36">2</text></svg></span><span class="av" style="background: #1D6FE0">JP</span><span class="nm">Juliana P.</span><span class="xp">1.215 XP</span></li>
+      <li class="lin"><span class="p"><svg width="22" height="22" viewBox="0 0 24 24" aria-label="3º"><circle cx="12" cy="12" r="10" fill="#E2A27A"/><text x="12" y="16.5" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="12" fill="#5A2E12">3</text></svg></span><span class="av" style="background: #8B5CF6">LM</span><span class="nm">Lucas M.</span><span class="xp">1.102 XP</span></li>
+      <li aria-hidden="true" style="display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 12px; font-weight: 900; letter-spacing: .05em; color: #15803D">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>ZONA DE PROMOÇÃO<span style="flex: 1; height: 2px; background: #BFE5CB"></span>
+      </li>
+      <li class="lin" aria-current="true" style="background: #E7F6EC; outline: 2px solid #4CBF73; outline-offset: -2px"><span class="p" style="color: #0F5F2D">4</span><span class="av" style="background: #15803D">MS</span><span class="nm" style="color: #0F5F2D">Marina S. (você)</span><span class="xp" style="color: #0F5F2D">1.040 XP</span></li>
+      <li class="lin"><span class="p" style="color: #6B7079">5</span><span class="av" style="background: #DC2626">AC</span><span class="nm">Ana C.</span><span class="xp">980 XP</span></li>
+      <li class="lin"><span class="p" style="color: #6B7079">6</span><span class="av" style="background: #0E8A7E">PH</span><span class="nm">Pedro H.</span><span class="xp">905 XP</span></li>
+      <li class="lin"><span class="p" style="color: #6B7079">7</span><span class="av" style="background: #B7791F">CF</span><span class="nm">Carla F.</span><span class="xp">842 XP</span></li>
+      <li class="lin"><span class="p" style="color: #6B7079">8</span><span class="av" style="background: #1D6FE0">GB</span><span class="nm">Gabriel B.</span><span class="xp">790 XP</span></li>
+      <li class="lin"><span class="p" style="color: #6B7079">9</span><span class="av" style="background: #8B5CF6">TR</span><span class="nm">Tatiane R.</span><span class="xp">655 XP</span></li>
+      <li class="lin"><span class="p" style="color: #6B7079">10</span><span class="av" style="background: #D9480F">EL</span><span class="nm">Eduardo L.</span><span class="xp">512 XP</span></li>
+    </ol>
+  </main>
+
+  <nav class="nav" aria-label="Navegação principal" style="height: 74px; flex: none; border-top: 2px solid #EEF0F3; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center; padding: 0 8px">
+    <a href="04-Trilha.html" aria-label="Aprender"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5L12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="#FF6A1F"/><rect x="10" y="15" width="4" height="6" fill="#C2410C"/></svg></a>
+    <a href="10-Revisao.html" aria-label="Revisar erros"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="9" width="4" height="6" rx="1.4" fill="#1D6FE0"/><rect x="18" y="9" width="4" height="6" rx="1.4" fill="#1D6FE0"/><rect x="5" y="7" width="3.5" height="10" rx="1.4" fill="#3B9BFF"/><rect x="15.5" y="7" width="3.5" height="10" rx="1.4" fill="#3B9BFF"/><rect x="8" y="10.8" width="8" height="2.4" fill="#9AA0AA"/></svg></a>
+    <a href="11-Simulado.html" aria-label="Simulado FAU"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3.5" width="16" height="18" rx="3" fill="#8B5CF6"/><rect x="8" y="2" width="8" height="4" rx="1.5" fill="#6D3FE0"/><path d="M8 11l2 2 4-4M8 17h8" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></a>
+    <a href="12-Liga.html" aria-label="Liga Palmital" aria-current="page"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V5z" fill="#FFC233"/><path d="M12 7l1.6 3.3 3.6.5-2.6 2.5.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.5 3.6-.5z" fill="#D99A00"/></svg></a>
+    <a href="13-Perfil.html" aria-label="Perfil"><svg width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.5" fill="#15803D"/><path d="M3.5 21a8.5 8.5 0 0 1 17 0z" fill="#22A35A"/></svg></a>
+  </nav>
+</div>
+</body>
+</html>

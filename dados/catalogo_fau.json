@@ -1,0 +1,2787 @@
+{
+  "gerado_em": "2026-10-23",
+  "fonte_certames": "https://www.concursosfau.com.br/novo/encerrados/",
+  "fonte_provas": "https://www.pciconcursos.com.br/provas/fau-unicentro (página 1 de 28; o restante é coletado pelo crawler)",
+  "padrao_prova_fau": {
+    "questoes": 40,
+    "alternativas": 5,
+    "duracao_h": 4,
+    "nota_minima_pct": 50,
+    "blocos": {
+      "portugues": 5,
+      "matematica_rl": 5,
+      "conhecimentos_gerais": 5,
+      "especificos": 25
+    }
+  },
+  "certames": [
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SALGADO FILHO - 2026",
+      "tipo": "Prefeitura",
+      "municipio": "Salgado Filho",
+      "regime": "",
+      "data_prova": "26/07/2026",
+      "ano": 2026,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmsf2026",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE REALEZA - 2026",
+      "tipo": "Prefeitura",
+      "municipio": "Realeza",
+      "regime": "",
+      "data_prova": "05/07/2026",
+      "ano": 2026,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmr2026",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PAULA FREITAS - 2026",
+      "tipo": "Prefeitura",
+      "municipio": "Paula Freitas",
+      "regime": "",
+      "data_prova": "28/06/2026",
+      "ano": 2026,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpf2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE BORRAZÓPOLIS",
+      "tipo": "Prefeitura",
+      "municipio": "Borrazópolis",
+      "regime": "",
+      "data_prova": "21/06/2026",
+      "ano": 2026,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmbz",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "CIS 5ª RS - CONSÓRCIO INTERMUNICIPAL DE SAÚDE DA 5ª REGIÃO",
+      "tipo": "Consórcio de saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "17/05/2026",
+      "ano": 2026,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cis-5rs",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SANTA ISABEL DO IVAÍ - 2026",
+      "tipo": "Prefeitura",
+      "municipio": "Santa Isabel do Ivaí",
+      "regime": "",
+      "data_prova": "24/04/2026",
+      "ano": 2026,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmsii-2026",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE TERRA ROXA - 2026",
+      "tipo": "Prefeitura",
+      "municipio": "Terra Roxa",
+      "regime": "",
+      "data_prova": "12/04/2026",
+      "ano": 2026,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmtr2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE VERÊ",
+      "tipo": "Prefeitura",
+      "municipio": "Verê",
+      "regime": "",
+      "data_prova": "08/02/2026",
+      "ano": 2026,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmv",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MARMELEIRO",
+      "tipo": "Prefeitura",
+      "municipio": "Marmeleiro",
+      "regime": "",
+      "data_prova": "01/02/2026",
+      "ano": 2026,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmm2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PROCESSO SELETIVO - AG. DE APOIO TÉC. ADM.-CULTURAL – FAU/SEEC PR",
+      "tipo": "Processo seletivo / outro",
+      "municipio": "",
+      "regime": "Processo seletivo",
+      "data_prova": "23/01/2026",
+      "ano": 2026,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pfauseec",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SÃO JOÃO",
+      "tipo": "Prefeitura",
+      "municipio": "São João",
+      "regime": "",
+      "data_prova": "21/12/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmsjo",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CAPANEMA",
+      "tipo": "Prefeitura",
+      "municipio": "Capanema",
+      "regime": "",
+      "data_prova": "07/12/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmcap",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "RESIDÊNCIA MULTIPROFISSIONAL EM ATENÇÃO PRIMÁRIA COM ÊNFASE EM SAÚDE DA FAMÍLIA - 2026",
+      "tipo": "Residência em saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "16/11/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/rmp2026",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE TRÊS BARRAS DO PARANÁ",
+      "tipo": "Prefeitura",
+      "municipio": "Três Barras do Paraná",
+      "regime": "",
+      "data_prova": "02/11/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmtbp",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PARANÁ FAZ CIÊNCIA",
+      "tipo": "Processo seletivo / outro",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "25/08/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pfc",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PROCESSO SELETIVO AGENTES DE APOIO TÉCNICO ADMINISTRATIVO-CULTURAL 2",
+      "tipo": "Processo seletivo / outro",
+      "municipio": "",
+      "regime": "Processo seletivo",
+      "data_prova": "16/07/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pac2",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PINHALÃO",
+      "tipo": "Prefeitura",
+      "municipio": "Pinhalão",
+      "regime": "",
+      "data_prova": "13/07/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpi",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CÉU AZUL",
+      "tipo": "Prefeitura",
+      "municipio": "Céu Azul",
+      "regime": "",
+      "data_prova": "29/06/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmca",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE QUARTO CENTENÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Quarto Centenário",
+      "regime": "",
+      "data_prova": "01/06/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmqc",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PORTO BARREIRO",
+      "tipo": "Prefeitura",
+      "municipio": "Porto Barreiro",
+      "regime": "",
+      "data_prova": "18/05/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpba",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL MATELÂNDIA",
+      "tipo": "Câmara",
+      "municipio": "Matelândia",
+      "regime": "",
+      "data_prova": "27/04/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmm",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PORTO AMAZONAS",
+      "tipo": "Prefeitura",
+      "municipio": "Porto Amazonas",
+      "regime": "",
+      "data_prova": "23/03/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpam",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PROJETO TELESSAÚDE NA REDE ESTADUAL DE EDUCAÇÃO DO PARANÁ - BEM CUIDAR 2",
+      "tipo": "Processo seletivo / outro",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "14/03/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pbc2",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PROCESSO SELETIVO AGENTES DE APOIO TÉCNICO ADMINISTRATIVO-CULTURAL",
+      "tipo": "Processo seletivo / outro",
+      "municipio": "",
+      "regime": "Processo seletivo",
+      "data_prova": "07/03/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pac",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE TOLEDO - CONCURSO PÚBLICO",
+      "tipo": "Prefeitura",
+      "municipio": "Toledo",
+      "regime": "",
+      "data_prova": "23/02/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmt-cp",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PROJETO TELESSAÚDE NA REDE ESTADUAL DE EDUCAÇÃO DO PARANÁ - BEM CUIDAR",
+      "tipo": "Processo seletivo / outro",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "17/01/2025",
+      "ano": 2025,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pbc",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE TOLEDO - PROCESSO SELETIVO SIMPLIFICADO",
+      "tipo": "Prefeitura",
+      "municipio": "Toledo",
+      "regime": "Processo seletivo",
+      "data_prova": "24/11/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmtpss",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "RESIDÊNCIA MULTIPROFISSIONAL EM ATENÇÃO PRIMÁRIA COM ÊNFASE EM SAÚDE DA FAMÍLIA - 2025",
+      "tipo": "Residência em saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "24/11/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/rmf2025",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SALGADO FILHO",
+      "tipo": "Prefeitura",
+      "municipio": "Salgado Filho",
+      "regime": "",
+      "data_prova": "03/11/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmsf24",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE BOA ESPERANÇA DO IGUAÇU",
+      "tipo": "Prefeitura",
+      "municipio": "Boa Esperança do Iguaçu",
+      "regime": "",
+      "data_prova": "14/07/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmbei",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE NOVA LARANJEIRAS",
+      "tipo": "Prefeitura",
+      "municipio": "Nova Laranjeiras",
+      "regime": "",
+      "data_prova": "05/05/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmnl2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SALTO DO LONTRA - PSS - MENOR APRENDIZ",
+      "tipo": "Prefeitura",
+      "municipio": "Salto do Lontra",
+      "regime": "Processo seletivo",
+      "data_prova": "21/04/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmslm",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SALTO DO LONTRA - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Salto do Lontra",
+      "regime": "Estatutário",
+      "data_prova": "21/04/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmsl",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE ENÉAS MARQUES",
+      "tipo": "Prefeitura",
+      "municipio": "Enéas Marques",
+      "regime": "",
+      "data_prova": "14/04/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmem",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE BOM JESUS DO SUL - PSS",
+      "tipo": "Prefeitura",
+      "municipio": "Bom Jesus do Sul",
+      "regime": "Processo seletivo",
+      "data_prova": "14/04/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmbjspss",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE BOM JESUS DO SUL - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Bom Jesus do Sul",
+      "regime": "Estatutário",
+      "data_prova": "14/04/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmbjses",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE BOM JESUS DO SUL- CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Bom Jesus do Sul",
+      "regime": "Celetista / emprego público",
+      "data_prova": "14/04/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmbjsc",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE SÃO JOÃO DO TRIUNFO",
+      "tipo": "Câmara",
+      "municipio": "São João do Triunfo",
+      "regime": "",
+      "data_prova": "07/04/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmsjt",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE WENCESLAU BRAZ",
+      "tipo": "Prefeitura",
+      "municipio": "Wenceslau Braz",
+      "regime": "",
+      "data_prova": "07/04/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmwb",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PRUDENTÓPOLIS - CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Prudentópolis",
+      "regime": "Celetista / emprego público",
+      "data_prova": "24/03/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmprudc",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PRUDENTÓPOLIS - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Prudentópolis",
+      "regime": "Estatutário",
+      "data_prova": "24/03/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmprue",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE BITURUNA",
+      "tipo": "Prefeitura",
+      "municipio": "Bituruna",
+      "regime": "",
+      "data_prova": "17/03/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmbi",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE JANIÓPOLIS - CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Janiópolis",
+      "regime": "Celetista / emprego público",
+      "data_prova": "18/02/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmjc",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE JANIÓPOLIS - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Janiópolis",
+      "regime": "Estatutário",
+      "data_prova": "18/02/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmje",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "EMDUR - EMPRESA DE DESENVOLVIMENTO URBANO E RURAL DE TOLEDO",
+      "tipo": "Autarquia / empresa pública",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "04/02/2024",
+      "ano": 2024,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/emdur2",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "RESIDÊNCIA MULTIPROFISSIONAL EM ATENÇÃO PRIMÁRIA COM ÊNFASE EM SAÚDE DA FAMÍLIA - 2023",
+      "tipo": "Residência em saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "03/12/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/rufau",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IMBITUVA - CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Imbituva",
+      "regime": "Celetista / emprego público",
+      "data_prova": "03/12/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmic2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IMBITUVA - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Imbituva",
+      "regime": "Estatutário",
+      "data_prova": "03/12/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmie2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE PRUDENTÓPOLIS",
+      "tipo": "Câmara",
+      "municipio": "Prudentópolis",
+      "regime": "",
+      "data_prova": "26/11/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmp1",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PALMEIRA",
+      "tipo": "Prefeitura",
+      "municipio": "Palmeira",
+      "regime": "",
+      "data_prova": "19/11/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmp2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE BARRACÃO",
+      "tipo": "Prefeitura",
+      "municipio": "Barracão",
+      "regime": "",
+      "data_prova": "15/10/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmba",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IVAÍ - CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Ivaí",
+      "regime": "Celetista / emprego público",
+      "data_prova": "08/10/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmic",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IVAÍ - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Ivaí",
+      "regime": "Estatutário",
+      "data_prova": "08/10/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmie",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE LARANJEIRAS DO SUL",
+      "tipo": "Prefeitura",
+      "municipio": "Laranjeiras do Sul",
+      "regime": "",
+      "data_prova": "01/10/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmlds",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE GENERAL CARNEIRO - CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "General Carneiro",
+      "regime": "Celetista / emprego público",
+      "data_prova": "17/09/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmgcc",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE GENERAL CARNEIRO - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "General Carneiro",
+      "regime": "Estatutário",
+      "data_prova": "17/09/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmgce",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE FOZ DO JORDÃO",
+      "tipo": "Prefeitura",
+      "municipio": "Foz do Jordão",
+      "regime": "",
+      "data_prova": "03/09/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmfj",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "UNIVERSIDADE ESTADUAL DO OESTE DO PARANÁ - UNIOESTE",
+      "tipo": "Ensino superior",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "20/08/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/ueop",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE GUAMIRANGA",
+      "tipo": "Câmara",
+      "municipio": "Guamiranga",
+      "regime": "",
+      "data_prova": "16/07/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmg1",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DOIS VIZINHOS - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Dois Vizinhos",
+      "regime": "Estatutário",
+      "data_prova": "02/07/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmdve",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE DOIS VIZINHOS - CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Dois Vizinhos",
+      "regime": "Celetista / emprego público",
+      "data_prova": "02/07/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmdvc",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SALGADO FILHO - CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Salgado Filho",
+      "regime": "Celetista / emprego público",
+      "data_prova": "25/06/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmsf2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SALGADO FILHO - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Salgado Filho",
+      "regime": "Estatutário",
+      "data_prova": "25/06/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmsf1",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE REALEZA",
+      "tipo": "Prefeitura",
+      "municipio": "Realeza",
+      "regime": "",
+      "data_prova": "28/05/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmrea",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE TIJUCAS DO SUL",
+      "tipo": "Prefeitura",
+      "municipio": "Tijucas do Sul",
+      "regime": "",
+      "data_prova": "21/05/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmts",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CRUZEIRO DO IGUAÇU",
+      "tipo": "Prefeitura",
+      "municipio": "Cruzeiro do Iguaçu",
+      "regime": "",
+      "data_prova": "30/04/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmci2023",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE NOSSA SENHORA DAS GRAÇAS",
+      "tipo": "Prefeitura",
+      "municipio": "Nossa Senhora das Graças",
+      "regime": "",
+      "data_prova": "12/03/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmnsg2023",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IMBITUVA",
+      "tipo": "Prefeitura",
+      "municipio": "Imbituva",
+      "regime": "",
+      "data_prova": "12/03/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmimb2023",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE AMPÉRE",
+      "tipo": "Prefeitura",
+      "municipio": "Ampére",
+      "regime": "",
+      "data_prova": "05/03/2023",
+      "ano": 2023,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmam",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PONTA GROSSA",
+      "tipo": "Prefeitura",
+      "municipio": "Ponta Grossa",
+      "regime": "",
+      "data_prova": "18/12/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpg2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CHOPINZINHO - CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Chopinzinho",
+      "regime": "Celetista / emprego público",
+      "data_prova": "04/12/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmcc",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CHOPINZINHO - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Chopinzinho",
+      "regime": "Estatutário",
+      "data_prova": "04/12/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmce",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SANTA MARIA DO OESTE",
+      "tipo": "Prefeitura",
+      "municipio": "Santa Maria do Oeste",
+      "regime": "",
+      "data_prova": "13/11/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmsmo",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "RESIDÊNCIA MULTIPROFISSIONAL EM ATENÇÃO PRIMÁRIA COM ÊNFASE EM SAÚDE DA FAMÍLIA - EDITAL 2022",
+      "tipo": "Residência em saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "13/11/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/rmpsf",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE QUERÊNCIA DO NORTE",
+      "tipo": "Prefeitura",
+      "municipio": "Querência do Norte",
+      "regime": "",
+      "data_prova": "18/09/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmqn2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CRUZMALTINA",
+      "tipo": "Prefeitura",
+      "municipio": "Cruzmaltina",
+      "regime": "",
+      "data_prova": "04/09/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmczm",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE FLOR DA SERRA DO SUL",
+      "tipo": "Prefeitura",
+      "municipio": "Flor da Serra do Sul",
+      "regime": "",
+      "data_prova": "28/08/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmfss",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE ALTAMIRA DO PARANÁ",
+      "tipo": "Prefeitura",
+      "municipio": "Altamira do Paraná",
+      "regime": "",
+      "data_prova": "21/08/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmap",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE RENASCENÇA - EMPREGO PÚBLICO",
+      "tipo": "Prefeitura",
+      "municipio": "Renascença",
+      "regime": "Celetista / emprego público",
+      "data_prova": "14/08/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmrep",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE RENASCENÇA - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Renascença",
+      "regime": "Estatutário",
+      "data_prova": "14/08/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmre",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CORONEL VIVIDA",
+      "tipo": "Prefeitura",
+      "municipio": "Coronel Vivida",
+      "regime": "",
+      "data_prova": "07/08/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmcv",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CONSELHEIRO MAIRINCK",
+      "tipo": "Prefeitura",
+      "municipio": "Conselheiro Mairinck",
+      "regime": "",
+      "data_prova": "10/07/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmcm",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE GOIOERÊ",
+      "tipo": "Prefeitura",
+      "municipio": "Goioerê",
+      "regime": "",
+      "data_prova": "03/07/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmfg",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "EMDUR - EMPRESA DE DESENVOLVIMENTO URBANO E RURAL DE TOLEDO",
+      "tipo": "Autarquia / empresa pública",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "26/06/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/emdur",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CISOP - CONSÓRCIO INTERMUNICIPAL DE SAÚDE DO OESTE DO PARANÁ - CETEA",
+      "tipo": "Consórcio de saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "19/06/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/CISOP",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IGUATU",
+      "tipo": "Prefeitura",
+      "municipio": "Iguatu",
+      "regime": "",
+      "data_prova": "15/05/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmi2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE REBOUÇAS - CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Rebouças",
+      "regime": "Celetista / emprego público",
+      "data_prova": "01/05/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmrc2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE REBOUÇAS - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Rebouças",
+      "regime": "Estatutário",
+      "data_prova": "01/05/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmr2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MANOEL RIBAS",
+      "tipo": "Prefeitura",
+      "municipio": "Manoel Ribas",
+      "regime": "",
+      "data_prova": "10/04/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmmr2",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SANTA FÉ - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Santa Fé",
+      "regime": "Estatutário",
+      "data_prova": "03/04/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmsfes",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SANTA FÉ - EMPREGO PÚBLICO",
+      "tipo": "Prefeitura",
+      "municipio": "Santa Fé",
+      "regime": "Celetista / emprego público",
+      "data_prova": "03/04/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmsfe",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IRETAMA",
+      "tipo": "Prefeitura",
+      "municipio": "Iretama",
+      "regime": "",
+      "data_prova": "27/03/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmi",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE FERNANDES PINHEIRO",
+      "tipo": "Prefeitura",
+      "municipio": "Fernandes Pinheiro",
+      "regime": "",
+      "data_prova": "20/02/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmfp",
+      "relevancia_palmital": true
+    },
+    {
+      "nome": "RESIDÊNCIA MULTIPROFISSIONAL E UNIPROFISSIONAL DA AUTARQUIA MUNICIPAL DE SAÚDE DE APUCARANA",
+      "tipo": "Residência em saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "30/01/2022",
+      "ano": 2022,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/amsapuc",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "FASP - FUNDAÇÃO DE ASSISTÊNCIA À SAÚDE DE PARANAGUÁ",
+      "tipo": "Autarquia / empresa pública",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "12/12/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/fasp",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MARIÓPOLIS",
+      "tipo": "Prefeitura",
+      "municipio": "Mariópolis",
+      "regime": "",
+      "data_prova": "05/12/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMMA",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE TERRA ROXA",
+      "tipo": "Prefeitura",
+      "municipio": "Terra Roxa",
+      "regime": "",
+      "data_prova": "05/12/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMTR",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE CANTAGALO",
+      "tipo": "Câmara",
+      "municipio": "Cantagalo",
+      "regime": "",
+      "data_prova": "28/11/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmcantagalo2020",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "RESIDÊNCIA MULTIPROFISSIONAL EM ATENÇÃO PRIMÁRIA COM ÊNFASE EM SAÚDE DA FAMÍLIA - 2022",
+      "tipo": "Residência em saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "21/11/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/rmsf",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "GESTÃO EM TURISMO - GESTUR",
+      "tipo": "Processo seletivo / outro",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "14/11/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/gestur",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "RESTEC INOVAÇÃO, TRANSFORMAÇÃO DIGITAL E E-GOV",
+      "tipo": "Processo seletivo / outro",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "14/11/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/ri",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PAULA FREITAS",
+      "tipo": "Prefeitura",
+      "municipio": "Paula Freitas",
+      "regime": "",
+      "data_prova": "07/11/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PPF",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SERRANÓPOLIS DO IGUAÇU",
+      "tipo": "Prefeitura",
+      "municipio": "Serranópolis do Iguaçu",
+      "regime": "",
+      "data_prova": "24/10/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMSI",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE JABOTI",
+      "tipo": "Prefeitura",
+      "municipio": "Jaboti",
+      "regime": "",
+      "data_prova": "06/09/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMJ",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE LIDIANÓPOLIS",
+      "tipo": "Câmara",
+      "municipio": "Lidianópolis",
+      "regime": "",
+      "data_prova": "29/08/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/CML",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE LIDIANÓPOLIS",
+      "tipo": "Prefeitura",
+      "municipio": "Lidianópolis",
+      "regime": "",
+      "data_prova": "29/08/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PML",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "OGMO/A - ÓRGÃO GESTOR DA MÃO DE OBRA DO TRABALHO PORTUÁRIO AVULSO DO PORTO ORGANIZADO DE ANTONINA",
+      "tipo": "Autarquia / empresa pública",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "13/08/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/OGMO",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "RESIDÊNCIA MULTIPROFISSIONAL EM ATENÇÃO PRIMÁRIA COM ÊNFASE EM SAÚDE DA FAMÍLIA - ENFERMAGEM",
+      "tipo": "Residência em saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "07/02/2021",
+      "ano": 2021,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/RME",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CONIMS - CONSÓRCIO INTERMUNICIPAL DE SAÚDE",
+      "tipo": "Consórcio de saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "13/12/2020",
+      "ano": 2020,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/CONIMS",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "RESIDÊNCIA MULTIPROFISSIONAL EM ATENÇÃO PRIMÁRIA COM ÊNFASE EM SAÚDE DA FAMÍLIA - 2021",
+      "tipo": "Residência em saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "22/11/2020",
+      "ano": 2020,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/RM",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PARANAGUÁ",
+      "tipo": "Prefeitura",
+      "municipio": "Paranaguá",
+      "regime": "",
+      "data_prova": "09/02/2020",
+      "ano": 2020,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMGUA",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PALOTINA - REGIME ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Palotina",
+      "regime": "Estatutário",
+      "data_prova": "26/01/2020",
+      "ano": 2020,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpalotina2019",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PALOTINA - REGIME CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Palotina",
+      "regime": "Celetista / emprego público",
+      "data_prova": "26/01/2020",
+      "ano": 2020,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpalotinaestatutario2019",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "RESIDÊNCIA MULTIPROFISSIONAL EM ATENÇÃO PRIMÁRIA COM ÊNFASE EM SAÚDE DA FAMÍLIA - 2020",
+      "tipo": "Residência em saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "26/01/2020",
+      "ano": 2020,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/RM- SF",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE NOVA LARANJEIRAS",
+      "tipo": "Prefeitura",
+      "municipio": "Nova Laranjeiras",
+      "regime": "",
+      "data_prova": "22/12/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMNL",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SIQUEIRA CAMPOS",
+      "tipo": "Prefeitura",
+      "municipio": "Siqueira Campos",
+      "regime": "",
+      "data_prova": "03/11/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMSC",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DO TURVO",
+      "tipo": "Prefeitura",
+      "municipio": "Turvo",
+      "regime": "",
+      "data_prova": "29/09/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMT",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE BOM SUCESSO DO SUL",
+      "tipo": "Prefeitura",
+      "municipio": "Bom Sucesso do Sul",
+      "regime": "",
+      "data_prova": "29/09/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMBSS",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CORBÉLIA",
+      "tipo": "Prefeitura",
+      "municipio": "Corbélia",
+      "regime": "",
+      "data_prova": "22/09/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMC",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE QUERÊNCIA DO NORTE",
+      "tipo": "Prefeitura",
+      "municipio": "Querência do Norte",
+      "regime": "",
+      "data_prova": "22/09/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMQN",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CONSÓRCIO INTERMUNICIPAL DA REDE DE URGÊNCIAS DO SUDOESTE DO PARANÁ - CIRUSPAR",
+      "tipo": "Consórcio de saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "01/09/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/CIRUSPAR",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "FUNPREV - TURVO - FUNDO DE PREVIDÊNCIA DOS SERVIDORES MUNICIPAIS",
+      "tipo": "Previdência municipal",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "25/08/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/FT",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "IFPR EDITAL Nº 08/2019 - PROFESSOR DA CARREIRA DE MAGISTÉRIO DO ENSINO BÁSICO, TÉCNICO E TECNOLÓGICO (AEE)",
+      "tipo": "Ensino superior",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "18/08/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/EDITAL08-AEE",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "INSTITUTO FEDERAL DO PARANÁ EDITAL Nº 09/2019 - PROFESSOR DA CARREIRA DE MAGISTÉRIO",
+      "tipo": "Ensino superior",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "18/08/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/EDITAL09-AREAS",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "INSTITUTO FEDERAL DO PARANÁ EDITAL 06/2019 - TAE - TÉCNICO ADMINISTRATIVO",
+      "tipo": "Ensino superior",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "18/08/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/EDITAL06-TAE",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE IPIRANGA",
+      "tipo": "Câmara",
+      "municipio": "Ipiranga",
+      "regime": "",
+      "data_prova": "28/07/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/CMI",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA DE MARMELEIRO - EMPREGO",
+      "tipo": "Prefeitura",
+      "municipio": "Marmeleiro",
+      "regime": "Celetista / emprego público",
+      "data_prova": "14/04/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMME",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MARMELEIRO - EFETIVO",
+      "tipo": "Prefeitura",
+      "municipio": "Marmeleiro",
+      "regime": "Estatutário",
+      "data_prova": "14/04/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMM",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE FRANCISCO BELTRÃO",
+      "tipo": "Prefeitura",
+      "municipio": "Francisco Beltrão",
+      "regime": "",
+      "data_prova": "07/04/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMFB",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE CHOPINZINHO",
+      "tipo": "Câmara",
+      "municipio": "Chopinzinho",
+      "regime": "",
+      "data_prova": "10/02/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/CMCH",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE GOIOERÊ",
+      "tipo": "Prefeitura",
+      "municipio": "Goioerê",
+      "regime": "",
+      "data_prova": "20/01/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmgoioere2018",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PONTAL DO PARANÁ",
+      "tipo": "Prefeitura",
+      "municipio": "Pontal do Paraná",
+      "regime": "",
+      "data_prova": "20/01/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMPDP",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "RESIDÊNCIA MULTIPROFISSIONAL EM ATENÇÃO PRIMÁRIA COM ÊNFASE EM SAÚDE DA FAMÍLIA",
+      "tipo": "Residência em saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "20/01/2019",
+      "ano": 2019,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/rm-saude-da-familia",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE SÃO SEBASTIÃO DA AMOREIRA",
+      "tipo": "Câmara",
+      "municipio": "São Sebastião da Amoreira",
+      "regime": "",
+      "data_prova": "16/12/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/CMSSSA",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IMBITUVA",
+      "tipo": "Prefeitura",
+      "municipio": "Imbituva",
+      "regime": "",
+      "data_prova": "02/12/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmimbituva",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CAMPO MOURÃO - PSS 02/2018",
+      "tipo": "Prefeitura",
+      "municipio": "Campo Mourão",
+      "regime": "Processo seletivo",
+      "data_prova": "02/12/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/psscampomourao022018",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE PATO BRANCO",
+      "tipo": "Câmara",
+      "municipio": "Pato Branco",
+      "regime": "",
+      "data_prova": "02/12/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/C%C3%82MARA%20MUNICIPAL%20DE%20PATO%20BRANCO",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IMBITUVA - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Imbituva",
+      "regime": "Estatutário",
+      "data_prova": "25/11/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmimbituva",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE GOIOXIM",
+      "tipo": "Prefeitura",
+      "municipio": "Goioxim",
+      "regime": "",
+      "data_prova": "11/11/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PREFEITURA%20MUNICIPAL%20DE%20GOIOXIM",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SANTA FÉ - EMPREGO PÚBLICO",
+      "tipo": "Prefeitura",
+      "municipio": "Santa Fé",
+      "regime": "Celetista / emprego público",
+      "data_prova": "14/10/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMSF%20E",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SANTA FÉ - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Santa Fé",
+      "regime": "Estatutário",
+      "data_prova": "14/10/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMSF",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE JURANDA",
+      "tipo": "Prefeitura",
+      "municipio": "Juranda",
+      "regime": "",
+      "data_prova": "30/09/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmjuranda",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PONTA GROSSA",
+      "tipo": "Prefeitura",
+      "municipio": "Ponta Grossa",
+      "regime": "",
+      "data_prova": "23/09/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpontagrossa-2018",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MARIÓPOLIS",
+      "tipo": "Prefeitura",
+      "municipio": "Mariópolis",
+      "regime": "",
+      "data_prova": "16/09/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PREFEITURA%20MUNICIPAL%20DE%20MARI%C3%93POLIS",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MANOEL RIBAS",
+      "tipo": "Prefeitura",
+      "municipio": "Manoel Ribas",
+      "regime": "",
+      "data_prova": "09/09/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMMR",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "AUTARQUIA MUNICIPAL DE SAÚDE DE APUCARANA - AMS",
+      "tipo": "Autarquia / empresa pública",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "02/09/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/AMS",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "COMPANHIA PONTAGROSSENSE DE SERVIÇOS - CPS",
+      "tipo": "Autarquia / empresa pública",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "19/08/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cpspg2018",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE ARIRANHA DO IVAÍ",
+      "tipo": "Câmara",
+      "municipio": "Ariranha do Ivaí",
+      "regime": "",
+      "data_prova": "22/07/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/CMAI",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE CAPANEMA",
+      "tipo": "Câmara",
+      "municipio": "Capanema",
+      "regime": "",
+      "data_prova": "15/07/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cm-capanema",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CHOPINZINHO - REGIME ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Chopinzinho",
+      "regime": "Estatutário",
+      "data_prova": "06/05/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMC-E",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CHOPINZINHO - REGIME CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Chopinzinho",
+      "regime": "Celetista / emprego público",
+      "data_prova": "06/05/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmchopinzinho-2018",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DO PINHÃO",
+      "tipo": "Prefeitura",
+      "municipio": "Pinhão",
+      "regime": "",
+      "data_prova": "29/04/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMP",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SANTA CRUZ DE MONTE CASTELO",
+      "tipo": "Prefeitura",
+      "municipio": "Santa Cruz de Monte Castelo",
+      "regime": "",
+      "data_prova": "15/04/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/SCMC",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE LIDIANÓPOLIS",
+      "tipo": "Prefeitura",
+      "municipio": "Lidianópolis",
+      "regime": "",
+      "data_prova": "18/03/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/P-M-L",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IRETAMA",
+      "tipo": "Prefeitura",
+      "municipio": "Iretama",
+      "regime": "",
+      "data_prova": "18/03/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMI-PR",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CAMPO MOURÃO - PROCESSO SELETIVO PÚBLICO",
+      "tipo": "Prefeitura",
+      "municipio": "Campo Mourão",
+      "regime": "Processo seletivo",
+      "data_prova": "11/03/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMCM%20-%20PSP",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CAMPO MOURÃO - REGIME CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Campo Mourão",
+      "regime": "Celetista / emprego público",
+      "data_prova": "11/03/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMCM-RC",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CAMPO MOURÃO - REGIME ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Campo Mourão",
+      "regime": "Estatutário",
+      "data_prova": "11/03/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pm-campo-mourao-estatutario-2018",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE REALEZA - REGIME ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Realeza",
+      "regime": "Estatutário",
+      "data_prova": "04/03/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMR%20-%20RE",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PALOTINA - ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Palotina",
+      "regime": "Estatutário",
+      "data_prova": "25/02/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMPE",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PALOTINA - EMPREGO PÚBLICO",
+      "tipo": "Prefeitura",
+      "municipio": "Palotina",
+      "regime": "Celetista / emprego público",
+      "data_prova": "25/02/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmp-emprego-publico-2018",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE RESERVA",
+      "tipo": "Prefeitura",
+      "municipio": "Reserva",
+      "regime": "",
+      "data_prova": "25/02/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pm-reserva",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE REALEZA - PROCESSO SELETIVO JOVEM APRENDIZ",
+      "tipo": "Prefeitura",
+      "municipio": "Realeza",
+      "regime": "Processo seletivo",
+      "data_prova": "18/02/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMR%20-%20JA",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE REALEZA - TESTE SELETIVO",
+      "tipo": "Prefeitura",
+      "municipio": "Realeza",
+      "regime": "Processo seletivo",
+      "data_prova": "18/02/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMR",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA DE CAMPO MOURÃO - PSS",
+      "tipo": "Prefeitura",
+      "municipio": "Campo Mourão",
+      "regime": "Processo seletivo",
+      "data_prova": "07/01/2018",
+      "ano": 2018,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmcampomourao-2017",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE CLEVELÂNDIA",
+      "tipo": "Câmara",
+      "municipio": "Clevelândia",
+      "regime": "",
+      "data_prova": "17/12/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmclevelandia-2017",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE BOM JESUS DO SUL - REGIME CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Bom Jesus do Sul",
+      "regime": "Celetista / emprego público",
+      "data_prova": "17/12/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmbjs-celetista-2017",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE BOM JESUS DO SUL - REGIME ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Bom Jesus do Sul",
+      "regime": "Estatutário",
+      "data_prova": "17/12/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmbjs-estatutario-2017",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "AGÊNCIA PARANÁ DE DESENVOLVIMENTO",
+      "tipo": "Autarquia / empresa pública",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "10/12/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/eparana2017",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CONSÓRCIO INTERMUNICIPAL DO VALE DO RIO JORDÃO",
+      "tipo": "Consórcio de saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "03/12/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/consorcio-vrj-2017",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA DE MATO RICO",
+      "tipo": "Câmara",
+      "municipio": "Mato Rico",
+      "regime": "",
+      "data_prova": "12/11/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cm-mato-rico-2017",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MARMELEIRO",
+      "tipo": "Prefeitura",
+      "municipio": "Marmeleiro",
+      "regime": "",
+      "data_prova": "24/09/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/prefeitura-municipal-marmeleiro",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "AUTARQUIA MUNICIPAL DE SAÚDE DE APUCARANA",
+      "tipo": "Autarquia / empresa pública",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "24/09/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/autarqua-municipal-saude-apucarana",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "É-PARANÁ COMUNICAÇÃO - EDITAL DO TESTE SELETIVO Nº 01/2017",
+      "tipo": "Autarquia / empresa pública",
+      "municipio": "",
+      "regime": "Processo seletivo",
+      "data_prova": "17/09/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/eparana-teste-seletivo",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IVAIPORÃ - TESTE SELETIVO NOVO",
+      "tipo": "Prefeitura",
+      "municipio": "Ivaiporã",
+      "regime": "Processo seletivo",
+      "data_prova": "17/07/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmivaipor%C3%A3",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "TESTE SELETIVO Nº 154/2017 - PREFEITURA MUNICIPAL DE IVAIPORÃ",
+      "tipo": "Prefeitura",
+      "municipio": "Ivaiporã",
+      "regime": "Processo seletivo",
+      "data_prova": "17/07/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/testeseletivoivaipora2017",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PIRAQUARA",
+      "tipo": "Prefeitura",
+      "municipio": "Piraquara",
+      "regime": "",
+      "data_prova": "25/06/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpiraquara2017",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE APUCARANA",
+      "tipo": "Prefeitura",
+      "municipio": "Apucarana",
+      "regime": "",
+      "data_prova": "25/06/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmapucarana",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA DE GODOY MOREIRA",
+      "tipo": "Câmara",
+      "municipio": "Godoy Moreira",
+      "regime": "",
+      "data_prova": "04/01/2017",
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmgodoymoreira",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PALMAS - PR",
+      "tipo": "Prefeitura",
+      "municipio": "Palmas",
+      "regime": "",
+      "data_prova": "23/10/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpalmas",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PITANGA",
+      "tipo": "Prefeitura",
+      "municipio": "Pitanga",
+      "regime": "",
+      "data_prova": "23/10/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpitanga",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE FAXINAL - EDITAL 004/2016- ESTATUTÁRIO",
+      "tipo": "Prefeitura",
+      "municipio": "Faxinal",
+      "regime": "Estatutário",
+      "data_prova": "21/08/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmfaxinal201604",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE FAXINAL - EDITAL 003/2016 - CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Faxinal",
+      "regime": "Celetista / emprego público",
+      "data_prova": "21/08/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmfaxinal201603",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE FAXINAL - EDITAL 002/2016 - CELETISTA",
+      "tipo": "Prefeitura",
+      "municipio": "Faxinal",
+      "regime": "Celetista / emprego público",
+      "data_prova": "21/08/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmfaxinal201602",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CISGAP - CONSÓRCIO INTERMUNICIPAL DE SAÚDE GUARAPUAVA - PINHÃO E TURVO",
+      "tipo": "Consórcio de saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": "25/06/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cisgap",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE SÃO PEDRO DO IVAÍ",
+      "tipo": "Câmara",
+      "municipio": "São Pedro do Ivaí",
+      "regime": "",
+      "data_prova": "15/05/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmsaopedrodoivai",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE ROLÂNDIA",
+      "tipo": "Câmara",
+      "municipio": "Rolândia",
+      "regime": "",
+      "data_prova": "15/05/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmrolandia2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE IRATI",
+      "tipo": "Câmara",
+      "municipio": "Irati",
+      "regime": "",
+      "data_prova": "01/05/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmirati2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE FRANCISCO ALVES",
+      "tipo": "Prefeitura",
+      "municipio": "Francisco Alves",
+      "regime": "",
+      "data_prova": "17/04/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmfranciscoalves2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE QUERÊNCIA DO NORTE - EFETIVO",
+      "tipo": "Prefeitura",
+      "municipio": "Querência do Norte",
+      "regime": "Estatutário",
+      "data_prova": "28/02/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmquerenciadonorte2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PORTO AMAZONAS",
+      "tipo": "Prefeitura",
+      "municipio": "Porto Amazonas",
+      "regime": "",
+      "data_prova": "28/02/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmportoamazonas2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE XAMBRÉ",
+      "tipo": "Prefeitura",
+      "municipio": "Xambré",
+      "regime": "",
+      "data_prova": "28/02/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmxambre2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE GODOY MOREIRA",
+      "tipo": "Prefeitura",
+      "municipio": "Godoy Moreira",
+      "regime": "",
+      "data_prova": "24/01/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmgodoymoreira2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MARILUZ - EDITAL 002/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Mariluz",
+      "regime": "",
+      "data_prova": "10/01/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmmariluz2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MARILUZ",
+      "tipo": "Prefeitura",
+      "municipio": "Mariluz",
+      "regime": "",
+      "data_prova": "10/01/2016",
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmmariluz2015a",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PALMEIRA - EDITAL 01/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Palmeira",
+      "regime": "",
+      "data_prova": "20/12/2015",
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpalmeira2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE FOZ DO IGUAÇU - EDITAL 001/01/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Foz do Iguaçu",
+      "regime": "",
+      "data_prova": "22/11/2015",
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmfozdoigua%C3%A7%C2%8D%C2%8Du2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CHOPINZINHO - EMPREGO PÚBLICO - EDITAL 15/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Chopinzinho",
+      "regime": "Celetista / emprego público",
+      "data_prova": "03/11/2015",
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmchopizinho15-2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CHOPINZINHO - EFETIVO - EDITAL 14/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Chopinzinho",
+      "regime": "Estatutário",
+      "data_prova": "03/11/2015",
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmchopizinho2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE TERRA BOA - EDITAL EMPREGO PÚBLICO - EDITAL Nº 02/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Terra Boa",
+      "regime": "Celetista / emprego público",
+      "data_prova": "25/09/2015",
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmterraboaemprego2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE TERRA BOA - EDITAL EFETIVO - EDITAL Nº 01/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Terra Boa",
+      "regime": "Estatutário",
+      "data_prova": "25/09/2015",
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmterraboa-efetivo2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE GUAÍRA - EDITAL 01/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Guaíra",
+      "regime": "",
+      "data_prova": "16/08/2015",
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmguaira2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE GUAÍRA",
+      "tipo": "Prefeitura",
+      "municipio": "Guaíra",
+      "regime": "",
+      "data_prova": "16/08/2015",
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/PMG",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE NOSSA SENHORA DAS GRAÇAS - EDITAL 01/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Nossa Senhora das Graças",
+      "regime": "",
+      "data_prova": "09/08/2015",
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmnossasenhoradasgra%C2%8Das2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE TERRA BOA",
+      "tipo": "Prefeitura",
+      "municipio": "Terra Boa",
+      "regime": "",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmterraboa",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "AME - AUTARQUIA MUNICIPAL DE EDUCAÇÃO DE APUCARANA",
+      "tipo": "Autarquia / empresa pública",
+      "municipio": "",
+      "regime": "",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/autarquiamunicioalapucarana",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CARAMBEÍ",
+      "tipo": "Prefeitura",
+      "municipio": "Carambeí",
+      "regime": "",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmcarambei",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "SERVIÇO AUTÔNOMO MUNICIPAL DE ÁGUA E ESGOTO - SAMAE - LOBATO",
+      "tipo": "Autarquia / empresa pública",
+      "municipio": "",
+      "regime": "",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/servi%C2%8Doautonomomunicipallobato",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PINHÃO",
+      "tipo": "Prefeitura",
+      "municipio": "Pinhão",
+      "regime": "",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpinhao",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CONSÓRCIO CISPAR - MARINGÁ",
+      "tipo": "Consórcio de saúde",
+      "municipio": "",
+      "regime": "",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cons%E2%80%94rciocisparmaring%E2%80%A1",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CASTRO",
+      "tipo": "Prefeitura",
+      "municipio": "Castro",
+      "regime": "",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmcastro",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MARIÓPOLIS",
+      "tipo": "Prefeitura",
+      "municipio": "Mariópolis",
+      "regime": "",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmmariopolis",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MARIÓPOLIS - TESTE SELETIVO",
+      "tipo": "Prefeitura",
+      "municipio": "Mariópolis",
+      "regime": "Processo seletivo",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmmariopolis",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "INSTITUTO DE PREVIDÊNCIA DE PRUDENTÓPOLIS",
+      "tipo": "Previdência municipal",
+      "municipio": "",
+      "regime": "",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/ipprevidenciadeprudentopolis",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PALOTINA",
+      "tipo": "Prefeitura",
+      "municipio": "Palotina",
+      "regime": "",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpalotina",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE CÂNDIDO DE ABREU",
+      "tipo": "Câmara",
+      "municipio": "Cândido de Abreu",
+      "regime": "",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmcandidodeabreu",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MARMELEIRO",
+      "tipo": "Prefeitura",
+      "municipio": "Marmeleiro",
+      "regime": "",
+      "data_prova": null,
+      "ano": null,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmmarmeleiro",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PALMEIRA - 2016",
+      "tipo": "Prefeitura",
+      "municipio": "Palmeira",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpalmeira2016",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SANTA ISABEL DO IVAÍ - 002/2016",
+      "tipo": "Prefeitura",
+      "municipio": "Santa Isabel do Ivaí",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmsantaisabeldoivai2016",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE SANTA ISABEL DO IVAÍ 001/2016",
+      "tipo": "Prefeitura",
+      "municipio": "Santa Isabel do Ivaí",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmsantaisabeldoivai2016",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE PIRAQUARA",
+      "tipo": "Prefeitura",
+      "municipio": "Piraquara",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmpiraquara2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IMBITUVA - EMPREGO PÚBLICO",
+      "tipo": "Prefeitura",
+      "municipio": "Imbituva",
+      "regime": "Celetista / emprego público",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmimbituva2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE QUERÊNCIA DO NORTE - EMPREGO PÚBLICO",
+      "tipo": "Prefeitura",
+      "municipio": "Querência do Norte",
+      "regime": "Celetista / emprego público",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmquerenciadonorte2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE TERRA BOA - EMPREGO PÚBLICO 2016",
+      "tipo": "Prefeitura",
+      "municipio": "Terra Boa",
+      "regime": "Celetista / emprego público",
+      "data_prova": null,
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmterraboa2016",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE IBIPORÃ",
+      "tipo": "Câmara",
+      "municipio": "Ibiporã",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmibipora2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "É-PARANA",
+      "tipo": "Autarquia / empresa pública",
+      "municipio": "",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2017,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/eparana2017",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE FAROL",
+      "tipo": "Prefeitura",
+      "municipio": "Farol",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmfarol2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE UMUARAMA - PROCESSO SELETIVO SIMPLIFICADO - EDITAL 09/2016",
+      "tipo": "Prefeitura",
+      "municipio": "Umuarama",
+      "regime": "Processo seletivo",
+      "data_prova": null,
+      "ano": 2016,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmumuarama2016",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "SECRETARIA DA ADMINISTRAÇÃO E DA PREVIDÊNCIA JUNTA COMERCIAL DO PARANÁ",
+      "tipo": "Previdência municipal",
+      "municipio": "",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/SECRETARIA%20DA%20ADMINISTRACAO%20E%20DA%20PREVIDENCIA%20JUNTA%20COMERCIAL%20DO%20PARANA2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IBIPORÃ - TESTE SELETIVO",
+      "tipo": "Prefeitura",
+      "municipio": "Ibiporã",
+      "regime": "Processo seletivo",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmibiporatesteseletivo2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IBIPORÃ - CONCURSO PÚBLICO",
+      "tipo": "Prefeitura",
+      "municipio": "Ibiporã",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmibipora2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "INSTITUTO DE PREVIDÊNCIA DOS SERVIDORES PÚBLICOS DO MUNICÍPIO DE JANDAIA DO SUL - JANDAIAPREV",
+      "tipo": "Previdência municipal",
+      "municipio": "",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/ipprevidenciadosservidores2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CANTAGALO - EDITAL NÚMERO 01/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Cantagalo",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmcantagalo2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CANTAGALO - EDITAL NÚMERO 02/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Cantagalo",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmcantagalo2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MARIÓPOLIS",
+      "tipo": "Prefeitura",
+      "municipio": "Mariópolis",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmmariopolis2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE BARRA DO JACARÉ - EDITAL 01/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Barra do Jacaré",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmbarradojacare2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CAMARA MUNICIPAL DE REBOUÇAS",
+      "tipo": "Câmara",
+      "municipio": "Rebouças",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmrebou%C2%8Das2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CAMPO MOURÃO - EDITAL PROCESSO SELETIVO 01 - EDITAL Nº 01/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Campo Mourão",
+      "regime": "Processo seletivo",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmcampomourao2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CAMPO MOURÃO - EDITAL EMPREGO PÚBLICO - CONCURSO 02",
+      "tipo": "Prefeitura",
+      "municipio": "Campo Mourão",
+      "regime": "Celetista / emprego público",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmcampomouraoempregopublico2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE CAMPO MOURÃO - EDITAL EFETIVO - CONCURSO 01 - EDITAL Nº 01/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Campo Mourão",
+      "regime": "Estatutário",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmcampomouraoefetivo2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "CÂMARA MUNICIPAL DE SÃO JORGE DO IVAÍ - EDITAL 01/2015",
+      "tipo": "Câmara",
+      "municipio": "São Jorge do Ivaí",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/cmsaojorgedoivai2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE BOM SUCESSO - EDITAL 01/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Bom Sucesso",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmbomsucesso2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE UMUARAMA - PROCESSO SELETIVO - EDITAL Nº 48/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Umuarama",
+      "regime": "Processo seletivo",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmumuarama2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE IGUATU - EDITAL 01/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Iguatu",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmiguatu2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE MANOEL RIBAS - EDITAL 01/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Manoel Ribas",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmmanoelribas2015",
+      "relevancia_palmital": false
+    },
+    {
+      "nome": "PREFEITURA MUNICIPAL DE TERRA ROXA - EDITAL 149/2015",
+      "tipo": "Prefeitura",
+      "municipio": "Terra Roxa",
+      "regime": "",
+      "data_prova": null,
+      "ano": 2015,
+      "pagina_fau": "https://www.concursosfau.com.br/novo/concurso/pmterrarocha2015",
+      "relevancia_palmital": false
+    }
+  ],
+  "provas_pci_amostra": [
+    {
+      "cargo": "Administrador",
+      "ano": 2024,
+      "orgao": "Câmara de São João do Triunfo/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/administrador-camara-de-sao-joao-do-triunfo-pr-fau-unicentro-2024"
+    },
+    {
+      "cargo": "Administrador",
+      "ano": 2023,
+      "orgao": "UNIOESTE",
+      "url": "https://www.pciconcursos.com.br/provas/download/administrador-unioeste-fau-unicentro-2023"
+    },
+    {
+      "cargo": "Administrador",
+      "ano": 2019,
+      "orgao": "IFPR",
+      "url": "https://www.pciconcursos.com.br/provas/download/administrador-ifpr-fau-unicentro-2019"
+    },
+    {
+      "cargo": "Administrador",
+      "ano": 2017,
+      "orgao": "E-Paraná",
+      "url": "https://www.pciconcursos.com.br/provas/download/administrador-e-parana-fau-unicentro-2017"
+    },
+    {
+      "cargo": "Administrador",
+      "ano": 2016,
+      "orgao": "Pref. Piraquara/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/administrador-prefeitura-piraquara-pr-fau-unicentro-2016"
+    },
+    {
+      "cargo": "Administrador",
+      "ano": 2016,
+      "orgao": "JUCEPAR",
+      "url": "https://www.pciconcursos.com.br/provas/download/administrador-jucepar-fau-unicentro-2016"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2026,
+      "orgao": "Pref. Terra Roxa/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-prefeitura-terra-roxa-pr-fau-unicentro-2026"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2025,
+      "orgao": "Pref. Três Barras do Paraná/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-prefeitura-tres-barras-do-parana-pr-fau-unicentro-2025"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2025,
+      "orgao": "Pref. Toledo/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-prefeitura-toledo-pr-fau-unicentro-2025"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2025,
+      "orgao": "Câmara de Matelândia/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-camara-de-matelandia-pr-fau-unicentro-2025"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2025,
+      "orgao": "Pref. Céu Azul/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-prefeitura-ceu-azul-pr-fau-unicentro-2025"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2024,
+      "orgao": "Pref. Wenceslau Braz/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-prefeitura-wenceslau-braz-pr-fau-unicentro-2024"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2024,
+      "orgao": "Pref. Prudentópolis/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-prefeitura-prudentopolis-pr-fau-unicentro-2024"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2023,
+      "orgao": "Pref. Imbituva/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-prefeitura-imbituva-pr-fau-unicentro-2023"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2023,
+      "orgao": "UNIOESTE",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-unioeste-fau-unicentro-2023"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2017,
+      "orgao": "E-Paraná",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-e-parana-fau-unicentro-2017"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2017,
+      "orgao": "Pref. Apucarana/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-prefeitura-apucarana-pr-fau-unicentro-2017"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2017,
+      "orgao": "Câmara Mato Rico/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-camara-mato-rico-pr-fau-unicentro-2017"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2016,
+      "orgao": "CISGAP - Guarapuava - Pinhão e Turvo",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-cisgap-guarapuava-pinhao-e-turvo-fau-unicentro-2016"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2016,
+      "orgao": "Instituto de Previdência - Prudentópolis/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-instituto-de-previdencia-prudentopolis-pr-fau-unicentro-2016"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2016,
+      "orgao": "Pref. Godoy Moreira/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-prefeitura-godoy-moreira-pr-fau-unicentro-2016"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2016,
+      "orgao": "Câmara de Ibiporã/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-camara-de-ibipora-pr-fau-unicentro-2016"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2015,
+      "orgao": "Câmara de Rebouças/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-camara-de-reboucas-pr-fau-unicentro-2015"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2015,
+      "orgao": "Câmara de São João do Ivaí/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-camara-de-sao-joao-do-ivai-pr-fau-unicentro-2015"
+    },
+    {
+      "cargo": "Advogado",
+      "ano": 2014,
+      "orgao": "Câmara de Prudentópolis",
+      "url": "https://www.pciconcursos.com.br/provas/download/advogado-camara-de-prudentopolis-fau-unicentro-2014"
+    },
+    {
+      "cargo": "Agente Administrativo",
+      "ano": 2026,
+      "orgao": "Pref. Terra Roxa/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-prefeitura-terra-roxa-pr-fau-unicentro-2026"
+    },
+    {
+      "cargo": "Agente Administrativo",
+      "ano": 2025,
+      "orgao": "Pref. Porto Barreiro/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-prefeitura-porto-barreiro-pr-fau-unicentro-2025"
+    },
+    {
+      "cargo": "Agente Administrativo",
+      "ano": 2025,
+      "orgao": "Pref. Pinhalão/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-prefeitura-pinhalao-pr-fau-unicentro-2025"
+    },
+    {
+      "cargo": "Agente Administrativo",
+      "ano": 2025,
+      "orgao": "Pref. Quarto Centenário/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-prefeitura-quarto-centenario-pr-fau-unicentro-2025"
+    },
+    {
+      "cargo": "Agente Administrativo",
+      "ano": 2024,
+      "orgao": "Pref. Wenceslau Braz/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-prefeitura-wenceslau-braz-pr-fau-unicentro-2024"
+    },
+    {
+      "cargo": "Agente Administrativo",
+      "ano": 2024,
+      "orgao": "Pref. Prudentópolis/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-prefeitura-prudentopolis-pr-fau-unicentro-2024"
+    },
+    {
+      "cargo": "Agente Administrativo",
+      "ano": 2023,
+      "orgao": "Pref. Dois Vizinhos/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-prefeitura-dois-vizinhos-pr-fau-unicentro-2023"
+    },
+    {
+      "cargo": "Agente Administrativo",
+      "ano": 2022,
+      "orgao": "Pref. Coronel Vivida/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-prefeitura-coronel-vivida-pr-fau-unicentro-2022"
+    },
+    {
+      "cargo": "Agente Administrativo",
+      "ano": 2017,
+      "orgao": "Câmara de Clevelândia/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-camara-de-clevelandia-pr-fau-unicentro-2017"
+    },
+    {
+      "cargo": "Agente Administrativo",
+      "ano": 2016,
+      "orgao": "Instituto de Previdência - Prudentópolis/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-instituto-de-previdencia-prudentopolis-pr-fau-unicentro-2016"
+    },
+    {
+      "cargo": "Agente Administrativo",
+      "ano": 2016,
+      "orgao": "Pref. Imbituva/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-prefeitura-imbituva-pr-fau-unicentro-2016"
+    },
+    {
+      "cargo": "Agente Administrativo",
+      "ano": 2015,
+      "orgao": "Pref. Campo Mourão/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-prefeitura-campo-mourao-pr-fau-unicentro-2015"
+    },
+    {
+      "cargo": "Agente Administrativo I",
+      "ano": 2023,
+      "orgao": "Pref. Imbituva/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-i-prefeitura-imbituva-pr-fau-unicentro-2023"
+    },
+    {
+      "cargo": "Agente Administrativo II",
+      "ano": 2023,
+      "orgao": "Pref. Imbituva/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-administrativo-ii-prefeitura-imbituva-pr-fau-unicentro-2023"
+    },
+    {
+      "cargo": "Agente Adminstrativo III",
+      "ano": 2026,
+      "orgao": "Pref. Ariranha do Ivaí/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-adminstrativo-iii-prefeitura-ariranha-do-ivai-pr-fau-unicentro-2026"
+    },
+    {
+      "cargo": "Agente Comunitário de Saúde",
+      "ano": 2026,
+      "orgao": "Pref. Terra Roxa/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-comunitario-de-saude-prefeitura-terra-roxa-pr-fau-unicentro-2026"
+    },
+    {
+      "cargo": "Agente Comunitário de Saúde",
+      "ano": 2025,
+      "orgao": "Pref. Céu Azul/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-comunitario-de-saude-prefeitura-ceu-azul-pr-fau-unicentro-2025"
+    },
+    {
+      "cargo": "Agente Comunitário de Saúde",
+      "ano": 2025,
+      "orgao": "Pref. Pinhalão/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-comunitario-de-saude-prefeitura-pinhalao-pr-fau-unicentro-2025"
+    },
+    {
+      "cargo": "Agente Comunitário de Saúde",
+      "ano": 2024,
+      "orgao": "Pref. Prudentópolis/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-comunitario-de-saude-prefeitura-prudentopolis-pr-fau-unicentro-2024"
+    },
+    {
+      "cargo": "Agente Comunitário de Saúde",
+      "ano": 2024,
+      "orgao": "Pref. Salto do Lontra/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-comunitario-de-saude-prefeitura-salto-do-lontra-pr-fau-unicentro-2024"
+    },
+    {
+      "cargo": "Agente Comunitário de Saúde",
+      "ano": 2024,
+      "orgao": "Pref. Wenceslau Braz/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-comunitario-de-saude-prefeitura-wenceslau-braz-pr-fau-unicentro-2024"
+    },
+    {
+      "cargo": "Agente Comunitário de Saúde",
+      "ano": 2024,
+      "orgao": "Pref. Nova Laranjeiras/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-comunitario-de-saude-prefeitura-nova-laranjeiras-pr-fau-unicentro-2024"
+    },
+    {
+      "cargo": "Agente Comunitário de Saúde",
+      "ano": 2023,
+      "orgao": "Pref. Tijucas do Sul/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-comunitario-de-saude-prefeitura-tijucas-do-sul-pr-fau-unicentro-2023"
+    },
+    {
+      "cargo": "Agente Comunitário de Saúde",
+      "ano": 2023,
+      "orgao": "Pref. Ampére/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-comunitario-de-saude-prefeitura-ampere-pr-fau-unicentro-2023"
+    },
+    {
+      "cargo": "Agente Comunitário de Saúde",
+      "ano": 2023,
+      "orgao": "Pref. Imbituva/PR",
+      "url": "https://www.pciconcursos.com.br/provas/download/agente-comunitario-de-saude-prefeitura-imbituva-pr-fau-unicentro-2023"
+    },
+    {
+      "cargo": "Assistente Social",
+      "ano": 2024,
+      "orgao": "Pref. Senador Salgado Filho/RS",
+      "url": "https://www.pciconcursos.com.br/provas/download/assistente-social-prefeitura-senador-salgado-filho-rs-fau-unicentro-2024"
+    }
+  ]
+}
