@@ -2,7 +2,7 @@
 # =============================================================================
 # Fuse Aprova: preparação do HOST da VPS (Ubuntu), como root
 #
-# Uso (o workflow .github/workflows/setup-host.yml envia e roda):
+# Uso (o job host de .github/workflows/deploy.yml envia e roda a cada deploy):
 #   bash /root/fuseaprova/deploy/setup-host.sh --email voce@exemplo.com.br
 #
 # O que faz (pode rodar de novo quantas vezes quiser):

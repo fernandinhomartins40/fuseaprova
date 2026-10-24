@@ -4,7 +4,7 @@ O deploy é automático: **todo push na `main`** roda os testes, gera as imagens
 
 > **A VPS é compartilhada** (fusai, palmital e outros projetos; 2 vCPU e 7,8 GB de RAM). Tudo o que é do Fuse Aprova tem nome próprio: projeto compose `fuseaprova`; containers `fuseaprova-postgres`, `fuseaprova-api`, `fuseaprova-worker` e `fuseaprova-nginx`; rede `fuseaprova-interna`; volume `fuseaprova-pgdata`; pasta `/root/fuseaprova`; porta local `3600`; site do nginx `fuseaprova.com.br`. Cada container tem limite de memória, e o conjunto fica abaixo de ~1,6 GB. Nada aqui mexe nos containers, nas imagens, nos sites do nginx, no sshd ou nas portas de outros projetos.
 >
-> **O deploy acontece só pelo GitHub Actions** (Deploy, Rollback e "Configurar nginx do host e HTTPS"). Não rode `deploy.sh` nem suba imagens novas à mão na VPS.
+> **O deploy acontece só pelo GitHub Actions**, num workflow único (`Fuse Aprova`, `.github/workflows/deploy.yml`), que também configura o nginx do host e o HTTPS e faz o rollback. Não rode `deploy.sh` nem suba imagens novas à mão na VPS.
 
 ## Visão geral
 
@@ -35,10 +35,7 @@ Arquivos:
 
 | Caminho no repositório | O que é |
 |---|---|
-| `.github/workflows/deploy.yml` | migrações imutáveis → testes → imagens → deploy → verificação pública |
-| `.github/workflows/rollback.yml` | volta para as imagens de um commit anterior (manual) |
-| `.github/workflows/setup-host.yml` | "Configurar nginx do host e HTTPS" (manual) |
-| `.github/workflows/e2e.yml` | Playwright (Chromium) |
+| `.github/workflows/deploy.yml` | workflow **único**: migrações + testes + E2E → build api, worker e web em 3 jobs simultâneos (GHCR) + nginx do host e HTTPS → deploy → verificação pública; manual com `acao=rollback` |
 | `.github/actions/preparar-ssh/` | SSH por chave de deploy, com a chave de host fixada |
 | `.github/vps_known_hosts` | chave de host ed25519 da VPS (impressão conferida em `VPS_HOST_FINGERPRINT`) |
 | `deploy/docker-compose.yml` | a stack de produção (vai para a VPS) |
@@ -80,11 +77,11 @@ A chave de host da VPS está fixada em `.github/vps_known_hosts`, e o workflow c
 
 Opcional, em **Variables** (não são segredos, vão para o bundle público): `VITE_SUPORTE_WHATSAPP` (ex.: `5542999999999`) e `VITE_SUPORTE_EMAIL`. Vazias, a tela de suporte usa `suporte@fuseaprova.com.br` e esconde o WhatsApp.
 
-### 1.2 Rodar "Configurar nginx do host e HTTPS"
+### 1.2 nginx do host e HTTPS (automático)
 
-O DNS de `www.fuseaprova.com.br` e de `fuseaprova.com.br` já aponta para a VPS. Em **Actions → Configurar nginx do host e HTTPS → Run workflow**, informe o seu e-mail (o Let's Encrypt avisa nele se o certificado não renovar).
+O DNS de `www.fuseaprova.com.br` e de `fuseaprova.com.br` já aponta para a VPS. Não há nada a rodar à mão: o job **nginx do host e HTTPS** roda em todo deploy, em paralelo com os builds. O e-mail do Let's Encrypt é `fuseagencia1515@gmail.com` (padrão do workflow; no Run workflow manual dá para informar outro).
 
-O workflow (`deploy/setup-host.sh`):
+O job (`deploy/setup-host.sh`):
 
 1. instala o que faltar: docker + compose, rsync, curl, nginx, certbot (plugin nginx) e poppler-utils;
 2. cria `/root/fuseaprova/{deploy,backups,arquivos,estado}`;
@@ -92,7 +89,7 @@ O workflow (`deploy/setup-host.sh`):
 4. roda `nginx -t` antes de recarregar; se falhar, volta o arquivo anterior e não recarrega nada;
 5. roda `certbot --nginx` só para os nomes que resolvem para a VPS.
 
-Pode rodar de novo quando quiser (por exemplo, depois de mudar o site em `deploy/nginx-host/`). Ele não toca nos sites de outros domínios e para com erro se outro site já declarar `www.fuseaprova.com.br`.
+É idempotente: só reescreve o site quando o modelo em `deploy/nginx-host/` muda, e o certbot só reemite perto de expirar. Ele não toca nos sites de outros domínios e para com erro se outro site já declarar `www.fuseaprova.com.br`.
 
 > Antes do primeiro deploy o site responde **502** (ainda não há nada em 127.0.0.1:3600). É normal.
 
@@ -102,7 +99,7 @@ Pode rodar de novo quando quiser (por exemplo, depois de mudar o site em `deploy
 git push origin main
 ```
 
-Acompanhe em **Actions → Deploy**. No primeiro deploy, o `deploy.sh`:
+Acompanhe em **Actions → Fuse Aprova**. No primeiro deploy, o `deploy.sh`:
 
 - cria `/root/fuseaprova/deploy/.env` a partir de `deploy/env.modelo`, com `APP_URL=https://www.fuseaprova.com.br`;
 - **gera** a senha do Postgres, a `DATABASE_URL`, o `SESSION_SECRET`, o `ASAAS_WEBHOOK_TOKEN` e o par de chaves VAPID (Web Push). Os valores não aparecem no log;
@@ -198,7 +195,7 @@ Sem `--senha`, o comando pede a senha no terminal sem eco (não passe a senha na
 
 1. **Migrações imutáveis.** Compara o push com o commit anterior em `packages/db/drizzle/` (SQL, `meta/*_snapshot.json` e `meta/_journal.json`). Só são aceitos arquivos **novos** e o `_journal.json` crescendo no fim. Editar ou apagar uma migração já versionada falha o workflow, salvo com `[migracao-revertida]` na mensagem do commit.
 2. **Testes.** Node 22, `pnpm install --frozen-lockfile`, `pnpm lint`, `pnpm typecheck` e `pnpm test` (os testes de banco usam PGlite, sem serviço postgres).
-3. **Imagens.** Build das 3 imagens (`infra/docker/*.Dockerfile`, contexto `.`, cache do GitHub Actions) e push para `ghcr.io/fernandinhomartins40/fuseaprova-{api,web,worker}` com as tags `sha-<commit>` e `main`. A saída é o **digest** (`repo@sha256:…`).
+3. **Imagens.** Build das 3 imagens em **3 jobs simultâneos** (matrix `api`/`worker`/`web`, cada um no seu runner e com o seu cache do GitHub Actions; `infra/docker/*.Dockerfile`, contexto `.`) e push para `ghcr.io/fernandinhomartins40/fuseaprova-{api,web,worker}` com as tags `sha-<commit>` e `main`. O job **Imagens por digest** resolve as 3 tags `sha-<commit>` para o **digest** (`repo@sha256:…`). Nada é compilado na VPS: ela só faz pull. Em paralelo rodam o **E2E** (Playwright) e o job **nginx do host e HTTPS**; o deploy só começa com os três verdes.
 4. **Deploy.** Confere que as 3 referências são por digest. Faz o primeiro contato SSH numa tentativa só, com limite de 3 min, e confere a chave de host. Envia `deploy/` + `infra/backup/` por `rsync --delete --no-owner --no-group`, sem tocar no `.env`, e roda o `deploy.sh` na VPS, que:
    1. trava (um deploy por vez) e faz login no GHCR com o token do Actions pela entrada padrão, num `DOCKER_CONFIG` temporário, com logout no fim;
    2. baixa as imagens novas e faz o **pré-teste** (arquivos de entrada, coletor, `pdftotext`, `pg_dump`, `nginx -t`, `index.html` e `sw.js`), com o site antigo ainda no ar;
@@ -209,7 +206,7 @@ Sem `--senha`, o comando pede a senha no terminal sem eco (não passe a senha na
    7. grava as imagens novas no `.env` e em `/root/fuseaprova/estado/historico.log` e apaga imagens antigas **só** de `ghcr.io/fernandinhomartins40/fuseaprova-*` (mantém a atual e a anterior).
 5. **Verificação pública.** Se `www.fuseaprova.com.br` resolve para a VPS e o HTTPS responde, confere `/api/saude`, `/` (HTML, CSP, HSTS, `no-cache`), o fallback SPA, `sw.js` e o 301 do apex (só se o apex existir). Se o DNS ou o HTTPS ainda não estiverem prontos, só avisa.
 
-Pull requests rodam só os passos 1 e 2. Um deploy em andamento nunca é cancelado: o próximo push espera na fila (`concurrency`).
+Pull requests rodam só as migrações, os testes e o E2E. Um deploy em andamento nunca é cancelado: o próximo push espera na fila (`concurrency`).
 
 > **Regra para as migrações:** como o rollback não desfaz o banco, uma migração precisa funcionar com o código da versão anterior (adicione colunas anuláveis ou com padrão; remova colunas só num deploy seguinte, quando nenhum código as usa).
 
@@ -229,7 +226,7 @@ tail -n 50 /var/log/nginx/error.log        # nginx do host
 ```
 
 - **Mudou só o `.env`:** `docker compose up -d --force-recreate api worker`.
-- **Reimplantar a versão atual:** **Actions → Deploy → Run workflow** (branch `main`). Depois de um reboot da VPS, os containers voltam sozinhos (`restart: unless-stopped`).
+- **Reimplantar a versão atual:** **Actions → Fuse Aprova → Run workflow** (branch `main`, `acao=deploy`). Depois de um reboot da VPS, os containers voltam sozinhos (`restart: unless-stopped`).
 - **Parar tudo:** `docker compose down` (**nunca** `down -v`, que apaga o banco).
 - **Coletor** (mesma imagem da api, com `pdftotext`; respeita o robots.txt e o rate limit e não contorna captcha nem login):
   ```bash
@@ -298,14 +295,14 @@ bash /root/fuseaprova/deploy/backup/teste-restore.sh
 
 Ele restaura num banco temporário, compara tabelas e linhas com a produção e termina com `TESTE DE RESTORE OK`. O resultado fica em `/root/fuseaprova/backups/teste-restore.log`.
 
-**Restore em outra VPS:** rode o setup-host nela (com o IP novo, `.github/vps_known_hosts` e `VPS_HOST_FINGERPRINT` atualizados nos workflows), restaure o **mesmo `.env`** em `/root/fuseaprova/deploy/.env`, faça um deploy, copie o `.dump` e `/root/fuseaprova/arquivos`, rode o `restore.sh` e só então aponte o DNS.
+**Restore em outra VPS:** rode o workflow nela (com o IP novo, `.github/vps_known_hosts` e `VPS_HOST_FINGERPRINT` atualizados nos workflows), restaure o **mesmo `.env`** em `/root/fuseaprova/deploy/.env`, faça um deploy, copie o `.dump` e `/root/fuseaprova/arquivos`, rode o `restore.sh` e só então aponte o DNS.
 
 ---
 
 ## 6. Rollback
 
 - **Automático:** se a versão nova não fica saudável, o `deploy.sh` volta sozinho para as imagens anteriores, e o workflow fica vermelho.
-- **Manual:** em **Actions → Rollback → Run workflow**, informe o **SHA completo** (40 caracteres, `git log --format=%H`) de um commit da `main` que já passou pelo deploy. O workflow acha as imagens `sha-<commit>` no GHCR por digest e roda o `deploy.sh` da VPS com `SKIP_MIGRATIONS=1` (sem backup e sem migração). Ele entra na mesma fila do deploy. O próximo push na `main` volta a implantar a versão mais nova.
+- **Manual:** em **Actions → Fuse Aprova → Run workflow**, escolha `acao=rollback` e informe em `commit` o **SHA completo** (40 caracteres, `git log --format=%H`) de um commit da `main` que já passou pelo deploy. O workflow acha as imagens `sha-<commit>` no GHCR por digest e roda o `deploy.sh` da VPS com `SKIP_MIGRATIONS=1` (sem backup e sem migração). Ele entra na mesma fila do deploy. O próximo push na `main` volta a implantar a versão mais nova.
 - **Dados:** o rollback não desfaz migrações. Se uma versão estragou dados, restaure o backup feito antes da migração dela (seção 5); o `historico.log` e os nomes dos dumps ajudam a achar o horário.
 
 ---
@@ -334,13 +331,13 @@ Ele restaura num banco temporário, compara tabelas e linhas com a produção e 
 | `Permission denied (publickey)` | A chave pública de deploy não está no `/root/.ssh/authorized_keys` da VPS, ou a secret `FUSEAPROVA_DEPLOY_SSH_KEY` não é a privada correspondente (seção 1.1). |
 | "Secret ausente" ou "Chave inválida" | Crie a secret `FUSEAPROVA_DEPLOY_SSH_KEY` com a chave privada inteira, sem senha. |
 | "Chave de host diferente" ou `Host key verification failed` | A VPS foi reinstalada ou há um intermediário. Confira no console: `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256`. Se a VPS foi mesmo reinstalada, atualize `.github/vps_known_hosts` e `VPS_HOST_FINGERPRINT` nos 3 workflows. |
-| "rsync ausente na VPS" | Rode antes o workflow "Configurar nginx do host e HTTPS". |
+| "rsync ausente na VPS" | Rode o fluxo completo (`acao=deploy`): o job "nginx do host e HTTPS" instala o rsync. |
 | `porta 127.0.0.1:3600 já está em uso` | Outro projeto pegou a porta. Escolha outra livre: `FUSEAPROVA_PORTA=<porta>` no `.env` da VPS, o mesmo número em `deploy/nginx-host/fuseaprova.com.br` (upstream) e em `PORTA_APP` do `deploy/setup-host.sh`; rode o setup-host e depois um deploy. |
 | 502 em `www.fuseaprova.com.br` | O container nginx não está no ar: `docker compose ps`, `docker compose logs nginx api`. |
 | Container morto por falta de memória (`OOMKilled` em `docker inspect`) | Um `mem_limit` ficou apertado. Aumente o do serviço em `deploy/docker-compose.yml`, de pouco em pouco (a VPS é compartilhada), e faça push. |
 | A migração falhou | O deploy parou antes da troca: a versão antiga segue no ar. Veja o log do workflow; se o banco ficou inconsistente, restaure o backup feito logo antes (seção 5). |
-| O certbot falhou | O DNS não aponta para a VPS, a porta 80 está fechada no firewall da Hostinger ou estourou o limite do Let's Encrypt. Veja `/var/log/letsencrypt/letsencrypt.log` e rode o setup-host de novo. |
-| O apex não redireciona | O apex `fuseaprova.com.br` não resolvia para a VPS quando o setup rodou. Confira o DNS e rode o setup-host de novo. |
+| O certbot falhou | O DNS não aponta para a VPS, a porta 80 está fechada no firewall da Hostinger ou estourou o limite do Let's Encrypt. Veja `/var/log/letsencrypt/letsencrypt.log` e rode o workflow de novo (`acao=deploy`). |
+| O apex não redireciona | O apex `fuseaprova.com.br` não resolvia para a VPS quando o setup rodou. Confira o DNS e rode o workflow de novo (`acao=deploy`). |
 | O Pix não gera ou dá erro de autenticação | `ASAAS_API_KEY` vazia ou sem aspas simples no `.env` (o `$` foi interpretado). Corrija e recrie api e worker. |
 | `o volume fuseaprova-pgdata já existe, mas .env não` | O `.env` sumiu. Restaure a cópia do dono em `/root/fuseaprova/deploy/.env`; uma senha nova não abriria o banco. |
 | Rate limit bloqueia todo mundo junto | A cadeia de proxies precisa sobrescrever `X-Forwarded-For` com o IP real (o site do host e `infra/nginx/fuseaprova.conf` já fazem isso; a API usa `trustProxy`). Confira se ninguém editou o site do host na mão. |

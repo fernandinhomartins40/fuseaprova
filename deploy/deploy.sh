@@ -2,7 +2,7 @@
 # =============================================================================
 # Fuse Aprova: deploy na VPS (roda em /root/fuseaprova/deploy, como root)
 #
-# Chamado SÓ pelos workflows .github/workflows/deploy.yml e rollback.yml (o
+# Chamado SÓ pelo workflow .github/workflows/deploy.yml (job deploy; o
 # deploy é só pelo GitHub Actions). Idempotente: rodar de novo com as mesmas
 # imagens só confere a saúde e não muda nada.
 #
@@ -52,7 +52,7 @@ fail()  { printf '[deploy %s] ERRO: %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >&
 compose() { docker compose --project-directory "$DIR" -f "$DIR/docker-compose.yml" "$@"; }
 
 [[ "$(id -u)" == 0 ]] || fail "rode como root (o deploy cria diretórios em $RAIZ)"
-command -v docker >/dev/null || fail "docker não encontrado. Rode o workflow 'Configurar nginx do host e HTTPS' (setup-host)."
+command -v docker >/dev/null || fail "docker não encontrado. Rode o workflow Fuse Aprova (o job 'nginx do host e HTTPS' instala o docker)."
 docker compose version >/dev/null 2>&1 || fail "o plugin 'docker compose' (v2) não está instalado"
 command -v curl >/dev/null || fail "curl não encontrado (apt-get install -y curl)"
 [[ -f "$DIR/docker-compose.yml" ]] || fail "não achei $DIR/docker-compose.yml"

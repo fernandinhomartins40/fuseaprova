@@ -1,16 +1,24 @@
 # =============================================================================
-# Fuse Aprova: testes, imagens e deploy na VPS
+# Fuse Aprova: workflow ÚNICO (testes, imagens, nginx/HTTPS, deploy e rollback)
 #
-# push na main:  migrações -> testes -> imagens (GHCR, por digest) -> deploy
-#                -> verificação pública
-# pull request:  só migrações e testes (nada de imagem nem VPS)
+# push na main:
+#   migrações + testes + E2E (em paralelo)
+#     -> build api | build worker | build web  (3 jobs SIMULTÂNEOS, GHCR por digest)
+#     -> host (nginx do host + HTTPS, idempotente; em paralelo com os builds)
+#     -> deploy na VPS (só puxa as imagens prontas; nada é compilado na VPS)
+#     -> verificação pública
+# pull request:  só migrações, testes e E2E (nada de imagem nem VPS)
+# manual (Run workflow):
+#   acao=deploy    o mesmo fluxo do push
+#   acao=rollback  volta para as imagens sha-<commit> já no GHCR, sem testes,
+#                  sem build e sem migração (SKIP_MIGRATIONS=1)
 #
 # Única secret: FUSEAPROVA_DEPLOY_SSH_KEY (chave privada de deploy do root da
-# VPS; a chave de host fica fixada em .github/vps_known_hosts). O login no GHCR usa o
-# GITHUB_TOKEN automático (packages: write no build, packages: read na VPS).
+# VPS; a chave de host fica fixada em .github/vps_known_hosts). O login no GHCR
+# usa o GITHUB_TOKEN automático (packages: write no build, read na VPS).
 # Passo a passo do dono: docs/DEPLOY.md
 # =============================================================================
-name: Deploy
+name: Fuse Aprova
 
 on:
   push:
@@ -18,12 +26,26 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      acao:
+        description: deploy (fluxo completo) ou rollback (voltar para um commit anterior)
+        type: choice
+        options: [deploy, rollback]
+        default: deploy
+      commit:
+        description: "Só no rollback: SHA completo (40 caracteres) do commit para onde voltar"
+        type: string
+        default: ''
+      email:
+        description: E-mail do Let's Encrypt (avisos de expiração do certificado)
+        type: string
+        default: fuseagencia1515@gmail.com
 
 permissions:
   contents: read
 
-# Um deploy nunca é cancelado no meio: só os PRs cancelam a execução anterior.
-# rollback.yml usa o mesmo grupo, então deploy e rollback entram na mesma fila.
+# Um deploy nunca é cancelado no meio (cancelar durante migração ou backup
+# deixaria a VPS num estado intermediário): só os PRs cancelam a execução anterior.
 concurrency:
   group: ${{ github.event_name == 'pull_request' && format('fuseaprova-pr-{0}', github.event.pull_request.number) || 'fuseaprova-producao' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -38,6 +60,8 @@ env:
   IMAGEM_PREFIXO: ghcr.io/fernandinhomartins40/fuseaprova
   DOMINIO: www.fuseaprova.com.br
   DOMINIO_APEX: fuseaprova.com.br
+  # E-mail do certbot: o do Run workflow ou, no push, o padrão.
+  CERTBOT_EMAIL: ${{ inputs.email || 'fuseagencia1515@gmail.com' }}
   TZ: America/Sao_Paulo
 
 jobs:
@@ -48,6 +72,7 @@ jobs:
   # crescendo no fim). Válvula: "[migracao-revertida]" na mensagem do commit.
   migracoes:
     name: Migrações imutáveis
+    if: inputs.acao != 'rollback'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -112,6 +137,7 @@ jobs:
   # ---------------------------------------------------------------------------
   testes:
     name: Lint, tipos e testes
+    if: inputs.acao != 'rollback'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -139,19 +165,66 @@ jobs:
         run: pnpm test
 
   # ---------------------------------------------------------------------------
-  imagens:
-    name: Imagens (GHCR)
-    needs: [migracoes, testes]
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+  # Playwright com a API real (PGlite em memória, Asaas falso). Roda em paralelo
+  # com os builds e segura só o deploy: nada vai para a VPS sem o E2E verde.
+  e2e:
+    name: E2E (Playwright)
+    if: inputs.acao != 'rollback'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 40
+    env:
+      CI: "1"
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Instalar dependências
+        run: pnpm install --frozen-lockfile
+
+      # Navegador na versão do @playwright/test do pacote e2e (com as libs do
+      # sistema). O `--filter` garante o binário do próprio pacote e2e.
+      - name: Instalar o Chromium do Playwright
+        run: pnpm --filter @fuse/e2e exec playwright install --with-deps chromium
+
+      - name: pnpm e2e
+        run: pnpm e2e
+
+      - name: Relatório do Playwright
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report/
+            e2e/test-results/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  # ---------------------------------------------------------------------------
+  # Um job por imagem, SIMULTÂNEOS (matrix): cada um no seu runner, com o seu
+  # cache do Actions. O build acontece aqui no GitHub; a VPS só faz pull.
+  # O `source` liga o pacote do GHCR a este repositório (o GITHUB_TOKEN da VPS
+  # consegue ler) e o rótulo do projeto deixa o deploy.sh limpar só as imagens
+  # do Fuse Aprova.
+  build:
+    name: Build ${{ matrix.imagem }}
+    needs: [migracoes, testes]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && inputs.acao != 'rollback'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       packages: write
-    outputs:
-      api: ${{ steps.refs.outputs.api }}
-      web: ${{ steps.refs.outputs.web }}
-      worker: ${{ steps.refs.outputs.worker }}
+    strategy:
+      fail-fast: true
+      matrix:
+        imagem: [api, worker, web]
     steps:
       - uses: actions/checkout@v5
 
@@ -163,56 +236,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
-      # O `source` liga o pacote do GHCR a este repositório (o GITHUB_TOKEN da
-      # VPS consegue ler) e o rótulo do projeto deixa o deploy.sh limpar só
-      # as imagens do Fuse Aprova.
-      - name: Build e push da api
-        id: api
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: infra/docker/api.Dockerfile
-          platforms: linux/amd64
-          push: true
-          provenance: false
-          tags: |
-            ${{ env.IMAGEM_PREFIXO }}-api:sha-${{ github.sha }}
-            ${{ env.IMAGEM_PREFIXO }}-api:main
-          labels: |
-            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            com.fuseaprova.projeto=fuseaprova
-          cache-from: type=gha,scope=fuseaprova-api
-          cache-to: type=gha,mode=max,scope=fuseaprova-api
-
-      - name: Build e push do worker
-        id: worker
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: infra/docker/worker.Dockerfile
-          platforms: linux/amd64
-          push: true
-          provenance: false
-          tags: |
-            ${{ env.IMAGEM_PREFIXO }}-worker:sha-${{ github.sha }}
-            ${{ env.IMAGEM_PREFIXO }}-worker:main
-          labels: |
-            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            com.fuseaprova.projeto=fuseaprova
-          cache-from: type=gha,scope=fuseaprova-worker
-          cache-to: type=gha,mode=max,scope=fuseaprova-worker
-
-      # Contato de suporte embutido no bundle (não é segredo): variáveis do
-      # repositório (Settings > Secrets and variables > Actions > Variables),
+      # Contato de suporte embutido no bundle da web (não é segredo): variáveis
+      # do repositório (Settings > Secrets and variables > Actions > Variables),
       # opcionais. Vazias, a PWA usa o e-mail padrão e esconde o WhatsApp.
-      - name: Build e push da web (nginx + PWA)
-        id: web
+      # Nas imagens api e worker esses build-args são ignorados.
+      - name: Build e push (${{ matrix.imagem }})
+        id: build
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: infra/docker/web.Dockerfile
+          file: infra/docker/${{ matrix.imagem }}.Dockerfile
           platforms: linux/amd64
           push: true
           provenance: false
@@ -220,36 +253,124 @@ jobs:
             VITE_SUPORTE_WHATSAPP=${{ vars.VITE_SUPORTE_WHATSAPP }}
             VITE_SUPORTE_EMAIL=${{ vars.VITE_SUPORTE_EMAIL }}
           tags: |
-            ${{ env.IMAGEM_PREFIXO }}-web:sha-${{ github.sha }}
-            ${{ env.IMAGEM_PREFIXO }}-web:main
+            ${{ env.IMAGEM_PREFIXO }}-${{ matrix.imagem }}:sha-${{ github.sha }}
+            ${{ env.IMAGEM_PREFIXO }}-${{ matrix.imagem }}:main
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
             com.fuseaprova.projeto=fuseaprova
-          cache-from: type=gha,scope=fuseaprova-web
-          cache-to: type=gha,mode=max,scope=fuseaprova-web
+          cache-from: type=gha,scope=fuseaprova-${{ matrix.imagem }}
+          cache-to: type=gha,mode=max,scope=fuseaprova-${{ matrix.imagem }}
 
-      - name: Referências por digest
-        id: refs
+      - name: Conferir o digest
         env:
-          D_API: ${{ steps.api.outputs.digest }}
-          D_WEB: ${{ steps.web.outputs.digest }}
-          D_WORKER: ${{ steps.worker.outputs.digest }}
+          DIGEST: ${{ steps.build.outputs.digest }}
         run: |
           set -euo pipefail
-          for d in "$D_API" "$D_WEB" "$D_WORKER"; do
-            [[ "$d" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "::error::digest inválido: '$d'"; exit 1; }
+          [[ "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "::error::digest inválido: '$DIGEST'"; exit 1; }
+          echo "${{ matrix.imagem }}: $IMAGEM_PREFIXO-${{ matrix.imagem }}@$DIGEST" | tee -a "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # Saídas de matrix não são confiáveis por imagem; o deploy resolve as
+  # imagens pela tag sha-<commit> (recém-publicada pelo build ou, no rollback,
+  # de um commit anterior) e fixa por DIGEST.
+  imagens:
+    name: Imagens por digest
+    needs: [build]
+    if: ${{ !cancelled() && !failure() && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      api: ${{ steps.refs.outputs.api }}
+      web: ${{ steps.refs.outputs.web }}
+      worker: ${{ steps.refs.outputs.worker }}
+    steps:
+      - name: Qual commit
+        id: commit
+        env:
+          ACAO: ${{ inputs.acao }}
+          COMMIT: ${{ inputs.commit }}
+        run: |
+          set -euo pipefail
+          if [ "$ACAO" = rollback ]; then
+            [[ "$COMMIT" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::no rollback, informe o SHA completo, 40 caracteres hexadecimais minúsculos (git log --format=%H)"; exit 1; }
+            echo "sha=$COMMIT" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Achar as imagens sha-<commit> por digest
+        id: refs
+        env:
+          SHA: ${{ steps.commit.outputs.sha }}
+        run: |
+          set -euo pipefail
+          for nome in api web worker; do
+            tag="$IMAGEM_PREFIXO-$nome:sha-$SHA"
+            if ! digest="$(docker buildx imagetools inspect "$tag" --format '{{json .Manifest}}' | jq -r '.digest')"; then
+              echo "::error::não achei $tag no GHCR (esse commit passou pelo build?)"
+              exit 1
+            fi
+            [[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "::error::digest inválido para $tag: '$digest'"; exit 1; }
+            echo "$nome=$IMAGEM_PREFIXO-$nome@$digest" | tee -a "$GITHUB_OUTPUT"
           done
-          {
-            echo "api=$IMAGEM_PREFIXO-api@$D_API"
-            echo "web=$IMAGEM_PREFIXO-web@$D_WEB"
-            echo "worker=$IMAGEM_PREFIXO-worker@$D_WORKER"
-          } | tee -a "$GITHUB_OUTPUT"
+
+  # ---------------------------------------------------------------------------
+  # nginx do HOST + HTTPS, em todo deploy (idempotente): instala o que faltar,
+  # só reescreve o site quando o modelo muda (nginx -t antes de recarregar) e o
+  # certbot só reemite perto de expirar. Não mexe em sites de outros domínios,
+  # no sshd nem em outros containers. Roda em paralelo com os builds.
+  host:
+    name: nginx do host e HTTPS
+    needs: [migracoes, testes]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && inputs.acao != 'rollback'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Validar o e-mail
+        run: |
+          set -euo pipefail
+          [[ "$CERTBOT_EMAIL" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$ ]] || { echo "::error::e-mail inválido"; exit 1; }
+
+      - uses: actions/checkout@v5
+
+      - name: Preparar SSH (chave de deploy + chave de host fixada)
+        uses: ./.github/actions/preparar-ssh
+        with:
+          host: ${{ env.VPS_HOST }}
+          usuario: ${{ env.VPS_USUARIO }}
+          impressao: ${{ env.VPS_HOST_FINGERPRINT }}
+          chave: ${{ secrets.FUSEAPROVA_DEPLOY_SSH_KEY }}
+
+      # tar pelo ssh (e não rsync): numa VPS nova o rsync ainda não existe;
+      # é este script que o instala. Só estes arquivos são escritos.
+      - name: Enviar setup-host.sh e o site do nginx
+        run: |
+          set -euo pipefail
+          sed -i 's/\r$//' deploy/setup-host.sh deploy/nginx-host/*
+          tar -C deploy -cf - setup-host.sh nginx-host \
+            | ssh vps "mkdir -p '$DIR_REMOTO' && tar -C '$DIR_REMOTO' --no-same-owner -xf - && chmod 755 '$DIR_REMOTO/setup-host.sh'"
+
+      # O e-mail já foi validado acima (só caracteres seguros).
+      - name: Rodar setup-host.sh
+        run: ssh vps "bash '$DIR_REMOTO/setup-host.sh' --email '$CERTBOT_EMAIL'"
 
   # ---------------------------------------------------------------------------
   deploy:
     name: Deploy na VPS
-    needs: imagens
+    needs: [imagens, host, e2e]
+    if: ${{ !cancelled() && !failure() && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -284,7 +405,8 @@ jobs:
           chave: ${{ secrets.FUSEAPROVA_DEPLOY_SSH_KEY }}
 
       # O pacote é deploy/ + infra/backup (em backup/). O .env da VPS nunca é
-      # enviado nem apagado (--exclude '.env*').
+      # enviado nem apagado (--exclude '.env*'). No rollback o pacote também
+      # vai, do commit atual da main: o deploy.sh da main sabe voltar imagens.
       - name: Montar o pacote da VPS
         run: |
           set -euo pipefail
@@ -299,7 +421,7 @@ jobs:
         run: |
           set -euo pipefail
           if ! ssh vps "mkdir -p '$DIR_REMOTO' && command -v rsync >/dev/null"; then
-            echo "::error title=rsync ausente na VPS::Rode antes o workflow 'Configurar nginx do host e HTTPS' (setup-host), que instala rsync, nginx e certbot."
+            echo "::error title=rsync ausente na VPS::O job 'nginx do host e HTTPS' instala o rsync; rode o fluxo completo (acao=deploy) antes do rollback."
             exit 1
           fi
           rsync -az --delete --no-owner --no-group --exclude='.env*' \
@@ -311,22 +433,26 @@ jobs:
           API: ${{ needs.imagens.outputs.api }}
           WEB: ${{ needs.imagens.outputs.web }}
           WORKER: ${{ needs.imagens.outputs.worker }}
+          SKIP: ${{ inputs.acao == 'rollback' && '1' || '0' }}
+          ROTULO: ${{ inputs.acao == 'rollback' && format('rollback-{0}', inputs.commit) || github.sha }}
         run: |
           set -euo pipefail
           [[ "$GITHUB_ACTOR" =~ ^[A-Za-z0-9-]+(\[bot\])?$ ]] || { echo "::error::actor inesperado"; exit 1; }
+          [[ "$ROTULO" =~ ^(rollback-)?[0-9a-f]{40}$ ]] || { echo "::error::commit inválido"; exit 1; }
           # O token do GHCR vai pela ENTRADA PADRÃO (nunca na linha de comando);
           # o deploy.sh faz login num DOCKER_CONFIG temporário e logout no trap.
           printf '%s\n' "$GHCR_TOKEN" | ssh vps \
-            "cd '$DIR_REMOTO' && GHCR_LOGIN_STDIN=1 GHCR_USUARIO='$GITHUB_ACTOR' \
+            "cd '$DIR_REMOTO' && GHCR_LOGIN_STDIN=1 GHCR_USUARIO='$GITHUB_ACTOR' SKIP_MIGRATIONS='$SKIP' \
              FUSEAPROVA_API_IMAGE='$API' FUSEAPROVA_WEB_IMAGE='$WEB' FUSEAPROVA_WORKER_IMAGE='$WORKER' \
-             DEPLOY_COMMIT='$GITHUB_SHA' bash ./deploy.sh"
+             DEPLOY_COMMIT='$ROTULO' bash ./deploy.sh"
 
   # ---------------------------------------------------------------------------
   # De fora, como um aluno. Se o DNS ainda não aponta para a VPS ou o HTTPS
-  # ainda não foi configurado (setup-host), só avisa. Se aponta, é rigoroso.
+  # ainda não respondeu, só avisa. Se aponta, é rigoroso.
   verificacao:
     name: Verificação pública
     needs: deploy
+    if: ${{ !cancelled() && needs.deploy.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -340,7 +466,7 @@ jobs:
             exit 0
           fi
           if ! curl -sS -o /dev/null --max-time 15 "https://$DOMINIO/"; then
-            echo "::warning title=HTTPS::$DOMINIO aponta para a VPS, mas o HTTPS não respondeu. Rode o workflow 'Configurar nginx do host e HTTPS'."
+            echo "::warning title=HTTPS::$DOMINIO aponta para a VPS, mas o HTTPS não respondeu. Veja o log do job 'nginx do host e HTTPS'."
             exit 0
           fi
 
@@ -371,7 +497,7 @@ jobs:
                 *) echo "::error::https://$DOMINIO_APEX/ deveria dar 301 para https://$DOMINIO/ (veio: $r)"; exit 1 ;;
               esac
             else
-              echo "::warning title=Apex::$DOMINIO_APEX resolve para a VPS, mas o HTTPS dele falhou. Rode 'Configurar nginx do host e HTTPS' de novo para incluir o apex no certificado."
+              echo "::warning title=Apex::$DOMINIO_APEX resolve para a VPS, mas o HTTPS dele falhou. Veja o log do job 'nginx do host e HTTPS'."
             fi
           else
             echo "apex $DOMINIO_APEX não aponta para a VPS: 301 não verificado."

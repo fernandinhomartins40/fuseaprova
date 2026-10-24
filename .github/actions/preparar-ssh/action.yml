@@ -1,7 +1,7 @@
 # =============================================================================
 # Prepara o SSH do runner para a VPS com CHAVE (secret
 # FUSEAPROVA_DEPLOY_SSH_KEY) e chave de host FIXADA no repositório
-# (.github/vps_known_hosts). Usada por deploy.yml, rollback.yml e setup-host.yml.
+# (.github/vps_known_hosts). Usada pelos jobs host e deploy de .github/workflows/deploy.yml.
 #
 # - grava a chave privada em ~/.ssh/fuseaprova_deploy (0600), sem eco no log;
 # - confere a impressão SHA256 de .github/vps_known_hosts contra
