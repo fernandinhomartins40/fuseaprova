@@ -36,7 +36,8 @@
     "test": "vitest run",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "check": "tsx --conditions=@fuse/source ./node_modules/drizzle-kit/bin.cjs check"
+    "check": "tsx --conditions=@fuse/source ./node_modules/drizzle-kit/bin.cjs check",
+    "conteudo:aplicar": "tsx --conditions=@fuse/source src/cli/conteudo.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "0.3.16",

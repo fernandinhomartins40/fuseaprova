@@ -57,6 +57,12 @@ export interface OpcoesSeed {
   caminhoCatalogo?: string;
   /** Pula a importação do catálogo (testes rápidos). */
   semCatalogo?: boolean;
+  /**
+   * Pula as unidades de exemplo (questões autorais em rascunho). Padrão: em produção
+   * (NODE_ENV=production) ou com SEED_SEM_EXEMPLOS=1, porque lá a trilha vem do pacote de
+   * conteúdo oficial (D15) e seções sem questão publicada apareceriam vazias.
+   */
+  semExemplos?: boolean;
   /** Mostra o progresso no console. */
   log?: (msg: string) => void;
 }
@@ -79,6 +85,14 @@ function emLotes<T>(lista: T[], tamanho: number): T[][] {
   const r: T[][] = [];
   for (let i = 0; i < lista.length; i += tamanho) r.push(lista.slice(i, i + tamanho));
   return r;
+}
+
+export function semExemplosPeloAmbiente(env: NodeJS.ProcessEnv = process.env): boolean {
+  return (
+    env.NODE_ENV === 'production' ||
+    env.SEED_SEM_EXEMPLOS === '1' ||
+    env.SEED_SEM_EXEMPLOS === 'true'
+  );
 }
 
 export function publicarAutoraisPeloAmbiente(env: NodeJS.ProcessEnv = process.env): boolean {
@@ -225,7 +239,8 @@ export async function semear(db: BancoDados, opcoes: OpcoesSeed = {}): Promise<R
     const idsQuestoes: string[] = [];
     const pendencias: string[] = [];
 
-    for (const u of UNIDADES_SEED) {
+    const semExemplos = opcoes.semExemplos ?? semExemplosPeloAmbiente();
+    for (const u of semExemplos ? [] : UNIDADES_SEED) {
       const disciplinaId = idDisciplina[u.disciplina];
       const unidadeId = idFixo(`${u.chave}:${concursoId}`);
       if (u.todo) pendencias.push(`${u.titulo}: ${u.todo}`);
@@ -338,7 +353,7 @@ export async function semear(db: BancoDados, opcoes: OpcoesSeed = {}): Promise<R
       disciplinas: DISCIPLINAS.length,
       provasOrigem: totalProvas,
       assuntos: nAssuntos,
-      unidades: UNIDADES_SEED.length,
+      unidades: semExemplos ? 0 : UNIDADES_SEED.length,
       secoes: nSecoes,
       licoes: nLicoes,
       questoes: nQuestoes,

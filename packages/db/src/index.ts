@@ -8,3 +8,15 @@
 export * from './cliente.js';
 export * from './schema/index.js';
 export { semear, type OpcoesSeed, type ResumoSeed } from './seed/index.js';
+export {
+  aplicarPacote,
+  validarPacote,
+  idQuestaoPacote,
+  FORMATO_PACOTE,
+  MIN_QUESTOES_SECAO,
+  type PacoteConteudo,
+  type QuestaoPacote,
+  type AssuntoPacote,
+  type ProvaPacote,
+  type ResumoPacote,
+} from './conteudo/pacote.js';
