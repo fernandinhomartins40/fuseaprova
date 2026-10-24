@@ -1,0 +1,1 @@
+ALTER TABLE "sessoes_estudo" ADD COLUMN "dicas_usadas" uuid[] DEFAULT '{}'::uuid[] NOT NULL;

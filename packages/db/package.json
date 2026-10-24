@@ -1,0 +1,50 @@
+{
+  "name": "@fuse/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "@fuse/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./schema": {
+      "@fuse/source": "./src/schema/index.ts",
+      "types": "./dist/schema/index.d.ts",
+      "default": "./dist/schema/index.js"
+    },
+    "./teste": {
+      "@fuse/source": "./src/teste.ts",
+      "types": "./dist/teste.d.ts",
+      "default": "./dist/teste.js"
+    },
+    "./seed": {
+      "@fuse/source": "./src/seed/index.ts",
+      "types": "./dist/seed/index.d.ts",
+      "default": "./dist/seed/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch",
+    "generate": "tsx --conditions=@fuse/source ./node_modules/drizzle-kit/bin.cjs generate",
+    "migrate": "tsx --conditions=@fuse/source src/cli/migrar.ts",
+    "seed": "tsx --conditions=@fuse/source src/cli/seed.ts",
+    "studio": "tsx --conditions=@fuse/source ./node_modules/drizzle-kit/bin.cjs studio",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "check": "tsx --conditions=@fuse/source ./node_modules/drizzle-kit/bin.cjs check"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.3.16",
+    "@fuse/shared": "workspace:*",
+    "drizzle-orm": "0.44.7",
+    "postgres": "3.4.7"
+  },
+  "devDependencies": {
+    "drizzle-kit": "0.31.5"
+  }
+}
