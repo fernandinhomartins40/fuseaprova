@@ -1,0 +1,13 @@
+User-agent: Mediapartners-Google
+Allow: /
+
+User-agent: *
+Allow: /
+Disallow: /acesso/
+Disallow: /pedido/
+Disallow: /admin/
+Disallow: /pdf/
+Disallow: /*.pdf
+Disallow: /*.php
+
+Sitemap: https://www.pciconcursos.com.br/smap_noticias.xml

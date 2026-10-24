@@ -1,0 +1,32 @@
+{
+  "name": "@fuse/crawler",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "bin": {
+    "crawler": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "@fuse/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx watch --conditions=@fuse/source src/index.ts",
+    "crawler": "tsx --conditions=@fuse/source src/cli.ts",
+    "test": "vitest run --passWithNoTests",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fuse/db": "workspace:*",
+    "@fuse/shared": "workspace:*",
+    "cheerio": "^1.2.0",
+    "drizzle-orm": "0.44.7",
+    "undici": "^8.12.3"
+  }
+}
