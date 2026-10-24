@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { tituloErro, type Letra, type OrigemQuestao } from '@fuse/shared';
 import { juntarClasses } from '../util';
-import { Markdown } from './Markdown';
+import { Markdown } from '../../ui';
 import s from './PreviaPergunta.module.css';
 
 export interface DadosPrevia {

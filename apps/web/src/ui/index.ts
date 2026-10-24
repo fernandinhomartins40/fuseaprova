@@ -31,3 +31,4 @@ export {
   Cartao,
   LinhaLista,
 } from './Layout';
+export { Markdown } from './Markdown';

@@ -23,6 +23,7 @@ import {
   IconeCheio,
   IconeTraco,
   Imagem,
+  Markdown,
   Pagina,
   useToast,
 } from '../../ui';
@@ -393,9 +394,7 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
 
       {questao.textoApoio ? (
         <div className={s.apoio} tabIndex={0} role="region" aria-label="Texto de apoio">
-          {questao.textoApoio.split(/\n{2,}/).map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
+          <Markdown texto={questao.textoApoio} />
         </div>
       ) : null}
 
@@ -406,9 +405,9 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
           className={s.enunciadoCapi}
           carregamento="eager"
         />
-        <p className={s.balao} id="enunciado">
-          {questao.enunciado}
-        </p>
+        <div className={s.balao} id="enunciado">
+          <Markdown texto={questao.enunciado} />
+        </div>
       </div>
 
       {dicaDaQuestao ? (

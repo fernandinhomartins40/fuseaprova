@@ -17,6 +17,7 @@ import {
   GrupoAlternativas,
   IconeTraco,
   Imagem,
+  Markdown,
   Pagina,
   useToast,
 } from '../../ui';
@@ -192,10 +193,10 @@ function Prova({ sim }: { sim: SimuladoAndamento }) {
       </div>
       {item.questao.textoApoio ? (
         <div className={s.apoio} tabIndex={0} role="region" aria-label="Texto de apoio">
-          {item.questao.textoApoio}
+          <Markdown texto={item.questao.textoApoio} />
         </div>
       ) : null}
-      <p className={s.enunciado}>{item.questao.enunciado}</p>
+      <Markdown className={s.enunciado} texto={item.questao.enunciado} />
 
       <GrupoAlternativas
         alternativas={item.questao.alternativas}
