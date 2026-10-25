@@ -13,6 +13,7 @@ import {
 } from '../src/importacao/caderno.js';
 import { confrontar, notaDeAlteracao, observacaoDoItem } from '../src/importacao/confronto.js';
 import {
+  blocoServeAoCargo,
   escolherGabarito,
   interpretarToken,
   lerLegenda,
@@ -272,6 +273,56 @@ describe('parser do gabarito definitivo', () => {
     // Bloco único de outro cargo não serve (Toledo 2024: a retificação pós-recurso só tinha
     // Técnico Desportivo I, e as respostas foram parar no caderno de Advogado SUAS I).
     expect(() => escolherGabarito(unico, 'Advogado SUAS I')).toThrow(/só tem o cargo/);
+  });
+
+  it('não aceita bloco de outro cargo que só divide uma palavra', () => {
+    // Casos reais do lote 2 que a similaridade de Jaccard deixava passar.
+    expect(blocoServeAoCargo('AGENTE DE TRÂNSITO', 'Agente Comunitário de Saúde')).toBe(false);
+    expect(
+      blocoServeAoCargo(
+        'ANALISTA EM TECNOLOGIA DA INFORMAÇÃO I',
+        'Assistente em Tecnologia da Informação I',
+      ),
+    ).toBe(false);
+    expect(blocoServeAoCargo('TÉCNICO DE ENFERMAGEM', 'Técnico de Informática')).toBe(false);
+    expect(blocoServeAoCargo('CIRURGIÃO DENTISTA II', 'Cirurgião Dentista - Odontopediatria')).toBe(
+      false,
+    );
+    // Abreviações, numerais, carga horária e siglas não atrapalham.
+    expect(blocoServeAoCargo('TÉC. EM SAÚDE BUCAL T8 - ESF/ESB I', 'Técnico em Saúde Bucal')).toBe(
+      true,
+    );
+    expect(blocoServeAoCargo('PROFESSOR DE EDU. INF. T40', 'Professor de Educação Infantil')).toBe(
+      true,
+    );
+    expect(
+      blocoServeAoCargo('AGENTE COMUNITÁRIO DE SAÚDE (P.A.C.S)', 'Agente Comunitário de Saúde'),
+    ).toBe(true);
+    expect(
+      blocoServeAoCargo('AUX. EM OPERAÇÃO E MANUTENÇÃO I', 'Auxiliar em Operação e Manutenção I'),
+    ).toBe(true);
+    expect(
+      blocoServeAoCargo('MOTORISTA DE VEÍCULOS DE PASSEIO', 'Motorista de Veículo de Passeio'),
+    ).toBe(true);
+  });
+
+  it('recusa quando dois blocos servem com respostas diferentes', () => {
+    const bloco = (cargo: string, letra: 'A' | 'B') => ({
+      cargo,
+      respostas: new Map([[1, { letra, anulada: false, alterada: false, bruto: letra }]]),
+    });
+    const g = {
+      gabaritos: [bloco('MÉDICO VETERINÁRIO I', 'A'), bloco('MÉDICO VETERINÁRIO II', 'B')],
+      definitivo: true,
+      preliminar: false,
+      avisos: [],
+    };
+    expect(() => escolherGabarito(g, 'Médico Veterinário')).toThrow(/Mais de um cargo/);
+    const iguais = {
+      ...g,
+      gabaritos: [bloco('MÉDICO VETERINÁRIO I', 'A'), bloco('MÉDICO VETERINÁRIO II', 'A')],
+    };
+    expect(escolherGabarito(iguais, 'Médico Veterinário').cargo).toMatch(/MÉDICO VETERINÁRIO/);
   });
 });
 

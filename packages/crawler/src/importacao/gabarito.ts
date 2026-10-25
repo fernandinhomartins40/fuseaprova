@@ -218,14 +218,65 @@ export function parseGabarito(texto: string): ResultadoGabarito {
   return { gabaritos: validos, definitivo, preliminar, avisos };
 }
 
-/** Escolhe o gabarito do cargo (único bloco, ou o de nome mais parecido com `cargo`). */
+const LIGACOES = new Set([
+  'DE',
+  'DO',
+  'DA',
+  'DOS',
+  'DAS',
+  'EM',
+  'NO',
+  'NA',
+  'NOS',
+  'NAS',
+  'E',
+  'A',
+  'O',
+  'AS',
+  'OS',
+]);
+
+/** Palavras que distinguem o cargo: sem ligações, numerais romanos, cargas horárias e siglas entre parênteses. */
+function palavrasDoCargo(nome: string): string[] {
+  return chaveComparacao(nome.replace(/\([^)]*\)/g, ' '))
+    .split(' ')
+    .filter((p) => p && !LIGACOES.has(p) && !/^[IVX]+$/.test(p) && !/\d/.test(p));
+}
+
+/**
+ * O bloco serve ao cargo quando cada palavra do cargo aparece no nome do bloco, aceitando
+ * abreviação ("TÉC. EM ENFERMAGEM" serve a "Técnico em Enfermagem"). Palavra a mais no
+ * cargo derruba: "Cirurgião Dentista - Odontopediatria" não usa o bloco "CIRURGIÃO DENTISTA II",
+ * nem "Agente Comunitário de Saúde" o de "AGENTE DE TRÂNSITO".
+ */
+export function blocoServeAoCargo(bloco: string, cargo: string): boolean {
+  const doBloco = palavrasDoCargo(bloco);
+  const doCargo = palavrasDoCargo(cargo);
+  if (!doCargo.length) return false;
+  const casa = (a: string, b: string) =>
+    a === b || (Math.min(a.length, b.length) >= 3 && (a.startsWith(b) || b.startsWith(a)));
+  return doCargo.every((p) => doBloco.some((b) => casa(p, b)));
+}
+
+const mesmasRespostas = (a: GabaritoCargo, b: GabaritoCargo) =>
+  a.respostas.size === b.respostas.size &&
+  [...a.respostas].every(
+    ([n, r]) => b.respostas.get(n)?.letra === r.letra && b.respostas.get(n)?.anulada === r.anulada,
+  );
+
+/** Escolhe o gabarito do cargo (único bloco, ou o bloco cujo nome serve a `cargo`). */
 export function escolherGabarito(r: ResultadoGabarito, cargo?: string | null): GabaritoCargo {
   if (!r.gabaritos.length) throw new Error('O gabarito não tem respostas legíveis.');
   const nomes = r.gabaritos.map((g) => g.cargo ?? '(sem nome)');
   if (r.gabaritos.length === 1) {
     const unico = r.gabaritos[0]!;
     // Bloco único com nome de outro cargo (ex.: retificação só de um cargo): não serve.
-    if (cargo && unico.cargo && similaridade(unico.cargo, cargo) < 0.34) {
+    if (
+      cargo &&
+      unico.cargo &&
+      chaveComparacao(unico.cargo) !== chaveComparacao(cargo) &&
+      !blocoServeAoCargo(unico.cargo, cargo)
+    ) {
       throw new Error(`O gabarito só tem o cargo "${unico.cargo}", que não é "${cargo}".`);
     }
     return unico;
@@ -237,11 +288,19 @@ export function escolherGabarito(r: ResultadoGabarito, cargo?: string | null): G
   }
   const exato = r.gabaritos.find((g) => chaveComparacao(g.cargo ?? '') === chaveComparacao(cargo));
   if (exato) return exato;
-  const melhor = [...r.gabaritos].sort(
-    (a, b) => similaridade(b.cargo ?? '', cargo) - similaridade(a.cargo ?? '', cargo),
-  )[0]!;
-  if (similaridade(melhor.cargo ?? '', cargo) < 0.34) {
+  const servem = r.gabaritos.filter((g) => g.cargo && blocoServeAoCargo(g.cargo, cargo));
+  if (!servem.length) {
     throw new Error(`Nenhum cargo do gabarito parece com "${cargo}". Cargos: ${nomes.join('; ')}.`);
+  }
+  // Vários blocos servem (ex.: "MÉDICO VETERINÁRIO I" e "II" para "Médico Veterinário"): só
+  // aceita se as respostas forem as mesmas; senão não há como saber qual é o do caderno.
+  const melhor = servem.sort(
+    (a, b) => similaridade(b.cargo!, cargo) - similaridade(a.cargo!, cargo),
+  )[0]!;
+  if (servem.some((g) => !mesmasRespostas(g, melhor))) {
+    throw new Error(
+      `Mais de um cargo do gabarito serve a "${cargo}" com respostas diferentes: ${servem.map((g) => g.cargo).join('; ')}. Informe --cargo exato.`,
+    );
   }
   return melhor;
 }
