@@ -100,4 +100,8 @@ WORKDIR /app
 EXPOSE 3000
 # `exec` deixa o node como processo principal (sinais chegam direto;
 # o compose usa `init: true` para ter um init reaper).
+# D13: versão em produção (o workflow passa o SHA do commit); aparece em /super/sistema.
+# Fica no fim para não invalidar o cache das camadas acima a cada commit.
+ARG APP_VERSION=desenvolvimento
+ENV APP_VERSION=${APP_VERSION}
 CMD ["sh", "-c", "exec node \"$APP_ENTRY\""]

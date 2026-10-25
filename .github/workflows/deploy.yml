@@ -252,6 +252,7 @@ jobs:
           build-args: |
             VITE_SUPORTE_WHATSAPP=${{ vars.VITE_SUPORTE_WHATSAPP }}
             VITE_SUPORTE_EMAIL=${{ vars.VITE_SUPORTE_EMAIL }}
+            APP_VERSION=${{ github.sha }}
           tags: |
             ${{ env.IMAGEM_PREFIXO }}-${{ matrix.imagem }}:sha-${{ github.sha }}
             ${{ env.IMAGEM_PREFIXO }}-${{ matrix.imagem }}:main
