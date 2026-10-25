@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import cron from 'node-cron';
 import { conectar, migrar } from '@fuse/db';
 import { definirJobs, FUSO } from './agenda.js';
-import { criarEnviadorWebPush } from './jobs/index.js';
+import { criarEnviadorSmtp, criarEnviadorWebPush } from './jobs/index.js';
 import { logConsole } from './util.js';
 
 const env = fileURLToPath(new URL('../../../.env', import.meta.url));
@@ -23,12 +23,25 @@ const push =
     ? criarEnviadorWebPush({ publica: VAPID_PUBLIC_KEY, privada: VAPID_PRIVATE_KEY, assunto: VAPID_SUBJECT || 'mailto:contato@localhost' })
     : null;
 if (!push) logConsole.warn({}, 'VAPID não configurado: lembretes desligados');
+// D13: e-mail da comunicação do superadmin (o mesmo SMTP do .env da API).
+const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM } = process.env;
+const email = SMTP_HOST
+  ? criarEnviadorSmtp({
+      host: SMTP_HOST,
+      porta: Number(SMTP_PORT) || 587,
+      usuario: SMTP_USER ?? '',
+      senha: SMTP_PASS ?? '',
+      remetente: SMTP_FROM || 'Fuse Aprova <nao-responda@localhost>',
+    })
+  : null;
 
 const jobs = definirJobs({
   db: conexao.db,
   push,
   log: logConsole,
   backupScript: process.env.BACKUP_SCRIPT ?? '/app/infra/backup/backup.sh',
+  email,
+  appUrl: (process.env.APP_URL ?? 'http://localhost:5173').replace(/\/+$/, ''),
 });
 
 const unico = process.argv[2];

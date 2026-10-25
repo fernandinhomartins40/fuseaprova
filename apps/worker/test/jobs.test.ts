@@ -6,8 +6,10 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { schema } from '@fuse/db';
 import { criarBancoTeste, type BancoTeste } from '@fuse/db/teste';
 import { completarCpf } from '@fuse/shared';
+import { JOBS_WORKER } from '@fuse/shared/api';
 import { definirJobs } from '../src/agenda.js';
 import {
+  enviarComunicacoes,
   enviarLembretes,
   executarBackup,
   expirarPix,
@@ -18,12 +20,12 @@ import {
   verificarOfensivas,
   type EnviadorPush,
 } from '../src/jobs/index.js';
-import { comTrava, logMudo, type Log } from '../src/util.js';
+import { comTrava, executarRegistrado, logMudo, type Log } from '../src/util.js';
 
 let b: BancoTeste;
 let concursoId: string;
 let n = 0;
-const { usuarios, ligasGrupos, ligasMembros, pedidos, sessoes, pushInscricoes, sessoesEstudo, conquistasUsuario } = schema;
+const { usuarios, ligasGrupos, ligasMembros, pedidos, sessoes, pushInscricoes, sessoesEstudo, conquistasUsuario, comunicacoes, comunicacoesEnvios } = schema;
 
 beforeAll(async () => {
   b = await criarBancoTeste({ seed: { semCatalogo: true } });
@@ -219,6 +221,59 @@ describe('backup e agendamento', () => {
       'expirar-pix': '*/10 * * * *',
       'limpar-sessoes': '0 3 * * *',
       backup: '30 3 * * *',
+      'enviar-comunicacoes': '* * * * *',
     });
+    expect(jobs.map((j) => j.nome)).toEqual(JOBS_WORKER.map((j) => j.nome));
+  });
+});
+
+describe('D13: execuções registradas e fila de comunicação', () => {
+  it('cada execução vai para jobs_execucoes, com sucesso, falha e { ok: false }', async () => {
+    const agora = () => new Date('2026-11-10T12:00:00-03:00');
+    await executarRegistrado(b.db, 'teste-ok', async () => ({ n: 1 }), logMudo, agora);
+    await executarRegistrado(b.db, 'teste-erro', async () => {
+      throw new Error('explodiu');
+    }, logMudo, agora);
+    await executarRegistrado(b.db, 'teste-backup', async () => ({ ok: false, erro: 'código de saída 1' }), logMudo, agora);
+    const linhas = await b.db.select().from(schema.jobsExecucoes);
+    const por = (j: string) => linhas.find((l) => l.job === j)!;
+    expect(por('teste-ok')).toMatchObject({ ok: true, resultado: { n: 1 }, erro: null });
+    expect(por('teste-ok').terminadoEm).not.toBeNull();
+    expect(por('teste-erro')).toMatchObject({ ok: false, erro: 'explodiu' });
+    expect(por('teste-backup')).toMatchObject({ ok: false, erro: 'código de saída 1' });
+  });
+
+  it('envia só para quem tem opt-in, respeita 1 por aluno em 24 h e conclui', async () => {
+    const agora = new Date('2026-11-10T12:00:00-03:00');
+    const com = await aluno({ marketing: true });
+    const sem = await aluno({ marketing: false });
+    const [c] = await b.db
+      .insert(comunicacoes)
+      .values({ canal: 'email', segmento: 'pagos', assunto: 'Novidade', mensagem: 'Questões novas!', link: '/aprender', total: 2, criadoEm: agora })
+      .returning();
+    await b.db.insert(comunicacoesEnvios).values([
+      { comunicacaoId: c!.id, usuarioId: com.id },
+      { comunicacaoId: c!.id, usuarioId: sem.id },
+    ]);
+    const enviados: { para: string; assunto: string; html: string }[] = [];
+    const email = { enviar: async (m: { para: string; assunto: string; html: string }) => void enviados.push(m) };
+    const r = await enviarComunicacoes(b.db, { email, push: null, appUrl: 'https://app.teste' }, agora);
+    expect(r).toMatchObject({ enviados: 1, ignorados: 1, concluidas: 1 });
+    expect(enviados[0]).toMatchObject({ para: com.email, assunto: 'Novidade' });
+    expect(enviados[0]!.html).toContain('https://app.teste/configuracoes');
+    const [fim] = await b.db.select().from(comunicacoes).where(eq(comunicacoes.id, c!.id));
+    expect(fim!.status).toBe('concluida');
+
+    // Outra comunicação no mesmo dia: o aluno já recebeu uma, fica de fora.
+    const [c2] = await b.db.insert(comunicacoes).values({ canal: 'email', segmento: 'pagos', assunto: 'Outra', mensagem: 'Mais uma', total: 1, criadoEm: agora }).returning();
+    await b.db.insert(comunicacoesEnvios).values({ comunicacaoId: c2!.id, usuarioId: com.id });
+    const r2 = await enviarComunicacoes(b.db, { email, push: null, appUrl: 'https://app.teste' }, new Date(agora.getTime() + 60_000));
+    expect(r2).toMatchObject({ enviados: 0, ignorados: 1 });
+    // Sem SMTP o envio falha e fica registrado.
+    const [c3] = await b.db.insert(comunicacoes).values({ canal: 'email', segmento: 'todos', assunto: 'Sem SMTP', mensagem: 'x', total: 1, criadoEm: agora }).returning();
+    const outro = await aluno({ marketing: true });
+    await b.db.insert(comunicacoesEnvios).values({ comunicacaoId: c3!.id, usuarioId: outro.id });
+    const r3 = await enviarComunicacoes(b.db, { email: null, push: null, appUrl: 'https://app.teste' }, agora);
+    expect(r3.falhas).toBe(1);
   });
 });
