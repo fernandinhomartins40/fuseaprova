@@ -14,6 +14,8 @@
  *   POST /__e2e/admin { email, senha, nome }  → cria um admin (como a CLI admin:criar)
  *   GET  /__e2e/emails                        → assuntos e destinatários enviados
  *   POST /__e2e/vidas { email, vidas }         → ajusta as vidas (cenário "sem vidas")
+ *   POST /__e2e/superadmin { email, senha, nome } → cria um superadmin sem 2FA (D13)
+ *   POST /__e2e/totp { segredo }              → código TOTP do instante do relógio da API
  * O pagamento é confirmado pelo webhook REAL (POST /api/webhooks/asaas) com o token de teste.
  */
 import { desc, eq } from 'drizzle-orm';
@@ -22,6 +24,7 @@ import {
   criarApp,
   criarAsaasFalso,
   criarMailerMemoria,
+  gerarCodigoTotp,
   gerarHashSenha,
 } from '@fuse/api';
 import { schema } from '@fuse/db';
@@ -124,6 +127,19 @@ app.post<{ Body: { email: string; senha: string; nome: string } }>('/__e2e/admin
     .onConflictDoNothing();
   return { ok: true };
 });
+
+app.post<{ Body: { email: string; senha: string; nome: string } }>('/__e2e/superadmin', async (req) => {
+  const { email, senha, nome } = req.body;
+  await db
+    .insert(schema.usuarios)
+    .values({ nome, email, senhaHash: await gerarHashSenha(senha), papel: 'superadmin', acesso: true })
+    .onConflictDoNothing();
+  return { ok: true };
+});
+
+app.post<{ Body: { segredo: string } }>('/__e2e/totp', async (req) => ({
+  codigo: gerarCodigoTotp(req.body.segredo.replace(/\s+/g, ''), relogio.agora()),
+}));
 
 app.post<{ Body: { email: string; vidas: number } }>('/__e2e/vidas', async (req) => {
   await db
