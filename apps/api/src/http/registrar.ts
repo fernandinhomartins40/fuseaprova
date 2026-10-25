@@ -14,7 +14,9 @@ import {
   type DefinicaoRota,
   type NomeRota,
 } from '@fuse/shared/api';
+import { ehAdmin } from '@fuse/shared';
 import type { Deps, UsuarioSessao } from '../contexto.js';
+import { lerConfiguracoes } from '../servicos/configuracoes.js';
 import { falha } from './erros.js';
 
 type Def<N extends NomeRota> = (typeof ROTAS)[N];
@@ -63,6 +65,23 @@ function validar<S extends z.ZodTypeAny>(schema: S | undefined, valor: unknown):
   return r.data;
 }
 
+/**
+ * D13: o superadmin só usa os poderes de admin/superadmin com o 2FA ativo e confirmado
+ * nesta sessão. Sem 2FA configurado: 403 `dois_fatores_necessario`; sem o código nesta
+ * sessão: 403 `dois_fatores_pendente`.
+ */
+export function exigirDoisFatores(u: UsuarioSessao): void {
+  if (!u.totpAtivadoEm) throw falha('dois_fatores_necessario');
+  if (!u.sessaoDoisFatoresEm) throw falha('dois_fatores_pendente');
+}
+
+/** exigirSuperadmin: papel superadmin + 2FA (403). */
+export function exigirSuperadmin(u: UsuarioSessao | null): asserts u is UsuarioSessao {
+  if (!u) throw falha('nao_autenticado');
+  if (u.papel !== 'superadmin') throw falha('proibido');
+  exigirDoisFatores(u);
+}
+
 export function exigirGuarda(def: DefinicaoRota, req: FastifyRequest, deps: Deps): void {
   const u = req.usuario;
   switch (def.guarda) {
@@ -83,10 +102,27 @@ export function exigirGuarda(def: DefinicaoRota, req: FastifyRequest, deps: Deps
       if (!u) throw falha('nao_autenticado');
       if (!u.acesso) throw falha('sem_acesso');
       return;
-    case 'admin':
+    case 'admin': // exigirAdmin: admin, ou superadmin com 2FA
       if (!u) throw falha('nao_autenticado');
-      if (u.papel !== 'admin') throw falha('proibido');
+      if (!ehAdmin(u.papel)) throw falha('proibido');
+      if (u.papel === 'superadmin') exigirDoisFatores(u);
       return;
+    case 'superadmin':
+      exigirSuperadmin(u);
+      return;
+    case 'superadmin_2fa': // só o papel: configurar ou confirmar o 2FA
+      if (!u) throw falha('nao_autenticado');
+      if (u.papel !== 'superadmin') throw falha('proibido');
+      return;
+  }
+}
+
+/** D13: modo manutenção — as rotas de conteúdo respondem 503 para quem não é admin. */
+async function exigirForaDeManutencao(def: DefinicaoRota, req: FastifyRequest, deps: Deps): Promise<void> {
+  if (def.guarda !== 'acesso' || ehAdmin(req.usuario?.papel)) return;
+  const { valores } = await lerConfiguracoes(deps.db, deps.config);
+  if (valores.manutencao.ativa) {
+    throw falha('manutencao', valores.manutencao.mensagem || undefined);
   }
 }
 
@@ -120,6 +156,7 @@ export function criarRegistrador(
             : {},
         handler: async (req, reply) => {
           exigirGuarda(def, req, deps);
+          await exigirForaDeManutencao(def, req, deps);
           const ctx = {
             req,
             reply,

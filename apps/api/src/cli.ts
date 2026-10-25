@@ -5,6 +5,14 @@
  *
  * Sem --senha (e sem ADMIN_SENHA no ambiente), pede a senha no terminal sem eco.
  * O admin é criado com acesso liberado (é o dono). Se o e-mail já existe, vira admin.
+ *
+ * D13:
+ *   pnpm --filter @fuse/api cli superadmin:criar --email dono@x.com [--nome "Luiz Oliveira"] [--senha …]
+ *     Conta que já existe: só promove o papel (a senha NÃO muda nem é pedida).
+ *     Conta nova: precisa de --nome; sem --senha (e sem ADMIN_SENHA), gera uma senha forte e
+ *     mostra uma única vez. O 2FA é configurado no primeiro login, em /super/2fa.
+ *   pnpm --filter @fuse/api cli superadmin:resetar-2fa --email dono@x.com
+ *     Apaga o 2FA (perdeu o celular e os códigos de recuperação). Encerra as sessões.
  */
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -13,6 +21,7 @@ import { eq } from 'drizzle-orm';
 import { conectar, migrar, schema } from '@fuse/db';
 import { normalizarEmail, validarEmail, validarNomeCompleto, SENHA_MINIMA } from '@fuse/shared';
 import { gerarHashSenha } from './servicos/senhas.js';
+import { criarOuPromoverSuperadmin } from './servicos/superadminCli.js';
 
 const env = fileURLToPath(new URL('../../../.env', import.meta.url));
 if (existsSync(env)) process.loadEnvFile(env);
@@ -104,11 +113,63 @@ async function adminCriar(args: string[]): Promise<void> {
   }
 }
 
+async function superadminCriar(args: string[]): Promise<void> {
+  const { values } = parseArgs({
+    args,
+    options: { email: { type: 'string' }, nome: { type: 'string' }, senha: { type: 'string' } },
+  });
+  const conexao = conectar(process.env.DATABASE_URL, { max: 1 });
+  try {
+    if (conexao.tipo === 'pglite') await migrar(conexao);
+    const r = await criarOuPromoverSuperadmin(conexao.db, {
+      email: values.email ?? process.env.ADMIN_EMAIL ?? '',
+      nome: values.nome ?? process.env.ADMIN_NOME,
+      senha: values.senha ?? (process.env.ADMIN_SENHA || undefined),
+    });
+    if (r.promovido) {
+      console.info(`Usuário ${r.email} promovido a superadmin. A senha não mudou; as sessões abertas foram encerradas.`);
+    } else {
+      console.info(`Superadmin ${r.email} criado.`);
+      if (r.senhaGerada) {
+        console.info('');
+        console.info(`  Senha gerada (aparece só agora, guarde num gerenciador de senhas): ${r.senhaGerada}`);
+        console.info('');
+      }
+    }
+    console.info('No primeiro login, configure o 2FA em /super/2fa com um app autenticador.');
+  } finally {
+    await conexao.fechar();
+  }
+}
+
+async function superadminResetar2fa(args: string[]): Promise<void> {
+  const { values } = parseArgs({ args, options: { email: { type: 'string' } } });
+  const email = normalizarEmail(values.email ?? '');
+  if (!validarEmail(email)) throw new Error('Informe um e-mail válido com --email.');
+  const conexao = conectar(process.env.DATABASE_URL, { max: 1 });
+  try {
+    const { usuarios, auditoria, sessoes, codigosRecuperacao } = schema;
+    const [u] = await conexao.db.select().from(usuarios).where(eq(usuarios.email, email));
+    if (!u) throw new Error(`Não existe conta com o e-mail ${email}.`);
+    await conexao.db.update(usuarios).set({ totpSegredo: null, totpAtivadoEm: null, totpUltimoPasso: null }).where(eq(usuarios.id, u.id));
+    await conexao.db.delete(codigosRecuperacao).where(eq(codigosRecuperacao.usuarioId, u.id));
+    await conexao.db.delete(sessoes).where(eq(sessoes.usuarioId, u.id));
+    await conexao.db.insert(auditoria).values({ adminId: u.id, acao: '2fa.resetar', alvo: `usuario:${u.id}`, motivo: 'CLI superadmin:resetar-2fa' });
+    console.info(`2FA de ${email} apagado. Configure de novo no próximo login.`);
+  } finally {
+    await conexao.fechar();
+  }
+}
+
 const [comando, ...resto] = process.argv.slice(2);
 try {
   if (comando === 'admin:criar') await adminCriar(resto);
+  else if (comando === 'superadmin:criar') await superadminCriar(resto);
+  else if (comando === 'superadmin:resetar-2fa') await superadminResetar2fa(resto);
   else {
-    console.info('Comandos:\n  admin:criar --email <e-mail> --nome "<nome completo>" [--senha <senha>]');
+    console.info(
+      'Comandos:\n  admin:criar --email <e-mail> --nome "<nome completo>" [--senha <senha>]\n  superadmin:criar --email <e-mail> [--nome "<nome completo>"] [--senha <senha>]\n  superadmin:resetar-2fa --email <e-mail>',
+    );
     process.exitCode = comando ? 1 : 0;
   }
 } catch (e) {

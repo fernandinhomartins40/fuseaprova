@@ -52,4 +52,6 @@ export type Usuario = typeof schema.usuarios.$inferSelect;
 
 export interface UsuarioSessao extends Usuario {
   sessaoId: string;
+  /** D13: quando a sessão foi confirmada com o 2FA (null = ainda não). */
+  sessaoDoisFatoresEm: Date | null;
 }

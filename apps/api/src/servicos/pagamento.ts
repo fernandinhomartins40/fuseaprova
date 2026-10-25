@@ -8,6 +8,7 @@ import {
   CONSULTA_ASAAS_APOS_MS,
   DESCRICAO_COBRANCA,
   STATUS_ASAAS_PAGO,
+  referenciaEhDoFuseAprova,
   referenciaExterna,
   type PixResposta,
   type StatusPagamentoResposta,
@@ -143,30 +144,52 @@ export async function statusPagamento(deps: Deps, u: Usuario, agora: Date): Prom
   };
 }
 
-/** Pedido pago: libera o acesso e manda o e-mail de boas-vindas com recibo. Idempotente. */
-export async function confirmarPagamento(deps: Deps, paymentId: string, agora: Date): Promise<boolean> {
+/** Identificador do recibo: a cobrança do Asaas ou, no pagamento manual, "manual-<pedido>". */
+export function idRecibo(p: Pick<Pedido, 'id' | 'asaasPaymentId' | 'metodo'>): string {
+  return p.metodo === 'manual' || !p.asaasPaymentId ? `manual-${p.id.slice(0, 8)}` : p.asaasPaymentId;
+}
+
+/** E-mail de confirmação com o recibo (boas-vindas). Usado no webhook, no manual e no reenvio. */
+export function enviarEmailConfirmacao(deps: Deps, pedido: Pedido, usuario: Usuario): void {
+  deps.enviarEmail(
+    emailBoasVindas({
+      nome: usuario.nome,
+      email: usuario.email,
+      valorCentavos: pedido.valorCentavos,
+      pagoEm: pedido.pagoEm ?? pedido.criadoEm,
+      cobrancaId: idRecibo(pedido),
+      appUrl: deps.config.appUrl,
+    }),
+  );
+}
+
+/**
+ * Pedido pago: libera o acesso e manda o e-mail de boas-vindas com recibo. Idempotente
+ * (pedido já pago ou estornado não muda: um webhook atrasado não duplica nem reverte nada).
+ */
+export async function confirmarPagamento(
+  deps: Deps,
+  paymentId: string,
+  agora: Date,
+  opcoes: { valorLiquidoCentavos?: number | null } = {},
+): Promise<boolean> {
   const resultado = await deps.db.transaction(async (tx) => {
     const [p] = await tx.select().from(pedidos).where(eq(pedidos.asaasPaymentId, paymentId)).for('update');
     if (!p || p.status === 'pago' || p.status === 'estornado') return null;
     const [pago] = await tx
       .update(pedidos)
-      .set({ status: 'pago', pagoEm: agora })
+      .set({
+        status: 'pago',
+        pagoEm: agora,
+        ...(opcoes.valorLiquidoCentavos != null ? { valorLiquidoCentavos: opcoes.valorLiquidoCentavos } : {}),
+      })
       .where(eq(pedidos.id, p.id))
       .returning();
     const [u] = await tx.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, p.usuarioId)).returning();
     return { pedido: pago!, usuario: u! };
   });
   if (!resultado) return false;
-  deps.enviarEmail(
-    emailBoasVindas({
-      nome: resultado.usuario.nome,
-      email: resultado.usuario.email,
-      valorCentavos: resultado.pedido.valorCentavos,
-      pagoEm: agora,
-      cobrancaId: paymentId,
-      appUrl: deps.config.appUrl,
-    }),
-  );
+  enviarEmailConfirmacao(deps, resultado.pedido, resultado.usuario);
   return true;
 }
 
@@ -194,9 +217,31 @@ export async function estornarPagamento(deps: Deps, paymentId: string, agora: Da
   return true;
 }
 
-export async function vencerPagamento(db: Db, paymentId: string): Promise<void> {
-  await db
+/**
+ * O evento do webhook é de uma cobrança do Fuse Aprova? Sim quando o `payment.id` é de um
+ * pedido nosso (cobre as referências antigas "usuario:<id>") ou quando o `externalReference`
+ * tem o prefixo "fuseaprova:". A conta Asaas é compartilhada (DECISOES D14).
+ */
+export async function eventoEhNosso(
+  db: Db,
+  paymentId: string | undefined,
+  externalReference: string | null | undefined,
+): Promise<boolean> {
+  if (!paymentId) return false;
+  if (referenciaEhDoFuseAprova(externalReference)) return true;
+  const [p] = await db
+    .select({ id: pedidos.id })
+    .from(pedidos)
+    .where(eq(pedidos.asaasPaymentId, paymentId))
+    .limit(1);
+  return p !== undefined;
+}
+
+export async function vencerPagamento(db: Db, paymentId: string): Promise<boolean> {
+  const r = await db
     .update(pedidos)
     .set({ status: 'vencido' })
-    .where(and(eq(pedidos.asaasPaymentId, paymentId), eq(pedidos.status, 'pendente')));
+    .where(and(eq(pedidos.asaasPaymentId, paymentId), eq(pedidos.status, 'pendente')))
+    .returning({ id: pedidos.id });
+  return r.length > 0;
 }

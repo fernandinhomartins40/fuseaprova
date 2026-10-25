@@ -19,6 +19,7 @@ import { criarRelogioTeste, type RelogioTeste } from '../contexto.js';
 import { criarAsaasFalso, type AsaasFalso } from '../integracoes/asaas.js';
 import { criarMailerMemoria, type MailerMemoria } from '../integracoes/email.js';
 import { gerarHashSenha } from '../servicos/senhas.js';
+import { gerarCodigoTotp } from '../servicos/totp.js';
 
 export interface OpcoesAmbienteTeste {
   /** Opções do seed (padrão: sem catálogo FAU e com as autorais publicadas). */
@@ -136,6 +137,32 @@ export async function criarAmbienteTeste(o: OpcoesAmbienteTeste = {}) {
     return { id: u!.id, email, senha, cookie: cookieDe(r)! };
   }
 
+  /**
+   * D13: superadmin logado. Com `doisFatores` (padrão), configura o TOTP e confirma a sessão.
+   * `codigo()` gera o código do instante do relógio de teste (avance 30 s entre dois usos).
+   */
+  async function superadmin(o: { doisFatores?: boolean; email?: string } = {}) {
+    const email = o.email ?? `super${++contador}@teste.com`;
+    const senha = 'senha-super-forte-123';
+    const [u] = await banco.db
+      .insert(schema.usuarios)
+      .values({ nome: 'Dono Superadmin', email, senhaHash: await gerarHashSenha(senha), papel: 'superadmin', acesso: true })
+      .returning();
+    const r = await chamar('authLogin', { corpo: { email, senha } });
+    const cookie = cookieDe(r)!;
+    let segredo = '';
+    const codigo = () => gerarCodigoTotp(segredo, relogio.agora());
+    if (o.doisFatores !== false) {
+      const ini = await chamar('super2faIniciar', { cookie });
+      if (ini.statusCode !== 200) throw new Error(`2fa iniciar: ${ini.body}`);
+      segredo = (ini.json().chaveManual as string).replace(/\s+/g, '');
+      const at = await chamar('super2faAtivar', { cookie, corpo: { codigo: codigo() } });
+      if (at.statusCode !== 200) throw new Error(`2fa ativar: ${at.body}`);
+      relogio.avancar(30_000);
+    }
+    return { id: u!.id, email, senha, cookie, segredo: () => segredo, codigo };
+  }
+
   return {
     app,
     banco,
@@ -149,6 +176,7 @@ export async function criarAmbienteTeste(o: OpcoesAmbienteTeste = {}) {
     webhook,
     alunoPago,
     admin,
+    superadmin,
     async fechar() {
       await app.close();
       await banco.fechar();

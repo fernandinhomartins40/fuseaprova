@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import nodemailer from 'nodemailer';
 import { formatarDataBR, formatarReais, diaSP, horaMinutoSP, primeiroNome } from '@fuse/shared';
-import { AVISO_EDITAL, RODAPE_LEGAL } from '@fuse/shared';
+import { AVISO_EDITAL, botaoEmail, CORES_EMAIL, escHtml, layoutEmail } from '@fuse/shared';
 import type { Config } from '../config.js';
 
 export interface MensagemEmail {
@@ -70,38 +70,10 @@ export function criarMailerPadrao(config: Config): Mailer {
 
 /* ------------------------------------------------------------- templates */
 
-// Paleta D1: petróleo, turquesa, laranja, marfim, texto.
-const COR = {
-  petroleo: '#00545D',
-  turquesa: '#008A92',
-  laranja: '#FF6A16',
-  marfim: '#FAF8F2',
-  texto: '#123F42',
-};
-
-function esc(s: string): string {
-  return s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
-}
-
-function layout(titulo: string, corpoHtml: string): string {
-  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>${esc(titulo)}</title></head>
-<body style="margin:0;background:${COR.marfim};font-family:Arial,Helvetica,sans-serif;color:${COR.texto}">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${COR.marfim};padding:24px 0">
-<tr><td align="center">
-<table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden">
-<tr><td style="background:${COR.petroleo};padding:20px 28px;font-size:26px;font-weight:bold">
-<span style="color:${COR.laranja}">fuse</span><span style="color:#ffffff">aprova</span></td></tr>
-<tr><td style="padding:28px;font-size:16px;line-height:1.5">
-<h1 style="margin:0 0 16px;font-size:22px;color:${COR.petroleo}">${esc(titulo)}</h1>
-${corpoHtml}
-</td></tr>
-<tr><td style="padding:16px 28px;background:${COR.marfim};font-size:12px;color:#5b6b6c">${esc(RODAPE_LEGAL)}</td></tr>
-</table></td></tr></table></body></html>`;
-}
-
-function botao(url: string, texto: string): string {
-  return `<p style="margin:24px 0"><a href="${esc(url)}" style="background:${COR.laranja};color:#ffffff;text-decoration:none;font-weight:bold;padding:14px 22px;border-radius:12px;display:inline-block">${esc(texto)}</a></p>`;
-}
+const COR = CORES_EMAIL;
+const esc = escHtml;
+const layout = layoutEmail;
+const botao = botaoEmail;
 
 export function emailBoasVindas(d: {
   nome: string;
@@ -164,4 +136,25 @@ export function emailReembolso(d: {
   );
   const texto = `Olá, ${nome}. O reembolso de ${valor} (cobrança ${d.cobrancaId}) foi confirmado. O acesso ao Fuse Aprova foi encerrado.`;
   return { para: d.email, assunto: 'Fuse Aprova: reembolso confirmado', html, texto };
+}
+
+/** D13: convite da equipe (admin ou superadmin) com o link para definir a senha. */
+export function emailConvite(d: {
+  nome: string;
+  email: string;
+  papel: string;
+  link: string;
+  entrar: string;
+  validadeHoras: number;
+}): MensagemEmail {
+  const nome = primeiroNome(d.nome);
+  const html = layout(
+    'Você foi convidado(a) para a equipe do Fuse Aprova',
+    `<p>Olá, ${esc(nome)}. Você recebeu acesso como <b>${esc(d.papel)}</b> no painel do Fuse Aprova.</p>
+${botao(d.link, 'DEFINIR MINHA SENHA')}
+<p>O link vale por ${d.validadeHoras} horas. Depois de definir a senha, entre em ${esc(d.entrar)}.</p>
+<p style="font-size:14px;color:#5b6b6c">Se você não esperava este convite, ignore este e-mail.</p>`,
+  );
+  const texto = `Olá, ${nome}. Você recebeu acesso como ${d.papel} no painel do Fuse Aprova. Defina sua senha (o link vale por ${d.validadeHoras} horas): ${d.link}`;
+  return { para: d.email, assunto: 'Fuse Aprova: convite para a equipe', html, texto };
 }

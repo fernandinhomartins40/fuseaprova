@@ -24,6 +24,8 @@ import { concursoAtivo } from '../servicos/usuario.js';
 const { usuarios, redefinicoesSenha } = schema;
 
 export function proximoPasso(u: Pick<Usuario, 'papel' | 'acesso' | 'onboardingConcluidoEm'>): ProximoPasso {
+  // D13: o superadmin sempre passa pelo 2FA (configurar ou digitar o código) ao entrar.
+  if (u.papel === 'superadmin') return 'dois_fatores';
   if (u.papel === 'admin') return 'admin';
   if (!u.acesso) return 'pagamento';
   if (!u.onboardingConcluidoEm) return 'onboarding';
@@ -43,12 +45,13 @@ export async function iniciarSessao(
   reply: Parameters<typeof definirCookieSessao>[0],
   usuarioId: string,
   agora: Date,
+  opcoes: { superadmin?: boolean } = {},
 ): Promise<void> {
   const { token, expiraEm } = await abrirSessao(
     deps.db,
     deps.config.segredoSessao,
     usuarioId,
-    { userAgent: req.headers['user-agent'], ip: req.ip },
+    { userAgent: req.headers['user-agent'], ip: req.ip, superadmin: opcoes.superadmin },
     agora,
   );
   definirCookieSessao(reply, deps.config, token, expiraEm);
@@ -104,7 +107,8 @@ export function rotasAuth(r: Registrador): void {
       .limit(1);
     const ok = await conferirSenha(u?.senhaHash, corpo.senha);
     if (!u || !ok) throw falha('credenciais_invalidas');
-    await iniciarSessao(deps, req, reply, u.id, agora);
+    if (u.bloqueadoEm) throw falha('conta_bloqueada');
+    await iniciarSessao(deps, req, reply, u.id, agora, { superadmin: u.papel === 'superadmin' });
     return respostaSessao(u);
   });
 
@@ -154,7 +158,7 @@ export function rotasAuth(r: Registrador): void {
       const [u] = await tx
         .update(usuarios)
         .set({ senhaHash: await gerarHashSenha(corpo.senha) })
-        .where(and(eq(usuarios.id, red.usuarioId), isNull(usuarios.excluidoEm)))
+        .where(and(eq(usuarios.id, red.usuarioId), isNull(usuarios.excluidoEm), isNull(usuarios.bloqueadoEm)))
         .returning();
       if (!u) throw falha('token_invalido');
       await tx.update(redefinicoesSenha).set({ usadoEm: agora }).where(eq(redefinicoesSenha.usuarioId, u.id));
@@ -162,7 +166,7 @@ export function rotasAuth(r: Registrador): void {
       await encerrarSessoesDoUsuario(tx, u.id);
       return u;
     });
-    await iniciarSessao(deps, req, reply, usuario.id, agora);
+    await iniciarSessao(deps, req, reply, usuario.id, agora, { superadmin: usuario.papel === 'superadmin' });
     return respostaSessao(usuario);
   });
 }

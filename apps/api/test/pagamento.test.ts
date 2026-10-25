@@ -1,6 +1,8 @@
+import { readFileSync } from 'node:fs';
 import { count, eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { schema } from '@fuse/db';
+import { DESCRICAO_COBRANCA, EVENTOS_ASAAS_WEBHOOK } from '@fuse/shared/api';
 import { criarAmbienteTeste, type AmbienteTeste } from '../src/teste/index.js';
 import { usuario } from './ajuda.js';
 
@@ -27,9 +29,10 @@ describe('pagamento Pix (PRD 8.3)', () => {
     const r2 = await t.chamar('pagamentoPix', { cookie: a.cookie });
     expect(r2.json().pedidoId).toBe(pix.pedidoId);
     const cob = t.asaas.cobrancas.get((await pedidoDe(pix.pedidoId)).asaasPaymentId!)!;
-    expect(cob.dados).toMatchObject({ billingType: 'PIX', value: 397, description: 'Fuse Aprova – acesso completo' });
-    expect(cob.dados.externalReference).toBe(`usuario:${a.id}`);
-    expect(t.asaas.clientes.at(-1)).toMatchObject({ externalReference: `usuario:${a.id}`, mobilePhone: '42998765432' });
+    expect(cob.dados).toMatchObject({ billingType: 'PIX', value: 397, description: DESCRICAO_COBRANCA });
+    expect(cob.dados.description).toMatch(/^Fuse Aprova: /);
+    expect(cob.dados.externalReference).toBe(`fuseaprova:usuario:${a.id}`);
+    expect(t.asaas.clientes.at(-1)).toMatchObject({ externalReference: `fuseaprova:usuario:${a.id}`, mobilePhone: '42998765432' });
   });
 
   it('webhook repetido 5 vezes não duplica nada', async () => {
@@ -56,6 +59,64 @@ describe('pagamento Pix (PRD 8.3)', () => {
     expect(t.mailer.enviados.length - emailsAntes).toBe(1);
     const st = (await t.chamar('pagamentoStatus', { cookie: a.cookie })).json();
     expect(st).toMatchObject({ status: 'pago', acesso: true, expirado: false });
+  });
+
+  it('conta compartilhada: evento de cobrança de outra aplicação responde 200 e não grava nada', async () => {
+    const token = { 'asaas-access-token': t.config.asaas.webhookToken };
+    const totalAntes = async () => Number((await t.db.select({ n: count() }).from(schema.webhookEventos))[0]!.n);
+    const antes = await totalAntes();
+    const outros = [
+      { id: 'evt_outra_app_1', event: 'PAYMENT_RECEIVED', payment: { id: 'pay_de_outra_app', externalReference: 'mercadoflow:pedido:9', customer: 'cus_x', value: 50 } },
+      { id: 'evt_outra_app_2', event: 'PAYMENT_CONFIRMED', payment: { id: 'pay_de_outra_app_2', externalReference: null } },
+      { id: 'evt_outra_app_3', event: 'PAYMENT_REFUNDED', payment: { id: 'pay_de_outra_app_3' } },
+      { id: 'evt_sem_payment', event: 'PAYMENT_CREATED' },
+    ];
+    for (const corpo of outros) {
+      const r = await t.chamar('webhookAsaas', { headers: token, corpo });
+      expect(r.statusCode, r.body).toBe(200);
+      expect(r.json()).toEqual({ ok: true });
+    }
+    expect(await totalAntes()).toBe(antes);
+    // Mesmo com token errado, o 401 vem antes de olhar o evento.
+    const errado = await t.chamar('webhookAsaas', { headers: { 'asaas-access-token': 'x' }, corpo: outros[0] });
+    expect(errado.statusCode).toBe(401);
+  });
+
+  it('evento com a nossa referência é gravado mesmo sem pedido; referência antiga vale pelo pedido', async () => {
+    const token = { 'asaas-access-token': t.config.asaas.webhookToken };
+    const r = await t.chamar('webhookAsaas', {
+      headers: token,
+      corpo: { id: 'evt_ref_nossa', event: 'PAYMENT_CONFIRMED', payment: { id: 'pay_sem_pedido', externalReference: 'fuseaprova:usuario:3f0c7a8e-2b1d-4c5e-9f00-0123456789ab' } },
+    });
+    expect(r.statusCode).toBe(200);
+    const [e] = await t.db.select().from(schema.webhookEventos).where(eq(schema.webhookEventos.id, 'evt_ref_nossa'));
+    expect(e?.processadoEm).not.toBeNull();
+    // Pedido antigo, criado com "usuario:<id>": reconhecido pelo payment.id.
+    const a = await t.cadastrar();
+    const pix = (await t.chamar('pagamentoPix', { cookie: a.cookie })).json();
+    const pid = (await pedidoDe(pix.pedidoId)).asaasPaymentId!;
+    const r2 = await t.chamar('webhookAsaas', {
+      headers: token,
+      corpo: { id: 'evt_ref_antiga', event: 'PAYMENT_RECEIVED', payment: { id: pid, externalReference: `usuario:${a.id}` } },
+    });
+    expect(r2.statusCode).toBe(200);
+    expect((await pedidoDe(pix.pedidoId)).status).toBe('pago');
+    expect((await usuario(t, a.id)).acesso).toBe(true);
+  });
+
+  it('PAYMENT_DELETED encerra o Pix pendente', async () => {
+    const a = await t.cadastrar();
+    const pix = (await t.chamar('pagamentoPix', { cookie: a.cookie })).json();
+    await t.webhook('PAYMENT_DELETED', (await pedidoDe(pix.pedidoId)).asaasPaymentId!);
+    expect((await pedidoDe(pix.pedidoId)).status).toBe('vencido');
+    expect((await usuario(t, a.id)).acesso).toBe(false);
+  });
+
+  it('deploy/asaas-webhook.sh cadastra exatamente os eventos tratados', () => {
+    const script = readFileSync(new URL('../../../deploy/asaas-webhook.sh', import.meta.url), 'utf8');
+    const m = /^EVENTOS=\(([^)]*)\)/m.exec(script);
+    expect(m).not.toBeNull();
+    expect(m![1]!.trim().split(/\s+/)).toEqual([...EVENTOS_ASAAS_WEBHOOK]);
   });
 
   it('webhook com token errado recebe 401 e não altera nada', async () => {

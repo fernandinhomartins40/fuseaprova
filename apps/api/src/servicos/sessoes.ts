@@ -5,7 +5,7 @@
 import { createHmac, randomBytes } from 'node:crypto';
 import { and, eq, gt, isNull, lt, ne } from 'drizzle-orm';
 import { schema, type BancoDados } from '@fuse/db';
-import { MS_DIA, MS_MINUTO } from '@fuse/shared';
+import { MS_DIA, MS_HORA, MS_MINUTO } from '@fuse/shared';
 import { DIAS_SESSAO } from '@fuse/shared/api';
 import type { UsuarioSessao } from '../contexto.js';
 import type { Db } from '../util.js';
@@ -13,6 +13,9 @@ import type { Db } from '../util.js';
 const { sessoes, usuarios } = schema;
 
 export const VALIDADE_SESSAO_MS = DIAS_SESSAO * MS_DIA;
+/** D13: a sessão do superadmin dura no máximo 12 h e cai após 2 h sem uso. */
+export const VALIDADE_SESSAO_SUPER_MS = 12 * MS_HORA;
+export const OCIOSIDADE_SESSAO_SUPER_MS = 2 * MS_HORA;
 /** Renova a sessão no máximo uma vez por este intervalo (evita escrita a cada requisição). */
 const RENOVAR_A_CADA_MS = 10 * MS_MINUTO;
 
@@ -28,11 +31,11 @@ export async function abrirSessao(
   db: BancoDados,
   segredo: string,
   usuarioId: string,
-  meta: { userAgent?: string | undefined; ip?: string | undefined },
+  meta: { userAgent?: string | undefined; ip?: string | undefined; superadmin?: boolean | undefined },
   agora: Date,
 ): Promise<{ token: string; expiraEm: Date }> {
   const token = gerarToken();
-  const expiraEm = new Date(agora.getTime() + VALIDADE_SESSAO_MS);
+  const expiraEm = new Date(agora.getTime() + (meta.superadmin ? VALIDADE_SESSAO_SUPER_MS : VALIDADE_SESSAO_MS));
   await db.insert(sessoes).values({
     usuarioId,
     tokenHash: hashToken(segredo, token),
@@ -61,21 +64,37 @@ export async function carregarSessao(
         eq(sessoes.tokenHash, hashToken(segredo, token)),
         gt(sessoes.expiraEm, agora),
         isNull(usuarios.excluidoEm),
+        isNull(usuarios.bloqueadoEm),
       ),
     )
     .limit(1);
   if (!linha) return null;
+  const superadmin = linha.usuario.papel === 'superadmin';
+  if (superadmin) {
+    // D13: limite absoluto de 12 h desde o login e 2 h de ociosidade.
+    const fim = linha.sessao.criadoEm.getTime() + VALIDADE_SESSAO_SUPER_MS;
+    if (agora.getTime() >= fim || agora.getTime() - linha.sessao.ultimoUsoEm.getTime() > OCIOSIDADE_SESSAO_SUPER_MS) {
+      await db.delete(sessoes).where(eq(sessoes.id, linha.sessao.id));
+      return null;
+    }
+  }
   let expiraEm = linha.sessao.expiraEm;
   let renovada = false;
   if (agora.getTime() - linha.sessao.ultimoUsoEm.getTime() >= RENOVAR_A_CADA_MS) {
-    expiraEm = new Date(agora.getTime() + VALIDADE_SESSAO_MS);
+    expiraEm = superadmin
+      ? new Date(Math.min(linha.sessao.criadoEm.getTime() + VALIDADE_SESSAO_SUPER_MS, agora.getTime() + OCIOSIDADE_SESSAO_SUPER_MS))
+      : new Date(agora.getTime() + VALIDADE_SESSAO_MS);
     renovada = true;
     await db
       .update(sessoes)
       .set({ expiraEm, ultimoUsoEm: agora })
       .where(eq(sessoes.id, linha.sessao.id));
   }
-  return { usuario: { ...linha.usuario, sessaoId: linha.sessao.id }, renovada, expiraEm };
+  return {
+    usuario: { ...linha.usuario, sessaoId: linha.sessao.id, sessaoDoisFatoresEm: linha.sessao.doisFatoresEm },
+    renovada,
+    expiraEm,
+  };
 }
 
 export async function encerrarSessao(db: BancoDados, sessaoId: string): Promise<void> {

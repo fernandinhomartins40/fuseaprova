@@ -21,6 +21,12 @@ export interface Config {
   arquivosDir: string;
   suporte: { whatsapp: string; email: string };
   nivelLog: string;
+  /** D13: versão em produção (APP_VERSION embutida na imagem, ou DEPLOY_COMMIT). */
+  versao: string;
+  /** D13: imagem da API em uso (FUSEAPROVA_API_IMAGE do .env, por digest). */
+  imagem: string | null;
+  /** D13: pasta dos backups montada só para leitura (ULTIMO_BACKUP). */
+  backupDir: string;
 }
 
 function numero(v: string | undefined, padrao: number): number {
@@ -64,6 +70,9 @@ export function lerConfig(env: NodeJS.ProcessEnv = process.env): Config {
     arquivosDir: env.ARQUIVOS_DIR ?? join(tmpdir(), 'fuse-arquivos'),
     suporte: { whatsapp: env.SUPORTE_WHATSAPP ?? '', email: env.SUPORTE_EMAIL ?? '' },
     nivelLog: env.LOG_LEVEL ?? (ambiente === 'test' ? 'silent' : 'info'),
+    versao: env.APP_VERSION || env.DEPLOY_COMMIT || 'desenvolvimento',
+    imagem: env.FUSEAPROVA_API_IMAGE || null,
+    backupDir: env.BACKUP_DIR ?? join(tmpdir(), 'fuse-backups'),
   };
 }
 

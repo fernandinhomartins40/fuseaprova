@@ -1,31 +1,19 @@
 /**
  * /me: perfil, preferências, senha, LGPD (exportar/excluir) e loja de protetores.
  */
-import { and, desc, eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { comprarProtetor } from '@fuse/shared';
 import type { Registrador } from '../http/registrar.js';
 import { falha } from '../http/erros.js';
 import { limparCookieSessao } from '../http/cookies.js';
 import { conferirSenha, gerarHashSenha } from '../servicos/senhas.js';
+import { anonimizarUsuario, exportarDadosUsuario } from '../servicos/lgpd.js';
 import { encerrarSessoesDoUsuario } from '../servicos/sessoes.js';
 import { travarUsuario } from '../servicos/progresso.js';
 import { concursoDoUsuario, montarMe, modoEdital } from '../servicos/usuario.js';
-import { iso } from '../util.js';
 
-const {
-  usuarios,
-  cargos,
-  pedidos,
-  tentativas,
-  sessoesEstudo,
-  simulados,
-  conquistasUsuario,
-  revisoes,
-  pushInscricoes,
-  redefinicoesSenha,
-  ligasMembros,
-} = schema;
+const { usuarios, cargos } = schema;
 
 export function rotasMe(r: Registrador): void {
   r.rota('meObter', async ({ usuario, deps, agora }) => montarMe(deps.db, usuario, agora));
@@ -53,11 +41,12 @@ export function rotasMe(r: Registrador): void {
     if (corpo.metaDiaria !== undefined) set.metaDiaria = corpo.metaDiaria;
     if (corpo.lembreteHora !== undefined) set.lembreteHora = corpo.lembreteHora;
     if (corpo.notificacoes !== undefined) set.notificacoes = corpo.notificacoes;
+    if (corpo.marketing !== undefined) set.marketing = corpo.marketing;
     if (corpo.apelidoLiga !== undefined) set.apelidoLiga = corpo.apelidoLiga;
     if (corpo.sons !== undefined) set.sons = corpo.sons;
     if (corpo.onboardingConcluido && !usuario.onboardingConcluidoEm) set.onboardingConcluidoEm = agora;
     const [u] = await deps.db.update(usuarios).set(set).where(eq(usuarios.id, usuario.id)).returning();
-    return montarMe(deps.db, u!, agora);
+    return montarMe(deps.db, { ...u!, sessaoDoisFatoresEm: usuario.sessaoDoisFatoresEm }, agora);
   });
 
   r.rota('meSenha', async ({ usuario, corpo, deps }) => {
@@ -72,57 +61,14 @@ export function rotasMe(r: Registrador): void {
     return { ok: true as const };
   });
 
-  r.rota('meExportar', async ({ usuario, deps, agora }) => {
-    const { db } = deps;
-    const { senhaHash: _s, sessaoId: _ss, ...perfil } = usuario;
-    const [ped, tent, sess, sims, conq, revs] = await Promise.all([
-      db.select().from(pedidos).where(eq(pedidos.usuarioId, usuario.id)).orderBy(desc(pedidos.criadoEm)),
-      db.select().from(tentativas).where(eq(tentativas.usuarioId, usuario.id)).orderBy(tentativas.respondidaEm),
-      db.select().from(sessoesEstudo).where(eq(sessoesEstudo.usuarioId, usuario.id)).orderBy(sessoesEstudo.iniciadaEm),
-      db.select().from(simulados).where(eq(simulados.usuarioId, usuario.id)).orderBy(simulados.iniciadoEm),
-      db.select().from(conquistasUsuario).where(eq(conquistasUsuario.usuarioId, usuario.id)),
-      db.select().from(revisoes).where(eq(revisoes.usuarioId, usuario.id)),
-    ]);
-    // Datas viram ISO na serialização JSON. A imagem do QR (base64) é omitida.
-    return {
-      geradoEm: iso(agora),
-      perfil,
-      pedidos: ped.map(({ pixImagem: _i, ...p }) => p),
-      tentativas: tent,
-      sessoesEstudo: sess,
-      simulados: sims,
-      conquistas: conq,
-      revisoes: revs,
-    };
-  });
+  r.rota('meExportar', async ({ usuario, deps, agora }) => exportarDadosUsuario(deps.db, usuario, agora));
 
   r.rota('meExcluir', async ({ usuario, corpo, deps, reply, agora }) => {
     if (!(await conferirSenha(usuario.senhaHash, corpo.senha))) {
       throw falha('validacao', 'A senha não confere.', { senha: 'A senha não confere.' });
     }
     // LGPD: anonimiza o perfil e mantém os pedidos (obrigação fiscal).
-    await deps.db.transaction(async (tx) => {
-      await tx
-        .update(usuarios)
-        .set({
-          nome: 'Conta excluída',
-          email: `excluido+${usuario.id}@fuse.invalid`,
-          cpf: null,
-          celular: null,
-          senhaHash: null,
-          apelidoLiga: null,
-          lembreteHora: null,
-          notificacoes: false,
-          acesso: false,
-          asaasCustomerId: null,
-          excluidoEm: agora,
-        })
-        .where(eq(usuarios.id, usuario.id));
-      await tx.delete(pushInscricoes).where(eq(pushInscricoes.usuarioId, usuario.id));
-      await tx.delete(redefinicoesSenha).where(eq(redefinicoesSenha.usuarioId, usuario.id));
-      await tx.delete(ligasMembros).where(eq(ligasMembros.usuarioId, usuario.id));
-      await encerrarSessoesDoUsuario(tx, usuario.id);
-    });
+    await deps.db.transaction((tx) => anonimizarUsuario(tx, usuario.id, agora));
     limparCookieSessao(reply, deps.config);
     return { ok: true as const };
   });

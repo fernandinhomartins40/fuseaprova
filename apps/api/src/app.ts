@@ -14,13 +14,13 @@ import rateLimit from '@fastify/rate-limit';
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastify';
 import { sql } from 'drizzle-orm';
 import type { BancoDados } from '@fuse/db';
-import { rngPadrao, type Rng } from '@fuse/shared';
+import { ehAdmin, rngPadrao, type Rng } from '@fuse/shared';
 import { NOME_COOKIE_SESSAO, erroApi, instalarMensagensPtBr } from '@fuse/shared/api';
 import { lerConfig, type Config } from './config.js';
 import { relogioSistema, type Deps, type Relogio, type UsuarioSessao } from './contexto.js';
 import { definirCookieSessao } from './http/cookies.js';
 import { ErroHttp } from './http/erros.js';
-import { conferirRegistro, criarRegistrador } from './http/registrar.js';
+import { conferirRegistro, criarRegistrador, exigirSuperadmin } from './http/registrar.js';
 import { criarClienteAsaasHttp, type ClienteAsaas } from './integracoes/asaas.js';
 import { criarMailerPadrao, type Mailer, type MensagemEmail } from './integracoes/email.js';
 import { rotasAdminConteudo } from './rotas/admin/conteudo.js';
@@ -33,6 +33,7 @@ import { rotasOffline } from './rotas/offline.js';
 import { rotasPagamento } from './rotas/pagamento.js';
 import { rotasSimulados } from './rotas/simulados.js';
 import { rotasSocial } from './rotas/social.js';
+import { rotasSuper } from './rotas/super/index.js';
 import { carregarSessao } from './servicos/sessoes.js';
 
 declare module 'fastify' {
@@ -173,13 +174,32 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
   app.get<{ Params: { nome: string } }>('/api/arquivos/uploads/:nome', async (req, reply) => {
     const u = req.usuario;
     if (!u) throw new ErroHttp('nao_autenticado');
-    if (!u.acesso && u.papel !== 'admin') throw new ErroHttp('sem_acesso');
+    if (!u.acesso && !ehAdmin(u.papel)) throw new ErroHttp('sem_acesso');
     const nome = req.params.nome;
     if (!/^[0-9a-f-]{36}\.(png|jpg|webp|gif)$/.test(nome)) throw new ErroHttp('nao_encontrado');
     try {
       const dados = await readFile(join(config.arquivosDir, 'uploads', nome));
       const tipo = { png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif' }[nome.split('.').pop()!]!;
       return reply.header('Cache-Control', 'private, max-age=86400').type(tipo).send(dados);
+    } catch {
+      throw new ErroHttp('nao_encontrado');
+    }
+  });
+
+  // D13: comprovantes da aprovação manual, só para o superadmin (com 2FA).
+  app.get<{ Params: { nome: string } }>('/api/super/comprovantes/:nome', async (req, reply) => {
+    exigirSuperadmin(req.usuario);
+    const nome = req.params.nome;
+    if (!/^[0-9a-f-]{36}\.(png|jpg|webp|pdf)$/.test(nome)) throw new ErroHttp('nao_encontrado');
+    try {
+      const dados = await readFile(join(config.arquivosDir, 'comprovantes', nome));
+      const ext = nome.split('.').pop()!;
+      const tipo = { png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp', pdf: 'application/pdf' }[ext]!;
+      return reply
+        .header('Cache-Control', 'private, no-store')
+        .header('Content-Disposition', `inline; filename="${nome}"`)
+        .type(tipo)
+        .send(dados);
     } catch {
       throw new ErroHttp('nao_encontrado');
     }
@@ -197,6 +217,7 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
   rotasSocial(r);
   rotasAdminConteudo(r);
   rotasAdminGestao(r);
+  rotasSuper(r);
   conferirRegistro(r.registradas);
 
   app.addHook('onClose', async () => {
@@ -211,3 +232,4 @@ export { criarAsaasFalso, criarClienteAsaasHttp, type AsaasFalso, type ClienteAs
 export { criarMailerMemoria, criarMailerSmtp, type Mailer, type MailerMemoria, type MensagemEmail } from './integracoes/email.js';
 export { entregarExpirados } from './servicos/simulado.js';
 export { gerarHashSenha } from './servicos/senhas.js';
+export { gerarCodigoTotp } from './servicos/totp.js';

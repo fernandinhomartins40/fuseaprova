@@ -5,6 +5,14 @@ import { cargoResumo } from '../conteudo.js';
 
 const { auditoria } = schema;
 
+/** D13: quem fez fica em `adminId`; o IP, o motivo e o antes/depois completam o registro. */
+export interface ExtraAuditoria {
+  ip?: string | null | undefined;
+  motivo?: string | null | undefined;
+  antes?: Record<string, unknown> | null | undefined;
+  depois?: Record<string, unknown> | null | undefined;
+}
+
 /** Toda ação do admin fica registrada (PRD 5.17). */
 export async function auditar(
   db: Db,
@@ -13,8 +21,19 @@ export async function auditar(
   alvo: string | null,
   detalhes: Record<string, unknown> | null,
   agora: Date,
+  extra: ExtraAuditoria = {},
 ): Promise<void> {
-  await db.insert(auditoria).values({ adminId, acao, alvo, detalhes, criadoEm: agora });
+  await db.insert(auditoria).values({
+    adminId,
+    acao,
+    alvo,
+    detalhes,
+    criadoEm: agora,
+    ip: extra.ip ?? null,
+    motivo: extra.motivo ?? null,
+    antes: extra.antes ?? null,
+    depois: extra.depois ?? null,
+  });
 }
 
 export function paginacao(q: { pagina: number; porPagina: number }) {

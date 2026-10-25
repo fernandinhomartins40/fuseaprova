@@ -100,7 +100,11 @@ export async function cargoDoUsuario(db: Db, u: Pick<Usuario, 'cargoId'>): Promi
   return c ?? null;
 }
 
-export async function montarMe(db: Db, u: Usuario, agora: Date): Promise<MeResposta> {
+export async function montarMe(
+  db: Db,
+  u: Usuario & { sessaoDoisFatoresEm?: Date | null },
+  agora: Date,
+): Promise<MeResposta> {
   const vidas = vidasAtuais(u, agora);
   const [concurso, cargo, pendentes, feitasHoje, ligaPend] = await Promise.all([
     concursoDoUsuario(db, u),
@@ -144,6 +148,7 @@ export async function montarMe(db: Db, u: Usuario, agora: Date): Promise<MeRespo
     metaDiaria: (meta >= 1 && meta <= 3 ? meta : 1) as 1 | 2 | 3,
     lembreteHora: u.lembreteHora,
     notificacoes: u.notificacoes,
+    marketing: u.marketing,
     apelidoLiga: u.apelidoLiga,
     sons: u.sons,
     xpTotal: u.xpTotal,
@@ -162,6 +167,7 @@ export async function montarMe(db: Db, u: Usuario, agora: Date): Promise<MeRespo
     confirmarCargoEdital: edital && cargo !== null && cargo.generico,
     resultadoLigaPendente: contar(ligaPend[0]?.n) > 0,
     versaoConteudo: concurso?.versaoConteudo ?? 1,
+    doisFatoresPendente: u.papel === 'superadmin' && !(u.totpAtivadoEm && u.sessaoDoisFatoresEm),
     criadoEm: iso(u.criadoEm),
   };
 }
