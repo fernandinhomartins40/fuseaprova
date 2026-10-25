@@ -21,4 +21,5 @@ export * from './formatacao.js';
 export * from './copy.js';
 export * from './licao.js';
 export * from './cifra.js';
+export * from './email.js';
 export * as api from './api/index.js';

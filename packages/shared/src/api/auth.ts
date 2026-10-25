@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { limparCelular, validarCelular } from '../celular.js';
 import { limparCpf, validarCpf } from '../cpf.js';
 import { normalizarEmail, SENHA_MINIMA, validarEmail, validarNomeCompleto } from '../validacao.js';
-import { Uuid } from './comum.js';
+import { Uuid, ZPapel } from './comum.js';
 
 export const VERSAO_TERMOS_ATUAL = '2026-10-23';
 
@@ -90,7 +90,7 @@ export const RedefinirEntrada = z.object({
 export type RedefinirEntrada = z.input<typeof RedefinirEntrada>;
 
 /** Para onde a PWA deve ir depois de entrar. */
-export const ProximoPasso = z.enum(['pagamento', 'onboarding', 'trilha', 'admin']);
+export const ProximoPasso = z.enum(['pagamento', 'onboarding', 'trilha', 'admin', 'dois_fatores']);
 export type ProximoPasso = z.infer<typeof ProximoPasso>;
 
 /** Resposta de cadastro, login e redefinição (a sessão vai no cookie httpOnly). */
@@ -99,7 +99,7 @@ export const SessaoResposta = z.object({
     id: Uuid,
     nome: z.string(),
     email: z.string(),
-    papel: z.enum(['aluno', 'admin']),
+    papel: ZPapel,
     acesso: z.boolean(),
   }),
   proximo: ProximoPasso,

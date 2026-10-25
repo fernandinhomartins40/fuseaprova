@@ -1,16 +1,22 @@
 import { pgEnum } from 'drizzle-orm/pg-core';
 import {
   AREAS_CARGO,
+  CANAIS_COMUNICACAO,
   DIVISOES,
   ESCOLARIDADES,
   FONTES_COLETA,
+  FORMAS_PAGAMENTO_MANUAL,
   LETRAS,
+  METODOS_PEDIDO,
   ORIGENS_QUESTAO,
   PAPEIS,
   RESULTADOS_LIGA,
+  SEGMENTOS_COMUNICACAO,
   SITUACOES_CERTAME,
   SLUGS_DISCIPLINA,
+  STATUS_COMUNICACAO,
   STATUS_CONCURSO,
+  STATUS_ENVIO_COMUNICACAO,
   STATUS_IMPORTACAO,
   STATUS_PEDIDO,
   STATUS_PROVA_ORIGEM,
@@ -47,3 +53,11 @@ export const statusImportacaoEnum = pgEnum('status_importacao', STATUS_IMPORTACA
 export const tipoArquivoColetaEnum = pgEnum('tipo_arquivo_coleta', TIPOS_ARQUIVO_COLETA);
 export const fonteColetaEnum = pgEnum('fonte_coleta', FONTES_COLETA);
 export const situacaoCertameEnum = pgEnum('situacao_certame', SITUACOES_CERTAME);
+
+// D13: superadmin (pagamento manual, comunicação em massa).
+export const metodoPedidoEnum = pgEnum('metodo_pedido', METODOS_PEDIDO);
+export const formaPagamentoManualEnum = pgEnum('forma_pagamento_manual', FORMAS_PAGAMENTO_MANUAL);
+export const canalComunicacaoEnum = pgEnum('canal_comunicacao', CANAIS_COMUNICACAO);
+export const segmentoComunicacaoEnum = pgEnum('segmento_comunicacao', SEGMENTOS_COMUNICACAO);
+export const statusComunicacaoEnum = pgEnum('status_comunicacao', STATUS_COMUNICACAO);
+export const statusEnvioComunicacaoEnum = pgEnum('status_envio_comunicacao', STATUS_ENVIO_COMUNICACAO);

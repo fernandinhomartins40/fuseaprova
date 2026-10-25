@@ -12,5 +12,6 @@ export * from './simulados.js';
 export * from './social.js';
 export * from './admin-conteudo.js';
 export * from './admin-gestao.js';
+export * from './superadmin.js';
 export * from './rotas.js';
 export * from './zod-ptbr.js';

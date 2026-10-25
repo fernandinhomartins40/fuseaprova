@@ -53,11 +53,57 @@ export type Letra = (typeof LETRAS)[number];
 export const TIPOS_LICAO = ['normal', 'bau', 'desafio'] as const;
 export type TipoLicao = (typeof TIPOS_LICAO)[number];
 
-export const PAPEIS = ['aluno', 'admin'] as const;
+export const PAPEIS = ['aluno', 'admin', 'superadmin'] as const;
 export type Papel = (typeof PAPEIS)[number];
+
+export const NOMES_PAPEL: Record<Papel, string> = {
+  aluno: 'Aluno',
+  admin: 'Admin',
+  superadmin: 'Superadmin',
+};
+
+/** D13: o superadmin tem tudo o que o admin tem (e a área /super). */
+export function ehAdmin(papel: string | null | undefined): boolean {
+  return papel === 'admin' || papel === 'superadmin';
+}
 
 export const STATUS_PEDIDO = ['pendente', 'pago', 'vencido', 'estornado'] as const;
 export type StatusPedido = (typeof STATUS_PEDIDO)[number];
+
+/** D13: como o pedido foi pago. `asaas` = Pix pelo Asaas; `manual` = aprovado pelo superadmin. */
+export const METODOS_PEDIDO = ['asaas', 'manual'] as const;
+export type MetodoPedido = (typeof METODOS_PEDIDO)[number];
+
+/** D13: forma do pagamento recebido por fora (aprovação manual). */
+export const FORMAS_PAGAMENTO_MANUAL = ['transferencia', 'dinheiro', 'pix_direto', 'outro'] as const;
+export type FormaPagamentoManual = (typeof FORMAS_PAGAMENTO_MANUAL)[number];
+
+export const NOMES_FORMA_PAGAMENTO_MANUAL: Record<FormaPagamentoManual, string> = {
+  transferencia: 'Transferência bancária',
+  dinheiro: 'Dinheiro',
+  pix_direto: 'Pix direto na conta',
+  outro: 'Outro',
+};
+
+/** D13: comunicação em massa (fila do worker). */
+export const CANAIS_COMUNICACAO = ['email', 'push'] as const;
+export type CanalComunicacao = (typeof CANAIS_COMUNICACAO)[number];
+
+export const SEGMENTOS_COMUNICACAO = ['todos', 'pagos', 'inativos', 'sem_pagamento'] as const;
+export type SegmentoComunicacao = (typeof SEGMENTOS_COMUNICACAO)[number];
+
+export const NOMES_SEGMENTO_COMUNICACAO: Record<SegmentoComunicacao, string> = {
+  todos: 'Todos os alunos',
+  pagos: 'Alunos com acesso pago',
+  inativos: 'Alunos pagos inativos há N dias',
+  sem_pagamento: 'Cadastrados sem pagamento',
+};
+
+export const STATUS_COMUNICACAO = ['na_fila', 'enviando', 'concluida', 'cancelada'] as const;
+export type StatusComunicacao = (typeof STATUS_COMUNICACAO)[number];
+
+export const STATUS_ENVIO_COMUNICACAO = ['pendente', 'enviado', 'falhou', 'ignorado'] as const;
+export type StatusEnvioComunicacao = (typeof STATUS_ENVIO_COMUNICACAO)[number];
 
 export const TIPOS_SESSAO_ESTUDO = ['licao', 'revisao', 'desafio', 'simulado'] as const;
 export type TipoSessaoEstudo = (typeof TIPOS_SESSAO_ESTUDO)[number];

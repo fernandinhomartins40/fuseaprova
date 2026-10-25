@@ -35,9 +35,18 @@ export const CONSULTA_ASAAS_APOS_MS = 60_000;
 
 /* ----------------------------------------------------------------- Asaas */
 
+/*
+ * Eventos de cobrança conferidos em https://docs.asaas.com/docs/webhook-para-cobrancas (24/10/2026).
+ * PAYMENT_CONFIRMED = pago, saldo ainda não disponível; PAYMENT_RECEIVED = saldo disponível.
+ * Estorno parcial (PAYMENT_PARTIALLY_REFUNDED) e estorno em andamento (PAYMENT_REFUND_IN_PROGRESS)
+ * não revogam o acesso: só o estorno total (PAYMENT_REFUNDED) ou o chargeback.
+ * PAYMENT_DELETED (cobrança removida) encerra o Pix pendente, como o vencimento (DECISOES D14).
+ */
 export const EVENTOS_ASAAS_PAGO = ['PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED'] as const;
 export const EVENTOS_ASAAS_ESTORNO = ['PAYMENT_REFUNDED', 'PAYMENT_CHARGEBACK_REQUESTED'] as const;
-export const EVENTOS_ASAAS_VENCIDO = ['PAYMENT_OVERDUE'] as const;
+export const EVENTOS_ASAAS_VENCIDO = ['PAYMENT_OVERDUE', 'PAYMENT_DELETED'] as const;
+/** Os únicos eventos cadastrados no webhook (deploy/asaas-webhook.sh usa esta mesma lista). */
+export const EVENTOS_ASAAS_WEBHOOK = [...EVENTOS_ASAAS_PAGO, ...EVENTOS_ASAAS_ESTORNO, ...EVENTOS_ASAAS_VENCIDO] as const;
 /** Status de cobrança que liberam o acesso na consulta direta. */
 export const STATUS_ASAAS_PAGO = ['RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'] as const;
 
@@ -76,14 +85,26 @@ export function acaoDoEventoAsaas(evento: string): AcaoWebhook {
   return 'ignorar';
 }
 
-/** "usuario:<id>" ↔ id. */
+/**
+ * Prefixo do `externalReference` das cobranças e clientes do Fuse Aprova. A conta Asaas é
+ * compartilhada com outras aplicações, e o prefixo separa o que é nosso (DECISOES D14).
+ */
+export const PREFIXO_REFERENCIA_ASAAS = 'fuseaprova:';
+
+/** "fuseaprova:usuario:<id>" ↔ id. Também lê o formato antigo "usuario:<id>". */
 export function referenciaExterna(usuarioId: string): string {
-  return `usuario:${usuarioId}`;
+  return `${PREFIXO_REFERENCIA_ASAAS}usuario:${usuarioId}`;
 }
 
 export function usuarioDaReferencia(ref: string | null | undefined): string | null {
-  const m = /^usuario:([0-9a-f-]{36})$/i.exec(ref ?? '');
+  const m = /^(?:fuseaprova:)?usuario:([0-9a-f-]{36})$/i.exec(ref ?? '');
   return m ? m[1]!.toLowerCase() : null;
 }
 
-export const DESCRICAO_COBRANCA = 'Fuse Aprova – acesso completo';
+/** A referência foi gerada por este app (só o formato novo; o antigo é reconhecido pelo pedido). */
+export function referenciaEhDoFuseAprova(ref: string | null | undefined): boolean {
+  return (ref ?? '').startsWith(PREFIXO_REFERENCIA_ASAAS);
+}
+
+/** Aparece para o pagador e no painel da conta compartilhada: identifica o produto. */
+export const DESCRICAO_COBRANCA = 'Fuse Aprova: acesso ao preparatório do concurso da Prefeitura de Palmital-PR (FAU)';

@@ -22,6 +22,13 @@
       "when": 1792806243465,
       "tag": "0002_lacunas_admin_coletor",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792814030258,
+      "tag": "0003_superadmin",
+      "breakpoints": true
     }
   ]
 }

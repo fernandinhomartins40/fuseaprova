@@ -19,6 +19,9 @@ import {
   QuestaoEntrada,
   QuestoesQuery,
   referenciaExterna,
+  referenciaEhDoFuseAprova,
+  DESCRICAO_COBRANCA,
+  EVENTOS_ASAAS_WEBHOOK,
   RetirarOrigemEntrada,
   ROTAS,
   rotasComGuarda,
@@ -226,11 +229,24 @@ describe('outros contratos', () => {
     expect(acaoDoEventoAsaas('PAYMENT_REFUNDED')).toBe('estornar');
     expect(acaoDoEventoAsaas('PAYMENT_CHARGEBACK_REQUESTED')).toBe('estornar');
     expect(acaoDoEventoAsaas('PAYMENT_OVERDUE')).toBe('vencer');
+    expect(acaoDoEventoAsaas('PAYMENT_DELETED')).toBe('vencer');
     expect(acaoDoEventoAsaas('PAYMENT_CREATED')).toBe('ignorar');
-    expect(referenciaExterna(uuid)).toBe(`usuario:${uuid}`);
+    expect(acaoDoEventoAsaas('PAYMENT_PARTIALLY_REFUNDED')).toBe('ignorar');
+    expect(EVENTOS_ASAAS_WEBHOOK.every((e) => acaoDoEventoAsaas(e) !== 'ignorar')).toBe(true);
+    expect(referenciaExterna(uuid)).toBe(`fuseaprova:usuario:${uuid}`);
+    expect(usuarioDaReferencia(referenciaExterna(uuid))).toBe(uuid);
     expect(usuarioDaReferencia(`usuario:${uuid.toUpperCase()}`)).toBe(uuid);
+    expect(usuarioDaReferencia(`FUSEAPROVA:usuario:${uuid}`)).toBe(uuid);
+    expect(usuarioDaReferencia(`outroapp:usuario:${uuid}`)).toBeNull();
     expect(usuarioDaReferencia('outra')).toBeNull();
     expect(usuarioDaReferencia(null)).toBeNull();
+    expect(referenciaEhDoFuseAprova(referenciaExterna(uuid))).toBe(true);
+    expect(referenciaEhDoFuseAprova(`usuario:${uuid}`)).toBe(false);
+    expect(referenciaEhDoFuseAprova('pedido-123')).toBe(false);
+    expect(referenciaEhDoFuseAprova(null)).toBe(false);
+    expect(referenciaEhDoFuseAprova(undefined)).toBe(false);
+    expect(DESCRICAO_COBRANCA).toMatch(/^Fuse Aprova/);
+    expect(DESCRICAO_COBRANCA.length).toBeLessThanOrEqual(500);
     const corpo = AsaasWebhookCorpo.parse({
       id: 'evt_1',
       event: 'PAYMENT_RECEIVED',

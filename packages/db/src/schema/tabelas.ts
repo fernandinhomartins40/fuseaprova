@@ -23,16 +23,22 @@ import {
 } from 'drizzle-orm/pg-core';
 import {
   areaCargoEnum,
+  canalComunicacaoEnum,
   divisaoEnum,
   escolaridadeEnum,
   fonteColetaEnum,
+  formaPagamentoManualEnum,
   letraEnum,
+  metodoPedidoEnum,
   origemQuestaoEnum,
   papelEnum,
   resultadoLigaEnum,
+  segmentoComunicacaoEnum,
   situacaoCertameEnum,
   slugDisciplinaEnum,
+  statusComunicacaoEnum,
   statusConcursoEnum,
+  statusEnvioComunicacaoEnum,
   statusImportacaoEnum,
   statusPedidoEnum,
   statusProvaOrigemEnum,
@@ -276,6 +282,17 @@ export const usuarios = pgTable(
     ultimoPushEm: ts('ultimo_push_em'),
     aceiteTermosEm: ts('aceite_termos_em'),
     versaoTermos: text('versao_termos'),
+    /** extra D13: opt-in de e-mail e push de novidades (marketing). */
+    marketing: boolean('marketing').notNull().default(false),
+    /** extra D13: conta bloqueada pelo superadmin (não entra nem usa sessões abertas). */
+    bloqueadoEm: ts('bloqueado_em'),
+    bloqueioMotivo: text('bloqueio_motivo'),
+    /** extra D13: segredo TOTP cifrado (AES-256-GCM com chave derivada do SESSION_SECRET). */
+    totpSegredo: text('totp_segredo'),
+    /** extra D13: null = 2FA ainda não ativado (o segredo acima pode estar pendente). */
+    totpAtivadoEm: ts('totp_ativado_em'),
+    /** extra D13: último passo de 30 s aceito (impede reutilizar o mesmo código). */
+    totpUltimoPasso: integer('totp_ultimo_passo'),
     criadoEm: criadoEm(),
     /** extra */
     atualizadoEm: atualizadoEm(),
@@ -305,6 +322,8 @@ export const sessoes = pgTable(
     criadoEm: criadoEm(),
     /** extra */
     ultimoUsoEm: ts('ultimo_uso_em').notNull().defaultNow(),
+    /** extra D13: quando a sessão foi confirmada com o 2FA (superadmin). */
+    doisFatoresEm: ts('dois_fatores_em'),
   },
   (t) => [index('sessoes_usuario_idx').on(t.usuarioId), index('sessoes_expira_idx').on(t.expiraEm)],
 );
@@ -458,6 +477,22 @@ export const pedidos = pgTable(
     reembolsoSolicitadoEm: ts('reembolso_solicitado_em'),
     /** extra */
     estornadoEm: ts('estornado_em'),
+    /** extra D13: asaas (Pix) ou manual (aprovado pelo superadmin). */
+    metodo: metodoPedidoEnum('metodo').notNull().default('asaas'),
+    /** extra D13: valor líquido informado pelo Asaas (valor − taxas). */
+    valorLiquidoCentavos: integer('valor_liquido_centavos'),
+    /** extra D13: cobrança Pix cancelada pelo superadmin (o status fica 'vencido'). */
+    canceladoEm: ts('cancelado_em'),
+    /** extra D13: última conciliação com o Asaas. */
+    conciliadoEm: ts('conciliado_em'),
+    /** extra D13: aprovação manual (pagamento recebido por fora). */
+    manualForma: formaPagamentoManualEnum('manual_forma'),
+    manualRecebidoEm: dia('manual_recebido_em'),
+    manualObservacao: text('manual_observacao'),
+    manualReferencia: text('manual_referencia'),
+    /** Nome do arquivo em ARQUIVOS_DIR/comprovantes (servido só ao superadmin). */
+    manualComprovante: text('manual_comprovante'),
+    aprovadoPor: uuid('aprovado_por').references(() => usuarios.id, { onDelete: 'set null' }),
     criadoEm: criadoEm(),
     /** extra */
     atualizadoEm: atualizadoEm(),
@@ -466,6 +501,7 @@ export const pedidos = pgTable(
     index('pedidos_usuario_status_idx').on(t.usuarioId, t.status),
     index('pedidos_status_expira_idx').on(t.status, t.pixExpiraEm),
     index('pedidos_pago_em_idx').on(t.pagoEm),
+    index('pedidos_criado_em_idx').on(t.criadoEm),
   ],
 );
 
@@ -478,6 +514,12 @@ export const webhookEventos = pgTable('webhook_eventos', {
   processadoEm: ts('processado_em'),
   /** extra */
   erro: text('erro'),
+  /** extra D13: quantas vezes o evento foi processado (recebido de novo ou reprocessado). */
+  tentativas: integer('tentativas').notNull().default(1),
+  /** extra D13: o que o processamento fez (pago, estornado, vencido, ignorado, sem_pedido). */
+  resultado: text('resultado'),
+  /** extra D13 */
+  ultimaTentativaEm: ts('ultima_tentativa_em'),
 });
 
 /* ------------------------------------------------------------------ estudo */
@@ -758,9 +800,18 @@ export const auditoria = pgTable(
     acao: text('acao').notNull(),
     alvo: text('alvo'),
     detalhes: jsonb('detalhes').$type<Record<string, unknown>>(),
+    /** extra D13 */
+    ip: text('ip'),
+    motivo: text('motivo'),
+    antes: jsonb('antes').$type<Record<string, unknown>>(),
+    depois: jsonb('depois').$type<Record<string, unknown>>(),
     criadoEm: criadoEm(),
   },
-  (t) => [index('auditoria_criado_idx').on(t.criadoEm), index('auditoria_acao_idx').on(t.acao)],
+  (t) => [
+    index('auditoria_criado_idx').on(t.criadoEm),
+    index('auditoria_acao_idx').on(t.acao),
+    index('auditoria_alvo_idx').on(t.alvo),
+  ],
 );
 
 /* ------------------------------------------------- extra: coletor/importação */
@@ -810,4 +861,86 @@ export const importacoes = pgTable(
     atualizadoEm: atualizadoEm(),
   },
   (t) => [index('importacoes_status_idx').on(t.status, t.criadoEm)],
+);
+
+/* ------------------------------------------------------ extra D13: superadmin */
+
+/** Códigos de recuperação do 2FA (só o hash SHA-256; cada um vale uma vez). */
+export const codigosRecuperacao = pgTable(
+  'codigos_recuperacao',
+  {
+    id: id(),
+    usuarioId: uuid('usuario_id')
+      .notNull()
+      .references(() => usuarios.id, { onDelete: 'cascade' }),
+    hash: text('hash').notNull(),
+    usadoEm: ts('usado_em'),
+    criadoEm: criadoEm(),
+  },
+  (t) => [index('codigos_recuperacao_usuario_idx').on(t.usuarioId)],
+);
+
+/** Cada execução de job do worker (saúde no painel /super/sistema). */
+export const jobsExecucoes = pgTable(
+  'jobs_execucoes',
+  {
+    id: id(),
+    job: text('job').notNull(),
+    iniciadoEm: ts('iniciado_em').notNull().defaultNow(),
+    terminadoEm: ts('terminado_em'),
+    ok: boolean('ok'),
+    resultado: jsonb('resultado').$type<Record<string, unknown>>(),
+    erro: text('erro'),
+  },
+  (t) => [index('jobs_execucoes_job_idx').on(t.job, t.iniciadoEm)],
+);
+
+/** Configurações do produto que não são segredo (chave → valor), com auditoria. */
+export const configuracoes = pgTable('configuracoes', {
+  chave: text('chave').primaryKey(),
+  valor: jsonb('valor').$type<unknown>().notNull(),
+  atualizadoEm: ts('atualizado_em').notNull().defaultNow(),
+  atualizadoPor: uuid('atualizado_por').references(() => usuarios.id, { onDelete: 'set null' }),
+});
+
+/** Comunicação em massa (e-mail ou push), enviada pelo worker em fila. */
+export const comunicacoes = pgTable(
+  'comunicacoes',
+  {
+    id: id(),
+    canal: canalComunicacaoEnum('canal').notNull(),
+    segmento: segmentoComunicacaoEnum('segmento').notNull(),
+    diasInativo: integer('dias_inativo'),
+    assunto: text('assunto').notNull(),
+    mensagem: text('mensagem').notNull(),
+    link: text('link'),
+    status: statusComunicacaoEnum('status').notNull().default('na_fila'),
+    total: integer('total').notNull().default(0),
+    criadoPor: uuid('criado_por').references(() => usuarios.id, { onDelete: 'set null' }),
+    criadoEm: criadoEm(),
+    iniciadoEm: ts('iniciado_em'),
+    concluidoEm: ts('concluido_em'),
+  },
+  (t) => [index('comunicacoes_status_idx').on(t.status, t.criadoEm)],
+);
+
+export const comunicacoesEnvios = pgTable(
+  'comunicacoes_envios',
+  {
+    id: id(),
+    comunicacaoId: uuid('comunicacao_id')
+      .notNull()
+      .references(() => comunicacoes.id, { onDelete: 'cascade' }),
+    usuarioId: uuid('usuario_id')
+      .notNull()
+      .references(() => usuarios.id, { onDelete: 'cascade' }),
+    status: statusEnvioComunicacaoEnum('status').notNull().default('pendente'),
+    enviadoEm: ts('enviado_em'),
+    erro: text('erro'),
+  },
+  (t) => [
+    unique('comunicacoes_envios_unico').on(t.comunicacaoId, t.usuarioId),
+    index('comunicacoes_envios_status_idx').on(t.comunicacaoId, t.status),
+    index('comunicacoes_envios_usuario_idx').on(t.usuarioId, t.enviadoEm),
+  ],
 );

@@ -12,6 +12,7 @@ import {
   Uuid,
   ZAreaCargo,
   ZDivisao,
+  ZPapel,
   ZStatusConcurso,
 } from './comum.js';
 import { CampoSenha } from './auth.js';
@@ -33,7 +34,7 @@ export const MeResposta = ContadoresUsuario.extend({
   /** "***.456.789-**" */
   cpfOculto: z.string(),
   celular: z.string(),
-  papel: z.enum(['aluno', 'admin']),
+  papel: ZPapel,
   acesso: z.boolean(),
   avatar: Avatar,
   concurso: z
@@ -53,6 +54,8 @@ export const MeResposta = ContadoresUsuario.extend({
   metaDiaria: ZMetaDiaria,
   lembreteHora: Hora.nullable(),
   notificacoes: z.boolean(),
+  /** D13: aceita receber e-mail e push de novidades (opt-in, padrão desligado). */
+  marketing: z.boolean().default(false),
   apelidoLiga: z.string().nullable(),
   sons: z.boolean(),
   vidasMax: z.number().int(),
@@ -72,6 +75,8 @@ export const MeResposta = ContadoresUsuario.extend({
   resultadoLigaPendente: z.boolean(),
   /** Versão do conteúdo; quando muda, a PWA invalida o cache e o pacote offline. */
   versaoConteudo: z.number().int(),
+  /** D13: superadmin sem 2FA configurado ou sem o código nesta sessão (vai para /super/2fa). */
+  doisFatoresPendente: z.boolean().default(false),
   criadoEm: DataHora,
 });
 export type MeResposta = z.infer<typeof MeResposta>;
@@ -83,6 +88,7 @@ export const MeAtualizarEntrada = z
     metaDiaria: ZMetaDiaria,
     lembreteHora: Hora.nullable(),
     notificacoes: z.boolean(),
+    marketing: z.boolean(),
     apelidoLiga: z
       .string()
       .trim()

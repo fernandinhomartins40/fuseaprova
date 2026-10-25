@@ -12,7 +12,9 @@ import {
   DIVISOES,
   ESCOLARIDADES,
   LETRAS,
+  METODOS_PEDIDO,
   ORIGENS_QUESTAO,
+  PAPEIS,
   SLUGS_DISCIPLINA,
   STATUS_CONCURSO,
   STATUS_PEDIDO,
@@ -46,6 +48,14 @@ export const CODIGOS_ERRO = {
   token_invalido: 400,
   limite_requisicoes: 429,
   pix_indisponivel: 502,
+  dois_fatores_necessario: 403,
+  dois_fatores_pendente: 403,
+  reconfirmacao_invalida: 403,
+  conta_bloqueada: 403,
+  codigo_invalido: 400,
+  ultimo_superadmin: 409,
+  asaas_indisponivel: 502,
+  manutencao: 503,
   interno: 500,
 } as const;
 export type CodigoErro = keyof typeof CODIGOS_ERRO;
@@ -73,6 +83,15 @@ export const MENSAGENS_ERRO: Record<CodigoErro, string> = {
   token_invalido: 'Este link é inválido ou expirou. Peça um novo.',
   limite_requisicoes: 'Muitas tentativas. Espere alguns minutos e tente de novo.',
   pix_indisponivel: 'Não foi possível gerar o Pix agora. Tente de novo em alguns minutos.',
+  dois_fatores_necessario:
+    'Configure a verificação em duas etapas (app autenticador) para usar o painel superadmin.',
+  dois_fatores_pendente: 'Digite o código do app autenticador para continuar.',
+  reconfirmacao_invalida: 'Confirme com sua senha ou com o código do app autenticador.',
+  conta_bloqueada: 'Sua conta está bloqueada. Fale com o suporte.',
+  codigo_invalido: 'Código inválido ou expirado. Confira o app autenticador e tente de novo.',
+  ultimo_superadmin: 'Não é possível remover o último superadmin ativo.',
+  asaas_indisponivel: 'O Asaas não respondeu agora. Tente de novo em alguns minutos.',
+  manutencao: 'O Fuse Aprova está em manutenção. Volte em alguns minutos.',
   interno: 'Algo deu errado do nosso lado. Tente de novo em instantes.',
 };
 
@@ -122,6 +141,8 @@ export const ZTipoLicao = z.enum(TIPOS_LICAO);
 export const ZStatusPedido = z.enum(STATUS_PEDIDO);
 export const ZTipoSessaoEstudo = z.enum(TIPOS_SESSAO_ESTUDO);
 export const ZDivisao = z.enum(DIVISOES);
+export const ZPapel = z.enum(PAPEIS);
+export const ZMetodoPedido = z.enum(METODOS_PEDIDO);
 
 export const IdParams = z.object({ id: Uuid });
 export type IdParams = z.infer<typeof IdParams>;
