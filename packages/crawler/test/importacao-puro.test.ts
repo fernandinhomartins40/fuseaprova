@@ -71,6 +71,20 @@ describe('parser do caderno', () => {
     expect(r2.questoes.map((q) => Boolean(q.textoApoio))).toEqual([true, false, true]);
   });
 
+  it('alternativa E que continua depois da quebra de página não vira texto de apoio', () => {
+    // Lote 2: "E) A adoção do sistema de plantio direto" / página / "(SPD) e a rotação…".
+    const r2 = parseCaderno(
+      'CONHECIMENTOS ESPECÍFICOS\n\n' +
+        '01) Assinale a correta:\nA) a.\nB) b.\nC) c.\nD) d.\nE) A adoção do sistema de plantio direto\n\n' +
+        '(SPD) e a rotação de culturas aumentam o armazenamento de água.\n\n' +
+        '02) A água é o principal constituinte:\nA) a.\nB) b.\nC) c.\nD) d.\nE) e.\n',
+    );
+    expect(r2.questoes[0]!.alternativas[4]!.texto).toBe(
+      'A adoção do sistema de plantio direto (SPD) e a rotação de culturas aumentam o armazenamento de água.',
+    );
+    expect(r2.questoes[1]!.textoApoio).toBeNull();
+  });
+
   it('lê o cargo da capa', () => {
     expect(cargoDaCapa(['PREFEITURA DE TOLEDO', '   CARGO: ADVOGADO   SUAS I  '])).toBe(
       'ADVOGADO SUAS I',

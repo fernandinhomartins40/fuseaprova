@@ -348,7 +348,12 @@ export function parseCaderno(texto: string): ResultadoCaderno {
       cur.enunciado.push(linha);
     } else if (estado === 'alternativa' && cur) {
       const ultima = cur.alternativas[cur.alternativas.length - 1]!;
-      const terminou = ultima.letra === 'E' && emBrancoAntes;
+      // A linha em branco depois da E encerra a questão, salvo quando é só a quebra de página
+      // no meio da frase: a E não fechou com pontuação e a linha segue em minúscula ou "(".
+      const continuaE =
+        !/[.!?;:)"”]\s*$/.test(ultima.linhas[ultima.linhas.length - 1] ?? '') &&
+        /^[a-zà-ÿ(]/.test(linha);
+      const terminou = ultima.letra === 'E' && emBrancoAntes && !continuaE;
       if (terminou || RE_INICIO_APOIO.test(linha)) {
         estado = 'apoio';
         apoio.linhas.push(linha);
