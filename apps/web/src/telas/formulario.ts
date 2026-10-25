@@ -20,6 +20,8 @@ export function rotaDoProximo(p: ProximoPasso): string {
       return '/onboarding';
     case 'admin':
       return '/admin';
+    case 'dois_fatores':
+      return '/super/2fa';
     default:
       return '/aprender';
   }

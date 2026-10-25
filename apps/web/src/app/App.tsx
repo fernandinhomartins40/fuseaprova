@@ -28,6 +28,7 @@ const Perfil = lazy(() => import('../telas/Perfil'));
 const Configuracoes = lazy(() => import('../telas/Configuracoes'));
 const NaoEncontrada = lazy(() => import('../telas/NaoEncontrada'));
 const Admin = lazy(() => import('../admin/rotas'));
+const Super = lazy(() => import('../super/rotas'));
 
 /** 401 → /entrar e 402 → /pagamento, vindos de qualquer chamada da API. */
 function Redirecionador() {
@@ -167,6 +168,14 @@ export function Rotas() {
           element={
             <Guarda nivel="admin">
               <Admin />
+            </Guarda>
+          }
+        />
+        <Route
+          path="/super/*"
+          element={
+            <Guarda nivel="super">
+              <Super />
             </Guarda>
           }
         />

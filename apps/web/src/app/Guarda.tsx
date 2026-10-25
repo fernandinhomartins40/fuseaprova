@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { ehAdmin } from '@fuse/shared';
 import { ErroApi } from '../api/cliente';
 import { useMe } from '../api/consultas';
 import { Carregando, ErroTela } from '../ui';
@@ -8,13 +9,14 @@ import { Carregando, ErroTela } from '../ui';
  * Guardas do lado da PWA (espelham as da API, que é quem decide de verdade):
  * - login: precisa de sessão (senão /entrar);
  * - acesso: precisa de pagamento confirmado (senão /pagamento) e de onboarding feito;
- * - admin: papel admin (senão /aprender).
+ * - admin: papel admin ou superadmin (senão /aprender);
+ * - super: papel superadmin (D13). Superadmin sem 2FA nesta sessão vai para /super/2fa.
  */
 export function Guarda({
   nivel,
   children,
 }: {
-  nivel: 'login' | 'acesso' | 'admin';
+  nivel: 'login' | 'acesso' | 'admin' | 'super';
   children: ReactNode;
 }) {
   const me = useMe();
@@ -32,8 +34,13 @@ export function Guarda({
     );
   }
   const u = me.data!;
-  if (nivel === 'admin') {
-    return u.papel === 'admin' ? <>{children}</> : <Navigate to="/aprender" replace />;
+  if (nivel === 'admin' || nivel === 'super') {
+    const pode = nivel === 'admin' ? ehAdmin(u.papel) : u.papel === 'superadmin';
+    if (!pode) return <Navigate to="/aprender" replace />;
+    if (u.papel === 'superadmin' && u.doisFatoresPendente && pathname !== '/super/2fa') {
+      return <Navigate to="/super/2fa" replace />;
+    }
+    return <>{children}</>;
   }
   if (nivel === 'acesso') {
     if (!u.acesso) return <Navigate to="/pagamento" replace />;
