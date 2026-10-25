@@ -148,15 +148,21 @@ Pegue o token gerado:
 grep '^ASAAS_WEBHOOK_TOKEN=' /root/fuseaprova/deploy/.env
 ```
 
-No painel do Asaas (sandbox: `https://sandbox.asaas.com`; produção: `https://www.asaas.com`), em **Integrações → Webhooks** (o menu pode mudar; confira em `docs.asaas.com`), adicione:
+O jeito recomendado é o script `deploy/asaas-webhook.sh`, que cria ou atualiza o webhook pela API do Asaas, só com os eventos que o app trata (veja **7.1 Asaas em produção**):
 
-- **Nome:** Fuse Aprova
+```bash
+bash /root/fuseaprova/deploy/asaas-webhook.sh
+```
+
+Se preferir o painel do Asaas (sandbox: `https://sandbox.asaas.com`; produção: `https://www.asaas.com`, em **Integrações → Webhooks**), use os mesmos valores do script:
+
+- **Nome:** Fuse Aprova - cobranças Pix
 - **URL:** `https://www.fuseaprova.com.br/api/webhooks/asaas`
-- **E-mail:** o seu (o Asaas avisa se a fila travar)
+- **E-mail:** `fuseagencia1515@gmail.com` (o Asaas avisa se a fila travar)
 - **Versão da API:** v3
-- **Token de autenticação:** o valor de `ASAAS_WEBHOOK_TOKEN`. O Asaas o envia no header `asaas-access-token`, e a API responde 401 se não bater.
+- **Token de autenticação:** o valor de `ASAAS_WEBHOOK_TOKEN` (de 32 a 255 caracteres). O Asaas o envia no header `asaas-access-token`, e a API responde 401 se não bater.
 - **Fila de sincronização:** ativa, sequencial.
-- **Eventos:** `PAYMENT_RECEIVED`, `PAYMENT_CONFIRMED`, `PAYMENT_OVERDUE`, `PAYMENT_REFUNDED`, `PAYMENT_CHARGEBACK_REQUESTED` (pode marcar todos os de cobrança; os outros são gravados e ignorados).
+- **Eventos (só estes):** `PAYMENT_RECEIVED`, `PAYMENT_CONFIRMED`, `PAYMENT_REFUNDED`, `PAYMENT_CHARGEBACK_REQUESTED`, `PAYMENT_OVERDUE`, `PAYMENT_DELETED`.
 
 O token errado precisa dar **401**:
 
@@ -186,6 +192,15 @@ docker compose exec api pnpm --filter @fuse/api cli admin:criar --email voce@fus
 ```
 
 Sem `--senha`, o comando pede a senha no terminal sem eco (não passe a senha na linha de comando: ela fica no histórico do shell). O admin nasce com acesso liberado. Entre em `https://www.fuseaprova.com.br/entrar` e abra `/admin`.
+
+### 1.8 Criar ou promover o superadmin (D13)
+
+```bash
+cd /root/fuseaprova/deploy
+docker compose exec api pnpm --filter @fuse/api cli superadmin:criar --email voce@fuseaprova.com.br
+```
+
+Se a conta já existe (por exemplo, o admin do passo 1.7), o comando **só promove o papel**: a senha não muda e as sessões abertas caem. Se a conta não existe, passe também `--nome "Nome Sobrenome"`. Sem `--senha`, o comando gera uma senha forte e a mostra **uma única vez**; guarde-a num gerenciador de senhas. No primeiro login, a PWA leva para `/super/2fa`, onde você lê o QR code com um app autenticador e guarda os códigos de recuperação. Se perder o celular e os códigos, use `cli superadmin:resetar-2fa --email …`.
 
 ---
 
@@ -310,7 +325,7 @@ Ele restaura num banco temporário, compara tabelas e linhas com a produção e 
 ## 7. Trocar o Asaas de sandbox para produção
 
 1. Na conta de **produção** do Asaas: conta aprovada, chave Pix cadastrada e uma chave de API (`$aact_prod_...`).
-2. Gere um token novo para o webhook de produção (`openssl rand -hex 32`) e cadastre o webhook da seção 1.5 no painel de produção.
+2. Gere um token novo para o webhook de produção (`openssl rand -hex 32`), grave no `.env` (passo 3) e rode `bash /root/fuseaprova/deploy/asaas-webhook.sh` (seção 7.1).
 3. No `.env` da VPS:
    ```
    ASAAS_API_KEY='$aact_prod_...'
@@ -320,6 +335,37 @@ Ele restaura num banco temporário, compara tabelas e linhas com a produção e 
 4. `docker compose up -d --force-recreate api worker`.
 5. Os clientes e cobranças do sandbox não existem na produção: remova as contas de teste antes de abrir as vendas.
 6. Faça uma compra real de R$ 397, confirme a liberação e, se quiser, estorne pelo admin (o acesso é revogado quando chega o `PAYMENT_REFUNDED`).
+
+### 7.1 Asaas em produção
+
+**A conta é compartilhada.** A conta Asaas de produção (FUSE AGENCIA LTDA) também atende o MercadoFlow e o fusai, cada um com o seu webhook. O Asaas manda para cada webhook os eventos de **todas** as cobranças da conta, então o do Fuse Aprova também recebe os pagamentos das outras aplicações.
+
+**Filtro de eventos na API** (`webhookAsaas`, DECISOES D14):
+
+1. confere o header `asaas-access-token` (401 se não bater);
+2. o evento é do Fuse Aprova quando o `payment.id` está em `pedidos.asaas_payment_id` **ou** o `payment.externalReference` começa com `fuseaprova:` (as cobranças e os clientes novos usam `fuseaprova:usuario:<uuid>`; os pedidos antigos, com `usuario:<uuid>`, são reconhecidos pelo `payment.id`);
+3. evento de outra aplicação responde **200 `{ ok: true }`** e **não grava nada** (o corpo traz dados pessoais de clientes das outras aplicações). Só sai um log em nível debug com o id e o tipo do evento;
+4. evento do Fuse Aprova segue como antes: grava em `webhook_eventos` de forma idempotente pelo id, processa e marca `processado_em`; em erro, apaga a marca e responde 500, para o Asaas reenviar.
+
+A descrição da cobrança, que o pagador e o painel da conta compartilhada veem, é "Fuse Aprova: acesso ao preparatório do concurso da Prefeitura de Palmital-PR (FAU)".
+
+**Cadastrar ou atualizar o webhook** (na VPS, como root, depois de preencher `ASAAS_API_KEY`, `ASAAS_BASE_URL`, `ASAAS_WEBHOOK_TOKEN` e `APP_URL` no `.env`):
+
+```bash
+bash /root/fuseaprova/deploy/asaas-webhook.sh
+```
+
+O script:
+
+- lê as 4 variáveis de `/root/fuseaprova/deploy/.env` (a chave fica entre aspas simples, porque começa com `$`; `ENV_FILE=/outro/.env` muda o caminho);
+- procura em `GET /v3/webhooks` o webhook com a URL `${APP_URL}/api/webhooks/asaas`. Se não houver, cria com `POST /v3/webhooks`; se houver, atualiza com `PUT /v3/webhooks/{id}`. Rodar de novo não muda nada (idempotente);
+- **nunca toca** nos webhooks de outras URLs (MercadoFlow, fusai). Se houver mais de um webhook com a nossa URL, ele para e pede para apagar os repetidos no painel;
+- cadastra só os eventos tratados pelo app: `PAYMENT_RECEIVED`, `PAYMENT_CONFIRMED`, `PAYMENT_REFUNDED`, `PAYMENT_CHARGEBACK_REQUESTED`, `PAYMENT_OVERDUE` e `PAYMENT_DELETED`, com fila sequencial, `enabled` true e `interrupted` false;
+- imprime o resultado **sem a chave e sem o token** e sai com erro se os eventos, o token ou a fila não estiverem como esperado.
+
+O `PUT` do Asaas não aceita `email` nem `apiVersion`. Se o webhook já existia com outro e-mail, o script avisa, e a troca se faz no painel. Se a fila do webhook for interrompida (o Asaas para depois de falhas seguidas), corrija a causa e rode o script de novo: ele grava `interrupted: false`, e o Asaas reenvia os eventos pendentes.
+
+Depois, confira o 401 com o token errado (seção 1.5) e faça uma compra real.
 
 ---
 

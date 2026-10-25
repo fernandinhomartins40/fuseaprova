@@ -145,8 +145,11 @@ services:
       PORT: "3000"
       # Caminho DENTRO do container (no host: /root/fuseaprova/arquivos).
       ARQUIVOS_DIR: /srv/fuse/arquivos
+      # D13: /super/sistema lê o ULTIMO_BACKUP (montado só para leitura).
+      BACKUP_DIR: /srv/fuse/backups
     volumes:
       - ${FUSEAPROVA_ARQUIVOS_HOST:-/root/fuseaprova/arquivos}:/srv/fuse/arquivos
+      - ${FUSEAPROVA_BACKUPS_HOST:-/root/fuseaprova/backups}:/srv/fuse/backups:ro
     expose:
       - "3000"
     networks: [interna]
