@@ -30,6 +30,18 @@ const PONTAS = 3;
  * Linhas vazias são mantidas como '' (separam parágrafos).
  */
 export function linhasLimpas(texto: string): string[] {
+  return linhasLimpasPaginadas(texto).linhas;
+}
+
+/**
+ * Como `linhasLimpas`, mas também diz onde cada página termina: `fimDePagina` guarda o índice
+ * da linha vazia que fecha cada página (a quebra de página real, que o parser usa para saber
+ * que uma alternativa E continua na página seguinte).
+ */
+export function linhasLimpasPaginadas(texto: string): {
+  linhas: string[];
+  fimDePagina: Set<number>;
+} {
   const paginas = normalizarTextoPdf(texto)
     .split('\f')
     .map((p) => p.split('\n').map((l) => l.replace(/\s+$/, '')));
@@ -58,6 +70,7 @@ export function linhasLimpas(texto: string): string[] {
   );
 
   const saida: string[] = [];
+  const fimDePagina = new Set<number>();
   for (const p of paginas) {
     const pontas = new Set(pontasDe(p));
     p.forEach((l, i) => {
@@ -65,7 +78,8 @@ export function linhasLimpas(texto: string): string[] {
       if (pontas.has(i) && (NUMERO_PAGINA.test(t) || repetidas.has(chaveComparacao(t)))) return;
       saida.push(t);
     });
+    fimDePagina.add(saida.length);
     saida.push('');
   }
-  return saida;
+  return { linhas: saida, fimDePagina };
 }

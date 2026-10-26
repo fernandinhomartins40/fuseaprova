@@ -12,7 +12,10 @@
  */
 import type { Letra, SlugDisciplina } from '@fuse/shared';
 import { chaveComparacao, limparEspacos } from '../util/texto.js';
-import { linhasLimpas } from './texto-pdf.js';
+import { fundirMarcas, RE_PEDE_DESTAQUE, resolverNegrito, semMarcas } from './marcas.js';
+import { linhasLimpasPaginadas } from './texto-pdf.js';
+
+export { semMarcas };
 
 export interface AlternativaExtraida {
   letra: Letra;
@@ -52,7 +55,7 @@ const SECOES: [RegExp, SlugDisciplina][] = [
   [/^(LINGUA PORTUGUESA|PORTUGUES|INTERPRETACAO DE TEXTO)/, 'portugues'],
   [/^(MATEMATICA|RACIOCINIO LOGICO)/, 'matematica'],
   [
-    /^(CONHECIMENTOS GERAIS|ATUALIDADES|REALIDADE DO MUNICIPIO|HISTORIA E GEOGRAFIA|CONHECIMENTOS SOBRE O MUNICIPIO)/,
+    /^(CONHECIMENTOS GERAIS|ATUALIDADES|REALIDADE DO MUNICIPIO|HISTORIA E GEOGRAFIA|CONHECIMENTOS SOBRE O MUNICIPIO|CONHECIMENTOS DE INFORMATICA)/,
     'gerais',
   ],
   [
@@ -90,6 +93,47 @@ export function disciplinaPadraoFau(numero: number, total: number): SlugDiscipli
   if (numero <= 10) return 'matematica';
   if (numero <= 15) return 'gerais';
   return 'especificos';
+}
+
+/* ----------------------------------------------------------- marcas de estilo */
+
+/*
+ * O texto pode trazer marcas de estilo vindas de `estilos.ts` (ver `marcas.ts`). As regras de
+ * estrutura (número da questão, alternativa, título de seção…) olham sempre a linha SEM elas.
+ */
+
+/** Resto da linha marcada depois de um prefixo reconhecido na linha sem marcas. */
+function restoMarcado(marcada: string, plana: string, resto: string): string {
+  if (marcada === plana) return resto;
+  const n = plana.length - resto.length;
+  return marcada.startsWith(plana.slice(0, n)) ? marcada.slice(n) : resto;
+}
+
+/** Item de lista dentro do enunciado: "1. …", "II – …", "( ) …". */
+const RE_ITEM_LISTA = /^(\d{1,2}|[IVX]{1,4})\s*[.)–-]\s|^\(\s*[VFXvf]?\s*\)\s/;
+
+/** Item solto depois da alternativa E: "( ) …" ou a lista romana recomeçando em "I – …". */
+const RE_ITEM_SOLTO = /^\(\s*[VFXvf]?\s*\)\s+\S|^I\s*[-–.)]\s+\S/;
+
+/** Enunciado que pede para julgar/analisar itens (e por isso tem de trazer os itens). */
+const RE_PEDE_ITENS =
+  /\b(afirma|assertiv|senten[çc]as|itens|julgue|analise|proposi[çc]|verdadeir|V para|falso)/i;
+
+/** Última palavra que não fecha frase: a alternativa continua na linha seguinte. */
+const LIGACAO = new Set(
+  'a ao aos as com contra da das de do dos e em entre na nas no nos o os ou para pela pelas pelo pelos por que se sem sob sobre um uma uns umas à às seu sua seus suas como mais menos não ser é foi são'.split(
+    ' ',
+  ),
+);
+
+/** A alternativa termina no meio da frase (sem pontuação final, ou em vírgula/conectivo)? */
+export function terminaNoMeio(texto: string): boolean {
+  const t = semMarcas(texto).trim();
+  if (!t) return false;
+  if (/,$/.test(t)) return true;
+  if (/[.!?;:)"”»…]$/.test(t)) return false;
+  const ultima = /([A-Za-zÀ-ÿ]+)$/.exec(t)?.[1]?.toLowerCase();
+  return ultima ? LIGACAO.has(ultima) : false;
 }
 
 /* ----------------------------------------------------------- linhas */
@@ -162,6 +206,19 @@ export function intervaloDoApoio(texto: string): [number, number] | null {
   return uma ? [Number(uma[1]), Number(uma[1])] : null;
 }
 
+const MARCA = '[*\uE000\uE001]';
+const RE_HIFEN_FIM = new RegExp(`[A-Za-zÀ-ÿ]-(${MARCA}{1,2})?$`);
+const RE_MINUSCULA_INI = new RegExp(`^${MARCA}{0,2}[a-zà-ÿ]`);
+
+/** "força-" + "tarefa" -> "forçatarefa", sem deixar marca de estilo no meio da palavra. */
+function juntarHifen(atual: string, t: string): string {
+  const fim = new RegExp(`-(${MARCA}{1,2})?$`).exec(atual)!;
+  const cabeca = atual.slice(0, fim.index);
+  const fecha = fim[1] ?? '';
+  const abre = new RegExp(`^${MARCA}{1,2}`).exec(t)?.[0] ?? '';
+  return fecha && abre === fecha ? cabeca + t.slice(abre.length) : cabeca + fecha + t;
+}
+
 /** Junta linhas quebradas: "palavra-" + "ção" → "palavração"; parágrafos ('') viram \n\n. */
 export function juntarLinhas(linhas: string[]): string {
   const paragrafos: string[] = [];
@@ -174,13 +231,15 @@ export function juntarLinhas(linhas: string[]): string {
     }
     const t = l.trim();
     if (!atual) atual = t;
-    else if (/[A-Za-zÀ-ÿ]-$/.test(atual) && /^[a-zà-ÿ]/.test(t)) atual = atual.slice(0, -1) + t;
+    else if (RE_HIFEN_FIM.test(atual) && RE_MINUSCULA_INI.test(t)) atual = juntarHifen(atual, t);
     // Itens enumerados ("1. …", "II – …") começam em linha própria.
-    else if (/^(\d{1,2}|[IVX]{1,4})\s*[.)–-]\s/.test(t)) atual = `${atual}\n${t}`;
+    else if (RE_ITEM_LISTA.test(semMarcas(t))) atual = `${atual}\n${t}`;
     else atual = `${atual} ${t}`;
   }
   if (atual) paragrafos.push(atual);
-  return paragrafos.map((p) => p.split('\n').map(limparEspacos).join('\n')).join('\n\n');
+  return fundirMarcas(
+    paragrafos.map((p) => p.split('\n').map(limparEspacos).join('\n')).join('\n\n'),
+  );
 }
 
 /* ----------------------------------------------------------- parser */
@@ -200,7 +259,9 @@ interface BlocoApoio {
 }
 
 export function parseCaderno(texto: string): ResultadoCaderno {
-  const linhas = linhasLimpas(texto);
+  const { linhas, fimDePagina } = linhasLimpasPaginadas(texto);
+  // Estrutura (questão, alternativa, seção…) é decidida sobre a linha sem as marcas de estilo.
+  const planas = linhas.map(semMarcas);
   const avisos: string[] = [];
   const secoes: SecaoCaderno[] = [];
   const montadas: { q: QuestaoEmMontagem; apoio: BlocoApoio | null }[] = [];
@@ -220,8 +281,23 @@ export function parseCaderno(texto: string): ResultadoCaderno {
   let apoio: BlocoApoio = { linhas: [], capa: true };
   let secaoAtual: { titulo: string; disciplina: SlugDisciplina } | null = null;
   let linhaEmBranco = false;
+  /** A última linha vazia era o fim de uma página (a E pode continuar no topo da próxima). */
+  let quebraDePagina = false;
+  /** Itens soltos depois da E que pertencem a uma questão anterior (ordem do PDF embaralhada). */
+  let orfaos: { alvo: QuestaoEmMontagem; de: number; linhas: string[] } | null = null;
+
+  const devolverOrfaos = () => {
+    if (!orfaos) return;
+    const { alvo, de, linhas: itens } = orfaos;
+    orfaos = null;
+    alvo.enunciado.push('', ...itens);
+    avisos.push(
+      `Itens soltos depois da questão ${de} foram devolvidos ao enunciado da questão ${alvo.numero}; confira.`,
+    );
+  };
 
   const fechar = () => {
+    devolverOrfaos();
     if (atual) montadas.push({ q: atual, apoio: null });
     atual = null;
   };
@@ -238,8 +314,8 @@ export function parseCaderno(texto: string): ResultadoCaderno {
     for (let j = i + 1; j < linhas.length; j++) {
       const l = linhas[j]!;
       if (!l) continue;
-      if (matchAlternativa(l)?.letra === 'A') return true;
-      const prox = matchQuestao(l);
+      if (matchAlternativa(planas[j]!)?.letra === 'A') return true;
+      const prox = matchQuestao(planas[j]!);
       if (prox && prox.numero === q.numero + 1 && mesmoFormato(prox, f)) return false;
     }
     return false;
@@ -259,7 +335,7 @@ export function parseCaderno(texto: string): ResultadoCaderno {
     if (apoio.capa) {
       // Da capa só aproveita o último bloco que começa como texto de apoio ("Leia o texto…").
       const inicio = ls
-        .map((l, i) => (RE_INICIO_APOIO.test(l) ? i : -1))
+        .map((l, i) => (RE_INICIO_APOIO.test(semMarcas(l)) ? i : -1))
         .filter((i) => i >= 0)
         .pop();
       ls = inicio === undefined ? [] : ls.slice(inicio);
@@ -275,25 +351,35 @@ export function parseCaderno(texto: string): ResultadoCaderno {
     const semInstrucao =
       partes.length > 1 &&
       /\bquest(ões|ão|oes|ao)\b/i.test(partes[0]!) &&
-      RE_INICIO_APOIO.test(partes[0]!)
+      RE_INICIO_APOIO.test(semMarcas(partes[0]!))
         ? partes.slice(1).join('\n\n')
         : textoApoio;
     apoios.push({ de, ate, texto: semInstrucao, explicito: !!faixa });
   };
 
   for (const [i, linha] of linhas.entries()) {
+    const plana = planas[i]!;
     if (!linha) {
       linhaEmBranco = true;
+      if (fimDePagina.has(i)) quebraDePagina = true;
+      if (orfaos) {
+        // Os itens soltos continuam só se a próxima linha ainda parece item ou continuação.
+        const prox = planas.slice(i + 1).find(Boolean);
+        if (!prox || !(RE_ITEM_SOLTO.test(prox) || /^[a-zà-ÿ(]/.test(prox))) devolverOrfaos();
+        continue;
+      }
       if (estado === 'enunciado' && atual) (atual as QuestaoEmMontagem).enunciado.push('');
       else if (estado === 'apoio' || estado === 'capa') apoio.linhas.push('');
       continue;
     }
     const emBrancoAntes = linhaEmBranco;
+    const nova = quebraDePagina;
     linhaEmBranco = false;
+    quebraDePagina = false;
 
-    const secao = detectarSecao(linha);
+    const secao = detectarSecao(plana);
     const faixaIndice = secao
-      ? /(\d{1,3})\s*(?:a|à|-|–|até)\s*(\d{1,3})\s*\)?\s*$/i.exec(linha)
+      ? /(\d{1,3})\s*(?:a|à|-|–|até)\s*(\d{1,3})\s*\)?\s*$/i.exec(plana)
       : null;
     if (secao && faixaIndice) {
       // Quadro da capa ("LÍNGUA PORTUGUESA ... 01 a 05"): vale como faixa, não como título.
@@ -302,14 +388,14 @@ export function parseCaderno(texto: string): ResultadoCaderno {
     }
     if (secao) {
       fechar();
-      secaoAtual = { titulo: limparEspacos(linha), disciplina: secao };
+      secaoAtual = { titulo: limparEspacos(plana), disciplina: secao };
       secoes.push({ titulo: secaoAtual.titulo, disciplina: secao, primeiraQuestao: null });
       apoio = { linhas: [], capa: false };
       estado = 'apoio';
       continue;
     }
 
-    const q = matchQuestao(linha);
+    const q = matchQuestao(plana);
     if (q && aceitaInicio(q, i)) {
       fechar();
       registrarApoio(q.numero);
@@ -319,7 +405,7 @@ export function parseCaderno(texto: string): ResultadoCaderno {
         numero: q.numero,
         disciplina: secaoAtual?.disciplina ?? null,
         secao: secaoAtual?.titulo ?? null,
-        enunciado: q.resto ? [q.resto] : [],
+        enunciado: q.resto ? [restoMarcado(linha, plana, q.resto)] : [],
         alternativas: [],
       };
       const s = secoes[secoes.length - 1];
@@ -329,7 +415,7 @@ export function parseCaderno(texto: string): ResultadoCaderno {
     }
 
     const cur = atual as QuestaoEmMontagem | null;
-    const alt = cur ? matchAlternativa(linha) : null;
+    const alt = cur ? matchAlternativa(plana) : null;
     const proximaLetra = cur ? LETRAS[cur.alternativas.length] : undefined;
     if (
       cur &&
@@ -337,24 +423,54 @@ export function parseCaderno(texto: string): ResultadoCaderno {
       alt.letra === proximaLetra &&
       (estado === 'enunciado' || estado === 'alternativa')
     ) {
-      for (const parte of dividirAlternativasNaLinha(alt.letra, alt.resto)) {
+      for (const parte of dividirAlternativasNaLinha(
+        alt.letra,
+        restoMarcado(linha, plana, alt.resto),
+      )) {
         cur.alternativas.push({ letra: parte.letra, linhas: parte.texto ? [parte.texto] : [] });
       }
       estado = 'alternativa';
       continue;
     }
 
-    if (estado === 'enunciado' && cur) {
+    if (orfaos) {
+      if (RE_INICIO_APOIO.test(plana)) {
+        devolverOrfaos();
+        estado = 'apoio';
+        apoio.linhas.push(linha);
+      } else {
+        orfaos.linhas.push(linha);
+      }
+    } else if (estado === 'enunciado' && cur) {
       cur.enunciado.push(linha);
     } else if (estado === 'alternativa' && cur) {
       const ultima = cur.alternativas[cur.alternativas.length - 1]!;
+      const textoE = ultima.linhas.join(' ');
+      // Itens ("( ) …", "I – …") que o PDF deixou depois da E da questão seguinte: pertencem
+      // ao enunciado de uma questão anterior que pede para julgar itens e não os tem.
+      if (ultima.letra === 'E' && ultima.linhas.length && RE_ITEM_SOLTO.test(plana)) {
+        const anterior = montadas[montadas.length - 1]?.q;
+        const enunciadoAnterior = anterior ? juntarLinhas(anterior.enunciado) : '';
+        const eEhLista = RE_ITEM_LISTA.test(semMarcas(ultima.linhas[0]!));
+        if (
+          anterior &&
+          !eEhLista &&
+          RE_PEDE_ITENS.test(enunciadoAnterior) &&
+          !/(^|\n)\s*(\(\s*[VFXvf]?\s*\)|I\s*[-–.)])\s/.test(semMarcas(enunciadoAnterior))
+        ) {
+          orfaos = { alvo: anterior, de: cur.numero, linhas: [linha] };
+          continue;
+        }
+      }
       // A linha em branco depois da E encerra a questão, salvo quando é só a quebra de página
-      // no meio da frase: a E não fechou com pontuação e a linha segue em minúscula ou "(".
+      // no meio da frase: a E não fechou com pontuação e a linha segue em minúscula ou "(", ou
+      // (na quebra de página) a E acabou em conectivo/vírgula ("…exclusivos da" + "União, …").
       const continuaE =
-        !/[.!?;:)"”]\s*$/.test(ultima.linhas[ultima.linhas.length - 1] ?? '') &&
-        /^[a-zà-ÿ(]/.test(linha);
+        ultima.letra === 'E' &&
+        ((!/[.!?;:)"”]\s*$/.test(semMarcas(textoE)) && /^[a-zà-ÿ(]/.test(plana)) ||
+          (nova && terminaNoMeio(textoE) && !RE_INICIO_APOIO.test(plana)));
       const terminou = ultima.letra === 'E' && emBrancoAntes && !continuaE;
-      if (terminou || RE_INICIO_APOIO.test(linha)) {
+      if (terminou || RE_INICIO_APOIO.test(plana)) {
         estado = 'apoio';
         apoio.linhas.push(linha);
       } else {
@@ -387,7 +503,7 @@ export function parseCaderno(texto: string): ResultadoCaderno {
       const q = montadas[i]!.q;
       if (q.secao !== secao || apoios.some((b) => b !== a && b.de === q.numero)) break;
       const texto = [...q.enunciado, ...q.alternativas.flatMap((x) => x.linhas)].join(' ');
-      if (RE_CITA_TEXTO.test(texto)) (a.extras ??= []).push(q.numero);
+      if (RE_CITA_TEXTO.test(semMarcas(texto))) (a.extras ??= []).push(q.numero);
     }
   }
 
@@ -396,19 +512,31 @@ export function parseCaderno(texto: string): ResultadoCaderno {
     const apoioQ = apoios.filter(
       (a) => (q.numero >= a.de && q.numero <= a.ate) || a.extras?.includes(q.numero),
     );
-    const textoApoio = apoioQ.length ? apoioQ.map((a) => a.texto).join('\n\n') : null;
+    const apoioBruto = apoioQ.length ? apoioQ.map((a) => a.texto).join('\n\n') : null;
     if (apoioQ.some((a) => !a.explicito))
       avisosQ.push('texto de apoio sem indicação das questões; confira');
-    const enunciado = juntarLinhas(q.enunciado);
-    const alternativas = q.alternativas.map((a) => ({
+    const enunciadoBruto = juntarLinhas(q.enunciado);
+    const alternativasBrutas = q.alternativas.map((a) => ({
       letra: a.letra,
       texto: juntarLinhas(a.linhas).replace(/\n\n/g, ' '),
+    }));
+    // Negrito só vira **destaque** na questão que fala em destaque/negrito/sublinhado.
+    const pedeDestaque = RE_PEDE_DESTAQUE.test(
+      semMarcas(
+        [enunciadoBruto, apoioBruto ?? '', ...alternativasBrutas.map((a) => a.texto)].join(' '),
+      ),
+    );
+    const textoApoio = apoioBruto === null ? null : resolverNegrito(apoioBruto, pedeDestaque);
+    const enunciado = resolverNegrito(enunciadoBruto, pedeDestaque);
+    const alternativas = alternativasBrutas.map((a) => ({
+      letra: a.letra,
+      texto: resolverNegrito(a.texto, pedeDestaque),
     }));
     if (!enunciado) avisosQ.push('enunciado vazio');
     if (alternativas.length !== 5)
       avisosQ.push(`${alternativas.length} alternativas extraídas (esperado 5)`);
     if (alternativas.some((a) => !a.texto)) avisosQ.push('alternativa sem texto (pode ser imagem)');
-    if (RE_IMAGEM.test(`${enunciado} ${textoApoio ?? ''}`))
+    if (RE_IMAGEM.test(semMarcas(`${enunciado} ${textoApoio ?? ''}`)))
       avisosQ.push('cita figura/gráfico/tabela: confira se depende de imagem');
     const daFaixa = faixas.find((f) => q.numero >= f.de && q.numero <= f.ate)?.disciplina ?? null;
     const disciplina =
