@@ -489,10 +489,6 @@ function aplicarCenario(nome: string) {
 type Ctx = { params: Record<string, string>; corpo: unknown; query: URLSearchParams };
 type Handler = (c: Ctx) => unknown | Promise<unknown>;
 
-function exigirVidas() {
-  if (estado.usuario.vidas <= 0) throw new Falha(409, 'sem_vidas');
-}
-
 function iniciarSessaoEstudo(
   tipo: SessaoEstudo['tipo'],
   licaoId: string | null,
@@ -786,7 +782,6 @@ const H: Partial<Record<NomeRota, Handler>> = {
     const idx = todasLicoes().findIndex((x) => x.l.id === achado.l.id);
     if (!concluida(achado.l) && idx !== iAtual) throw new Falha(409, 'licao_bloqueada');
     if (achado.l.tipo === 'bau') throw new Falha(409, 'conflito', 'Use abrir-bau.');
-    if (achado.l.tipo === 'normal') exigirVidas();
     const tipo = achado.l.tipo === 'desafio' ? 'desafio' : 'licao';
     const qs = questoesDaLicao(achado.s.assunto.id, achado.l.tamanho, achado.l.ordem);
     return iniciarSessaoEstudo(
@@ -833,7 +828,6 @@ const H: Partial<Record<NomeRota, Handler>> = {
     const q = s.questoes.find((x) => x.id === c.questaoId);
     if (!q) throw new Falha(404, 'nao_encontrado');
     const u = estado.usuario;
-    if (s.tipo === 'licao') exigirVidas();
     const acertou = q.gabarito === c.resposta;
     s.respostas.push({ questaoId: q.id, acertou, tempoMs: c.tempoMs });
     estado.questoesFeitas += 1;
@@ -859,7 +853,6 @@ const H: Partial<Record<NomeRota, Handler>> = {
       comboVisivel: comboVisivel(combo),
       vidas: u.vidas,
       proximaVidaEm: u.vidas < 5 ? u.proximaVidaEm : null,
-      semVidas: s.tipo === 'licao' && u.vidas === 0,
       voltaNaRevisao: !acertou,
       respondidas: s.respostas.length,
       total: s.questoes.length,

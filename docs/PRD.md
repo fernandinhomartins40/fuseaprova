@@ -174,7 +174,7 @@ As telas marcadas com ✅ têm desenho final em `design/png` e `design/html`. As
 - Uma vida é descontada, com animação de coração partido.
 - **ENTENDI** leva à próxima questão.
 - O link "Reportar problema" fica no rodapé da folha, com as opções gabarito errado, enunciado com erro, explicação confusa e outro, mais um campo de texto. Isso cria um registro no painel admin.
-- **Sem vidas** (✏️): uma folha com Capi triste, "Suas vidas acabaram", e duas opções: PRATICAR ERROS PARA RECUPERAR e ESPERAR (com o tempo até a próxima vida).
+- **Vidas nunca travam o estudo** (decisão do dono, 26/10/2026): o contador cai a cada erro, mas com 0 vidas a lição continua normalmente. Não existe a folha "Suas vidas acabaram" (veja 6.2 e D16).
 
 ### 5.11 ✅ 08 Fim da lição
 - Confete, Capi comemorando e "Lição concluída!", com o nome da lição.
@@ -187,7 +187,7 @@ As telas marcadas com ✅ têm desenho final em `design/png` e `design/html`. As
 - Variante ✏️ **Ofensiva perdida**: "Sua ofensiva zerou". Se o aluno tinha protetor, aparece "O protetor salvou sua ofensiva!".
 
 ### 5.13 ✅ 10 Revisar (`/revisar`)
-- **Hero:** "N questões para hoje" e o botão PRATICAR ERROS, que inicia uma lição de até 10 questões da fila vencida. Revisão não gasta vidas e acertar recupera 1 vida, até o máximo.
+- **Hero:** "N questões para hoje" e o botão PRATICAR ERROS, que inicia uma lição de até 10 questões da fila vencida. Revisão não gasta vidas e acertar recupera 1 vida, até o máximo (as vidas são só um indicador: não bloqueiam nada).
 - **Por disciplina:** a barra mostra o domínio e o selo mostra o número de pendentes. Tocar abre a revisão filtrada por aquela disciplina.
 - **Explicação da regra:** "Cada erro volta em 1, 3, 7 e 15 dias. Acertou 4 vezes seguidas, a questão sai da fila."
 - **Estado vazio:** Capi de óculos e "Nada para revisar hoje. Que tal uma lição nova?".
@@ -273,7 +273,7 @@ O XP total nunca diminui. O XP semanal alimenta a liga.
 ### 6.2 Vidas
 - O máximo é 5.
 - Errar em **lição de trilha** custa 1 vida. Revisão, simulado e desafio não gastam vidas.
-- Com 0 vidas não é possível iniciar nem continuar uma lição de trilha.
+- **As vidas nunca bloqueiam o treino.** Quem pagou não espera recarga: com 0 vidas, a lição de trilha inicia e continua normalmente, e o contador fica em 0 (nunca negativo).
 - Recarga: +1 vida a cada 4 h, contadas da perda, até o máximo. Cada acerto em revisão também dá +1 vida.
 - Todo dia à meia-noite, as vidas voltam para 5.
 
@@ -606,7 +606,6 @@ Os ids são `uuid`. As datas são `timestamptz`. As colunas estão em snake_case
 - **Aviso do edital:** "Quando o edital de Palmital sair, as trilhas e os simulados se ajustam ao seu cargo, sem custo extra."
 - **Variações de acerto:** "Mandou bem!", "Isso aí!", "Certinho!", "Boa, {nome}!", "Tá voando!".
 - **Variações de erro:** o título é sempre "Resposta correta: X", sem frases de culpa.
-- **Sem vidas:** "Suas vidas acabaram. Pratique seus erros para recuperar, ou volte em {tempo}."
 - **Termos de uso:** devem conter:
   - produto digital de acesso único;
   - validade até a homologação do concurso de Palmital ou 24 meses, o que vier primeiro;
@@ -630,7 +629,7 @@ Os ids são `uuid`. As datas são `timestamptz`. As colunas estão em snake_case
 **Lição e gamificação**
 - [ ] Uma lição tem 5 questões e o VERIFICAR fica desabilitado até a seleção.
 - [ ] O feedback mostra a explicação.
-- [ ] Errar numa lição de trilha tira 1 vida; com 0 vidas não é possível iniciar uma lição.
+- [ ] Errar numa lição de trilha tira 1 vida; com 0 vidas a lição inicia e continua normalmente (vidas não travam o treino).
 - [ ] O XP de uma lição com 4 de 5 acertos é 45; com 5 de 5, é 65.
 - [ ] Uma questão errada aparece na revisão no dia seguinte e some depois de 4 acertos espaçados.
 - [ ] A ofensiva sobe com a primeira lição do dia e zera depois de um dia sem estudo e sem protetor.

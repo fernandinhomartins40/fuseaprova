@@ -58,14 +58,18 @@ describe('lição de trilha (PRD 5.8–5.12, 6)', () => {
     expect(l2.fim.liga).toEqual({ entrou: true, xpSemana: 110 });
   });
 
-  it('errar tira 1 vida; com 0 vidas não inicia nem continua a lição', async () => {
+  it('errar tira 1 vida, mas com 0 vidas a lição continua: vidas nunca travam o treino', async () => {
     const a = await t.alunoPago();
     const { respostas } = await fazerLicao(t, a.cookie, 5);
     expect(respostas.map((r) => r.vidas)).toEqual([4, 3, 2, 1, 0]);
-    expect(respostas[4].semVidas).toBe(true);
+    expect(respostas[4]).not.toHaveProperty('semVidas');
     const r = await t.chamar('licaoIniciar', { cookie: a.cookie, params: { id: await licaoAtual(t, a.cookie) } });
-    expect(r.statusCode).toBe(409);
-    expect(r.json().codigo).toBe('sem_vidas');
+    expect(r.statusCode).toBe(200);
+    const s = r.json();
+    const gab = await gabaritos(t, [s.questoes[0].id]);
+    const erro = await t.chamar('sessaoResponder', { cookie: a.cookie, params: { id: s.sessaoId }, corpo: { questaoId: s.questoes[0].id, resposta: errada(gab.get(s.questoes[0].id)!), tempoMs: 1 } });
+    expect(erro.statusCode).toBe(200);
+    expect(erro.json().vidas).toBe(0);
     // revisão continua liberada e cada acerto devolve 1 vida
     t.relogio.avancar(24 * 3600_000);
     const me = (await t.chamar('meObter', { cookie: a.cookie })).json();

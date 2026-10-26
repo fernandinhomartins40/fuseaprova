@@ -29,7 +29,6 @@ export interface RespostaExibida {
   comboVisivel: boolean;
   vidas: number | null;
   proximaVidaEm: string | null;
-  semVidas: boolean;
   voltaNaRevisao: boolean;
 }
 
@@ -93,7 +92,6 @@ function sessaoOnline(r: IniciarSessaoResposta): Sessao {
         comboVisivel: x.comboVisivel,
         vidas: x.vidas,
         proximaVidaEm: x.proximaVidaEm,
-        semVidas: x.semVidas,
         voltaNaRevisao: x.voltaNaRevisao,
       };
     },
@@ -177,7 +175,6 @@ function sessaoOffline(o: {
         comboVisivel: comboVisivel(combo),
         vidas: null,
         proximaVidaEm: null,
-        semVidas: false,
         voltaNaRevisao: !acertou,
       };
     },

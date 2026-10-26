@@ -1,6 +1,6 @@
 .pagina {
   padding-top: calc(8px + env(safe-area-inset-top));
-  padding-bottom: 190px;
+  padding-bottom: 290px; /* a folha de feedback recolhida ocupa ~260px */
 }
 
 /* ---- topo ---- */
@@ -253,38 +253,6 @@
   background: var(--fa-laranja-soft);
   border-radius: 0 12px 12px 0;
   font-size: 15px;
-}
-
-/* ---- sem vidas ---- */
-.semVidas {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 14px;
-}
-.coracoes {
-  display: flex;
-  gap: 6px;
-  margin-top: 20px;
-}
-.coracaoVazio {
-  filter: grayscale(1) opacity(0.35);
-}
-.semVidasTitulo {
-  font-size: 30px;
-  font-weight: 800;
-}
-.semVidasTexto {
-  font-size: 16px;
-  color: var(--fa-ink-2);
-}
-.semVidasAcoes {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 8px;
 }
 
 /* ---- reportar ---- */

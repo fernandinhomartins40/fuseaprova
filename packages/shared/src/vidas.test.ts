@@ -4,7 +4,6 @@ import {
   msAteProximaVida,
   normalizarVidas,
   perderVida,
-  podeJogarLicao,
   RECARGA_VIDA_MS,
   resetDiarioVidas,
   sessaoGastaVida,
@@ -34,8 +33,6 @@ describe('vidas (PRD 6.2)', () => {
   it('não fica negativo', () => {
     const r = perderVida({ vidas: 0, atualizadoEm: t0 }, mais(MS_MINUTO));
     expect(r.vidas).toBe(0);
-    expect(podeJogarLicao({ vidas: 0, atualizadoEm: t0 }, mais(MS_MINUTO))).toBe(false);
-    expect(podeJogarLicao({ vidas: 1, atualizadoEm: t0 }, mais(MS_MINUTO))).toBe(true);
   });
 
   it('recarrega +1 a cada 4 h, até o máximo', () => {

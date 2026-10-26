@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { GEMAS, LINHA_REVISAO_AMANHA, TEXTO_SAIR_LICAO, type Letra } from '@fuse/shared';
-import { ErroApi, mensagemDeErro } from '../../api/cliente';
+import { mensagemDeErro } from '../../api/cliente';
 import { CHAVES, useMe } from '../../api/consultas';
 import { baixarPacote } from '../../offline/pacote';
 import {
@@ -31,11 +31,10 @@ import { ICONE_DISCIPLINA, NOME_CURTO_DISCIPLINA } from '../comum';
 import { FimLicao } from './FimLicao';
 import { TelaOfensiva } from './Ofensiva';
 import { ReportarProblema } from './Reportar';
-import { SemVidas } from './SemVidas';
 import { somAcerto, somErro } from './sons';
 import s from './Licao.module.css';
 
-type Fase = 'carregando' | 'erro' | 'semVidas' | 'dica' | 'questao' | 'fim' | 'ofensiva';
+type Fase = 'carregando' | 'erro' | 'dica' | 'questao' | 'fim' | 'ofensiva';
 
 /**
  * 05–08 Lição (`/licao/:id`), Desafio e Revisão (`/revisar/praticar`).
@@ -57,7 +56,6 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
   const [resposta, setResposta] = useState<RespostaExibida | null>(null);
   const [verificando, setVerificando] = useState(false);
   const [vidas, setVidas] = useState(5);
-  const [proximaVidaEm, setProximaVidaEm] = useState<string | null>(null);
   const [gemas, setGemas] = useState(0);
   const [dicas, setDicas] = useState<Record<string, string>>({});
   const [confirmarDica, setConfirmarDica] = useState(false);
@@ -66,7 +64,6 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
   const [reportAberto, setReportAberto] = useState(false);
   const [coracaoPartido, setCoracaoPartido] = useState(false);
   const [fim, setFim] = useState<FimSessao | null>(null);
-  const [semVidasPendente, setSemVidasPendente] = useState(false);
   const inicioQuestao = useRef(Date.now());
   const iniciado = useRef(false);
 
@@ -86,7 +83,6 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
       );
       setSessao(sx);
       setVidas(sx.vidas);
-      setProximaVidaEm(sx.proximaVidaEm);
       setGemas(sx.gemas);
       setIndice(0);
       setSelecionada(null);
@@ -94,12 +90,6 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
       setFase(sx.dica ? 'dica' : 'questao');
       inicioQuestao.current = Date.now();
     } catch (e) {
-      if (e instanceof ErroApi && e.codigo === 'sem_vidas') {
-        setVidas(0);
-        setProximaVidaEm(me.data.proximaVidaEm);
-        setFase('semVidas');
-        return;
-      }
       setErro(mensagemDeErro(e));
       setFase('erro');
     }
@@ -150,15 +140,9 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
           window.setTimeout(() => setCoracaoPartido(false), 900);
         }
         setVidas(r.vidas);
-        setProximaVidaEm(r.proximaVidaEm);
       }
-      if (r.semVidas) setSemVidasPendente(true);
     } catch (e) {
-      if (e instanceof ErroApi && e.codigo === 'sem_vidas') {
-        setFase('semVidas');
-      } else {
-        toast(mensagemDeErro(e), 'erro');
-      }
+      toast(mensagemDeErro(e), 'erro');
     } finally {
       setVerificando(false);
     }
@@ -186,10 +170,6 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
   }
 
   function continuar() {
-    if (semVidasPendente) {
-      setFase('semVidas');
-      return;
-    }
     if (indice + 1 >= total) {
       void concluir();
       return;
@@ -224,7 +204,7 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
 
   /* ------------------------------------------------------------ fases */
 
-  if (fase === 'carregando' || (!sessao && fase !== 'erro' && fase !== 'semVidas')) {
+  if (fase === 'carregando' || (!sessao && fase !== 'erro')) {
     return (
       <Pagina>
         <Carregando texto="Preparando suas questões…" />
@@ -239,15 +219,6 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
           Voltar
         </Botao3D>
       </Pagina>
-    );
-  }
-  if (fase === 'semVidas') {
-    return (
-      <SemVidas
-        proximaVidaEm={proximaVidaEm}
-        onPraticar={() => navegar('/revisar/praticar', { replace: true })}
-        onEsperar={() => navegar('/aprender', { replace: true })}
-      />
     );
   }
   if (fase === 'fim' && fim) {

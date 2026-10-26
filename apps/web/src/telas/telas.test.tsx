@@ -139,7 +139,7 @@ describe('telas do aluno contra a API simulada', () => {
     await waitFor(() => expect(local).toBe('/aprender'));
   });
 
-  it('sem vidas mostra a folha com as duas opções', async () => {
+  it('com 0 vidas a lição inicia normalmente: vidas não travam o treino', async () => {
     const api = ligarApiSimulada();
     await api.cenario('semVidas');
     abrir('/aprender');
@@ -147,9 +147,9 @@ describe('telas do aluno contra a API simulada', () => {
       await screen.findByRole('button', { name: /Continuar treino|Começar treino/ }),
     );
     expect(
-      await screen.findByRole('button', { name: 'PRATICAR ERROS PARA RECUPERAR' }),
+      await screen.findByRole('button', { name: /ENTENDI, VAMOS LÁ|VERIFICAR/ }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /ESPERAR/ })).toBeInTheDocument();
+    expect(screen.queryByText(/Suas vidas acabaram/)).not.toBeInTheDocument();
   });
 
   it('revisar, liga, perfil e simulado carregam sem violações sérias', async () => {

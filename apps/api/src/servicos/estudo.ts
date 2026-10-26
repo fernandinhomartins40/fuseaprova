@@ -240,9 +240,8 @@ export async function iniciarLicao(
   return db.transaction(async (tx) => {
     const u = await travarUsuario(tx, usuario.id);
     if (tipo === 'licao') {
-      const vidas = vidasAtuais(u, agora);
-      await salvarVidas(tx, u, vidas);
-      if (vidas.vidas <= 0) throw falha('sem_vidas');
+      // Vidas não travam o treino: quem pagou estuda sem esperar recarga.
+      await salvarVidas(tx, u, vidasAtuais(u, agora));
     }
     const { ids, revisao } = await sortearQuestoesDaLicao(tx, u.id, c, agora, deps.rng);
     if (ids.length === 0) throw falha('questoes_insuficientes');
@@ -401,10 +400,6 @@ export async function responder(
       // Repetição (mesmo id_cliente ou questão já respondida): devolve o mesmo resultado, sem efeitos.
       acertou = anterior.acertou;
     } else {
-      if (s.tipo === 'licao') {
-        const v = vidasAtuais(u, agora);
-        if (v.vidas <= 0) throw falha('sem_vidas');
-      }
       if (q.gabaritoReal === null)
         throw falha('conflito', 'Essa questão foi anulada. Siga para a próxima.');
       acertou = e.resposta === q.gabarito;
@@ -465,7 +460,6 @@ export async function responder(
       comboVisivel: comboVisivel(combo),
       vidas: vidas.vidas,
       proximaVidaEm: isoOuNull(vidas.proximaVidaEm),
-      semVidas: s.tipo === 'licao' && vidas.vidas <= 0,
       voltaNaRevisao: !acertou,
       respondidas: feitas.length,
       total: s.questoes.length,

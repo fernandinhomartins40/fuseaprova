@@ -79,8 +79,6 @@ export const ResponderResposta = CorrecaoQuestao.extend({
   comboVisivel: z.boolean(),
   vidas: z.number().int(),
   proximaVidaEm: DataHora.nullable(),
-  /** Vidas zeraram numa lição de trilha: mostrar a folha "Suas vidas acabaram". */
-  semVidas: z.boolean(),
   /** Mostra "Essa questão volta na sua revisão amanhã". */
   voltaNaRevisao: z.boolean(),
   respondidas: z.number().int(),

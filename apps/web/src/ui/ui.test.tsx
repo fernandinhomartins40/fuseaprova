@@ -156,6 +156,38 @@ describe('FolhaFeedback', () => {
     expect(screen.getByText('Dica de bolso')).toBeInTheDocument();
     expect(screen.getByText('Essa questão volta na sua revisão amanhã')).toBeInTheDocument();
   });
+
+  it('explicação e dica de bolso ficam recolhidas, o botão continua à vista e a escolha é lembrada', async () => {
+    localStorage.removeItem('fa:folha-detalhe-aberto');
+    const cont = vi.fn();
+    const props = {
+      tipo: 'erro' as const,
+      titulo: 'Resposta correta: C',
+      explicacao: 'Explicação longa.',
+      dicaBolso: 'Troque por masculino.',
+      textoBotao: 'ENTENDI',
+      onContinuar: cont,
+    };
+    const { unmount } = render(<FolhaFeedback {...props} />);
+    const alternar = screen.getByRole('button', { name: /Ver explicação e dica de bolso/ });
+    expect(alternar).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByText('Explicação longa.')).not.toBeVisible();
+    expect(screen.getByText('Troque por masculino.')).not.toBeVisible();
+    expect(screen.getByRole('button', { name: 'ENTENDI' })).toBeVisible();
+
+    await userEvent.click(alternar);
+    expect(screen.getByRole('button', { name: 'Ocultar explicação' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+    expect(screen.getByText('Explicação longa.')).toBeVisible();
+    expect(screen.getByText('Troque por masculino.')).toBeVisible();
+
+    unmount();
+    render(<FolhaFeedback {...props} />);
+    expect(screen.getByText('Explicação longa.')).toBeVisible();
+    localStorage.removeItem('fa:folha-detalhe-aberto');
+  });
 });
 
 describe('BarraProgresso, Chip, CartaoEstatistica, Capi', () => {

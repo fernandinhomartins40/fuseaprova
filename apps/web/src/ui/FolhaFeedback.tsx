@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { Botao3D } from './Botao3D';
 import { Chip } from './Chip';
 import { Imagem } from './Imagem';
@@ -25,9 +25,30 @@ export interface FolhaFeedbackProps {
   aviso?: ReactNode;
 }
 
+const CHAVE_DETALHE = 'fa:folha-detalhe-aberto';
+
+/** Preferência por viewer: o detalhe (explicação e dica de bolso) abre ou fica recolhido. */
+function lerDetalheAberto(): boolean {
+  try {
+    return localStorage.getItem(CHAVE_DETALHE) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function gravarDetalheAberto(aberto: boolean): void {
+  try {
+    localStorage.setItem(CHAVE_DETALHE, aberto ? '1' : '0');
+  } catch {
+    // sem armazenamento (janela privada etc.): vale só para esta tela
+  }
+}
+
 /**
  * Folha de feedback: fixa embaixo, sobe em 200 ms. Verde no acerto, vermelha no erro.
- * O texto fica numa região role="status" para o leitor de tela anunciar.
+ * O título fica numa região role="status" para o leitor de tela anunciar. A explicação, a dica
+ * de bolso e a linha de revisão ficam num detalhe recolhível (recolhido por padrão), para a folha
+ * não cobrir as alternativas com a correção; o botão de continuar fica sempre à vista.
  */
 export function FolhaFeedback({
   tipo,
@@ -43,9 +64,15 @@ export function FolhaFeedback({
   aviso,
 }: FolhaFeedbackProps) {
   const botao = useRef<HTMLButtonElement>(null);
+  const idDetalhe = useId();
+  const [aberto, setAberto] = useState(lerDetalheAberto);
   useEffect(() => {
     botao.current?.focus({ preventScroll: true });
   }, []);
+  const alternar = () => {
+    gravarDetalheAberto(!aberto);
+    setAberto(!aberto);
+  };
   return (
     <section className={[s.folha, s[tipo]].join(' ')} aria-label="Resultado da resposta">
       <div className={s.cartao}>
@@ -61,30 +88,44 @@ export function FolhaFeedback({
               {xp ? <span className={s.xp}>+{xp} XP</span> : null}
               {combo ? <Chip variante="laranja">COMBO × {combo}</Chip> : null}
             </div>
-            <div className={s.explicacao}>{explicacao}</div>
           </div>
           <Imagem
             nome={tipo === 'acerto' ? 'mascote-celebrando' : 'mascote-incentivando'}
-            tamanho={118}
-            className={s.mascote}
+            tamanho={aberto ? 118 : 64}
+            className={aberto ? s.mascote : s.mascoteRecolhido}
             carregamento="eager"
           />
         </div>
-        {dicaBolso ? (
-          <div className={s.dicaBolso}>
-            <Imagem nome="icone-dica" tamanho={28} />
-            <div>
-              <strong>Dica de bolso</strong>
-              <p>{dicaBolso}</p>
+        <button
+          type="button"
+          className={s.alternar}
+          aria-expanded={aberto}
+          aria-controls={idDetalhe}
+          onClick={alternar}
+        >
+          {aberto ? 'Ocultar explicação' : dicaBolso ? 'Ver explicação e dica de bolso' : 'Ver explicação'}
+          <span className={aberto ? s.chevronAberto : s.chevron} aria-hidden="true">
+            <IconeTraco nome="chevron" tamanho={16} espessura={3} />
+          </span>
+        </button>
+        <div id={idDetalhe} className={s.detalhe} hidden={!aberto}>
+          <div className={s.explicacao}>{explicacao}</div>
+          {dicaBolso ? (
+            <div className={s.dicaBolso}>
+              <Imagem nome="icone-dica" tamanho={28} carregamento="eager" />
+              <div>
+                <strong>Dica de bolso</strong>
+                <p>{dicaBolso}</p>
+              </div>
             </div>
-          </div>
-        ) : null}
-        {linhaRevisao ? (
-          <p className={s.linhaRevisao}>
-            <Imagem nome="icone-revisao" tamanho={24} />
-            {linhaRevisao}
-          </p>
-        ) : null}
+          ) : null}
+          {linhaRevisao ? (
+            <p className={s.linhaRevisao}>
+              <Imagem nome="icone-revisao" tamanho={24} carregamento="eager" />
+              {linhaRevisao}
+            </p>
+          ) : null}
+        </div>
         {aviso}
       </div>
       <Botao3D

@@ -85,13 +85,16 @@ test.describe('Lição da trilha', () => {
     await expect(page.getByText('100%')).toBeVisible();
   });
 
-  test('com 0 vidas não é possível iniciar uma lição', async ({ page }) => {
+  test('com 0 vidas a lição inicia normalmente: vidas não travam o treino', async ({ page }) => {
     const c = await alunoPago(page, novaConta('semvidas'));
     await page.request.post(`${API}/__e2e/vidas`, { data: { email: c.email, vidas: 0 } });
     await page.goto('/aprender');
     await page.getByRole('button', { name: /Começar treino|Continuar treino/ }).click();
-    await expect(page.getByText('Suas vidas acabaram', { exact: true })).toBeVisible();
-    await expect(page.locator('#enunciado')).toHaveCount(0);
+    const dica = page.getByRole('button', { name: 'ENTENDI, VAMOS LÁ' });
+    await expect(page.locator('#enunciado').or(dica)).toBeVisible();
+    if (await dica.isVisible()) await dica.click();
+    await expect(page.getByText('Suas vidas acabaram')).toHaveCount(0);
+    await expect(page.locator('#enunciado')).toBeVisible();
   });
 
   test('a lição inteira é navegável só pelo teclado', async ({ page }) => {

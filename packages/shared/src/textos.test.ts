@@ -9,7 +9,6 @@ import {
   textoLembrete,
   textoQuestoesParaHoje,
   textoRegraLiga,
-  textoSemVidas,
   textoStatusEdital,
   textoTerminaEmDias,
   tituloAcerto,
@@ -54,12 +53,6 @@ describe('copy (PRD 11)', () => {
 
   it('título de erro sem culpa', () => {
     expect(tituloErro('C')).toBe('Resposta correta: C');
-  });
-
-  it('sem vidas', () => {
-    expect(textoSemVidas(3 * MS_HORA + 20 * MS_MINUTO)).toBe(
-      'Suas vidas acabaram. Pratique seus erros para recuperar, ou volte em 3 h 20 min.',
-    );
   });
 
   it('lembretes e textos de contagem', () => {

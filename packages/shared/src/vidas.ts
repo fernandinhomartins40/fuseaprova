@@ -2,7 +2,8 @@
  * Vidas (PRD 6.2).
  * - Máximo 5.
  * - Errar em lição de trilha custa 1 vida. Revisão, simulado e desafio não gastam.
- * - Com 0 vidas não se inicia nem continua lição de trilha.
+ * - As vidas nunca bloqueiam o estudo: com 0 vidas a lição de trilha continua normalmente
+ *   (quem pagou não espera recarga). O contador é só um indicador.
  * - Recarga: +1 vida a cada 4 h, contadas da perda, até o máximo.
  * - Cada acerto em revisão dá +1 vida.
  * - À meia-noite (São Paulo) as vidas voltam para 5.
@@ -59,11 +60,6 @@ export function normalizarVidas(estado: EstadoVidas, agora: Date): EstadoVidasCa
 /** Tipos de sessão em que errar custa vida. */
 export function sessaoGastaVida(tipo: TipoSessaoEstudo): boolean {
   return tipo === 'licao';
-}
-
-/** Pode iniciar ou continuar uma lição de trilha? */
-export function podeJogarLicao(estado: EstadoVidas, agora: Date): boolean {
-  return normalizarVidas(estado, agora).vidas > 0;
 }
 
 /** Desconta 1 vida (erro em lição de trilha). A recarga conta a partir desta perda se estava cheio. */

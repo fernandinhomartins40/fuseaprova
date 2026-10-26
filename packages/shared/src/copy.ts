@@ -3,7 +3,6 @@
  * Mensagens de erro da API ficam em `api/erros.ts`.
  */
 import { escolher, rngPadrao, type Rng } from './aleatorio.js';
-import { formatarDuracao } from './formatacao.js';
 import type { Letra } from './dominio.js';
 
 export const NOME_PRODUTO = 'Fuse Aprova';
@@ -40,12 +39,6 @@ export function tituloErro(gabarito: Letra): string {
 }
 
 export const LINHA_REVISAO_AMANHA = 'Essa questão volta na sua revisão amanhã';
-
-export const TITULO_SEM_VIDAS = 'Suas vidas acabaram';
-
-export function textoSemVidas(msAteProximaVida: number): string {
-  return `Suas vidas acabaram. Pratique seus erros para recuperar, ou volte em ${formatarDuracao(msAteProximaVida)}.`;
-}
 
 export const TEXTO_REVISAO_VAZIA = 'Nada para revisar hoje. Que tal uma lição nova?';
 export const TEXTO_LIGA_VAZIA = 'Complete 1 lição para entrar na liga desta semana';
