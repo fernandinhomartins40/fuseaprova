@@ -1,6 +1,10 @@
 /**
  * Markdown simples do enunciado (PRD 5.17): parágrafos, quebras de linha, listas com "- ",
  * **negrito**, *itálico* e imagem ![texto](url). Gera elementos React (sem innerHTML).
+ *
+ * O importador de cadernos (D18) grava o sublinhado e o negrito do caderno como `**termo**` e o
+ * itálico como `*termo*`; o app mostra os dois primeiros em negrito (não há sublinhado).
+ * `MarkdownEmLinha` serve às alternativas, que são uma linha só e podem ter o termo em destaque.
  */
 import type { ReactNode } from 'react';
 import s from './Markdown.module.css';
@@ -35,6 +39,16 @@ function comQuebras(linhas: string[], chave: string): ReactNode[] {
     out.push(...emLinha(l, `${chave}-${i}`));
   });
   return out;
+}
+
+/** Só a formatação em linha (negrito/itálico), sem parágrafos: para alternativas. */
+export function MarkdownEmLinha({ texto }: { texto: string }) {
+  return <>{emLinha(texto, 'l')}</>;
+}
+
+/** O texto sem as marcas de Markdown em linha (para rótulos de acessibilidade). */
+export function semMarcasMarkdown(texto: string): string {
+  return texto.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*\s][^*]*)\*/g, '$1');
 }
 
 export function Markdown({ texto, className }: { texto: string; className?: string }) {

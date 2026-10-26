@@ -63,6 +63,21 @@ describe('Botao3D', () => {
 });
 
 describe('Alternativa / GrupoAlternativas', () => {
+  it('mostra o termo em destaque (**termo**) em negrito, sem asteriscos, e o rótulo fica limpo', () => {
+    const alts = ALTS.map((x) =>
+      x.letra === 'A' ? { ...x, texto: 'O **menino** correu *rápido*.' } : x,
+    );
+    render(
+      <GrupoAlternativas alternativas={alts} selecionada={null} onSelecionar={() => undefined} />,
+    );
+    const a = screen.getAllByRole('radio')[0]!;
+    expect(a.textContent).toContain('O menino correu rápido.');
+    expect(a.textContent).not.toContain('*');
+    expect(a.querySelector('strong')?.textContent).toBe('menino');
+    expect(a.querySelector('em')?.textContent).toBe('rápido');
+    expect(a).toHaveAccessibleName('A) O menino correu rápido.');
+  });
+
   it('mapeia teclas 1–5 e A–E', () => {
     expect(letraDaTecla('1')).toBe('A');
     expect(letraDaTecla('5')).toBe('E');

@@ -1,6 +1,7 @@
 import { useEffect, useRef, type KeyboardEvent } from 'react';
 import type { Letra } from '@fuse/shared';
 import { IconeTraco } from './IconeTraco';
+import { MarkdownEmLinha, semMarcasMarkdown } from './Markdown';
 import s from './Alternativa.module.css';
 
 export type EstadoAlternativa =
@@ -46,7 +47,7 @@ export function Alternativa({
       role="radio"
       aria-checked={marcada}
       aria-disabled={desabilitada || undefined}
-      aria-label={`${letra}) ${texto}${rotuloEstado}`}
+      aria-label={`${letra}) ${semMarcasMarkdown(texto)}${rotuloEstado}`}
       tabIndex={focavel ? 0 : -1}
       data-letra={letra}
       className={[s.alternativa, s[estado]].join(' ')}
@@ -63,7 +64,7 @@ export function Alternativa({
         )}
       </span>
       <span className={s.texto} aria-hidden="true">
-        {texto}
+        <MarkdownEmLinha texto={texto} />
       </span>
       {estado === 'correta' || estado === 'reveladaCorreta' ? (
         <span className={[s.selo, s.seloOk].join(' ')} aria-hidden="true">
