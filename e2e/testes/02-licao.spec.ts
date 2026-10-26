@@ -23,7 +23,7 @@ test.describe('Lição da trilha', () => {
     await comecarLicao(page);
 
     await expect(page.getByText('Questão 1 de 5')).toBeVisible();
-    await expect(page.getByRole('img', { name: '5 vidas' })).toBeVisible();
+    await expect(page.getByRole('img', { name: /vidas/ })).toHaveCount(0);
     // VERIFICAR desabilitado até selecionar uma alternativa.
     await expect(page.getByRole('button', { name: 'VERIFICAR' })).toBeDisabled();
     await alternativa(page, 'A').click();
@@ -35,7 +35,7 @@ test.describe('Lição da trilha', () => {
     await expect(folha).toBeVisible();
     await expect(page.getByRole('button', { name: 'CONTINUAR' })).toBeVisible();
     if (q1.explicacao) await expect(folha).toContainText(q1.explicacao.slice(0, 40));
-    await expect(page.getByRole('img', { name: '5 vidas' })).toBeVisible();
+    await expect(page.getByRole('img', { name: /vidas/ })).toHaveCount(0);
     await page.getByRole('button', { name: 'CONTINUAR' }).click();
 
     // 2ª: errada → perde 1 vida, mostra a explicação e o aviso de revisão.
@@ -44,7 +44,7 @@ test.describe('Lição da trilha', () => {
     await expect(page.getByRole('button', { name: 'ENTENDI' })).toBeVisible();
     if (q2.explicacao) await expect(folha).toContainText(q2.explicacao.slice(0, 40));
     await expect(folha).toContainText(/revisão/i);
-    await expect(page.getByRole('img', { name: '4 vidas' })).toBeVisible();
+    await expect(page.getByRole('img', { name: /vidas/ })).toHaveCount(0);
     await page.getByRole('button', { name: 'ENTENDI' }).click();
 
     // 3ª a 5ª: certas.

@@ -127,18 +127,16 @@ export function CabecalhoVoltar({
   );
 }
 
-/** Contadores do cabeçalho da Trilha: chip do concurso, ofensiva, gemas e vidas. */
+/** Contadores do cabeçalho da Trilha: chip do concurso, ofensiva e gemas. */
 export function Contadores({
   sigla,
   ofensiva,
   gemas,
-  vidas,
   diasParaProva,
 }: {
   sigla: string;
   ofensiva: number;
   gemas: number;
-  vidas: number;
   diasParaProva?: number | null;
 }) {
   const [a, b] = sigla.split('·').map((p) => p.trim());
@@ -160,10 +158,6 @@ export function Contadores({
       <span className={s.contador} role="img" aria-label={`${gemas} gemas`}>
         <IconeCheio nome="gema" tamanho={24} />
         <span className={s.numAzul}>{gemas}</span>
-      </span>
-      <span className={s.contador} role="img" aria-label={`${vidas} vidas`}>
-        <IconeCheio nome="coracao" tamanho={24} />
-        <span className={s.numVermelho}>{vidas}</span>
       </span>
     </div>
   );

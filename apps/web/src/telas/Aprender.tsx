@@ -74,7 +74,6 @@ export default function Aprender() {
         sigla={u.concurso?.sigla ?? 'PAL · FAU'}
         ofensiva={u.ofensiva}
         gemas={u.gemas}
-        vidas={u.vidas}
         diasParaProva={concurso.data?.diasParaProva ?? null}
       />
 

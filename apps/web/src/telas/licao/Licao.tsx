@@ -55,14 +55,12 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
   const [selecionada, setSelecionada] = useState<Letra | null>(null);
   const [resposta, setResposta] = useState<RespostaExibida | null>(null);
   const [verificando, setVerificando] = useState(false);
-  const [vidas, setVidas] = useState(5);
   const [gemas, setGemas] = useState(0);
   const [dicas, setDicas] = useState<Record<string, string>>({});
   const [confirmarDica, setConfirmarDica] = useState(false);
   const [pedindoDica, setPedindoDica] = useState(false);
   const [sairAberto, setSairAberto] = useState(false);
   const [reportAberto, setReportAberto] = useState(false);
-  const [coracaoPartido, setCoracaoPartido] = useState(false);
   const [fim, setFim] = useState<FimSessao | null>(null);
   const inicioQuestao = useRef(Date.now());
   const iniciado = useRef(false);
@@ -82,7 +80,6 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
         { usuarioId: me.data.id, nome: me.data.nome, vidas: me.data.vidas, gemas: me.data.gemas },
       );
       setSessao(sx);
-      setVidas(sx.vidas);
       setGemas(sx.gemas);
       setIndice(0);
       setSelecionada(null);
@@ -134,13 +131,6 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
       setResposta(r);
       if (r.acertou) somAcerto(sons);
       else somErro(sons);
-      if (r.vidas != null) {
-        if (r.vidas < vidas) {
-          setCoracaoPartido(true);
-          window.setTimeout(() => setCoracaoPartido(false), 900);
-        }
-        setVidas(r.vidas);
-      }
     } catch (e) {
       toast(mensagemDeErro(e), 'erro');
     } finally {
@@ -269,18 +259,7 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
           fina
         />
       </div>
-      {sx.gastaVidas ? (
-        <span
-          className={[s.vidas, coracaoPartido ? s.partido : ''].join(' ')}
-          role="img"
-          aria-label={`${vidas} vidas`}
-        >
-          <IconeCheio nome={coracaoPartido ? 'coracaoPartido' : 'coracao'} tamanho={26} />
-          <span aria-hidden="true">{vidas}</span>
-        </span>
-      ) : (
-        <span className={s.semVidasEspaco} />
-      )}
+      <span className={s.espacoDireita} />
     </header>
   );
 

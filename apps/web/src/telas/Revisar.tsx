@@ -45,7 +45,7 @@ export default function Revisar() {
               {textoQuestoesParaHoje(r.data.pendentes)}
             </h2>
             <p className={s.heroiSub}>
-              Transforme seus erros em aprendizado. Acertar aqui recupera vidas.
+              Transforme seus erros em aprendizado.
             </p>
             <Botao3D
               variante="claro"

@@ -129,9 +129,6 @@
 .numAzul {
   color: var(--fa-blue-shade);
 }
-.numVermelho {
-  color: var(--fa-red-shade);
-}
 
 /* ---- estados ---- */
 .carregando {

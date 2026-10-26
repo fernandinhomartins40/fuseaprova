@@ -39,7 +39,7 @@ export default function BoasVindas() {
             </Chip>
           </li>
           <li>
-            <Chip grande>Banca FAU-Unicentro</Chip>
+            <Chip grande>Provas da FAU</Chip>
           </li>
           <li>
             <Chip grande>2026/27</Chip>

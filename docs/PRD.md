@@ -82,7 +82,7 @@ As telas marcadas com ✅ têm desenho final em `design/png` e `design/html`. As
 
 ### 5.1 ✅ 01 Boas-vindas (`/`)
 - Capi feliz com o balão "Bora passar?", o wordmark e o título "Treine para o concurso da Prefeitura de Palmital com as provas da FAU".
-- Subtítulo e os chips "Palmital · PR", "Banca FAU-Unicentro" e "2026/27".
+- Subtítulo e os chips "Palmital · PR", "Provas da FAU" e "2026/27".
 - **COMEÇAR AGORA** leva ao Cadastro. **JÁ TENHO CONTA** leva ao Login.
 - Se houver sessão: com acesso, redireciona para a Trilha; sem acesso, para o Pagamento.
 
@@ -131,7 +131,7 @@ As telas marcadas com ✅ têm desenho final em `design/png` e `design/html`. As
 - Ao final, leva à Trilha. O cargo pode ser trocado depois, no Perfil.
 
 ### 5.7 ✅ 04 Trilha (`/aprender`)
-- **Cabeçalho:** chip do concurso ("PAL · FAU"), ofensiva, gemas e vidas.
+- **Cabeçalho:** chip do concurso ("PAL · FAU"), ofensiva e gemas (o contador de vidas não aparece na interface: D17).
   - O chip abre a tela ✏️ **Sobre o concurso**, com o status do edital, os links oficiais e a data da prova se houver.
   - A contagem regressiva aparece quando a data da prova estiver cadastrada.
 - **Banner da unidade:** "UNIDADE n · SEÇÃO n" e o título. O botão livro abre o ✏️ **Guia da unidade**: as dicas de todas as lições da unidade em cartões curtos, para ler sem responder.
@@ -147,8 +147,7 @@ As telas marcadas com ✅ têm desenho final em `design/png` e `design/html`. As
 ### 5.8 ✅ 05 Pergunta (`/licao/:id`)
 - **Topo:**
   - fechar (✕), que abre a confirmação ✏️ "Quer mesmo sair? Você perde o progresso desta lição." com os botões CONTINUAR ESTUDANDO e SAIR;
-  - barra de progresso;
-  - vidas.
+  - barra de progresso (sem contador de vidas na interface: D17).
 - **Antes da 1ª questão:** um cartão ✏️ **Dica da lição**, com Capi, o título do conceito, 2–4 linhas e um exemplo. O botão é ENTENDI, VAMOS LÁ.
 - **Chip de origem:** "FAU-Unicentro · {Órgão} · {Ano}" e o nome da disciplina. Questão autoral mostra "Questão Fuse Aprova · estilo FAU".
 - Título "Selecione a alternativa correta".
@@ -171,7 +170,7 @@ As telas marcadas com ✅ têm desenho final em `design/png` e `design/html`. As
   - a explicação de por que a marcada está errada e a certa está certa;
   - o cartão **Dica de bolso** (macete);
   - a linha "Essa questão volta na sua revisão amanhã".
-- Uma vida é descontada, com animação de coração partido.
+- Uma vida é descontada no servidor (`/me.vidas`), sem exibir contador nem animação (D17).
 - **ENTENDI** leva à próxima questão.
 - O link "Reportar problema" fica no rodapé da folha, com as opções gabarito errado, enunciado com erro, explicação confusa e outro, mais um campo de texto. Isso cria um registro no painel admin.
 - **Vidas nunca travam o estudo** (decisão do dono, 26/10/2026): o contador cai a cada erro, mas com 0 vidas a lição continua normalmente. Não existe a folha "Suas vidas acabaram" (veja 6.2 e D16).
