@@ -63,6 +63,7 @@ pnpm --filter @fuse/crawler crawler importar ./caderno.pdf \
 
 - **Caderno**:
   - o PDF é lido com `pdftotext -raw`; se nem todas as questões saírem completas, o coletor compara com `-layout` e com o modo normal e fica com a melhor extração;
+  - **estilo (opcional, D18):** com Python + PyMuPDF (`pip install pymupdf`; `python/estilos_pdf.py`) o sublinhado e o itálico viram `**termo**` e `*termo*` no texto (o negrito só na questão que fala em destaque); sem eles o import funciona igual e avisa. Sem rede;
   - questões numeradas "01." (também "01)" e "QUESTÃO 01"), em sequência e no formato aprendido na 1ª questão (com isso, listas como "1. Confira seu nome" e itens "1., 2." do enunciado não viram questão);
   - alternativas "A)" a "E)", inclusive várias na mesma linha;
   - textos de apoio "Leia o texto … questões 01 a 03";
@@ -134,5 +135,6 @@ pnpm --filter @fuse/crawler test
 | `ARQUIVOS_DIR` | Raiz dos PDFs (padrão `/srv/fuse/arquivos`) |
 | `CRAWLER_USER_AGENT` | User-Agent com contato |
 | `CRAWLER_INTERVALO_MS` | Intervalo por host (mínimo 2000) |
+| `PYTHON_BIN` | Python com PyMuPDF para o estilo do caderno (opcional; padrão `python3`, depois `python`) |
 | `PDFTOTEXT_BIN` | Caminho do `pdftotext` (padrão no PATH; na VPS: `apt install poppler-utils`) |
 | `APP_URL`, `SUPORTE_EMAIL` | Contato no User-Agent padrão |

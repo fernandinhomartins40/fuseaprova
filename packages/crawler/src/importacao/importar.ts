@@ -33,6 +33,7 @@ import {
   type ResultadoConfronto,
 } from './confronto.js';
 import { escolherGabarito, parseGabarito, type ResultadoGabarito } from './gabarito.js';
+import { aplicarEstilos, extrairEstilosPdf } from './estilos.js';
 import { lerTexto, type OpcoesPdf } from './pdf.js';
 import { chaveComparacao } from '../util/texto.js';
 
@@ -88,20 +89,34 @@ async function hashDaFonte(f: FonteTexto): Promise<string> {
   return typeof f === 'string' ? sha256DoArquivo(f) : sha256(f.texto);
 }
 
-/** Caderno: tenta o texto normal e o `-layout` e fica com a extração de melhor qualidade. */
+/**
+ * Caderno: tenta o texto normal e o `-layout` e fica com a extração de melhor qualidade.
+ * Com PyMuPDF disponível (opcional), recupera negrito, sublinhado e itálico como Markdown
+ * (`**destaque**`, `*itálico*`; D18). `estilos: false` desliga.
+ */
 export async function extrairCaderno(
   f: FonteTexto,
   pdf: OpcoesPdf = {},
+  opcoes: { estilos?: boolean } = {},
 ): Promise<ResultadoCaderno> {
   if (typeof f !== 'string') return parseCaderno(f.texto);
   if (/\.txt$/i.test(f)) return parseCaderno(await lerTexto(f));
+  const comEstilos = opcoes.estilos !== false;
+  const estilos = comEstilos ? await extrairEstilosPdf(f) : null;
   // -raw primeiro (1 coluna); se não sair tudo completo, compara com -layout e o modo normal.
   let melhor: ResultadoCaderno | null = null;
   for (const modo of ['raw', 'layout', 'normal'] as const) {
-    const r = parseCaderno(await lerTexto(f, { ...pdf, modo }));
+    let texto = await lerTexto(f, { ...pdf, modo });
+    if (estilos) texto = aplicarEstilos(texto, estilos).texto;
+    const r = parseCaderno(texto);
     if (!melhor || qualidadeDaExtracao(r) > qualidadeDaExtracao(melhor)) melhor = r;
     const completas = r.questoes.filter((q) => q.alternativas.length === 5 && q.enunciado).length;
     if (r.questoes.length && completas === r.questoes.length) break;
+  }
+  if (comEstilos && !estilos) {
+    melhor!.avisos.push(
+      'Negrito, sublinhado e itálico não foram recuperados (precisa de Python com PyMuPDF: `pip install pymupdf`). Confira as questões que pedem "a palavra sublinhada" ou "em destaque".',
+    );
   }
   return melhor!;
 }
