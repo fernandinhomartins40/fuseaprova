@@ -55,12 +55,17 @@ function Prova({ sim }: { sim: SimuladoAndamento }) {
   const fim = new Date(sim.terminaEm).getTime();
   const [restante, setRestante] = useState(() => fim - (Date.now() + desvio));
   const entregue = useRef(false);
+  /** Entrega automática que falhou (sem rede): tenta de novo a cada 10 s, com um aviso só. */
+  const proximaTentativa = useRef(0);
+  const avisouFalha = useRef(false);
 
   const entregar = useCallback(
     async (automatica: boolean) => {
       if (entregue.current) return;
+      if (automatica && Date.now() < proximaTentativa.current) return;
       entregue.current = true;
       setEntregando(true);
+      let ok = true;
       try {
         const r = await chamar('simuladoEntregar', { params: { id: sim.id } });
         qc.setQueryData(CHAVES.simulado(sim.id), r);
@@ -68,8 +73,15 @@ function Prova({ sim }: { sim: SimuladoAndamento }) {
         if (e instanceof ErroApi && e.codigo === 'simulado_encerrado') {
           await qc.invalidateQueries({ queryKey: CHAVES.simulado(sim.id) });
         } else {
+          ok = false;
           entregue.current = false;
-          toast(mensagemDeErro(e), 'erro');
+          proximaTentativa.current = Date.now() + 10_000;
+          // As respostas já salvas estão no servidor, que entrega sozinho quando o tempo acaba.
+          if (!automatica) toast(mensagemDeErro(e), 'erro');
+          else if (!avisouFalha.current) {
+            avisouFalha.current = true;
+            toast('O tempo acabou. Sem conexão agora: a prova será entregue assim que a internet voltar.', 'erro');
+          }
         }
       } finally {
         setEntregando(false);
@@ -77,8 +89,8 @@ function Prova({ sim }: { sim: SimuladoAndamento }) {
         void qc.invalidateQueries({ queryKey: CHAVES.simulados });
         void qc.invalidateQueries({ queryKey: CHAVES.me });
         void qc.invalidateQueries({ queryKey: CHAVES.revisao });
-        if (automatica) toast('O tempo acabou e a prova foi entregue.', 'info');
       }
+      if (automatica && ok) toast('O tempo acabou e a prova foi entregue.', 'info');
     },
     [qc, sim.id, toast],
   );
@@ -327,9 +339,11 @@ function Resultado({ r }: { r: SimuladoResultado }) {
           </button>
         </div>
       </div>
-      <p className={s.nota}>
-        <Imagem nome="icone-revisao" tamanho={22} /> Os erros entraram na sua fila de revisão.
-      </p>
+      {r.acertos < r.totalQuestoes && (
+        <p className={s.nota}>
+          <Imagem nome="icone-revisao" tamanho={22} /> Os erros entraram na sua fila de revisão.
+        </p>
+      )}
       <ol className={s.questoes}>
         {lista.map((q) => (
           <li key={q.questao.id}>
