@@ -63,7 +63,8 @@ export function Campo({
           {...(mascara === 'cpf'
             ? { maxLength: 14 }
             : mascara === 'celular'
-              ? { maxLength: 15 }
+              ? // cabe "+55 (42) 99999-9999" colado; a máscara reduz a 11 dígitos (R2-13)
+                { maxLength: 20 }
               : {})}
         />
         {senha ? (
