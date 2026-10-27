@@ -65,14 +65,26 @@ describe('perfil e push', () => {
   it('chave VAPID, inscrição e remoção', async () => {
     const a = await t.alunoPago();
     expect((await t.chamar('pushChave', { cookie: a.cookie })).json().chavePublica).toBe(t.config.vapid.publica);
-    const ins = await t.chamar('pushInscrever', { cookie: a.cookie, corpo: { endpoint: 'https://push.exemplo.com/abc', keys: { p256dh: 'k', auth: 'a' } } });
+    const ins = await t.chamar('pushInscrever', { cookie: a.cookie, corpo: { endpoint: 'https://fcm.googleapis.com/fcm/send/abc', keys: { p256dh: 'k', auth: 'a' } } });
     expect(ins.statusCode).toBe(200);
-    await t.chamar('pushInscrever', { cookie: a.cookie, corpo: { endpoint: 'https://push.exemplo.com/abc', keys: { p256dh: 'k2', auth: 'a2' } } });
+    await t.chamar('pushInscrever', { cookie: a.cookie, corpo: { endpoint: 'https://fcm.googleapis.com/fcm/send/abc', keys: { p256dh: 'k2', auth: 'a2' } } });
     const lista = await t.db.select().from(schema.pushInscricoes).where(eq(schema.pushInscricoes.usuarioId, a.id));
     expect(lista).toHaveLength(1);
     expect(lista[0]!.p256dh).toBe('k2');
     await t.chamar('pushRemover', { cookie: a.cookie, corpo: {} });
     expect(await t.db.select().from(schema.pushInscricoes).where(eq(schema.pushInscricoes.usuarioId, a.id))).toHaveLength(0);
+  });
+
+  it('inscrição de push só aceita serviço de push de navegador (auditoria PIE R1-06)', async () => {
+    const a = await t.alunoPago();
+    for (const endpoint of ['https://127.0.0.1:5432/x', 'http://fcm.googleapis.com/x', 'https://postgres/x', 'https://fcm.googleapis.com.mal.com/x']) {
+      const r = await t.chamar('pushInscrever', { cookie: a.cookie, corpo: { endpoint, keys: { p256dh: 'k', auth: 'a' } } });
+      expect(r.statusCode, endpoint).toBe(400);
+    }
+    for (const endpoint of ['https://updates.push.services.mozilla.com/wpush/v2/x', 'https://web.push.apple.com/x', 'https://wns2-par02p.notify.windows.com/w/?token=x']) {
+      const r = await t.chamar('pushInscrever', { cookie: a.cookie, corpo: { endpoint, keys: { p256dh: 'k', auth: 'a' } } });
+      expect(r.statusCode, endpoint).toBe(200);
+    }
   });
 
   it('concurso com áreas para o onboarding', async () => {

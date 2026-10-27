@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import {
   acaoDoEventoAsaas,
+  endpointPushValido,
   AsaasWebhookCorpo,
   CadastroEntrada,
   CODIGOS_ERRO,
@@ -326,5 +327,17 @@ describe('registro de rotas (PRD 10)', () => {
 
   it('a raiz reexporta os contratos como api', () => {
     expect(raiz.api.ROTAS).toBe(ROTAS);
+  });
+});
+
+describe('endpoint de push (auditoria PIE R1-06)', () => {
+  it('aceita só https nos serviços de push dos navegadores', () => {
+    expect(endpointPushValido('https://fcm.googleapis.com/fcm/send/x')).toBe(true);
+    expect(endpointPushValido('https://updates.push.services.mozilla.com/wpush/v2/x')).toBe(true);
+    expect(endpointPushValido('https://web.push.apple.com/x')).toBe(true);
+    expect(endpointPushValido('http://fcm.googleapis.com/x')).toBe(false);
+    expect(endpointPushValido('https://fcm.googleapis.com.mal.com/x')).toBe(false);
+    expect(endpointPushValido('https://127.0.0.1:5432/x')).toBe(false);
+    expect(endpointPushValido('não é url')).toBe(false);
   });
 });

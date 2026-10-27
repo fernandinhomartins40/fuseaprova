@@ -297,19 +297,24 @@ export function rotasAdminGestao(r: Registrador): void {
   });
 
   r.rota('adminUsuarioRevogarSessoes', async ({ params, deps, usuario, agora }) => {
+    await exigirAlvoAluno(deps.db, usuario, params.id);
     const revogadas = await encerrarSessoesDoUsuario(deps.db, params.id);
     await auditar(deps.db, usuario.id, 'usuario.revogar_sessoes', `usuario:${params.id}`, { revogadas }, agora);
     return { revogadas };
   });
   r.rota('adminUsuarioLiberarAcesso', async ({ params, corpo, deps, usuario, agora }) => {
-    const [u] = await deps.db.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, params.id)).returning({ id: usuarios.id });
-    existe(u, 'Usuário não encontrado.');
+    await exigirAlvoAluno(deps.db, usuario, params.id);
+    await deps.db.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, params.id));
     await auditar(deps.db, usuario.id, 'acesso.liberar', `usuario:${params.id}`, { motivo: corpo.motivo }, agora);
     return { ok: true as const };
   });
   r.rota('adminUsuarioRevogarAcesso', async ({ params, corpo, deps, usuario, agora }) => {
-    const [u] = await deps.db.update(usuarios).set({ acesso: false }).where(eq(usuarios.id, params.id)).returning({ id: usuarios.id });
-    existe(u, 'Usuário não encontrado.');
+    await exigirAlvoAluno(deps.db, usuario, params.id);
+    // Sem acesso, as sessões abertas também caem (como no estorno).
+    await deps.db.transaction(async (tx) => {
+      await tx.update(usuarios).set({ acesso: false }).where(eq(usuarios.id, params.id));
+      await encerrarSessoesDoUsuario(tx, params.id);
+    });
     await auditar(deps.db, usuario.id, 'acesso.revogar', `usuario:${params.id}`, { motivo: corpo.motivo }, agora);
     return { ok: true as const };
   });
@@ -342,4 +347,13 @@ export function rotasAdminGestao(r: Registrador): void {
       porPagina: query.porPagina,
     };
   });
+}
+
+/**
+ * O admin só age sobre alunos: derrubar sessões ou mexer no acesso de outro admin ou do
+ * superadmin é coisa do painel do superadmin (com 2FA). Auditoria PIE R1-05.
+ */
+async function exigirAlvoAluno(db: Db, quem: { papel: string }, alvoId: string): Promise<void> {
+  const [alvo] = await db.select({ papel: usuarios.papel }).from(usuarios).where(eq(usuarios.id, alvoId));
+  if (existe(alvo, 'Usuário não encontrado.').papel !== 'aluno' && quem.papel !== 'superadmin') throw falha('proibido');
 }

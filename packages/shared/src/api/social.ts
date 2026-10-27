@@ -122,9 +122,32 @@ export type EstatisticasResposta = z.infer<typeof EstatisticasResposta>;
 export const PushChaveResposta = z.object({ chavePublica: z.string() });
 export type PushChaveResposta = z.infer<typeof PushChaveResposta>;
 
+/**
+ * Serviços de push dos navegadores (Chrome/Edge/Opera/Samsung, Firefox, Safari, Windows). O
+ * worker faz POST no endpoint: aceitar qualquer URL deixaria o aluno apontá-lo para a rede
+ * interna da VPS (auditoria PIE R1-06).
+ */
+export const HOSTS_PUSH = [
+  'fcm.googleapis.com',
+  'android.googleapis.com',
+  'push.services.mozilla.com',
+  'push.apple.com',
+  'notify.windows.com',
+] as const;
+
+export function endpointPushValido(endpoint: string): boolean {
+  try {
+    const u = new URL(endpoint);
+    const host = u.hostname.toLowerCase();
+    return u.protocol === 'https:' && HOSTS_PUSH.some((h) => host === h || host.endsWith(`.${h}`));
+  } catch {
+    return false;
+  }
+}
+
 /** POST /push/inscrever — o JSON de `PushSubscription.toJSON()`. */
 export const PushInscreverEntrada = z.object({
-  endpoint: z.string().url(),
+  endpoint: z.string().url().refine(endpointPushValido, 'Serviço de notificação não reconhecido.'),
   expirationTime: z.number().nullable().optional(),
   keys: z.object({ p256dh: z.string().min(1), auth: z.string().min(1) }),
 });

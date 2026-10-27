@@ -140,6 +140,22 @@ describe('admin (PRD 5.17)', () => {
     expect(aud.itens[0].detalhes.motivo).toMatch(/comprovante/);
   });
 
+  it('admin só age sobre alunos; revogar acesso derruba as sessões (auditoria PIE R1-05)', async () => {
+    const outroAdmin = await t.admin();
+    const sup = await t.superadmin();
+    for (const alvo of [outroAdmin, sup]) {
+      for (const nome of ['adminUsuarioRevogarSessoes', 'adminUsuarioLiberarAcesso', 'adminUsuarioRevogarAcesso'] as const) {
+        const r = await t.chamar(nome, { cookie: adm.cookie, params: { id: alvo.id }, corpo: { motivo: 'Teste de permissão' } });
+        expect(r.statusCode, `${nome} em ${alvo.email}`).toBe(403);
+      }
+    }
+    expect((await t.chamar('meObter', { cookie: sup.cookie })).statusCode).toBe(200);
+    const a = await t.alunoPago();
+    const r = await t.chamar('adminUsuarioRevogarAcesso', { cookie: adm.cookie, params: { id: a.id }, corpo: { motivo: 'Chargeback por fora' } });
+    expect(r.statusCode).toBe(200);
+    expect((await t.chamar('trilha', { cookie: a.cookie })).statusCode).toBe(401);
+  });
+
   it('trilhas: criar unidade/seção/lição, reordenar e excluir', async () => {
     const concurso = (await t.chamar('adminConcursosListar', { cookie: adm.cookie })).json().itens[0];
     const disc = (await t.chamar('adminDisciplinas', { cookie: adm.cookie })).json().itens[0];
