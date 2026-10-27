@@ -6,11 +6,34 @@
  * itálico como `*termo*`; o app mostra os dois primeiros em negrito (não há sublinhado).
  * `MarkdownEmLinha` serve às alternativas, que são uma linha só e podem ter o termo em destaque.
  */
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { EH_APP } from '../nativo/plataforma';
 import s from './Markdown.module.css';
 
 const URL_PERMITIDA = /^(\/|https?:\/\/)/i;
 const TOKEN = /(!\[[^\]]*\]\([^)\s]+\)|\*\*[^*]+\*\*|\*[^*\s][^*]*\*|_[^_\s][^_]*_)/g;
+
+/**
+ * App nativo: a imagem do enunciado (`/api/arquivos/...`) exige a sessão, e o cookie não vai
+ * num <img> de outra origem. Carrega pelo HTTP nativo e mostra como data URL.
+ */
+function ImagemDoServidor({ caminho, alt }: { caminho: string; alt: string }) {
+  const [src, setSrc] = useState<string | null>(null);
+  const [falhou, setFalhou] = useState(false);
+  useEffect(() => {
+    let vivo = true;
+    import('../nativo/nativo')
+      .then((n) => n.carregarImagem(caminho))
+      .then((d) => vivo && setSrc(d))
+      .catch(() => vivo && setFalhou(true));
+    return () => {
+      vivo = false;
+    };
+  }, [caminho]);
+  if (falhou) return <span className={s.imagem}>{alt || 'Imagem indisponível sem conexão.'}</span>;
+  if (!src) return <span className={s.imagem} role="img" aria-label={alt} aria-busy="true" />;
+  return <img src={src} alt={alt} className={s.imagem} />;
+}
 
 function emLinha(texto: string, chave: string): ReactNode[] {
   const partes = texto.split(TOKEN).filter((p) => p !== '');
@@ -20,6 +43,8 @@ function emLinha(texto: string, chave: string): ReactNode[] {
     if (img) {
       const [, alt = '', url = ''] = img;
       if (!URL_PERMITIDA.test(url)) return alt;
+      if (EH_APP && url.startsWith('/'))
+        return <ImagemDoServidor key={k} caminho={url} alt={alt} />;
       return <img key={k} src={url} alt={alt} className={s.imagem} loading="lazy" />;
     }
     if (p.startsWith('**') && p.endsWith('**') && p.length > 4) {
@@ -52,7 +77,10 @@ export function semMarcasMarkdown(texto: string): string {
 }
 
 export function Markdown({ texto, className }: { texto: string; className?: string }) {
-  const blocos = texto.replace(/\r\n/g, '\n').trim().split(/\n{2,}/);
+  const blocos = texto
+    .replace(/\r\n/g, '\n')
+    .trim()
+    .split(/\n{2,}/);
   return (
     <div className={className}>
       {blocos.map((b, i) => {

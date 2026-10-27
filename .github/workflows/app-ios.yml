@@ -1,0 +1,40 @@
+# =============================================================================
+# App iOS (Capacitor): confere que o projeto compila no macOS (simulador, sem assinatura).
+# Manual. A publicação na App Store (assinatura, archive e envio) está em
+# docs/APP-MOBILE.md §5 e depende da conta Apple Developer do dono.
+# =============================================================================
+name: App iOS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ios:
+    name: Build iOS (simulador)
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Instalar dependências
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web (modo app) e cap sync
+        run: pnpm --filter @fuse/mobile sync:ios
+
+      - name: xcodebuild (simulador, sem assinatura)
+        working-directory: apps/mobile/ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build | tail -40

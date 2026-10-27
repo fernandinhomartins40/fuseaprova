@@ -1,11 +1,16 @@
 /**
  * Web Push com chaves VAPID próprias: pede permissão, inscreve o service worker e registra
  * a inscrição na API (POST /push/inscrever). DELETE /push remove.
+ *
+ * No app nativo não há service worker: o lembrete é uma notificação LOCAL agendada no
+ * aparelho (src/nativo), e aqui só se pede a permissão ou se cancela o que foi agendado.
  */
 import { PushInscreverEntrada } from '@fuse/shared/api';
 import { chamar } from '../api/cliente';
+import { EH_APP } from '../nativo/plataforma';
 
 export function pushSuportado(): boolean {
+  if (EH_APP) return true;
   return (
     typeof window !== 'undefined' &&
     'serviceWorker' in navigator &&
@@ -26,6 +31,7 @@ function chaveParaBytes(base64Url: string): Uint8Array<ArrayBuffer> {
 export type ResultadoPush = 'ativado' | 'negado' | 'indisponivel' | 'erro';
 
 export async function ativarPush(): Promise<ResultadoPush> {
+  if (EH_APP) return (await import('../nativo/nativo')).pedirPermissaoLembrete();
   if (!pushSuportado()) return 'indisponivel';
   try {
     const permissao = await Notification.requestPermission();
@@ -51,6 +57,7 @@ export async function ativarPush(): Promise<ResultadoPush> {
 }
 
 export async function desativarPush(): Promise<void> {
+  if (EH_APP) return (await import('../nativo/nativo')).cancelarLembretes();
   try {
     if (pushSuportado()) {
       const reg = await navigator.serviceWorker.getRegistration();

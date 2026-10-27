@@ -4,6 +4,7 @@ import { condicoesCliente } from '../../vitest.shared';
 
 export default defineConfig({
   plugins: [react()],
+  define: { __APP_NATIVO__: 'false' },
   resolve: { conditions: condicoesCliente },
   test: {
     environment: 'jsdom',

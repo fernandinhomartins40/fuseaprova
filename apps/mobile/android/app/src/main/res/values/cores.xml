@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tokens do design (design/tokens.css). -->
+    <color name="fuse_creme">#FAF8F2</color>
+    <color name="fuse_verde">#00545D</color>
+</resources>

@@ -3,18 +3,23 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { aoRedirecionar } from '../api/cliente';
 import { criarQueryClient } from '../api/consultas';
+import { EH_APP } from '../nativo/plataforma';
 import { Carregando, ProvedorToast } from '../ui';
 import { Guarda } from './Guarda';
 import { LayoutAbas } from './LayoutAbas';
 import { Sincronizador } from './Sincronizador';
 
+function Vazio() {
+  return null;
+}
+
 const BoasVindas = lazy(() => import('../telas/BoasVindas'));
-const Cadastro = lazy(() => import('../telas/Cadastro'));
+const Cadastro = EH_APP ? Vazio : lazy(() => import('../telas/Cadastro'));
 const Entrar = lazy(() => import('../telas/Entrar'));
 const Recuperar = lazy(() => import('../telas/Recuperar'));
 const Termos = lazy(() => import('../telas/Legal').then((m) => ({ default: m.Termos })));
 const Privacidade = lazy(() => import('../telas/Legal').then((m) => ({ default: m.Privacidade })));
-const Pagamento = lazy(() => import('../telas/Pagamento'));
+const Pagamento = EH_APP ? Vazio : lazy(() => import('../telas/Pagamento'));
 const Onboarding = lazy(() => import('../telas/Onboarding'));
 const Aprender = lazy(() => import('../telas/Aprender'));
 const SobreConcurso = lazy(() => import('../telas/SobreConcurso'));
@@ -27,16 +32,21 @@ const Liga = lazy(() => import('../telas/Liga'));
 const Perfil = lazy(() => import('../telas/Perfil'));
 const Configuracoes = lazy(() => import('../telas/Configuracoes'));
 const NaoEncontrada = lazy(() => import('../telas/NaoEncontrada'));
-const Admin = lazy(() => import('../admin/rotas'));
-const Super = lazy(() => import('../super/rotas'));
+// Cada alvo só leva as suas telas (D20): o app nativo não tem cadastro, pagamento nem
+// painéis da equipe; o site não tem os recursos nativos.
+const Admin = EH_APP ? Vazio : lazy(() => import('../admin/rotas'));
+const Super = EH_APP ? Vazio : lazy(() => import('../super/rotas'));
+const AcessoApp = EH_APP ? lazy(() => import('../telas/AcessoApp')) : Vazio;
+const RecursosNativos = EH_APP ? lazy(() => import('../nativo/RecursosNativos')) : Vazio;
 
-/** 401 → /entrar e 402 → /pagamento, vindos de qualquer chamada da API. */
+/** 401 → /entrar e 402 → /pagamento (no app, /acesso), vindos de qualquer chamada da API. */
 function Redirecionador() {
   const navegar = useNavigate();
   const local = useLocation();
   useEffect(
     () =>
-      aoRedirecionar((destino) => {
+      aoRedirecionar((pedido) => {
+        const destino = EH_APP && pedido === '/pagamento' ? '/acesso' : pedido;
         if (local.pathname === destino) return;
         if (
           destino === '/entrar' &&
@@ -73,21 +83,40 @@ export function Rotas() {
     <Carregar>
       <Routes>
         <Route path="/" element={<BoasVindas />} />
-        <Route path="/cadastro" element={<Cadastro />} />
+        {/* App nativo: sem cadastro, pagamento nem painéis da equipe (D20). */}
+        {EH_APP ? (
+          <Route path="/cadastro" element={<Navigate to="/entrar" replace />} />
+        ) : (
+          <Route path="/cadastro" element={<Cadastro />} />
+        )}
         <Route path="/entrar" element={<Entrar />} />
         <Route path="/recuperar" element={<Recuperar />} />
         <Route path="/recuperar/:token" element={<Recuperar />} />
         <Route path="/termos" element={<Termos />} />
         <Route path="/privacidade" element={<Privacidade />} />
 
-        <Route
-          path="/pagamento"
-          element={
-            <Guarda nivel="login">
-              <Pagamento />
-            </Guarda>
-          }
-        />
+        {EH_APP ? (
+          <>
+            <Route path="/pagamento" element={<Navigate to="/acesso" replace />} />
+            <Route
+              path="/acesso"
+              element={
+                <Guarda nivel="login">
+                  <AcessoApp />
+                </Guarda>
+              }
+            />
+          </>
+        ) : (
+          <Route
+            path="/pagamento"
+            element={
+              <Guarda nivel="login">
+                <Pagamento />
+              </Guarda>
+            }
+          />
+        )}
         <Route
           path="/onboarding"
           element={
@@ -163,22 +192,26 @@ export function Rotas() {
           }
         />
 
-        <Route
-          path="/admin/*"
-          element={
-            <Guarda nivel="admin">
-              <Admin />
-            </Guarda>
-          }
-        />
-        <Route
-          path="/super/*"
-          element={
-            <Guarda nivel="super">
-              <Super />
-            </Guarda>
-          }
-        />
+        {!EH_APP && (
+          <>
+            <Route
+              path="/admin/*"
+              element={
+                <Guarda nivel="admin">
+                  <Admin />
+                </Guarda>
+              }
+            />
+            <Route
+              path="/super/*"
+              element={
+                <Guarda nivel="super">
+                  <Super />
+                </Guarda>
+              }
+            />
+          </>
+        )}
         <Route path="/inicio" element={<Navigate to="/aprender" replace />} />
         <Route path="*" element={<NaoEncontrada />} />
       </Routes>
@@ -194,6 +227,11 @@ export function App() {
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Redirecionador />
           <FocoNaTroca />
+          {EH_APP && (
+            <Suspense fallback={null}>
+              <RecursosNativos />
+            </Suspense>
+          )}
           <Rotas />
         </BrowserRouter>
       </ProvedorToast>

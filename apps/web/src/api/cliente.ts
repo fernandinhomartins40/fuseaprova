@@ -1,7 +1,8 @@
 /**
  * Cliente HTTP da PWA, tipado pelos contratos de `ROTAS` (@fuse/shared/api).
  *
- * - Caminho relativo `/api`, sessão por cookie httpOnly (`credentials: 'include'`).
+ * - Caminho relativo `/api`, sessão por cookie httpOnly (`credentials: 'include'`). No app
+ *   nativo a URL é absoluta e o `fetch` vai pelo HTTP nativo do Capacitor (cookie do sistema).
  * - O corpo é validado no cliente com o MESMO schema Zod que a API usa.
  * - Erros sempre no formato `{ erro, codigo?, campos? }` → `ErroApi` com a mensagem pronta.
  * - Tratamento global: 401 → /entrar e 402 → /pagamento (via `aoRedirecionar`).
@@ -17,6 +18,7 @@ import {
   type QueryDe,
   type RespostaDe,
 } from '@fuse/shared/api';
+import { urlDoServidor } from '../nativo/plataforma';
 
 export const MENSAGEM_SEM_CONEXAO =
   'Sem conexão com a internet. Verifique sua rede e tente de novo.';
@@ -131,7 +133,9 @@ export async function chamar<N extends NomeRota>(
     signal?: AbortSignal;
   };
   const caminho = montarCaminho(def.caminho, o.params ?? {});
-  const url = `${PREFIXO_API}${caminho}${montarQuery(o.query as Record<string, ValorQuery>)}`;
+  const url = urlDoServidor(
+    `${PREFIXO_API}${caminho}${montarQuery(o.query as Record<string, ValorQuery>)}`,
+  );
 
   const init: RequestInit = {
     method: def.metodo,

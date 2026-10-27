@@ -14,6 +14,10 @@ export default tseslint.config(
       '**/coverage/**',
       '**/.turbo/**',
       '**/dev-dist/**',
+      '**/dist-app/**',
+      // Projetos nativos do app (Capacitor): têm o build web copiado e código gerado.
+      'apps/mobile/android/**',
+      'apps/mobile/ios/**',
       'packages/db/drizzle/**',
       'design/**',
       'dados/**',

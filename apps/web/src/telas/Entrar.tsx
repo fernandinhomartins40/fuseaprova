@@ -6,6 +6,7 @@ import { camposDoErro, chamar, mensagemDeErro } from '../api/cliente';
 import { rotaInicial } from '../app/rotaInicial';
 import { CHAVES, useMe } from '../api/consultas';
 import { Botao3D, CabecalhoVoltar, Campo, IconeTraco, Pagina } from '../ui';
+import { EH_APP } from '../nativo/plataforma';
 import { errosPorCampo, rotaDoProximo } from './formulario';
 import s from './Auth.module.css';
 
@@ -87,9 +88,13 @@ export default function Entrar() {
         >
           Entrar
         </Botao3D>
-        <p className={s.rodape}>
-          Ainda não tem conta? <Link to="/cadastro">Criar conta</Link>
-        </p>
+        {EH_APP ? (
+          <p className={s.rodape}>Use o e-mail e a senha da sua conta Fuse Aprova.</p>
+        ) : (
+          <p className={s.rodape}>
+            Ainda não tem conta? <Link to="/cadastro">Criar conta</Link>
+          </p>
+        )}
       </form>
     </Pagina>
   );

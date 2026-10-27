@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { RODAPE_LEGAL } from '@fuse/shared';
 import { rotaInicial } from '../app/rotaInicial';
 import { useMe } from '../api/consultas';
+import { EH_APP } from '../nativo/plataforma';
 import { Botao3D, Capi, Chip, IconeTraco, Imagem } from '../ui';
 import s from './BoasVindas.module.css';
 
@@ -47,15 +48,27 @@ export default function BoasVindas() {
           </li>
         </ul>
         <div className={s.acoes}>
-          <Botao3D
-            onClick={() => navegar('/cadastro')}
-            iconeDireita={<IconeTraco nome="seta" tamanho={20} />}
-          >
-            Começar agora
-          </Botao3D>
-          <Botao3D variante="secundario" onClick={() => navegar('/entrar')}>
-            Já tenho conta
-          </Botao3D>
+          {EH_APP ? (
+            // App nativo: só entra quem já tem conta (D20).
+            <Botao3D
+              onClick={() => navegar('/entrar')}
+              iconeDireita={<IconeTraco nome="seta" tamanho={20} />}
+            >
+              Entrar
+            </Botao3D>
+          ) : (
+            <>
+              <Botao3D
+                onClick={() => navegar('/cadastro')}
+                iconeDireita={<IconeTraco nome="seta" tamanho={20} />}
+              >
+                Começar agora
+              </Botao3D>
+              <Botao3D variante="secundario" onClick={() => navegar('/entrar')}>
+                Já tenho conta
+              </Botao3D>
+            </>
+          )}
         </div>
         <p className={s.legal}>{RODAPE_LEGAL}</p>
       </section>

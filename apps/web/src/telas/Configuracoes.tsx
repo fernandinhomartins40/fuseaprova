@@ -12,6 +12,7 @@ import { camposDoErro, chamar, mensagemDeErro } from '../api/cliente';
 import { CHAVES, useConcurso, useMe } from '../api/consultas';
 import { ativarPush, desativarPush } from '../app/push';
 import { limparLocal, sair } from '../app/sair';
+import { EH_APP } from '../nativo/plataforma';
 import { contarPendentes, sincronizar } from '../offline/fila';
 import {
   Botao3D,
@@ -116,7 +117,9 @@ export default function Configuracoes() {
       if (r !== 'ativado') {
         toast(
           r === 'negado'
-            ? 'As notificações estão bloqueadas no navegador.'
+            ? EH_APP
+              ? 'As notificações estão bloqueadas nos ajustes do aparelho.'
+              : 'As notificações estão bloqueadas no navegador.'
             : 'Não foi possível ativar as notificações neste aparelho.',
           'erro',
         );
@@ -135,11 +138,19 @@ export default function Configuracoes() {
     setBaixando(true);
     try {
       const dados = await chamar('meExportar');
+      const nome = `fuse-aprova-meus-dados-${new Date().toISOString().slice(0, 10)}.json`;
+      if (EH_APP) {
+        // WebView não baixa blob: grava no aparelho e abre o compartilhamento do sistema.
+        await (
+          await import('../nativo/nativo')
+        ).compartilharArquivo(nome, JSON.stringify(dados, null, 2));
+        return;
+      }
       const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `fuse-aprova-meus-dados-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = nome;
       document.body.appendChild(a);
       a.click();
       a.remove();
