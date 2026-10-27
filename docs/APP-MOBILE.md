@@ -162,7 +162,7 @@ Não entram no app.
 | App Store | Capturas iPhone 6,5" (opcional) | 1284×2778 | Idem |
 | App Store | Ícone | sai do build (`icone.png` 1024×1024) | — |
 
-**As capturas precisam mostrar o app de verdade.** Use as telas de `design/png/` ou capturas do app no celular. Pode emoldurar com fundo da marca e título curto, mas não invente telas nem funções.
+**As capturas precisam mostrar o app de verdade.** Use as telas de `apps/mobile/loja/telas/` (o app atual, 1170×2532), geradas por `pnpm --filter @fuse/web capturas:loja` com a API simulada (`dev:mock --port 5181` em outro terminal). **Não use `design/png/`**: é o design original, anterior às mudanças do app (vidas, layout da trilha, navegação). Pode emoldurar com fundo da marca e título curto, mas não invente telas nem funções.
 
 **Textos da ficha (sugestão):**
 - **Título (até 30 caracteres):** "Fuse Aprova: Concurso Palmital".

@@ -21,6 +21,7 @@ import {
   NOME_CURTO_DISCIPLINA,
   plural,
 } from './comum';
+import { EH_APP } from '../nativo/plataforma';
 import s from './Perfil.module.css';
 
 /** 13 Perfil (`/perfil`): avatar, estatísticas, domínio, conquistas e cartão do edital. */
@@ -64,7 +65,10 @@ export default function Perfil() {
             icone={<Imagem nome="icone-coroa" tamanho={20} />}
             className={s.selo}
           >
-            {est.data?.seloAcesso ?? 'Acesso completo · pago via Pix'}
+            {/* App nativo: sem citar o pagamento feito fora da loja (D20). */}
+            {EH_APP
+              ? 'Acesso completo'
+              : (est.data?.seloAcesso ?? 'Acesso completo · pago via Pix')}
           </Chip>
         </div>
       </section>

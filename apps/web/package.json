@@ -14,7 +14,8 @@
     "assets": "node scripts/gerar-assets.mjs",
     "capturas": "node scripts/capturar-telas.mjs",
     "tamanho": "node scripts/medir-bundle.mjs",
-    "build:app": "tsc --noEmit && vite build --mode app"
+    "build:app": "tsc --noEmit && vite build --mode app",
+    "capturas:loja": "node scripts/capturar-loja.mjs"
   },
   "dependencies": {
     "@capacitor/app": "8.1.2",
