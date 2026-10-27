@@ -36,6 +36,7 @@ Em produção (`pnpm build`), o bin `crawler` aponta para `dist/cli.js`.
 | `crawler pci:listar [--paginas 1-28] [--sem-banco]` | Lista as provas FAU do PCI, para no total de páginas e grava em `provas_origem` (`fonte='pci'`, mesmo id do seed). Aceita `--paginas 1,3,5-7`. |
 | `crawler pci:baixar <id>` | Lê a página da prova, atualiza a prova de origem e baixa caderno e gabarito **só por link direto permitido pelo robots.txt**. Com captcha, para (saída 2). |
 | `crawler importar <caderno.pdf> --gabarito <gabarito.pdf> [--prova <id\|slug FAU\|id PCI>] [--cargo <nome>] [--preliminar <pdf>] [--forcar] [--simular]` | Extrai as questões, confronta com o gabarito definitivo e grava como `rascunho` (anuladas como `anulada`), sem nunca publicar. Também aceita `.txt` já extraído. Sem `--prova`, procura o caderno pelo hash em `arquivos_coletados`. |
+| `crawler figuras --ids <ids.json> --contexto <contexto.json> --cadernos <pasta> --saida <pasta> [--dpi 170]` | Recorta a figura de cada questão no caderno em PDF (precisa de Python + PyMuPDF; `python/figuras_pdf.py`, sem rede) e grava `<id>.png`, `manifesto.json` e `conferencia.html` na pasta de saída. Não toca no banco nem sobe arquivos. Variante `--pdf <caderno.pdf> --numeros 3,5 --saida <pasta>` para questões soltas. |
 
 Opções gerais: `--json` e `--ajuda`.
 
@@ -138,3 +139,12 @@ pnpm --filter @fuse/crawler test
 | `PYTHON_BIN` | Python com PyMuPDF para o estilo do caderno (opcional; padrão `python3`, depois `python`) |
 | `PDFTOTEXT_BIN` | Caminho do `pdftotext` (padrão no PATH; na VPS: `apt install poppler-utils`) |
 | `APP_URL`, `SUPORTE_EMAIL` | Contato no User-Agent padrão |
+
+## Figuras das questões (`crawler figuras`)
+Questões que dependem de imagem, planta, tabela, gráfico ou símbolo ficam sem a figura quando só o texto do PDF é extraído. O comando acha a questão no caderno (marcador `NN)` ou `NN.`, 1 ou 2 colunas, continuação na coluna ou página seguinte) e recorta **só a figura** em PNG nítido (170 dpi por padrão, até 1,9 MB para caber no limite de upload do painel), sem cabeçalho, rodapé, número de página nem a marca d'água do PCI.
+
+- **Entrada:** `--ids` (array JSON de ids), `--contexto` (array com `id, orgao, ano, cargo, numero, enunciado`...) e `--cadernos` (nomes `cargo-orgao-pr-fau-unicentro-ANO.pdf`; "Pref." vira "prefeitura").
+- **Saída:** `<saida>/<id>.png`, `manifesto.json` (id -> arquivo, `url`, `markdown`, `alt`, `campo`, página, caixas em pontos, confiança, estratégia) e `conferencia.html` (miniaturas ao lado do enunciado, com filtro por confiança).
+- **Confiança:** `alta` = figura isolada (imagem ou desenho vetorial, com rótulos curtos); `media` = várias figuras, símbolos pequenos dentro do texto, ou questão que pede um destaque/sublinhado (recorte da questão inteira, que mostra o sublinhado); `baixa` = nada isolável, recorte da questão inteira para conferir à mão.
+- **Formato publicado:** a questão ganha, na primeira linha do enunciado (ou do `textoApoio`, conforme `campo`), `![texto alternativo](/api/arquivos/uploads/<id-da-questao>.png)`. O arquivo vai para `${ARQUIVOS_DIR}/uploads/<id>.png`, servido por `GET /api/arquivos/uploads/:nome` (exige acesso pago ou admin; o nome precisa ser `uuid.png`, por isso o arquivo leva o id da questão). O `Markdown.tsx` já renderiza a imagem.
+- Sem Python/PyMuPDF o comando para com erro claro (`PYTHON_BIN` escolhe o interpretador). O PDF é tratado como dado não confiável: só é lido e desenhado.

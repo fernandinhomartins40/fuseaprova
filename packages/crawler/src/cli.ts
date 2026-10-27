@@ -13,6 +13,13 @@ import { lerConfig } from './config.js';
 import { atualizarCertames } from './fau/certames.js';
 import { baixarDocsCertame } from './fau/docs.js';
 import { importarProva } from './importacao/importar.js';
+import {
+  gravarManifestoEConferencia,
+  lerQuestoes,
+  recortarFiguras,
+  recortarPdfAvulso,
+  resumoFiguras,
+} from './figuras/figuras.js';
 import { baixarPci, listarPci } from './pci/comandos.js';
 import { parseIntervaloPaginas } from './pci/parser.js';
 import { resolverProva } from './prova.js';
@@ -33,6 +40,12 @@ Comandos:
   importar <caderno.pdf> --gabarito <gabarito.pdf> [--prova <id|slug>] [--cargo <nome>]
            [--preliminar <gabarito-preliminar.pdf>] [--forcar] [--simular]
       Extrai as questões, confronta com o gabarito definitivo e grava como rascunho.
+
+  figuras --ids <ids.json> --contexto <contexto.json> --cadernos <pasta> --saida <pasta> [--dpi 170]
+      Recorta a figura de cada questão no caderno em PDF (PyMuPDF), grava PNGs <id>.png, o
+      manifesto.json e a conferencia.html na pasta de saída. Não grava no banco nem sobe arquivos.
+  figuras --pdf <caderno.pdf> --numeros 3,5 --saida <pasta> [--dpi 170]
+      O mesmo para questões soltas de um caderno (as chaves dos arquivos viram q03, q05...).
 
 Opções gerais: --json (saída em JSON), --ajuda
 Ambiente: DATABASE_URL, ARQUIVOS_DIR, CRAWLER_USER_AGENT, CRAWLER_INTERVALO_MS (mín. 2000), PDFTOTEXT_BIN.
@@ -60,6 +73,13 @@ async function principal(argv: string[]): Promise<number> {
       todos: { type: 'boolean', default: false },
       forcar: { type: 'boolean', default: false },
       simular: { type: 'boolean', default: false },
+      ids: { type: 'string' },
+      contexto: { type: 'string' },
+      cadernos: { type: 'string' },
+      saida: { type: 'string' },
+      dpi: { type: 'string', default: '170' },
+      pdf: { type: 'string' },
+      numeros: { type: 'string' },
       'sem-banco': { type: 'boolean', default: false },
       'sem-andamento': { type: 'boolean', default: false },
       json: { type: 'boolean', default: false },
@@ -225,6 +245,40 @@ async function principal(argv: string[]): Promise<number> {
             ].join('\n'),
         );
         return 0;
+      }
+      case 'figuras': {
+        if (!values.saida) throw new Error('Informe --saida <pasta>.');
+        const saida = resolve(values.saida);
+        const dpi = Number(values.dpi);
+        if (!Number.isInteger(dpi) || dpi < 72 || dpi > 400)
+          throw new Error('--dpi deve ficar entre 72 e 400.');
+        if (values.pdf) {
+          const numeros = (values.numeros ?? '')
+            .split(',')
+            .map((n) => Number(n.trim()))
+            .filter((n) => Number.isInteger(n) && n > 0);
+          if (!numeros.length) throw new Error('Informe --numeros 3,5 (números das questões).');
+          const r = await recortarPdfAvulso(resolve(values.pdf), numeros, saida, dpi);
+          imprimir(values.json, r, () => resumoFiguras(r));
+          return r.resumo.falhas ? 1 : 0;
+        }
+        if (!values.ids || !values.contexto || !values.cadernos)
+          throw new Error(
+            'Uso: crawler figuras --ids <ids.json> --contexto <contexto.json> --cadernos <pasta> --saida <pasta>',
+          );
+        const questoes = await lerQuestoes(resolve(values.ids), resolve(values.contexto));
+        const cadernos = resolve(values.cadernos);
+        const manifesto = await recortarFiguras({ questoes, cadernos, saida, dpi, log });
+        const arqs = await gravarManifestoEConferencia(saida, manifesto, questoes);
+        imprimir(
+          values.json,
+          { ...manifesto, itens: undefined, arquivos: arqs },
+          () =>
+            `${resumoFiguras(manifesto)}
+Manifesto: ${arqs.manifesto}
+Conferência: ${arqs.conferencia}`,
+        );
+        return manifesto.resumo.falhas ? 1 : 0;
       }
       default:
         console.error(`Comando desconhecido: ${comando}\n`);
