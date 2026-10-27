@@ -3,7 +3,7 @@
  * D7) e sync idempotente por id_cliente, com recálculo de tudo no servidor.
  */
 import { randomUUID } from 'node:crypto';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, count, eq, gte, inArray, sql } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { cifrarTexto, gerarChaveOffline, MS_DIA, xpDaResposta } from '@fuse/shared';
 import type { PacoteOfflineResposta, SyncEntrada, SyncResposta } from '@fuse/shared/api';
@@ -12,11 +12,11 @@ import type { Deps, Usuario } from '../contexto.js';
 import { iso, type Db } from '../util.js';
 import { dicaDaLicao, finalizarSessao, licaoAbrivel, revisoesVencidas, sortearQuestoesDaLicao } from './estudo.js';
 import { aplicarRevisao, creditarXp, ofensivaHoje, travarUsuario } from './progresso.js';
-import { carregarQuestoes, emOrdem, type QuestaoCompleta } from './questoes.js';
-import { calcularTrilha, tituloDaLicao } from './trilha.js';
+import { carregarQuestoes, emOrdem, questaoVisivel, type QuestaoCompleta } from './questoes.js';
+import { calcularTrilha, tituloDaLicao, type TrilhaCalculada } from './trilha.js';
 import { concursoDoUsuario, revisoesPendentes, vidasAtuais } from './usuario.js';
 
-const { assuntos, licoes, pacotesOffline, revisoes, secoes, sessoesEstudo, tentativas } = schema;
+const { assuntos, licoes, pacotesOffline, questoes, revisoes, secoes, sessoesEstudo, tentativas, unidades } = schema;
 
 const LIMITE_REVISAO_PACOTE = 200;
 const VALIDADE_PACOTE_MS = 7 * MS_DIA;
@@ -32,12 +32,7 @@ export async function montarPacote(deps: Deps, u: Usuario, agora: Date): Promise
   const t = await calcularTrilha(db, u);
   const licoesPacote: PacoteOfflineResposta['licoes'] = [];
   if (t) {
-    const iAtual = t.ordem.findIndex((id) => t.nos.get(id)!.estado === 'atual');
-    const proximas = (iAtual < 0 ? [] : t.ordem.slice(iAtual))
-      .map((id) => t.nos.get(id)!)
-      .filter((n) => n.licao.tipo === 'normal')
-      .slice(0, 3);
-    for (const n of proximas) {
+    for (const n of licoesDoPacote(t)) {
       const { ids } = await sortearQuestoesDaLicao(
         db,
         u.id,
@@ -72,10 +67,23 @@ export async function montarPacote(deps: Deps, u: Usuario, agora: Date): Promise
   };
 }
 
+/**
+ * As próximas 3 lições normais a partir da atual (baú e desafio ficam de fora). O sync aceita
+ * exatamente estas, além das já liberadas: assim a lição depois de um baú fechado, que veio no
+ * pacote, também vale (validação PIE V1-04).
+ */
+function licoesDoPacote(t: TrilhaCalculada) {
+  const iAtual = t.ordem.findIndex((id) => t.nos.get(id)!.estado === 'atual');
+  return (iAtual < 0 ? [] : t.ordem.slice(iAtual))
+    .map((id) => t.nos.get(id)!)
+    .filter((n) => n.licao.tipo === 'normal')
+    .slice(0, 3);
+}
+
 type Lote = z.output<typeof SyncEntrada>;
 type SessaoLote = Lote['sessoes'][number];
 type TentativaLote = Lote['tentativas'][number];
-type LimiteLicao = { assuntoId: string; tamanho: number };
+type LimiteLicao = { assuntoId: string; tamanho: number; area: string | null };
 
 /** Prende a data do aparelho entre `piso` e `agora` (o relógio do aparelho não é confiável). */
 function noIntervalo(d: Date, piso: Date, agora: Date): Date {
@@ -105,7 +113,13 @@ export async function sincronizar(deps: Deps, usuario: Usuario, lote: Lote, agor
         ? await tx
             .select({ id: pacotesOffline.id, geradoEm: pacotesOffline.geradoEm })
             .from(pacotesOffline)
-            .where(and(eq(pacotesOffline.usuarioId, u.id), inArray(pacotesOffline.id, idsPacote)))
+            .where(
+              and(
+                eq(pacotesOffline.usuarioId, u.id),
+                inArray(pacotesOffline.id, idsPacote),
+                gte(pacotesOffline.expiraEm, agora),
+              ),
+            )
         : []
       ).map((p) => [p.id, p.geradoEm]),
     );
@@ -172,7 +186,8 @@ export async function sincronizar(deps: Deps, usuario: Usuario, lote: Lote, agor
       const lista = [...(tentativasPorSessao.get(idCliente) ?? [])].sort((a, b) =>
         a.respondidaEm.localeCompare(b.respondidaEm),
       );
-      if (!s) {
+      if (s?.concluidaEm) motivo = 'Sessão já encerrada.';
+      if (!s || s.concluidaEm) {
         for (const t of lista) {
           if (existentes.has(t.idCliente)) duplicadas.push(t.idCliente);
           else rejeitadas.push({ idCliente: t.idCliente, motivo });
@@ -184,9 +199,10 @@ export async function sincronizar(deps: Deps, usuario: Usuario, lote: Lote, agor
       let licao: LimiteLicao | null = null;
       if (sessao.tipo === 'licao' && sessao.licaoId) {
         const [l] = await tx
-          .select({ assuntoId: secoes.assuntoId, tamanho: licoes.tamanho })
+          .select({ assuntoId: secoes.assuntoId, tamanho: licoes.tamanho, area: unidades.area })
           .from(licoes)
           .innerJoin(secoes, eq(secoes.id, licoes.secaoId))
+          .innerJoin(unidades, eq(unidades.id, secoes.unidadeId))
           .where(eq(licoes.id, sessao.licaoId));
         licao = l ?? null;
       }
@@ -206,14 +222,14 @@ export async function sincronizar(deps: Deps, usuario: Usuario, lote: Lote, agor
           continue;
         }
         const q = mapa.get(t.questaoId);
-        const recusa = await recusaDaTentativa(tx, u.id, sessao.tipo, licao, respondidas, q, agora);
+        const em = noIntervalo(new Date(t.respondidaEm), sessao.iniciadaEm, agora);
+        const recusa = await recusaDaTentativa(tx, u.id, sessao.tipo, licao, respondidas, q, em);
         if (recusa !== null || !q) {
           rejeitadas.push({ idCliente: t.idCliente, motivo: recusa ?? 'Questão indisponível (retirada do ar).' });
           continue;
         }
         vistasNoLote.add(t.idCliente);
         respondidas.add(q.aluno.id);
-        const em = noIntervalo(new Date(t.respondidaEm), sessao.iniciadaEm, agora);
         const acertou = t.resposta === q.gabarito;
         await tx.insert(tentativas).values({
           idCliente: t.idCliente,
@@ -239,6 +255,7 @@ export async function sincronizar(deps: Deps, usuario: Usuario, lote: Lote, agor
         .from(tentativas)
         .where(eq(tentativas.sessaoEstudoId, sessao.id));
       if (feitas.length === 0) continue;
+      if (licao && sessao.licaoId && feitas.length < (await questoesExigidas(tx, licao))) continue;
       const qs = [...new Set(feitas.map((f) => f.questaoId))];
       await tx
         .update(sessoesEstudo)
@@ -277,7 +294,8 @@ async function validarSessaoOffline(
     const c = await licaoAbrivel(tx, u, s.licaoId);
     return c.licao.tipo === 'normal' ? true : 'Lição indisponível offline.';
   } catch {
-    return 'Lição indisponível offline.';
+    const t = await calcularTrilha(tx, u);
+    return t && licoesDoPacote(t).some((n) => n.licao.id === s.licaoId) ? true : 'Lição indisponível offline.';
   }
 }
 
@@ -289,7 +307,7 @@ async function recusaDaTentativa(
   licao: LimiteLicao | null,
   respondidas: ReadonlySet<string>,
   q: QuestaoCompleta | undefined,
-  agora: Date,
+  em: Date,
 ): Promise<string | null> {
   if (!q || !q.visivel || q.gabaritoReal === null) return 'Questão indisponível (retirada do ar).';
   if (respondidas.has(q.aluno.id)) return 'Questão já respondida nesta sessão.';
@@ -302,7 +320,22 @@ async function recusaDaTentativa(
       .select({ venceEm: revisoes.venceEm, status: revisoes.status })
       .from(revisoes)
       .where(and(eq(revisoes.usuarioId, usuarioId), eq(revisoes.questaoId, q.aluno.id)));
-    return r && r.status === 'ativa' && r.venceEm.getTime() <= agora.getTime() ? null : 'Esta revisão não está vencida.';
+    // Vencida na data da resposta (já presa à janela do pacote): a revisão respondida avança
+    // e a mesma questão não vale de novo até vencer outra vez (validação PIE V1-01).
+    return r && r.status === 'ativa' && r.venceEm.getTime() <= em.getTime() ? null : 'Esta revisão não está vencida.';
   }
   return 'Sessão inválida.';
+}
+
+/**
+ * Respostas que uma lição offline precisa para contar como concluída: o tamanho da lição, ou
+ * todas as questões visíveis do assunto se houver menos (como o sorteio do pacote). O online
+ * exige todas as questões da sessão; o offline não pode concluir com 1 (validação PIE V1-02).
+ */
+async function questoesExigidas(tx: Db, licao: LimiteLicao): Promise<number> {
+  const [n] = await tx
+    .select({ n: count() })
+    .from(questoes)
+    .where(and(eq(questoes.assuntoId, licao.assuntoId), questaoVisivel(), licao.area ? sql`${questoes.areas} @> array[${licao.area}]::text[]` : undefined));
+  return Math.min(licao.tamanho, Number(n?.n ?? 0));
 }

@@ -256,7 +256,7 @@ export function rotasAdminGestao(r: Registrador): void {
     return { itens: lista.map(mapUsuario), total: contar(t?.n), pagina: query.pagina, porPagina: query.porPagina };
   });
 
-  r.rota('adminUsuarioObter', async ({ params, deps, agora }) => {
+  r.rota('adminUsuarioObter', async ({ params, deps, agora, usuario }) => {
     const { db } = deps;
     const [u] = await db.select().from(usuarios).where(eq(usuarios.id, params.id));
     const usu = existe(u, 'Usuário não encontrado.');
@@ -267,7 +267,11 @@ export function rotasAdminGestao(r: Registrador): void {
       .where(eq(tentativas.usuarioId, usu.id));
     const [sims] = await db.select({ n: count() }).from(simulados).where(and(eq(simulados.usuarioId, usu.id), isNotNull(simulados.entregueEm)));
     const ped = await db.select().from(pedidos).where(eq(pedidos.usuarioId, usu.id)).orderBy(desc(pedidos.criadoEm));
-    const sess = await db.select().from(sessoes).where(eq(sessoes.usuarioId, usu.id)).orderBy(desc(sessoes.criadoEm));
+    // IP e aparelho das sessões de outro admin ou do superadmin só o superadmin vê (V1-11).
+    const verSessoes = usu.papel === 'aluno' || usuario.papel === 'superadmin';
+    const sess = verSessoes
+      ? await db.select().from(sessoes).where(eq(sessoes.usuarioId, usu.id)).orderBy(desc(sessoes.criadoEm))
+      : [];
     const cargo = await cargoDoUsuario(db, usu);
     const feitas = contar(tent?.n);
     return {

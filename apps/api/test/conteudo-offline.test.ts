@@ -213,10 +213,11 @@ describe('offline (PRD 8.4)', () => {
     expect(r.rejeitadas.map((x: { motivo: string }) => x.motivo)).toEqual(
       expect.arrayContaining(['Questão já respondida nesta sessão.', 'Lição indisponível offline.']),
     );
+    // 1 resposta só não conclui a lição (o online exige todas): sem gemas nem progresso.
     const u = await usuario(t, a.id);
-    expect(u.gemas).toBe(5);
+    expect(u.gemas).toBe(0);
     const prog = await t.db.select().from(schema.progressoLicoes).where(eq(schema.progressoLicoes.usuarioId, a.id));
-    expect(prog.map((p) => p.licaoId)).toEqual([pac.licoes[0].licao.id]);
+    expect(prog).toEqual([]);
   });
 
   it('sync recusa questão de outro assunto e revisão que não venceu', async () => {
@@ -245,6 +246,52 @@ describe('offline (PRD 8.4)', () => {
     expect(r.aceitas).toHaveLength(0);
     expect(r.rejeitadas.map((x: { motivo: string }) => x.motivo).sort()).toEqual(['Esta revisão não está vencida.', 'Questão fora desta lição.']);
     expect(r.xpGanho).toBe(0);
+  });
+
+  it('revisão offline vale uma vez por vencimento, na data da resposta (validação PIE V1-01)', async () => {
+    const a = await t.alunoPago();
+    const { fim } = await fazerLicao(t, a.cookie, 2);
+    const q = fim.erros[0] as string;
+    const pac = (await t.chamar('offlinePacote', { cookie: a.cookie })).json();
+    const quando = new Date(new Date(pac.geradoEm).getTime() + 60_000).toISOString(); // antes de vencer
+    t.relogio.avancar(24 * 3600_000);
+    const [{ g }] = (await t.db.select({ g: schema.questoes.gabarito }).from(schema.questoes).where(eq(schema.questoes.id, q))) as [{ g: string }];
+    const lote = (em: string) => {
+      const sessoes = [];
+      const tentativas = [];
+      for (let i = 0; i < 10; i++) {
+        const sid = randomUUID();
+        sessoes.push({ idCliente: sid, pacoteId: pac.pacoteId, tipo: 'revisao', licaoId: null, iniciadaEm: em, concluidaEm: em });
+        tentativas.push({ idCliente: randomUUID(), sessaoIdCliente: sid, questaoId: q, resposta: g, tempoMs: 1, respondidaEm: em });
+      }
+      return { pacoteId: pac.pacoteId, sessoes, tentativas };
+    };
+    // respondida antes de vencer: não vale
+    expect((await t.chamar('syncTentativas', { cookie: a.cookie, corpo: lote(quando) })).json().aceitas).toHaveLength(0);
+    // vencida: vale uma vez só, mesmo repetida em 10 sessões
+    const r = (await t.chamar('syncTentativas', { cookie: a.cookie, corpo: lote(t.relogio.agora().toISOString()) })).json();
+    expect(r.aceitas).toHaveLength(1);
+  });
+
+  it('lição offline com uma resposta só não conclui (validação PIE V1-02)', async () => {
+    const a = await t.alunoPago();
+    const pac = (await t.chamar('offlinePacote', { cookie: a.cookie })).json();
+    const l = pac.licoes[0];
+    const sid = randomUUID();
+    const agora = t.relogio.agora().toISOString();
+    const r = (
+      await t.chamar('syncTentativas', {
+        cookie: a.cookie,
+        corpo: {
+          pacoteId: pac.pacoteId,
+          sessoes: [{ idCliente: sid, tipo: 'licao', licaoId: l.licao.id, iniciadaEm: agora, concluidaEm: agora }],
+          tentativas: [{ idCliente: randomUUID(), sessaoIdCliente: sid, questaoId: l.questoes[0].id, resposta: await gabaritoDe(pac, l.questoes[0]), tempoMs: 1, respondidaEm: agora }],
+        },
+      })
+    ).json();
+    expect(r.aceitas).toHaveLength(1);
+    expect((await usuario(t, a.id)).gemas).toBe(0);
+    expect(await t.db.select().from(schema.progressoLicoes).where(eq(schema.progressoLicoes.usuarioId, a.id))).toEqual([]);
   });
 
   it('datas anteriores ao pacote não forjam ofensiva; as 3 lições do pacote valem em ordem', async () => {

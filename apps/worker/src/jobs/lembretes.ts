@@ -6,6 +6,7 @@ import { and, count, eq, gte, inArray, isNull, lt, or } from 'drizzle-orm';
 import webpush from 'web-push';
 import { schema } from '@fuse/db';
 import { diaSP, horaMinutoSP, inicioDoDiaSP, textoLembrete, verificarOfensiva } from '@fuse/shared';
+import { endpointPushValido } from '@fuse/shared/api';
 import type { Db, Log } from '../util.js';
 
 const { usuarios, pushInscricoes, sessoesEstudo } = schema;
@@ -25,6 +26,9 @@ export function criarEnviadorWebPush(vapid: { publica: string; privada: string; 
   webpush.setVapidDetails(vapid.assunto, vapid.publica, vapid.privada);
   return {
     async enviar(insc, payload) {
+      // Inscrição gravada antes da validação do endpoint: nada de POST para a rede interna;
+      // tratada como expirada, ela é apagada (validação PIE V1-10).
+      if (!endpointPushValido(insc.endpoint)) return { ok: false, expirada: true };
       try {
         await webpush.sendNotification({ endpoint: insc.endpoint, keys: { p256dh: insc.p256dh, auth: insc.auth } }, payload, {
           TTL: 6 * 3600,

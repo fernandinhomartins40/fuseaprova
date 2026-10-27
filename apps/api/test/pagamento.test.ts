@@ -180,6 +180,20 @@ describe('pagamento Pix (PRD 8.3)', () => {
     expect(e!.resultado).toBe('valor_divergente');
   });
 
+  it('status consultando o Asaas também não libera valor menor que o do pedido (validação PIE V1-07)', async () => {
+    const a = await t.cadastrar();
+    const pix = (await t.chamar('pagamentoPix', { cookie: a.cookie })).json();
+    const pid = (await pedidoDe(pix.pedidoId)).asaasPaymentId!;
+    const c = t.asaas.cobrancas.get(pid)!;
+    c.value = 1;
+    t.asaas.definirStatus(pid, 'RECEIVED');
+    t.relogio.avancar(120_000);
+    const st = (await t.chamar('pagamentoStatus', { cookie: a.cookie })).json();
+    expect(st.acesso).toBe(false);
+    expect((await pedidoDe(pix.pedidoId)).status).toBe('pendente');
+    expect((await usuario(t, a.id)).acesso).toBe(false);
+  });
+
   it('dois pedidos de Pix ao mesmo tempo geram uma cobrança só', async () => {
     const a = await t.cadastrar();
     const antes = t.asaas.cobrancas.size;

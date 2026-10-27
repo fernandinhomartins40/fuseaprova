@@ -8,7 +8,7 @@ import { schema } from '@fuse/db';
 import { statusLocalDoAsaas, type ConciliacaoItem } from '@fuse/shared/api';
 import type { Deps } from '../contexto.js';
 import { ErroAsaas } from '../integracoes/asaas.js';
-import { confirmarPagamento, estornarPagamento, vencerPagamento, type Pedido } from './pagamento.js';
+import { confirmarPagamento, estornarPagamento, valorMenorQueOPedido, vencerPagamento, type Pedido } from './pagamento.js';
 
 const { pedidos } = schema;
 
@@ -35,11 +35,13 @@ export async function conciliarPedido(
   let statusAsaas: string;
   let removida = false;
   let liquido: number | null = null;
+  let valorPago: number | null = null;
   try {
     const c = await deps.asaas.obterCobranca(p.asaasPaymentId);
     statusAsaas = c.status;
     removida = c.deleted === true;
     if (typeof c.netValue === 'number') liquido = Math.round(c.netValue * 100);
+    if (typeof c.value === 'number') valorPago = Math.round(c.value * 100);
   } catch (e) {
     if (e instanceof ErroAsaas && e.status === 404) {
       statusAsaas = 'REMOVIDA';
@@ -67,8 +69,10 @@ export async function conciliarPedido(
   // Divergência. Correções seguras automáticas; o resto fica para análise humana.
   let acao: (() => Promise<unknown>) | null = null;
   let mensagem: string;
-  if (esperado === 'pago' && (p.status === 'pendente' || p.status === 'vencido')) {
-    acao = () => confirmarPagamento(deps, p.asaasPaymentId!, agora, { valorLiquidoCentavos: liquido });
+  if (esperado === 'pago' && (p.status === 'pendente' || p.status === 'vencido') && valorMenorQueOPedido(valorPago, p.valorCentavos)) {
+    mensagem = 'Divergência: pago no Asaas com valor menor que o do pedido. Confira antes de liberar o acesso.';
+  } else if (esperado === 'pago' && (p.status === 'pendente' || p.status === 'vencido')) {
+    acao = () => confirmarPagamento(deps, p.asaasPaymentId!, agora, { valorLiquidoCentavos: liquido, valorPagoCentavos: valorPago });
     mensagem = 'Pago no Asaas: pedido marcado como pago e acesso liberado.';
   } else if (esperado === 'estornado' && p.status === 'pago') {
     acao = () => estornarPagamento(deps, p.asaasPaymentId!, agora);

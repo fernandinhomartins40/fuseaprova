@@ -35,16 +35,33 @@ function respostaPix(p: Pedido): PixResposta {
 }
 
 /**
- * POST /pagamento/pix: reaproveita o pendente não expirado; senão cria no Asaas. A linha do
- * aluno fica travada até o pedido ser gravado: dois cliques simultâneos não geram 2 cobranças.
+ * Fila por aluno: um pedido de Pix por vez para o mesmo aluno, sem segurar conexão do banco
+ * durante as chamadas ao Asaas (validação PIE V1-08: a trava de linha esgotava o pool).
+ * Vale para uma instância da API, que é o deploy atual (ver R3-11 em docs/pie).
+ */
+const filaPix = new Map<string, Promise<unknown>>();
+function umPorAluno<T>(usuarioId: string, fn: () => Promise<T>): Promise<T> {
+  const anterior = filaPix.get(usuarioId) ?? Promise.resolve();
+  const atual = anterior.catch(() => undefined).then(fn);
+  filaPix.set(usuarioId, atual);
+  void atual.catch(() => undefined).finally(() => {
+    if (filaPix.get(usuarioId) === atual) filaPix.delete(usuarioId);
+  });
+  return atual;
+}
+
+/**
+ * POST /pagamento/pix: reaproveita o pendente não expirado; senão cria no Asaas. Dois cliques
+ * simultâneos do mesmo aluno não geram 2 cobranças (o 2º espera e reaproveita o 1º).
  */
 export async function gerarPix(deps: Deps, usuario: Usuario, agora: Date): Promise<PixResposta> {
   const { asaas, config } = deps;
-  const resultado = await deps.db.transaction(async (tx) => {
-    const [u] = await tx.select().from(usuarios).where(eq(usuarios.id, usuario.id)).for('update');
+  const { db } = deps;
+  const resultado = await umPorAluno(usuario.id, async () => {
+    const [u] = await db.select().from(usuarios).where(eq(usuarios.id, usuario.id));
     if (!u) throw falha('nao_autenticado');
     if (u.acesso) throw falha('conflito', 'Seu acesso já está liberado.');
-    const [pendente] = await tx
+    const [pendente] = await db
       .select()
       .from(pedidos)
       .where(and(eq(pedidos.usuarioId, u.id), eq(pedidos.status, 'pendente')))
@@ -54,7 +71,7 @@ export async function gerarPix(deps: Deps, usuario: Usuario, agora: Date): Promi
       return respostaPix(pendente);
     }
     if (pendente) {
-      await tx.update(pedidos).set({ status: 'vencido' }).where(eq(pedidos.id, pendente.id));
+      await db.update(pedidos).set({ status: 'vencido' }).where(eq(pedidos.id, pendente.id));
     }
     if (!u.cpf || !u.celular) throw falha('pix_indisponivel');
 
@@ -70,7 +87,7 @@ export async function gerarPix(deps: Deps, usuario: Usuario, agora: Date): Promi
           externalReference: ref,
         });
         customerId = c.id;
-        await tx.update(usuarios).set({ asaasCustomerId: customerId }).where(eq(usuarios.id, u.id));
+        await db.update(usuarios).set({ asaasCustomerId: customerId }).where(eq(usuarios.id, u.id));
       }
       const cobranca = await asaas.criarCobranca({
         customer: customerId,
@@ -82,7 +99,7 @@ export async function gerarPix(deps: Deps, usuario: Usuario, agora: Date): Promi
       });
       const qr = await asaas.qrCodePix(cobranca.id);
       const expira = lerDataAsaas(qr.expirationDate) ?? new Date(agora.getTime() + 24 * MS_HORA);
-      const [p] = await tx
+      const [p] = await db
         .insert(pedidos)
         .values({
           usuarioId: u.id,
@@ -129,9 +146,11 @@ export async function statusPagamento(deps: Deps, u: Usuario, agora: Date): Prom
       try {
         const c = await deps.asaas.obterCobranca(p.asaasPaymentId);
         if ((STATUS_ASAAS_PAGO as readonly string[]).includes(c.status)) {
-          await confirmarPagamento(deps, p.asaasPaymentId, agora);
+          await confirmarPagamento(deps, p.asaasPaymentId, agora, {
+            valorPagoCentavos: typeof c.value === 'number' ? Math.round(c.value * 100) : null,
+          });
           [p] = await db.select().from(pedidos).where(eq(pedidos.id, pedidoId));
-          acesso = true;
+          acesso = p?.status === 'pago' ? true : acesso;
         }
       } catch (e) {
         deps.log.warn({ pedidoId, erro: (e as Error).message }, 'consulta ao Asaas falhou');
@@ -180,11 +199,17 @@ export async function confirmarPagamento(
   deps: Deps,
   paymentId: string,
   agora: Date,
-  opcoes: { valorLiquidoCentavos?: number | null } = {},
+  opcoes: { valorLiquidoCentavos?: number | null; valorPagoCentavos?: number | null } = {},
 ): Promise<boolean> {
   const resultado = await deps.db.transaction(async (tx) => {
     const [p] = await tx.select().from(pedidos).where(eq(pedidos.asaasPaymentId, paymentId)).for('update');
     if (!p || p.status === 'pago' || p.status === 'estornado') return null;
+    // Cobrança com valor menor que o do pedido (alterada no painel do Asaas) não libera, venha
+    // a confirmação do webhook, do status ou da conciliação (validação PIE V1-07).
+    if (valorMenorQueOPedido(opcoes.valorPagoCentavos, p.valorCentavos)) {
+      deps.log.warn({ pedidoId: p.id, valorCentavos: opcoes.valorPagoCentavos }, 'pagamento com valor menor que o pedido');
+      return null;
+    }
     const [pago] = await tx
       .update(pedidos)
       .set({
@@ -200,6 +225,11 @@ export async function confirmarPagamento(
   if (!resultado) return false;
   enviarEmailConfirmacao(deps, resultado.pedido, resultado.usuario);
   return true;
+}
+
+/** O Asaas informou um valor pago menor que o do pedido? (sem valor informado: não). */
+export function valorMenorQueOPedido(valorPagoCentavos: number | null | undefined, valorPedido: number): boolean {
+  return typeof valorPagoCentavos === 'number' && valorPagoCentavos < valorPedido;
 }
 
 /**

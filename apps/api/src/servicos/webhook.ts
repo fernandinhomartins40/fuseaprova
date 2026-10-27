@@ -10,7 +10,7 @@ import { eq, sql } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { acaoDoEventoAsaas, type AsaasWebhookCorpo } from '@fuse/shared/api';
 import type { Deps } from '../contexto.js';
-import { confirmarPagamento, estornarPagamento, vencerPagamento } from './pagamento.js';
+import { confirmarPagamento, estornarPagamento, valorMenorQueOPedido, vencerPagamento } from './pagamento.js';
 
 const { webhookEventos, pedidos } = schema;
 
@@ -35,9 +35,9 @@ export async function executarEvento(deps: Deps, corpo: AsaasWebhookCorpo, agora
   if (!p) return 'sem_pedido';
   if (acao === 'pagar') {
     // Cobrança alterada no painel do Asaas para menos que o pedido: não libera (o superadmin vê o evento).
-    const valor = corpo.payment?.value;
-    if (typeof valor === 'number' && Math.round(valor * 100) < p.valorCentavos) {
-      deps.log.warn({ pedidoId: p.id, valorCentavos: Math.round(valor * 100) }, 'webhook com valor menor que o pedido');
+    const valor = typeof corpo.payment?.value === 'number' ? Math.round(corpo.payment.value * 100) : null;
+    if (valorMenorQueOPedido(valor, p.valorCentavos)) {
+      deps.log.warn({ pedidoId: p.id, valorCentavos: valor }, 'webhook com valor menor que o pedido');
       return 'valor_divergente';
     }
     const liquido = typeof corpo.payment?.netValue === 'number' ? Math.round(corpo.payment.netValue * 100) : null;
