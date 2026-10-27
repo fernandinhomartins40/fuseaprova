@@ -56,6 +56,25 @@ describe('telas do aluno contra a API simulada', () => {
     expect(await violacoesSerias(container)).toEqual([]);
   });
 
+  it('cadastro com senhas diferentes não envia e pede para repetir', async () => {
+    const api = ligarApiSimulada();
+    await api.cenario('novo');
+    abrir('/cadastro');
+    await userEvent.type(await screen.findByLabelText('Nome completo'), 'Marina Souza');
+    await userEvent.type(screen.getByLabelText('E-mail'), 'nova@email.com');
+    await userEvent.type(screen.getByLabelText('Celular'), '42998765432');
+    await userEvent.type(screen.getByLabelText('CPF'), '52998224725');
+    await userEvent.type(screen.getByLabelText('Senha'), 'senhaforte');
+    await userEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('button', { name: /Criar conta/ }));
+    expect(await screen.findByText('Repita a senha para confirmar.')).toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText('Confirmar senha'), 'senhaforTe');
+    expect(screen.getByText('As senhas ainda não coincidem.')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: /Criar conta/ }));
+    expect(await screen.findByText('As senhas não coincidem.')).toBeInTheDocument();
+    expect(local).toBe('/cadastro');
+  });
+
   it('cadastro com e-mail existente mostra o link para o login', async () => {
     const api = ligarApiSimulada();
     await api.cenario('novo');
@@ -65,6 +84,7 @@ describe('telas do aluno contra a API simulada', () => {
     await userEvent.type(screen.getByLabelText('Celular'), '42998765432');
     await userEvent.type(screen.getByLabelText('CPF'), '52998224725');
     await userEvent.type(screen.getByLabelText('Senha'), 'senhaforte');
+    await userEvent.type(screen.getByLabelText('Confirmar senha'), 'senhaforte');
     await userEvent.click(screen.getByRole('checkbox'));
     await userEvent.click(screen.getByRole('button', { name: /Criar conta/ }));
     expect(

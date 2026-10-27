@@ -19,6 +19,9 @@ const Entrar = lazy(() => import('../telas/Entrar'));
 const Recuperar = lazy(() => import('../telas/Recuperar'));
 const Termos = lazy(() => import('../telas/Legal').then((m) => ({ default: m.Termos })));
 const Privacidade = lazy(() => import('../telas/Legal').then((m) => ({ default: m.Privacidade })));
+const ExclusaoDeConta = lazy(() =>
+  import('../telas/Legal').then((m) => ({ default: m.ExclusaoDeConta })),
+);
 const Pagamento = EH_APP ? Vazio : lazy(() => import('../telas/Pagamento'));
 const Onboarding = lazy(() => import('../telas/Onboarding'));
 const Aprender = lazy(() => import('../telas/Aprender'));
@@ -50,7 +53,9 @@ function Redirecionador() {
         if (local.pathname === destino) return;
         if (
           destino === '/entrar' &&
-          ['/', '/cadastro', '/entrar', '/termos', '/privacidade'].includes(local.pathname)
+          ['/', '/cadastro', '/entrar', '/termos', '/privacidade', '/excluir-conta'].includes(
+            local.pathname,
+          )
         )
           return;
         navegar(destino, { replace: true });
@@ -94,6 +99,7 @@ export function Rotas() {
         <Route path="/recuperar/:token" element={<Recuperar />} />
         <Route path="/termos" element={<Termos />} />
         <Route path="/privacidade" element={<Privacidade />} />
+        <Route path="/excluir-conta" element={<ExclusaoDeConta />} />
 
         {EH_APP ? (
           <>

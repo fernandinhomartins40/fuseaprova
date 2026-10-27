@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { GEMAS, PROTETORES_MAX, nomeComSobrenomeAbreviado } from '@fuse/shared';
 import {
   AlterarSenhaEntrada,
+  MENSAGENS_CADASTRO,
   ExcluirContaEntrada,
   OPCOES_META_DIARIA,
   type MeAtualizarEntrada,
@@ -18,6 +19,7 @@ import {
   Botao3D,
   CabecalhoVoltar,
   Campo,
+  CamposNovaSenha,
   Carregando,
   IconeCheio,
   IconeTraco,
@@ -411,16 +413,24 @@ export default function Configuracoes() {
 function AlterarSenha({ aberto, onFechar }: { aberto: boolean; onFechar: () => void }) {
   const toast = useToast();
   const [v, setV] = useState({ senhaAtual: '', novaSenha: '' });
+  const [confirma, setConfirma] = useState('');
   const [erros, setErros] = useState<Record<string, string>>({});
   const [enviando, setEnviando] = useState(false);
   async function enviar() {
     const r = AlterarSenhaEntrada.safeParse(v);
-    if (!r.success) return setErros(errosPorCampo(r.error));
+    const novos = r.success ? {} : errosPorCampo(r.error);
+    if (!novos.novaSenha && confirma !== v.novaSenha) {
+      novos.confirma = confirma
+        ? MENSAGENS_CADASTRO.senhasDiferentes
+        : MENSAGENS_CADASTRO.confirmarSenha;
+    }
+    if (Object.keys(novos).length) return setErros(novos);
     setEnviando(true);
     try {
       await chamar('meSenha', { corpo: v });
       toast('Senha alterada. As outras sessões foram encerradas.', 'sucesso');
       setV({ senhaAtual: '', novaSenha: '' });
+      setConfirma('');
       setErros({});
       onFechar();
     } catch (e) {
@@ -451,14 +461,15 @@ function AlterarSenha({ aberto, onFechar }: { aberto: boolean; onFechar: () => v
           senha
           autoComplete="current-password"
         />
-        <Campo
-          rotulo="Nova senha"
-          valor={v.novaSenha}
-          onValor={(x) => setV((a) => ({ ...a, novaSenha: x }))}
-          erro={erros.novaSenha}
-          senha
-          autoComplete="new-password"
-          ajuda="Pelo menos 8 caracteres."
+        <CamposNovaSenha
+          rotuloSenha="Nova senha"
+          rotuloConfirma="Repita a nova senha"
+          senha={v.novaSenha}
+          confirma={confirma}
+          onSenha={(x) => setV((a) => ({ ...a, novaSenha: x }))}
+          onConfirma={setConfirma}
+          erroSenha={erros.novaSenha}
+          erroConfirma={erros.confirma}
         />
       </div>
     </Modal>

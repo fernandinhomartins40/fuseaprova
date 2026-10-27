@@ -16,6 +16,8 @@ export const MENSAGENS_CADASTRO = {
   celular: 'Informe um celular com DDD (11 dígitos).',
   senha: `A senha precisa ter pelo menos ${SENHA_MINIMA} caracteres.`,
   aceite: 'Você precisa aceitar os Termos de uso e a Política de privacidade.',
+  confirmarSenha: 'Repita a senha para confirmar.',
+  senhasDiferentes: 'As senhas não coincidem.',
   contaExistente: 'Já existe uma conta com este e-mail ou CPF. Entre com sua senha.',
 } as const;
 

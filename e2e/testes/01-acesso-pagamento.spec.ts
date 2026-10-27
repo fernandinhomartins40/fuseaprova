@@ -27,6 +27,8 @@ test.describe('Acesso e pagamento Pix', () => {
     await page.getByLabel('Celular').fill('42998765432');
     await page.getByLabel('CPF').fill(cpfValido(123456789));
     await page.getByLabel('Senha', { exact: true }).fill('senha-forte-123');
+    await page.getByLabel('Confirmar senha').fill('senha-forte-123');
+    await expect(page.getByText('As senhas coincidem.')).toBeVisible();
     await page.getByLabel(/Li e aceito/).check();
     await page.getByRole('button', { name: 'Criar conta e ir para o pagamento' }).click();
 

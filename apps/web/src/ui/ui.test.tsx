@@ -10,6 +10,7 @@ import {
   BarraProgresso,
   Botao3D,
   Campo,
+  CamposNovaSenha,
   Capi,
   CartaoEstatistica,
   Chip,
@@ -271,6 +272,56 @@ describe('Campo', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Mostrar senha' }));
     expect(screen.getByLabelText('Senha')).toHaveAttribute('type', 'text');
     expect(await violacoesSerias(container)).toEqual([]);
+  });
+});
+
+describe('CamposNovaSenha: força e confirmação', () => {
+  function Bloco() {
+    const [senha, setSenha] = useState('');
+    const [confirma, setConfirma] = useState('');
+    return (
+      <CamposNovaSenha
+        senha={senha}
+        confirma={confirma}
+        onSenha={setSenha}
+        onConfirma={setConfirma}
+        pessoal={['marina@email.com']}
+      />
+    );
+  }
+
+  it('mostra a força e os requisitos enquanto a pessoa digita', async () => {
+    const { container } = render(<Bloco />);
+    expect(screen.getByText('Crie uma senha que só você saiba.')).toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText('Senha'), 'abc');
+    expect(screen.getByText('Muito fraca')).toBeInTheDocument();
+    expect(screen.getByText('Faltam 5 caracteres.')).toBeInTheDocument();
+    await userEvent.clear(screen.getByLabelText('Senha'));
+    await userEvent.type(screen.getByLabelText('Senha'), 'Aprovado#Palmital2026');
+    expect(screen.getByText('Forte')).toBeInTheDocument();
+    expect(screen.getAllByText(/\(atendido\)/)).toHaveLength(4);
+    expect(await violacoesSerias(container)).toEqual([]);
+  });
+
+  it('avisa quando a senha usa o e-mail ou o nome', async () => {
+    render(<Bloco />);
+    await userEvent.type(screen.getByLabelText('Senha'), 'Marina#2026x');
+    expect(screen.getByText('Fraca')).toBeInTheDocument();
+    expect(screen.getByText(/Evite usar seu nome ou e-mail/)).toBeInTheDocument();
+  });
+
+  it('confirmação: calada enquanto é o começo da senha, depois coincide ou diverge', async () => {
+    render(<Bloco />);
+    await userEvent.type(screen.getByLabelText('Senha'), 'Segredo#2026');
+    const confirma = screen.getByLabelText('Confirmar senha');
+    await userEvent.type(confirma, 'Segr');
+    expect(screen.queryByText(/coincid/)).not.toBeInTheDocument();
+    await userEvent.type(confirma, 'edo#2026');
+    expect(screen.getByText('As senhas coincidem.')).toBeInTheDocument();
+    expect(confirma).not.toHaveAttribute('aria-invalid');
+    await userEvent.type(confirma, '7');
+    expect(screen.getByText('As senhas ainda não coincidem.')).toBeInTheDocument();
+    expect(confirma).toHaveAttribute('aria-invalid', 'true');
   });
 });
 

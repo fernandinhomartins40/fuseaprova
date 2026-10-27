@@ -16,6 +16,8 @@ export interface CampoProps
   mascara?: MascaraCampo;
   /** Senha com botão de mostrar/ocultar. */
   senha?: boolean;
+  /** Retorno ao vivo (ex.: "As senhas coincidem"); some quando há `erro`. */
+  feedback?: { tom: 'ok' | 'erro'; texto: string } | null;
 }
 
 export function aplicarMascara(valor: string, mascara?: MascaraCampo): string {
@@ -33,6 +35,7 @@ export function Campo({
   ajuda,
   mascara,
   senha = false,
+  feedback = null,
   id,
   className,
   ...resto
@@ -41,22 +44,36 @@ export function Campo({
   const idCampo = id ?? `campo-${gerado}`;
   const idErro = `${idCampo}-erro`;
   const idAjuda = `${idCampo}-ajuda`;
+  const idFeedback = `${idCampo}-feedback`;
   const [visivel, setVisivel] = useState(false);
-  const descritores = [erro ? idErro : null, ajuda ? idAjuda : null].filter(Boolean).join(' ');
+  const tomFeedback = erro ? null : (feedback?.tom ?? null);
+  const descritores = [
+    erro ? idErro : null,
+    ajuda ? idAjuda : null,
+    tomFeedback ? idFeedback : null,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={[s.campo, className ?? ''].join(' ')}>
       <label htmlFor={idCampo} className={s.rotulo}>
         {rotulo}
       </label>
-      <div className={[s.caixa, erro ? s.comErro : ''].join(' ')}>
+      <div
+        className={[
+          s.caixa,
+          erro || tomFeedback === 'erro' ? s.comErro : '',
+          tomFeedback === 'ok' ? s.comSucesso : '',
+        ].join(' ')}
+      >
         <input
           {...resto}
           id={idCampo}
           className={s.input}
           value={valor}
           onChange={(e) => onValor(aplicarMascara(e.target.value, mascara))}
-          aria-invalid={erro ? true : undefined}
+          aria-invalid={erro || tomFeedback === 'erro' ? true : undefined}
           aria-describedby={descritores || undefined}
           type={senha ? (visivel ? 'text' : 'password') : resto.type}
           inputMode={mascara ? 'numeric' : resto.inputMode}
@@ -82,6 +99,20 @@ export function Campo({
       {ajuda && !erro ? (
         <p id={idAjuda} className={s.ajuda}>
           {ajuda}
+        </p>
+      ) : null}
+      {tomFeedback && feedback ? (
+        <p
+          id={idFeedback}
+          className={tomFeedback === 'ok' ? s.feedbackOk : s.feedbackErro}
+          aria-live="polite"
+        >
+          <IconeTraco
+            nome={tomFeedback === 'ok' ? 'check' : 'alerta'}
+            tamanho={16}
+            espessura={2.8}
+          />
+          <span>{feedback.texto}</span>
         </p>
       ) : null}
       {erro ? (

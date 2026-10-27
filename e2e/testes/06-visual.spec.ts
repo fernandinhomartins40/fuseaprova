@@ -83,6 +83,7 @@ test('Visual: as 13 telas em 390×844', async ({ page }) => {
   await page.getByLabel('Celular').fill('42998765432');
   await page.getByLabel('CPF').fill('52998224725');
   await page.getByLabel('Senha', { exact: true }).fill('senha-forte-123');
+  await page.getByLabel('Confirmar senha').fill('senha-forte-123');
   await page.getByLabel(/Li e aceito/).check();
   await page.getByRole('button', { name: 'Criar conta e ir para o pagamento' }).click();
 

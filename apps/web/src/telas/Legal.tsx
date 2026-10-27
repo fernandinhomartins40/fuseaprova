@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { AVISO_EDITAL, RODAPE_LEGAL } from '@fuse/shared';
 import { VERSAO_TERMOS_ATUAL } from '@fuse/shared/api';
 import { CabecalhoVoltar, Pagina } from '../ui';
@@ -124,7 +125,85 @@ export function Privacidade() {
         <p>
           Em Perfil › Configurações você pode <strong>baixar seus dados</strong> (arquivo JSON) e{' '}
           <strong>excluir a conta</strong>. Na exclusão, o perfil é anonimizado e só o registro do
-          pedido é mantido, por obrigação fiscal. Dúvidas: {CONTATO_SUPORTE.texto}.
+          pedido é mantido, por obrigação fiscal. Veja o passo a passo e o que é apagado em{' '}
+          <Link to="/excluir-conta">Como excluir sua conta</Link>. Dúvidas: {CONTATO_SUPORTE.texto}.
+        </p>
+      </article>
+    </Pagina>
+  );
+}
+
+/**
+ * Como excluir a conta e os dados (`/excluir-conta`): página pública exigida pela Play Store e
+ * pela App Store. Descreve o passo a passo, o que é apagado e o que fica (ver servicos/lgpd.ts).
+ */
+export function ExclusaoDeConta() {
+  return (
+    <Pagina>
+      <CabecalhoVoltar titulo="Excluir conta" />
+      <article className={s.texto}>
+        <h1>Como excluir sua conta do Fuse Aprova</h1>
+        <p>
+          Esta página vale para o app <strong>Fuse Aprova</strong> (Android e iPhone) e para o site
+          fuseaprova.com.br.
+        </p>
+
+        <h2>Passo a passo</h2>
+        <ol>
+          <li>Abra o Fuse Aprova (app ou site) e entre na sua conta.</li>
+          <li>
+            Toque em <strong>Perfil</strong> e, depois, na engrenagem de{' '}
+            <strong>Configurações</strong>.
+          </li>
+          <li>
+            Role até o fim e toque em <strong>Excluir conta</strong>.
+          </li>
+          <li>
+            Digite a sua senha e a palavra <strong>EXCLUIR</strong> e confirme.
+          </li>
+        </ol>
+        <p>
+          Antes de excluir, você pode tocar em <strong>Baixar meus dados</strong>, na mesma tela,
+          para guardar uma cópia do seu perfil e do seu histórico de estudo.
+        </p>
+        <p>
+          Sem acesso ao app ou esqueceu a senha? Peça a exclusão pelo contato{' '}
+          {CONTATO_SUPORTE.texto}, a partir do e-mail cadastrado na conta.
+        </p>
+
+        <h2>O que é apagado</h2>
+        <p>Na hora da exclusão, o seu perfil é anonimizado e estes dados são removidos:</p>
+        <ul>
+          <li>nome, e-mail, CPF e celular;</li>
+          <li>senha e dados do segundo fator de autenticação, se houver;</li>
+          <li>apelido na liga e a sua posição nela;</li>
+          <li>horário de lembrete e inscrições de notificação;</li>
+          <li>sessões abertas em todos os aparelhos (você é desconectado);</li>
+          <li>o vínculo com o seu cadastro no serviço de pagamento (Asaas).</li>
+        </ul>
+
+        <h2>O que é mantido</h2>
+        <ul>
+          <li>
+            <strong>Registro do pedido e do pagamento</strong>, sem seus dados pessoais, pelo prazo
+            exigido pela legislação fiscal, por obrigação legal.
+          </li>
+          <li>
+            <strong>Histórico de respostas e simulados</strong>, sem nome, e-mail nem qualquer dado
+            que identifique você, apenas para estatísticas do conteúdo.
+          </li>
+          <li>
+            <strong>Cópias de segurança</strong> do servidor: podem conter os dados por até 8
+            semanas, quando são apagadas automaticamente.
+          </li>
+        </ul>
+
+        <h2>Depois de excluir</h2>
+        <p>
+          A exclusão <strong>não pode ser desfeita</strong> e o acesso ao conteúdo é encerrado. Se
+          você pagou há menos de 7 dias, veja o direito de arrependimento nos{' '}
+          <Link to="/termos">Termos de uso</Link>. Mais sobre os seus dados na{' '}
+          <Link to="/privacidade">Política de privacidade</Link>.
         </p>
       </article>
     </Pagina>

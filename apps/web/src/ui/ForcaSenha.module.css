@@ -1,0 +1,124 @@
+.forca {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.barra {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+}
+.segmento {
+  height: 7px;
+  border-radius: 999px;
+  background: var(--fa-line);
+  transition: background-color 160ms;
+}
+.nivel0 .cheio {
+  background: var(--fa-red);
+}
+.nivel1 .cheio {
+  background: var(--fa-laranja);
+}
+.nivel2 .cheio {
+  background: var(--fa-gold);
+}
+.nivel3 .cheio {
+  background: var(--fa-green-line);
+}
+.nivel4 .cheio {
+  background: var(--fa-green);
+}
+.resumo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  font-size: 13.5px;
+  min-height: 20px;
+  margin: 0;
+}
+.rotulo {
+  font-weight: 900;
+}
+.nivel0 .rotulo {
+  color: var(--fa-red-shade);
+}
+.nivel1 .rotulo {
+  color: var(--fa-laranja-forte);
+}
+.nivel2 .rotulo {
+  color: var(--fa-gold-ink);
+}
+.nivel3 .rotulo,
+.nivel4 .rotulo {
+  color: var(--fa-green-shade);
+}
+.dica {
+  color: var(--fa-muted);
+  font-weight: 600;
+}
+.lista {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--fa-muted);
+}
+.item.ok {
+  color: var(--fa-green-shade);
+}
+.item.falta {
+  color: var(--fa-red-shade);
+}
+.marca {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--fa-line-forte);
+  color: transparent;
+  transition:
+    background-color 160ms,
+    border-color 160ms;
+}
+.ok .marca {
+  background: var(--fa-green);
+  border-color: var(--fa-green);
+  color: #fff;
+}
+.falta .marca {
+  border-color: var(--fa-red);
+  color: var(--fa-red);
+}
+.legenda {
+  margin-top: 3px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--fa-muted);
+}
+.visual {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+@media (prefers-reduced-motion: reduce) {
+  .segmento,
+  .marca {
+    transition: none;
+  }
+}

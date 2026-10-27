@@ -1,0 +1,10 @@
+.bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

@@ -1,10 +1,15 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { MENSAGEM_RECUPERAR, RecuperarEntrada, RedefinirEntrada } from '@fuse/shared/api';
+import {
+  MENSAGEM_RECUPERAR,
+  MENSAGENS_CADASTRO,
+  RecuperarEntrada,
+  RedefinirEntrada,
+} from '@fuse/shared/api';
 import { camposDoErro, chamar, mensagemDeErro } from '../api/cliente';
 import { CHAVES } from '../api/consultas';
-import { Botao3D, CabecalhoVoltar, Campo, Capi, Pagina } from '../ui';
+import { Botao3D, CabecalhoVoltar, Campo, CamposNovaSenha, Capi, Pagina } from '../ui';
 import { errosPorCampo, rotaDoProximo } from './formulario';
 import s from './Auth.module.css';
 
@@ -90,7 +95,11 @@ function NovaSenha({ token }: { token: string }) {
     setErroGeral(null);
     const r = RedefinirEntrada.safeParse({ token, senha });
     const novos = r.success ? {} : errosPorCampo(r.error);
-    if (!novos.senha && senha !== confirma) novos.confirma = 'As senhas não são iguais.';
+    if (!novos.senha && senha !== confirma) {
+      novos.confirma = confirma
+        ? MENSAGENS_CADASTRO.senhasDiferentes
+        : MENSAGENS_CADASTRO.confirmarSenha;
+    }
     if (novos.token) setErroGeral('Este link é inválido ou expirou. Peça um novo.');
     if (Object.keys(novos).length) {
       setErros(novos);
@@ -119,22 +128,15 @@ function NovaSenha({ token }: { token: string }) {
         Ao salvar, as outras sessões abertas da sua conta são encerradas.
       </p>
       <form className={s.form} onSubmit={enviar} noValidate>
-        <Campo
-          rotulo="Nova senha"
-          valor={senha}
-          onValor={setSenha}
-          erro={erros.senha}
-          senha
-          autoComplete="new-password"
-          ajuda="Pelo menos 8 caracteres."
-        />
-        <Campo
-          rotulo="Repita a nova senha"
-          valor={confirma}
-          onValor={setConfirma}
-          erro={erros.confirma}
-          senha
-          autoComplete="new-password"
+        <CamposNovaSenha
+          rotuloSenha="Nova senha"
+          rotuloConfirma="Repita a nova senha"
+          senha={senha}
+          confirma={confirma}
+          onSenha={setSenha}
+          onConfirma={setConfirma}
+          erroSenha={erros.senha}
+          erroConfirma={erros.confirma}
         />
         {erroGeral ? (
           <p className={s.erro} role="alert">

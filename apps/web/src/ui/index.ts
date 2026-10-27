@@ -12,6 +12,8 @@ export { BannerUnidade } from './BannerUnidade';
 export { NavInferior } from './NavInferior';
 export { Chip } from './Chip';
 export { Campo, aplicarMascara } from './Campo';
+export { CamposNovaSenha } from './NovaSenha';
+export { ForcaSenha, feedbackConfirmacao } from './ForcaSenha';
 export { CartaoEstatistica } from './CartaoEstatistica';
 export { Capi, type PoseCapi } from './Capi';
 export { ProvedorToast, useToast } from './Toast';

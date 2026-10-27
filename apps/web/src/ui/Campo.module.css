@@ -27,6 +27,33 @@
   border-color: var(--fa-red);
   background: #fffafa;
 }
+.comSucesso {
+  border-color: var(--fa-green-line);
+  background: #fbfefc;
+}
+.comSucesso:focus-within {
+  border-color: var(--fa-green);
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.16);
+}
+.feedbackOk,
+.feedbackErro {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  font-size: 13.5px;
+  font-weight: 800;
+}
+.feedbackOk {
+  color: var(--fa-green-shade);
+}
+.feedbackErro {
+  color: var(--fa-red-shade);
+}
+.feedbackOk svg,
+.feedbackErro svg {
+  flex: none;
+  margin-top: 1px;
+}
 .input {
   flex: 1;
   min-width: 0;

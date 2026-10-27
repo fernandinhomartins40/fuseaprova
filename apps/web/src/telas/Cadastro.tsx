@@ -5,7 +5,7 @@ import { AVISO_EDITAL } from '@fuse/shared';
 import { CadastroEntrada, MENSAGENS_CADASTRO, VERSAO_TERMOS_ATUAL } from '@fuse/shared/api';
 import { camposDoErro, chamar, ErroApi, mensagemDeErro } from '../api/cliente';
 import { CHAVES } from '../api/consultas';
-import { Botao3D, CabecalhoVoltar, Campo, Capi, IconeTraco, Pagina } from '../ui';
+import { Botao3D, CabecalhoVoltar, Campo, CamposNovaSenha, Capi, IconeTraco, Pagina } from '../ui';
 import { errosPorCampo, rotaDoProximo } from './formulario';
 import s from './Auth.module.css';
 
@@ -14,6 +14,7 @@ export default function Cadastro() {
   const navegar = useNavigate();
   const qc = useQueryClient();
   const [v, setV] = useState({ nome: '', email: '', celular: '', cpf: '', senha: '' });
+  const [confirma, setConfirma] = useState('');
   const [aceite, setAceite] = useState(false);
   const [erros, setErros] = useState<Record<string, string>>({});
   const [erroGeral, setErroGeral] = useState<string | null>(null);
@@ -31,8 +32,15 @@ export default function Cadastro() {
     setContaExiste(false);
     const corpo = { ...v, aceiteTermos: aceite as true, versaoTermos: VERSAO_TERMOS_ATUAL };
     const r = CadastroEntrada.safeParse(corpo);
-    if (!r.success) {
-      setErros(errosPorCampo(r.error));
+    const novos = r.success ? {} : errosPorCampo(r.error);
+    // A confirmação é só do formulário (a API recebe uma senha): confere antes de enviar.
+    if (!novos.senha && confirma !== v.senha) {
+      novos.confirma = confirma
+        ? MENSAGENS_CADASTRO.senhasDiferentes
+        : MENSAGENS_CADASTRO.confirmarSenha;
+    }
+    if (Object.keys(novos).length) {
+      setErros(novos);
       return;
     }
     setErros({});
@@ -100,14 +108,17 @@ export default function Cadastro() {
           ajuda="Usado só para identificar seu pagamento Pix."
           placeholder="000.000.000-00"
         />
-        <Campo
-          rotulo="Senha"
-          valor={v.senha}
-          onValor={campo('senha')}
-          erro={erros.senha}
-          senha
-          autoComplete="new-password"
-          ajuda="Pelo menos 8 caracteres."
+        <CamposNovaSenha
+          senha={v.senha}
+          confirma={confirma}
+          onSenha={campo('senha')}
+          onConfirma={(x) => {
+            setConfirma(x);
+            if (erros.confirma) setErros(({ confirma: _c, ...resto }) => resto);
+          }}
+          erroSenha={erros.senha}
+          erroConfirma={erros.confirma}
+          pessoal={[v.email, v.nome]}
         />
 
         <div className={s.aceite}>
