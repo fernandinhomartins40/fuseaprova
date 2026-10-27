@@ -179,4 +179,97 @@ describe('offline (PRD 8.4)', () => {
     });
     expect(r.json().rejeitadas[0].motivo).toBe('Sessão desconhecida.');
   });
+
+  /** Auditoria PIE (R1-01/R3-01, R1-02/R3-02): o sync só aceita o que o pacote permite. */
+  async function gabaritoDe(pac: { chave: string }, q: { id: string; cifrado: string }) {
+    return GabaritoOfflineClaro.parse(JSON.parse(await decifrarTexto(pac.chave, q.id, q.cifrado))).gabarito;
+  }
+
+  it('sync recusa a mesma questão repetida, lição bloqueada e desafio', async () => {
+    const a = await t.alunoPago();
+    const tr = (await t.chamar('trilha', { cookie: a.cookie })).json();
+    const todas = tr.unidades.flatMap((u: { secoes: { licoes: { id: string; tipo: string }[] }[] }) =>
+      u.secoes.flatMap((s) => s.licoes),
+    );
+    const bloqueada = todas.filter((l: { tipo: string }) => l.tipo === 'normal').at(-1)!;
+    const desafio = todas.find((l: { tipo: string }) => l.tipo === 'desafio');
+    const pac = (await t.chamar('offlinePacote', { cookie: a.cookie })).json();
+    const q = pac.licoes[0].questoes[0];
+    const g = await gabaritoDe(pac, q);
+    const agora = t.relogio.agora().toISOString();
+    const sessoes = [pac.licoes[0].licao.id, pac.licoes[0].licao.id, bloqueada.id, desafio?.id ?? bloqueada.id].map((licaoId) => ({
+      idCliente: randomUUID(),
+      pacoteId: pac.pacoteId,
+      tipo: 'licao',
+      licaoId,
+      iniciadaEm: agora,
+      concluidaEm: agora,
+    }));
+    const tentativas = sessoes.flatMap((s) =>
+      [0, 1, 2].map(() => ({ idCliente: randomUUID(), sessaoIdCliente: s.idCliente, questaoId: q.id, resposta: g, tempoMs: 1, respondidaEm: agora })),
+    );
+    const r = (await t.chamar('syncTentativas', { cookie: a.cookie, corpo: { pacoteId: pac.pacoteId, sessoes, tentativas } })).json();
+    expect(r.aceitas).toHaveLength(1);
+    expect(r.rejeitadas.map((x: { motivo: string }) => x.motivo)).toEqual(
+      expect.arrayContaining(['Questão já respondida nesta sessão.', 'Lição indisponível offline.']),
+    );
+    const u = await usuario(t, a.id);
+    expect(u.gemas).toBe(5);
+    const prog = await t.db.select().from(schema.progressoLicoes).where(eq(schema.progressoLicoes.usuarioId, a.id));
+    expect(prog.map((p) => p.licaoId)).toEqual([pac.licoes[0].licao.id]);
+  });
+
+  it('sync recusa questão de outro assunto e revisão que não venceu', async () => {
+    const a = await t.alunoPago();
+    const pac = (await t.chamar('offlinePacote', { cookie: a.cookie })).json();
+    const [fora] = await t.db.select().from(schema.questoes).where(and(ne(schema.questoes.assuntoId, assuntoId), eq(schema.questoes.status, 'publicada'))).limit(1);
+    const agora = t.relogio.agora().toISOString();
+    const sl = randomUUID();
+    const sr = randomUUID();
+    const r = (
+      await t.chamar('syncTentativas', {
+        cookie: a.cookie,
+        corpo: {
+          pacoteId: pac.pacoteId,
+          sessoes: [
+            { idCliente: sl, tipo: 'licao', licaoId: pac.licoes[0].licao.id, iniciadaEm: agora, concluidaEm: null },
+            { idCliente: sr, tipo: 'revisao', licaoId: null, iniciadaEm: agora, concluidaEm: agora },
+          ],
+          tentativas: [
+            { idCliente: randomUUID(), sessaoIdCliente: sl, questaoId: fora!.id, resposta: 'A', tempoMs: 1, respondidaEm: agora },
+            { idCliente: randomUUID(), sessaoIdCliente: sr, questaoId: visiveis[1], resposta: 'A', tempoMs: 1, respondidaEm: agora },
+          ],
+        },
+      })
+    ).json();
+    expect(r.aceitas).toHaveLength(0);
+    expect(r.rejeitadas.map((x: { motivo: string }) => x.motivo).sort()).toEqual(['Esta revisão não está vencida.', 'Questão fora desta lição.']);
+    expect(r.xpGanho).toBe(0);
+  });
+
+  it('datas anteriores ao pacote não forjam ofensiva; as 3 lições do pacote valem em ordem', async () => {
+    const a = await t.alunoPago();
+    const pac = (await t.chamar('offlinePacote', { cookie: a.cookie })).json();
+    const base = t.relogio.agora().getTime();
+    const sessoes = [];
+    const tentativas = [];
+    for (const [i, l] of pac.licoes.entries()) {
+      // o aparelho diz que fez uma lição por dia, 30 dias atrás
+      const quando = new Date(base - (30 - i) * 86_400_000).toISOString();
+      const sid = randomUUID();
+      sessoes.push({ idCliente: sid, pacoteId: pac.pacoteId, tipo: 'licao', licaoId: l.licao.id, iniciadaEm: quando, concluidaEm: quando });
+      for (const q of l.questoes) {
+        tentativas.push({ idCliente: randomUUID(), sessaoIdCliente: sid, questaoId: q.id, resposta: await gabaritoDe(pac, q), tempoMs: 1, respondidaEm: quando });
+      }
+    }
+    const r = (await t.chamar('syncTentativas', { cookie: a.cookie, corpo: { pacoteId: null, sessoes, tentativas } })).json();
+    expect(r.rejeitadas).toEqual([]);
+    const u = await usuario(t, a.id);
+    expect(u.ofensiva).toBe(1);
+    expect(u.ofensivaRecorde).toBe(1);
+    const prog = await t.db.select().from(schema.progressoLicoes).where(eq(schema.progressoLicoes.usuarioId, a.id));
+    expect(prog).toHaveLength(pac.licoes.length);
+    const datas = await t.db.select({ em: schema.tentativas.respondidaEm }).from(schema.tentativas).where(eq(schema.tentativas.usuarioId, a.id));
+    for (const d of datas) expect(d.em.getTime()).toBeGreaterThanOrEqual(base);
+  });
 });

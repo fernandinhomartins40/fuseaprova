@@ -29,6 +29,13 @@
       "when": 1792814030258,
       "tag": "0003_superadmin",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793106533378,
+      "tag": "0004_pacotes_offline",
+      "breakpoints": true
     }
   ]
 }

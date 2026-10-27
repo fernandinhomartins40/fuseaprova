@@ -50,6 +50,8 @@ export type PacoteOfflineResposta = z.infer<typeof PacoteOfflineResposta>;
 export const SessaoOffline = z.object({
   /** Id gerado no cliente para a sessão offline. */
   idCliente: Uuid,
+  /** Pacote de onde vieram as questões (o aparelho pode baixar outro antes do sync). */
+  pacoteId: Uuid.nullable().optional(),
   tipo: z.enum(['licao', 'revisao']),
   licaoId: Uuid.nullable(),
   iniciadaEm: DataHora,

@@ -7,7 +7,7 @@ import { schema } from '@fuse/db';
 import { diaSP, somarDias, VIDAS_MAX, verificarOfensiva } from '@fuse/shared';
 import type { Db } from '../util.js';
 
-const { usuarios, pedidos, sessoes, redefinicoesSenha } = schema;
+const { usuarios, pedidos, sessoes, redefinicoesSenha, pacotesOffline } = schema;
 
 /** 00:00 — todo mundo volta para 5 vidas. */
 export async function resetarVidas(db: Db, agora: Date): Promise<number> {
@@ -60,14 +60,21 @@ export async function expirarPix(db: Db, agora: Date): Promise<number> {
   return r.length;
 }
 
-/** 03:00 — sessões expiradas e links de senha usados ou vencidos há mais de 1 dia. */
-export async function limparSessoes(db: Db, agora: Date): Promise<{ sessoes: number; redefinicoes: number }> {
+/** 03:00 — sessões expiradas, links de senha e pacotes offline usados ou vencidos há mais de 1 dia. */
+export async function limparSessoes(
+  db: Db,
+  agora: Date,
+): Promise<{ sessoes: number; redefinicoes: number; pacotes: number }> {
   const s = await db.delete(sessoes).where(lt(sessoes.expiraEm, agora)).returning({ id: sessoes.id });
   const umDia = new Date(agora.getTime() - 24 * 3600_000);
   const rd = await db
     .delete(redefinicoesSenha)
     .where(or(lt(redefinicoesSenha.expiraEm, umDia), and(isNotNull(redefinicoesSenha.usadoEm), lt(redefinicoesSenha.usadoEm, umDia))))
     .returning({ id: redefinicoesSenha.id });
-  return { sessoes: s.length, redefinicoes: rd.length };
+  const pc = await db
+    .delete(pacotesOffline)
+    .where(lt(pacotesOffline.expiraEm, umDia))
+    .returning({ id: pacotesOffline.id });
+  return { sessoes: s.length, redefinicoes: rd.length, pacotes: pc.length };
 }
 

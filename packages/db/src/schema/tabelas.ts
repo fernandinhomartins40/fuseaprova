@@ -777,6 +777,23 @@ export const reports = pgTable(
   ],
 );
 
+/**
+ * extra (auditoria PIE): pacotes offline emitidos. O sync só aceita datas entre a geração
+ * do pacote e o envio, para o aparelho não forjar dias de ofensiva no passado.
+ */
+export const pacotesOffline = pgTable(
+  'pacotes_offline',
+  {
+    id: uuid('id').primaryKey(),
+    usuarioId: uuid('usuario_id')
+      .notNull()
+      .references(() => usuarios.id, { onDelete: 'cascade' }),
+    geradoEm: ts('gerado_em').notNull(),
+    expiraEm: ts('expira_em').notNull(),
+  },
+  (t) => [index('pacotes_offline_usuario_idx').on(t.usuarioId)],
+);
+
 export const pushInscricoes = pgTable(
   'push_inscricoes',
   {

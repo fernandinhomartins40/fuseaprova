@@ -112,6 +112,7 @@ function sessaoOffline(o: {
   dica: DicaLicao | null;
   questoes: QuestaoOffline[];
   chave: string;
+  pacoteId: string;
   vidas: number;
   gemas: number;
 }): Sessao {
@@ -127,6 +128,7 @@ function sessaoOffline(o: {
     await registrarSessao({
       usuarioId: o.usuarioId,
       idCliente,
+      pacoteId: o.pacoteId,
       tipo: o.tipo,
       licaoId: o.licao?.id ?? null,
       iniciadaEm,
@@ -239,6 +241,7 @@ export async function iniciarSessao(
         dica: achado.licao.dica,
         questoes: achado.licao.questoes,
         chave: achado.pacote.chave,
+        pacoteId: achado.pacote.pacoteId,
       });
     }
     if (pedido.sessaoOrigemId) throw new ErroApi(MENSAGEM_SEM_PACOTE, 0, 'sem_conexao');
@@ -254,6 +257,7 @@ export async function iniciarSessao(
       dica: null,
       questoes,
       chave: rev.pacote.chave,
+      pacoteId: rev.pacote.pacoteId,
     });
   }
 }
