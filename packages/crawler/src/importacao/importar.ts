@@ -210,9 +210,12 @@ export async function importarProva(o: OpcoesImportar): Promise<ResumoImportacao
     // O cargo da capa do caderno vale mais que o informado: um concurso pode ter
     // "Advogado" e "Advogado SUAS I" no mesmo gabarito.
     const cargoAlvo = caderno.cargo ?? o.cargo ?? prova.cargo;
-    const bloco = escolherGabarito(gabarito, cargoAlvo);
+    const totalQuestoes = Math.max(0, ...caderno.questoes.map((q) => q.numero));
+    const bloco = escolherGabarito(gabarito, cargoAlvo, { totalQuestoes });
     const preliminar = o.preliminar
-      ? escolherGabarito(await extrairGabarito(o.preliminar, o.pdf), bloco.cargo ?? o.cargo)
+      ? escolherGabarito(await extrairGabarito(o.preliminar, o.pdf), bloco.cargo ?? o.cargo, {
+          totalQuestoes,
+        })
       : null;
     const confronto = confrontar(caderno.questoes, bloco, preliminar);
     const avisos = [...caderno.avisos, ...gabarito.avisos];

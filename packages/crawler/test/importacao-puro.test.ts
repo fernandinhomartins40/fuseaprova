@@ -13,10 +13,13 @@ import {
 } from '../src/importacao/caderno.js';
 import { confrontar, notaDeAlteracao, observacaoDoItem } from '../src/importacao/confronto.js';
 import {
+  blocoEquivaleAoCargo,
   blocoServeAoCargo,
+  distanciaEdicao,
   escolherGabarito,
   interpretarToken,
   lerLegenda,
+  palavrasParecidas,
   paresNaLinha,
   parseGabarito,
 } from '../src/importacao/gabarito.js';
@@ -406,5 +409,89 @@ describe('confronto caderno × gabarito', () => {
     expect(notaDeAlteracao(semPre.itens.find((i) => i.numero === 7)!)).toBe(
       'Gabarito alterado pela banca após os recursos: o gabarito definitivo é B.',
     );
+  });
+});
+
+describe('casamento de cargo tolerante (gabaritos reais do PCI/FAU)', () => {
+  const bloco = (cargo: string, letra: 'A' | 'B' | 'C', n = 1) => ({
+    cargo,
+    respostas: new Map(
+      Array.from({ length: n }, (_, i) => [
+        i + 1,
+        { letra, anulada: false, alterada: false, bruto: letra },
+      ]),
+    ),
+  });
+  const resultado = (...blocos: ReturnType<typeof bloco>[]) => ({
+    gabaritos: blocos,
+    definitivo: true,
+    preliminar: false,
+    avisos: [],
+  });
+
+  it('tolera erro de digitação no cargo do gabarito (MÉDICO OBSTRETA)', () => {
+    const g = resultado(bloco('MÉDICO PEDIATRA', 'A'), bloco('MÉDICO OBSTRETA', 'B'));
+    expect(escolherGabarito(g, 'Médico Obstetra').cargo).toBe('MÉDICO OBSTRETA');
+    expect(blocoServeAoCargo('MÉDICO OBSTRETA', 'Médico Obstetra')).toBe(true);
+    expect(blocoServeAoCargo('MÉDICO OBSTETRA', 'Médico Obstetra')).toBe(true);
+    // Palavra diferente de verdade continua recusada.
+    expect(blocoServeAoCargo('MÉDICO PEDIATRA', 'Médico Obstetra')).toBe(false);
+    expect(blocoServeAoCargo('AUXILIAR', 'Auxilio')).toBe(false);
+  });
+
+  it('aceita ODONTOPEDIATRA x ODONTOPEDIATRIA', () => {
+    const g = resultado(
+      bloco('CIRURGIÃO DENTISTA II', 'A'),
+      bloco('CIRURGIÃO DENTISTA - ODONTOPEDIATRA', 'B'),
+    );
+    expect(escolherGabarito(g, 'Cirurgião Dentista - Odontopediatria').cargo).toBe(
+      'CIRURGIÃO DENTISTA - ODONTOPEDIATRA',
+    );
+    expect(palavrasParecidas('ODONTOPEDIATRA', 'ODONTOPEDIATRIA')).toBe(true);
+    expect(palavrasParecidas('OBSTRETA', 'OBSTETRA')).toBe(true);
+  });
+
+  it('ignora a carga horária e prefere o bloco sem especificação ("Professor 20h")', () => {
+    const g = resultado(
+      bloco('PROFESSOR', 'A'),
+      bloco('PROFESSOR ARTE', 'B'),
+      bloco('PROFESSOR EDUCAÇÃO FÍSICA', 'C'),
+    );
+    expect(escolherGabarito(g, 'Professor 20h').cargo).toBe('PROFESSOR');
+    expect(escolherGabarito(g, 'PROFESSOR 40 HORAS').cargo).toBe('PROFESSOR');
+    expect(escolherGabarito(g, 'Professor de Arte 20h').cargo).toBe('PROFESSOR ARTE');
+    expect(blocoEquivaleAoCargo('PROFESSOR', 'Professor 20h')).toBe(true);
+    expect(blocoEquivaleAoCargo('PROFESSOR ARTE', 'Professor 20h')).toBe(false);
+  });
+
+  it('une palavras separadas de outro jeito (ÁUDIO VISUAL x AUDIOVISUAL)', () => {
+    const g = resultado(bloco('ADMINISTRADOR', 'A'), bloco('OPERADOR DE AUDIOVISUAL', 'B'));
+    expect(escolherGabarito(g, 'Operador de Áudio Visual').cargo).toBe('OPERADOR DE AUDIOVISUAL');
+  });
+
+  it('desempata blocos parecidos pelo nº de questões do caderno', () => {
+    const g = resultado(
+      bloco('MÉDICO VETERINÁRIO I', 'A', 30),
+      bloco('MÉDICO VETERINÁRIO II', 'B', 40),
+    );
+    expect(() => escolherGabarito(g, 'Médico Veterinário')).toThrow(/Mais de um cargo/);
+    expect(escolherGabarito(g, 'Médico Veterinário', { totalQuestoes: 40 }).cargo).toBe(
+      'MÉDICO VETERINÁRIO II',
+    );
+    // Dois blocos com o mesmo tamanho e respostas diferentes continuam ambíguos.
+    const g2 = resultado(
+      bloco('MÉDICO VETERINÁRIO I', 'A', 40),
+      bloco('MÉDICO VETERINÁRIO II', 'B', 40),
+    );
+    expect(() => escolherGabarito(g2, 'Médico Veterinário', { totalQuestoes: 40 })).toThrow(
+      /Mais de um cargo/,
+    );
+  });
+
+  it('mede a distância de edição com transposição', () => {
+    expect(distanciaEdicao('OBSTRETA', 'OBSTETRA')).toBe(2);
+    expect(distanciaEdicao('CASA', 'CAZA')).toBe(1);
+    expect(distanciaEdicao('AB', 'BA')).toBe(1);
+    expect(distanciaEdicao('ABCDEFG', 'A', 2)).toBe(3);
   });
 });
