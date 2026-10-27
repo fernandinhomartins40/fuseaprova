@@ -381,6 +381,34 @@ Depois, confira o 401 com o token errado (seção 1.5) e faça uma compra real.
 
 ---
 
+### 7.2 Vários concursos: preço e o que muda no Asaas (D21)
+
+Cada concurso é uma compra: **R$ 397,00 o primeiro** (`PRICE_CENTS=39700`) e **R$ 197,00 cada
+concurso adicional** do mesmo aluno (`PRICE_ADICIONAL_CENTS=19700`). O deploy completa o `.env` da
+VPS com o valor novo; o padrão também está no código.
+
+**No painel do Asaas não há nada a mudar:** o valor e a descrição da cobrança saem da API a cada Pix
+(a descrição passa a trazer o nome do concurso: "Fuse Aprova: acesso ao preparatório do <concurso>"),
+e o webhook, o token e os eventos continuam os mesmos. O webhook acha o pedido pelo id da cobrança, e o
+valor pago é conferido contra o valor do próprio pedido (R$ 397 ou R$ 197).
+
+Para mudar um preço, edite a variável no `.env` da VPS e reinicie a `api`:
+
+```bash
+cd /root/fuseaprova/deploy && nano .env          # PRICE_ADICIONAL_CENTS=17700, por exemplo
+docker compose up -d --force-recreate api
+```
+
+O Pix já gerado mantém o preço com que foi criado; o novo preço vale a partir do próximo Pix. Se o
+aluno ganhou o desconto depois de gerar um Pix cheio, o sistema gera outro Pix com o preço de hoje.
+
+Para abrir um concurso novo (ex.: outro da FAU): **Admin › Concursos › "Criar a partir deste"**. A trilha
+e os cargos genéricos são copiados e o concurso entra **inativo**; cadastre o edital na tela Edital e
+marque "Concurso ativo" em Editar. A migração `0005` preenche o acesso por concurso de quem já é aluno
+(todos continuam com o concurso que usavam); o `deploy.sh` faz um backup antes de migrar.
+
+---
+
 ## 8. Problemas comuns
 
 | Sintoma | Causa provável e solução |

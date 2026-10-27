@@ -11,12 +11,31 @@ import { conferirSenha, gerarHashSenha } from '../servicos/senhas.js';
 import { anonimizarUsuario, exportarDadosUsuario } from '../servicos/lgpd.js';
 import { encerrarSessoesDoUsuario } from '../servicos/sessoes.js';
 import { travarUsuario } from '../servicos/progresso.js';
+import {
+  ativarConcurso,
+  deixarConcurso,
+  guardarCargoNoConcurso,
+  montarMeusConcursos,
+  seguirConcurso,
+} from '../servicos/concursos.js';
 import { concursoDoUsuario, montarMe, modoEdital } from '../servicos/usuario.js';
 
 const { usuarios, cargos } = schema;
 
 export function rotasMe(r: Registrador): void {
   r.rota('meObter', async ({ usuario, deps, agora }) => montarMe(deps.db, usuario, agora));
+
+  // D21: vários concursos por aluno, um acesso por concurso.
+  r.rota('meusConcursos', async ({ usuario, deps, agora }) => montarMeusConcursos(deps, usuario, agora));
+  r.rota('meuConcursoSeguir', async ({ usuario, corpo, deps, agora }) =>
+    seguirConcurso(deps, usuario, corpo.concursoId, corpo.cargoId, agora),
+  );
+  r.rota('meuConcursoAtivar', async ({ usuario, params, deps, agora }) =>
+    ativarConcurso(deps, usuario, params.id, agora),
+  );
+  r.rota('meuConcursoDeixar', async ({ usuario, params, deps, agora }) =>
+    deixarConcurso(deps, usuario, params.id, agora),
+  );
 
   r.rota('meAtualizar', async ({ usuario, corpo, deps, agora }) => {
     const set: Partial<typeof usuarios.$inferInsert> = {};
@@ -36,7 +55,10 @@ export function rotasMe(r: Registrador): void {
       }
       set.cargoId = cargo.id;
       set.area = cargo.area;
-      if (concurso) set.concursoId = concurso.id;
+      if (concurso) {
+        set.concursoId = concurso.id;
+        await guardarCargoNoConcurso(deps.db, usuario, concurso.id, cargo, agora);
+      }
     }
     if (corpo.metaDiaria !== undefined) set.metaDiaria = corpo.metaDiaria;
     if (corpo.lembreteHora !== undefined) set.lembreteHora = corpo.lembreteHora;

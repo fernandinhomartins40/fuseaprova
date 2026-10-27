@@ -28,7 +28,7 @@ import { falha } from '../http/erros.js';
 import { dominioPorDisciplina } from '../servicos/dominio.js';
 import { ofensivaHoje } from '../servicos/progresso.js';
 import { cargoDoUsuario, concursoDoUsuario } from '../servicos/usuario.js';
-import { diasParaProva } from './conteudo.js';
+import { diasParaProva } from '../servicos/concursos.js';
 import { contar, iso } from '../util.js';
 
 const { ligasGrupos, ligasMembros, usuarios, tentativas, conquistasUsuario, pushInscricoes } = schema;

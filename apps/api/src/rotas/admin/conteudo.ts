@@ -12,6 +12,7 @@ import type { z } from 'zod';
 import type { QuestaoAdmin, QuestaoAdmin as QuestaoAdminSchema, QuestaoEntrada } from '@fuse/shared/api';
 import type { Registrador } from '../../http/registrar.js';
 import { ehViolacaoUnica, existe, falha } from '../../http/erros.js';
+import { clonarConcurso } from '../../servicos/concursos.js';
 import { carregarQuestoes } from '../../servicos/questoes.js';
 import { concursoAtivo, subirVersaoConteudo } from '../../servicos/usuario.js';
 import { contar, iso, isoOuNull, type Db } from '../../util.js';
@@ -133,6 +134,23 @@ export function rotasAdminConteudo(r: Registrador): void {
       const [c] = await deps.db.insert(concursos).values({ ...corpo, criadoEm: agora }).returning();
       await auditar(deps.db, usuario.id, 'concurso.editar', `concurso:${c!.id}`, { criado: true }, agora);
       return mapConcurso(c!);
+    } catch (e) {
+      if (ehViolacaoUnica(e)) throw falha('conflito', 'Já existe um concurso com esse slug.');
+      throw e;
+    }
+  });
+  r.rota('adminConcursoClonar', async ({ params, corpo, deps, usuario, agora }) => {
+    try {
+      const r = await clonarConcurso(deps.db, params.id, corpo, agora);
+      await auditar(
+        deps.db,
+        usuario.id,
+        'concurso.editar',
+        `concurso:${r.concurso.id}`,
+        { clonadoDe: params.id, unidades: r.unidades, secoes: r.secoes, licoes: r.licoes, cargos: r.cargos },
+        agora,
+      );
+      return { concurso: mapConcurso(r.concurso), unidades: r.unidades, secoes: r.secoes, licoes: r.licoes, cargos: r.cargos };
     } catch (e) {
       if (ehViolacaoUnica(e)) throw falha('conflito', 'Já existe um concurso com esse slug.');
       throw e;

@@ -227,6 +227,7 @@ completar_env TZ America/Sao_Paulo
 completar_env ARQUIVOS_DIR /srv/fuse/arquivos
 completar_env ASAAS_BASE_URL "https://api-sandbox.asaas.com/v3"
 completar_env PRICE_CENTS 39700
+completar_env PRICE_ADICIONAL_CENTS 19700
 
 # Chaves VAPID (Web Push): geradas com o web-push da própria imagem da api;
 # se falhar, com openssl (P-256: privada de 32 bytes, pública não comprimida

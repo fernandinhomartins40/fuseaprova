@@ -14,7 +14,10 @@ export interface Config {
   cookieDominio: string | undefined;
   /** Cookie com `Secure` (padrão true; COOKIE_SECURE=0 só para dev em http fora de localhost). */
   cookieSeguro: boolean;
+  /** Preço do 1º concurso do aluno (PRICE_CENTS). */
   precoCentavos: number;
+  /** Preço de cada concurso adicional, com desconto (PRICE_ADICIONAL_CENTS, D21). */
+  precoAdicionalCentavos: number;
   asaas: { apiKey: string; baseUrl: string; webhookToken: string };
   smtp: { host: string; porta: number; usuario: string; senha: string; remetente: string };
   vapid: { publica: string; privada: string; assunto: string };
@@ -50,6 +53,7 @@ export function lerConfig(env: NodeJS.ProcessEnv = process.env): Config {
     cookieDominio: env.COOKIE_DOMAIN || undefined,
     cookieSeguro: !(env.COOKIE_SECURE === '0' || env.COOKIE_SECURE === 'false'),
     precoCentavos: numero(env.PRICE_CENTS, 39700),
+    precoAdicionalCentavos: numero(env.PRICE_ADICIONAL_CENTS, 19700),
     asaas: {
       apiKey: env.ASAAS_API_KEY ?? '',
       baseUrl: (env.ASAAS_BASE_URL ?? 'https://api-sandbox.asaas.com/v3').replace(/\/+$/, ''),

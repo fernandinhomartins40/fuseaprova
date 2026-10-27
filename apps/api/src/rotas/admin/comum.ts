@@ -1,7 +1,7 @@
 import { schema } from '@fuse/db';
 import type { AcaoAuditoria } from '@fuse/shared/api';
 import { iso, isoOuNull, type Db } from '../../util.js';
-import { cargoResumo } from '../conteudo.js';
+import { cargoResumo } from '../../servicos/concursos.js';
 
 const { auditoria } = schema;
 

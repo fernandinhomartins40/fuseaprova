@@ -14,7 +14,9 @@ import type { AprovarManualResposta } from '@fuse/shared/api';
 import type { Deps, Usuario } from '../contexto.js';
 import { existe, falha } from '../http/erros.js';
 import { ErroAsaas } from '../integracoes/asaas.js';
+import { liberarConcurso, revogarConcurso } from './concursos.js';
 import { enviarEmailConfirmacao, type Pedido } from './pagamento.js';
+import { concursoDoUsuario } from './usuario.js';
 import { encerrarSessoesDoUsuario } from './sessoes.js';
 
 const { pedidos, usuarios } = schema;
@@ -54,23 +56,39 @@ export async function aprovarPagamentoManual(
     const [u] = await tx.select().from(usuarios).where(eq(usuarios.id, usuarioId)).for('update');
     const aluno = existe(u, 'Usuário não encontrado.');
     if (aluno.excluidoEm) throw falha('conflito', 'Esta conta foi excluída.');
+    // D21: a aprovação vale para o concurso ativo do aluno (um pedido por concurso).
+    const concursoId = (await concursoDoUsuario(tx, aluno))?.id ?? null;
     const [jaPago] = await tx
       .select()
       .from(pedidos)
-      .where(and(eq(pedidos.usuarioId, aluno.id), eq(pedidos.status, 'pago')))
+      .where(
+        and(
+          eq(pedidos.usuarioId, aluno.id),
+          eq(pedidos.status, 'pago'),
+          concursoId ? eq(pedidos.concursoId, concursoId) : undefined,
+        ),
+      )
       .orderBy(desc(pedidos.pagoEm))
       .limit(1);
     if (jaPago) {
-      if (!aluno.acesso) await tx.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, aluno.id));
+      if (concursoId) await liberarConcurso(tx, aluno.id, concursoId, agora);
+      else if (!aluno.acesso) await tx.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, aluno.id));
       return { jaAprovado: true as const, aluno, antes: jaPago, depois: jaPago, cobranca: null };
     }
     const [pendente] = await tx
       .select()
       .from(pedidos)
-      .where(and(eq(pedidos.usuarioId, aluno.id), eq(pedidos.status, 'pendente')))
+      .where(
+        and(
+          eq(pedidos.usuarioId, aluno.id),
+          eq(pedidos.status, 'pendente'),
+          concursoId ? eq(pedidos.concursoId, concursoId) : undefined,
+        ),
+      )
       .orderBy(desc(pedidos.criadoEm))
       .limit(1);
     const dadosManuais = {
+      concursoId,
       status: 'pago' as const,
       metodo: 'manual' as const,
       valorCentavos: deps.config.precoCentavos,
@@ -92,7 +110,9 @@ export async function aprovarPagamentoManual(
         .values({ usuarioId: aluno.id, asaasCustomerId: aluno.asaasCustomerId, criadoEm: agora, ...dadosManuais })
         .returning()) as [Pedido];
     }
-    const [atualizado] = await tx.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, aluno.id)).returning();
+    if (concursoId) await liberarConcurso(tx, aluno.id, concursoId, agora);
+    else await tx.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, aluno.id));
+    const [atualizado] = await tx.select().from(usuarios).where(eq(usuarios.id, aluno.id));
     return { jaAprovado: false as const, aluno: atualizado!, antes: pendente ?? null, depois, cobranca: pendente?.asaasPaymentId ?? null };
   });
 
@@ -151,15 +171,27 @@ export async function desfazerAprovacaoManual(deps: Deps, pedidoId: string, agor
       throw falha('conflito', 'Só é possível desfazer uma aprovação manual que está paga.');
     }
     const [depois] = await tx.update(pedidos).set({ status: 'estornado', estornadoEm: agora }).where(eq(pedidos.id, pedido.id)).returning();
+    const concursoId = pedido.concursoId;
     const [outroPago] = await tx
       .select({ id: pedidos.id })
       .from(pedidos)
-      .where(and(eq(pedidos.usuarioId, pedido.usuarioId), eq(pedidos.status, 'pago'), ne(pedidos.id, pedido.id)))
+      .where(
+        and(
+          eq(pedidos.usuarioId, pedido.usuarioId),
+          eq(pedidos.status, 'pago'),
+          ne(pedidos.id, pedido.id),
+          concursoId ? eq(pedidos.concursoId, concursoId) : undefined,
+        ),
+      )
       .limit(1);
-    const [u] = outroPago
-      ? await tx.select().from(usuarios).where(eq(usuarios.id, pedido.usuarioId))
-      : await tx.update(usuarios).set({ acesso: false }).where(eq(usuarios.id, pedido.usuarioId)).returning();
-    if (!outroPago) await encerrarSessoesDoUsuario(tx, pedido.usuarioId);
+    let temAcesso = true;
+    if (!outroPago) {
+      temAcesso = concursoId
+        ? await revogarConcurso(tx, pedido.usuarioId, concursoId)
+        : (await tx.update(usuarios).set({ acesso: false }).where(eq(usuarios.id, pedido.usuarioId)), false);
+    }
+    if (!temAcesso) await encerrarSessoesDoUsuario(tx, pedido.usuarioId);
+    const [u] = await tx.select().from(usuarios).where(eq(usuarios.id, pedido.usuarioId));
     return { antes: pedido, depois: depois!, usuario: u! };
   });
 }

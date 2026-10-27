@@ -18,8 +18,9 @@ import type { PedidoAdmin } from '@fuse/shared/api';
 import type { Registrador } from '../../http/registrar.js';
 import { existe, falha } from '../../http/erros.js';
 import { dominioPorDisciplina } from '../../servicos/dominio.js';
+import { liberarConcurso, revogarTudo } from '../../servicos/concursos.js';
 import { encerrarSessoesDoUsuario } from '../../servicos/sessoes.js';
-import { cargoDoUsuario, revisoesPendentes } from '../../servicos/usuario.js';
+import { cargoDoUsuario, concursoDoUsuario, revisoesPendentes } from '../../servicos/usuario.js';
 import { consultar, contar, dataSql, iso, isoOuNull, type Db } from '../../util.js';
 import { auditar, paginacao } from './comum.js';
 
@@ -308,7 +309,13 @@ export function rotasAdminGestao(r: Registrador): void {
   });
   r.rota('adminUsuarioLiberarAcesso', async ({ params, corpo, deps, usuario, agora }) => {
     await exigirAlvoAluno(deps.db, usuario, params.id);
-    await deps.db.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, params.id));
+    // D21: libera o concurso ativo do aluno (sem pedido; não dá desconto no próximo concurso).
+    await deps.db.transaction(async (tx) => {
+      const alvo = (await tx.select().from(usuarios).where(eq(usuarios.id, params.id)))[0]!;
+      const c = await concursoDoUsuario(tx, alvo);
+      if (c) await liberarConcurso(tx, alvo.id, c.id, agora);
+      else await tx.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, alvo.id));
+    });
     await auditar(deps.db, usuario.id, 'acesso.liberar', `usuario:${params.id}`, { motivo: corpo.motivo }, agora);
     return { ok: true as const };
   });
@@ -316,7 +323,7 @@ export function rotasAdminGestao(r: Registrador): void {
     await exigirAlvoAluno(deps.db, usuario, params.id);
     // Sem acesso, as sessões abertas também caem (como no estorno).
     await deps.db.transaction(async (tx) => {
-      await tx.update(usuarios).set({ acesso: false }).where(eq(usuarios.id, params.id));
+      await revogarTudo(tx, params.id);
       await encerrarSessoesDoUsuario(tx, params.id);
     });
     await auditar(deps.db, usuario.id, 'acesso.revogar', `usuario:${params.id}`, { motivo: corpo.motivo }, agora);

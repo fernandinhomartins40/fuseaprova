@@ -7,9 +7,11 @@ import { eventoEhNosso, gerarPix, statusPagamento } from '../servicos/pagamento.
 import { receberEvento } from '../servicos/webhook.js';
 
 export function rotasPagamento(r: Registrador): void {
-  r.rota('pagamentoPix', async ({ usuario, deps, agora }) => gerarPix(deps, usuario, agora));
+  r.rota('pagamentoPix', async ({ usuario, corpo, deps, agora }) => gerarPix(deps, usuario, agora, corpo.concursoId));
 
-  r.rota('pagamentoStatus', async ({ usuario, deps, agora }) => statusPagamento(deps, usuario, agora));
+  r.rota('pagamentoStatus', async ({ usuario, query, deps, agora }) =>
+    statusPagamento(deps, usuario, agora, query.concursoId),
+  );
 
   r.rota('webhookAsaas', async ({ corpo, deps, agora, req }) => {
     // A conta Asaas é compartilhada com outras aplicações (DECISOES D14): o webhook recebe

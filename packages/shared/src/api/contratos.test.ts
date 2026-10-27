@@ -21,7 +21,7 @@ import {
   QuestoesQuery,
   referenciaExterna,
   referenciaEhDoFuseAprova,
-  DESCRICAO_COBRANCA,
+  descricaoCobranca,
   EVENTOS_ASAAS_WEBHOOK,
   RetirarOrigemEntrada,
   ROTAS,
@@ -246,8 +246,10 @@ describe('outros contratos', () => {
     expect(referenciaEhDoFuseAprova('pedido-123')).toBe(false);
     expect(referenciaEhDoFuseAprova(null)).toBe(false);
     expect(referenciaEhDoFuseAprova(undefined)).toBe(false);
-    expect(DESCRICAO_COBRANCA).toMatch(/^Fuse Aprova/);
-    expect(DESCRICAO_COBRANCA.length).toBeLessThanOrEqual(500);
+    expect(descricaoCobranca('concurso da Prefeitura de Palmital-PR')).toBe(
+      'Fuse Aprova: acesso ao preparatório do concurso da Prefeitura de Palmital-PR',
+    );
+    expect(descricaoCobranca('x'.repeat(900)).length).toBeLessThanOrEqual(200);
     const corpo = AsaasWebhookCorpo.parse({
       id: 'evt_1',
       event: 'PAYMENT_RECEIVED',

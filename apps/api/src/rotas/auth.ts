@@ -21,7 +21,7 @@ import { conferirSenha, gerarHashSenha } from '../servicos/senhas.js';
 import { abrirSessao, encerrarSessao, encerrarSessoesDoUsuario, gerarToken } from '../servicos/sessoes.js';
 import { concursoAtivo } from '../servicos/usuario.js';
 
-const { usuarios, redefinicoesSenha } = schema;
+const { usuarios, redefinicoesSenha, usuariosConcursos } = schema;
 
 export function proximoPasso(u: Pick<Usuario, 'papel' | 'acesso' | 'onboardingConcluidoEm'>): ProximoPasso {
   // D13: o superadmin sempre passa pelo 2FA (configurar ou digitar o código) ao entrar.
@@ -93,6 +93,12 @@ export function rotasAuth(r: Registrador): void {
     } catch (e) {
       if (ehViolacaoUnica(e)) throw contaExistente();
       throw e;
+    }
+    if (concurso) {
+      await db
+        .insert(usuariosConcursos)
+        .values({ usuarioId: novo.id, concursoId: concurso.id, criadoEm: agora })
+        .onConflictDoNothing();
     }
     await iniciarSessao(deps, req, reply, novo.id, agora);
     reply.status(201);

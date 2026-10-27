@@ -9,6 +9,7 @@ import type { z } from 'zod';
 import { IdParams, OkResposta } from './comum.js';
 import * as auth from './auth.js';
 import * as me from './me.js';
+import * as mc from './meus-concursos.js';
 import * as pag from './pagamento.js';
 import * as cont from './conteudo.js';
 import * as est from './estudo.js';
@@ -141,6 +142,37 @@ export const ROTAS = {
     corpo: me.ExcluirContaEntrada,
     resposta: OkResposta,
   }),
+  meusConcursos: rota({
+    metodo: 'GET',
+    caminho: '/me/concursos',
+    guarda: 'login',
+    descricao: 'Concursos que o aluno acompanha, o ativo e os abertos que ainda não acompanha (D21).',
+    resposta: mc.MeusConcursosResposta,
+  }),
+  meuConcursoSeguir: rota({
+    metodo: 'POST',
+    caminho: '/me/concursos',
+    guarda: 'login',
+    descricao: 'Passa a acompanhar um concurso; se já está liberado, ele vira o ativo (a trilha muda).',
+    corpo: mc.SeguirConcursoEntrada,
+    resposta: mc.MeusConcursosResposta,
+  }),
+  meuConcursoAtivar: rota({
+    metodo: 'POST',
+    caminho: '/me/concursos/:id/ativar',
+    guarda: 'login',
+    descricao: 'Troca o concurso ativo por outro já liberado para o aluno (402 se ainda não pagou).',
+    params: IdParams,
+    resposta: mc.MeusConcursosResposta,
+  }),
+  meuConcursoDeixar: rota({
+    metodo: 'DELETE',
+    caminho: '/me/concursos/:id',
+    guarda: 'login',
+    descricao: 'Deixa de acompanhar um concurso ainda não pago. Concurso liberado não sai da lista.',
+    params: IdParams,
+    resposta: mc.MeusConcursosResposta,
+  }),
   meComprarProtetor: rota({
     metodo: 'POST',
     caminho: '/me/protetores',
@@ -154,7 +186,8 @@ export const ROTAS = {
     metodo: 'POST',
     caminho: '/pagamento/pix',
     guarda: 'login',
-    descricao: 'Gera ou reaproveita o Pix pendente não expirado.',
+    descricao: 'Gera ou reaproveita o Pix pendente não expirado de um concurso (padrão: o ativo).',
+    corpo: pag.PixEntrada,
     resposta: pag.PixResposta,
     limite: { max: 10, janelaMs: HORA, por: 'usuario' },
   }),
@@ -162,7 +195,8 @@ export const ROTAS = {
     metodo: 'GET',
     caminho: '/pagamento/status',
     guarda: 'login',
-    descricao: 'Status do pagamento; após 60 s pendente consulta o Asaas.',
+    descricao: 'Status do pagamento de um concurso; após 60 s pendente consulta o Asaas.',
+    query: pag.StatusPagamentoQuery,
     resposta: pag.StatusPagamentoResposta,
   }),
   webhookAsaas: rota({
@@ -175,6 +209,14 @@ export const ROTAS = {
   }),
 
   /* ----------------------------------------------------------- conteúdo */
+  concursoPorId: rota({
+    metodo: 'GET',
+    caminho: '/concursos/:id',
+    guarda: 'login',
+    descricao: 'Dados de um concurso aberto (edital, cargos e áreas), para escolher o cargo antes de seguir.',
+    params: IdParams,
+    resposta: cont.ConcursoResposta,
+  }),
   concurso: rota({
     metodo: 'GET',
     caminho: '/concurso',
@@ -394,6 +436,16 @@ export const ROTAS = {
     descricao: 'Cria um concurso.',
     corpo: ac.ConcursoEntrada,
     resposta: ac.ConcursoAdmin,
+  }),
+  adminConcursoClonar: rota({
+    metodo: 'POST',
+    caminho: '/admin/concursos/:id/clonar',
+    guarda: 'admin',
+    descricao: 'Cria um concurso novo com a trilha e os cargos genéricos de um concurso modelo.',
+    params: IdParams,
+    corpo: ac.ConcursoClonarEntrada,
+    resposta: ac.ConcursoClonarResposta,
+    limite: LIMITE_SENSIVEL,
   }),
   adminConcursoObter: rota({
     metodo: 'GET',

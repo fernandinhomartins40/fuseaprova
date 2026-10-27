@@ -7,7 +7,7 @@ import { limparCpf, validarCpf } from '../cpf.js';
 import { normalizarEmail, SENHA_MINIMA, validarEmail, validarNomeCompleto } from '../validacao.js';
 import { Uuid, ZPapel } from './comum.js';
 
-export const VERSAO_TERMOS_ATUAL = '2026-10-23';
+export const VERSAO_TERMOS_ATUAL = '2026-10-27';
 
 export const MENSAGENS_CADASTRO = {
   nome: 'Informe seu nome completo (nome e sobrenome).',

@@ -21,6 +21,7 @@ const {
   redefinicoesSenha,
   ligasMembros,
   codigosRecuperacao,
+  usuariosConcursos,
 } = schema;
 
 /** JSON com perfil, pedidos e progresso. Sem hash de senha, segredo do 2FA nem a imagem do QR. */
@@ -82,5 +83,6 @@ export async function anonimizarUsuario(tx: Db, usuarioId: string, agora: Date):
   await tx.delete(redefinicoesSenha).where(eq(redefinicoesSenha.usuarioId, usuarioId));
   await tx.delete(ligasMembros).where(eq(ligasMembros.usuarioId, usuarioId));
   await tx.delete(codigosRecuperacao).where(eq(codigosRecuperacao.usuarioId, usuarioId));
+  await tx.delete(usuariosConcursos).where(eq(usuariosConcursos.usuarioId, usuarioId));
   await encerrarSessoesDoUsuario(tx, usuarioId);
 }

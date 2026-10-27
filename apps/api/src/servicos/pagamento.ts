@@ -6,7 +6,7 @@ import { schema } from '@fuse/db';
 import { centavosParaReais, diaSP, MS_HORA, ocultarCpf, somarDias } from '@fuse/shared';
 import {
   CONSULTA_ASAAS_APOS_MS,
-  DESCRICAO_COBRANCA,
+  descricaoCobranca,
   STATUS_ASAAS_PAGO,
   referenciaEhDoFuseAprova,
   referenciaExterna,
@@ -17,15 +17,19 @@ import type { Deps, Usuario } from '../contexto.js';
 import { falha } from '../http/erros.js';
 import { emailBoasVindas, emailReembolso } from '../integracoes/email.js';
 import { lerDataAsaas } from '../integracoes/asaas.js';
+import { concursoAbertoPorId, liberarConcurso, precoDoConcurso, revogarConcurso } from './concursos.js';
 import { encerrarSessoesDoUsuario } from './sessoes.js';
+import { concursoDoUsuario } from './usuario.js';
 import { iso, isoOuNull, type Db } from '../util.js';
 
-const { pedidos, usuarios } = schema;
+const { pedidos, usuarios, usuariosConcursos } = schema;
 export type Pedido = typeof schema.pedidos.$inferSelect;
 
-function respostaPix(p: Pedido): PixResposta {
+function respostaPix(p: Pedido, concurso: { id: string; nome: string }): PixResposta {
   return {
     pedidoId: p.id,
+    concursoId: concurso.id,
+    concursoNome: concurso.nome,
     valorCentavos: p.valorCentavos,
     imagem: p.pixImagem ?? '',
     payload: p.pixPayload ?? '',
@@ -51,24 +55,51 @@ function umPorAluno<T>(usuarioId: string, fn: () => Promise<T>): Promise<T> {
 }
 
 /**
- * POST /pagamento/pix: reaproveita o pendente não expirado; senão cria no Asaas. Dois cliques
- * simultâneos do mesmo aluno não geram 2 cobranças (o 2º espera e reaproveita o 1º).
+ * POST /pagamento/pix: Pix de UM concurso (D21; sem `concursoId`, o ativo do aluno). Reaproveita o
+ * pendente não expirado daquele concurso; senão cria no Asaas. O primeiro concurso custa o preço
+ * cheio e os adicionais o preço com desconto. Dois cliques simultâneos do mesmo aluno não geram 2
+ * cobranças (o 2º espera e reaproveita o 1º).
  */
-export async function gerarPix(deps: Deps, usuario: Usuario, agora: Date): Promise<PixResposta> {
-  const { asaas, config } = deps;
+export async function gerarPix(
+  deps: Deps,
+  usuario: Usuario,
+  agora: Date,
+  concursoIdPedido?: string,
+): Promise<PixResposta> {
+  const { asaas } = deps;
   const { db } = deps;
   const resultado = await umPorAluno(usuario.id, async () => {
     const [u] = await db.select().from(usuarios).where(eq(usuarios.id, usuario.id));
     if (!u) throw falha('nao_autenticado');
-    if (u.acesso) throw falha('conflito', 'Seu acesso já está liberado.');
+    const concurso = concursoIdPedido
+      ? await concursoAbertoPorId(db, concursoIdPedido)
+      : await concursoDoUsuario(db, u);
+    if (!concurso) throw falha('nao_encontrado', 'Concurso não encontrado.');
+    const [linha] = await db
+      .select()
+      .from(usuariosConcursos)
+      .where(and(eq(usuariosConcursos.usuarioId, u.id), eq(usuariosConcursos.concursoId, concurso.id)));
+    // Sem linha (equipe, legado) vale o acesso global quando o pedido é do concurso ativo.
+    if (linha?.acesso || (!linha && !concursoIdPedido && u.acesso)) {
+      throw falha('conflito', 'Seu acesso a este concurso já está liberado.');
+    }
+    const preco = await precoDoConcurso(deps, db, u.id, concurso.id);
     const [pendente] = await db
       .select()
       .from(pedidos)
-      .where(and(eq(pedidos.usuarioId, u.id), eq(pedidos.status, 'pendente')))
+      .where(and(eq(pedidos.usuarioId, u.id), eq(pedidos.concursoId, concurso.id), eq(pedidos.status, 'pendente')))
       .orderBy(desc(pedidos.criadoEm))
       .limit(1);
-    if (pendente && pendente.pixExpiraEm && pendente.pixExpiraEm > agora && pendente.pixPayload) {
-      return respostaPix(pendente);
+    // O Pix pendente só vale se ainda é o preço de hoje (o aluno pode ter pago outro concurso
+    // desde então e ganhado o desconto).
+    if (
+      pendente &&
+      pendente.valorCentavos === preco.centavos &&
+      pendente.pixExpiraEm &&
+      pendente.pixExpiraEm > agora &&
+      pendente.pixPayload
+    ) {
+      return respostaPix(pendente, concurso);
     }
     if (pendente) {
       await db.update(pedidos).set({ status: 'vencido' }).where(eq(pedidos.id, pendente.id));
@@ -92,9 +123,9 @@ export async function gerarPix(deps: Deps, usuario: Usuario, agora: Date): Promi
       const cobranca = await asaas.criarCobranca({
         customer: customerId,
         billingType: 'PIX',
-        value: centavosParaReais(config.precoCentavos),
+        value: centavosParaReais(preco.centavos),
         dueDate: somarDias(diaSP(agora), 1),
-        description: DESCRICAO_COBRANCA,
+        description: descricaoCobranca(concurso.nome),
         externalReference: ref,
       });
       const qr = await asaas.qrCodePix(cobranca.id);
@@ -103,9 +134,10 @@ export async function gerarPix(deps: Deps, usuario: Usuario, agora: Date): Promi
         .insert(pedidos)
         .values({
           usuarioId: u.id,
+          concursoId: concurso.id,
           asaasCustomerId: customerId,
           asaasPaymentId: cobranca.id,
-          valorCentavos: config.precoCentavos,
+          valorCentavos: preco.centavos,
           status: 'pendente',
           pixPayload: qr.payload,
           pixImagem: qr.encodedImage,
@@ -114,7 +146,7 @@ export async function gerarPix(deps: Deps, usuario: Usuario, agora: Date): Promi
         })
         .returning();
       deps.log.info({ pedidoId: p!.id, usuarioId: u.id, cpf: ocultarCpf(u.cpf) }, 'pix gerado');
-      return respostaPix(p!);
+      return respostaPix(p!, concurso);
     } catch (e) {
       // Sem payload Pix nem dados pessoais no log. O cliente já criado no Asaas fica gravado.
       deps.log.error({ usuarioId: u.id, erro: (e as Error).message }, 'falha ao gerar pix');
@@ -129,15 +161,30 @@ const ultimaConsulta = new Map<string, number>();
 const INTERVALO_CONSULTA_MS = 15_000;
 
 /** GET /pagamento/status, com consulta direta ao Asaas depois de 60 s pendente. */
-export async function statusPagamento(deps: Deps, u: Usuario, agora: Date): Promise<StatusPagamentoResposta> {
+export async function statusPagamento(
+  deps: Deps,
+  u: Usuario,
+  agora: Date,
+  concursoIdPedido?: string,
+): Promise<StatusPagamentoResposta> {
   const { db } = deps;
+  const concurso = concursoIdPedido ? { id: concursoIdPedido } : await concursoDoUsuario(db, u);
+  const concursoId = concurso?.id ?? null;
+  const [linha] = concursoId
+    ? await db
+        .select()
+        .from(usuariosConcursos)
+        .where(and(eq(usuariosConcursos.usuarioId, u.id), eq(usuariosConcursos.concursoId, concursoId)))
+    : [];
+  // Sem linha (equipe, legado) vale o acesso global para o concurso ativo.
+  const acessoAoConcurso = () => (linha ? linha.acesso : !concursoIdPedido && u.acesso);
+  let acesso = acessoAoConcurso();
   let [p] = await db
     .select()
     .from(pedidos)
-    .where(eq(pedidos.usuarioId, u.id))
+    .where(and(eq(pedidos.usuarioId, u.id), concursoId ? eq(pedidos.concursoId, concursoId) : undefined))
     .orderBy(desc(pedidos.criadoEm))
     .limit(1);
-  let acesso = u.acesso;
   if (p && p.status === 'pendente' && p.asaasPaymentId && agora.getTime() - p.criadoEm.getTime() > CONSULTA_ASAAS_APOS_MS) {
     const ultima = ultimaConsulta.get(p.id) ?? 0;
     if (agora.getTime() - ultima >= INTERVALO_CONSULTA_MS) {
@@ -150,7 +197,7 @@ export async function statusPagamento(deps: Deps, u: Usuario, agora: Date): Prom
             valorPagoCentavos: typeof c.value === 'number' ? Math.round(c.value * 100) : null,
           });
           [p] = await db.select().from(pedidos).where(eq(pedidos.id, pedidoId));
-          acesso = p?.status === 'pago' ? true : acesso;
+          if (p?.status === 'pago') acesso = true;
         }
       } catch (e) {
         deps.log.warn({ pedidoId, erro: (e as Error).message }, 'consulta ao Asaas falhou');
@@ -158,13 +205,14 @@ export async function statusPagamento(deps: Deps, u: Usuario, agora: Date): Prom
     }
   }
   if (!p) {
-    return { status: 'nenhum', acesso, pedidoId: null, expiraEm: null, pagoEm: null, expirado: false };
+    return { status: 'nenhum', acesso, concursoId, pedidoId: null, expiraEm: null, pagoEm: null, expirado: false };
   }
   const expirado =
     p.status === 'vencido' || (p.status === 'pendente' && p.pixExpiraEm !== null && p.pixExpiraEm <= agora);
   return {
     status: p.status,
     acesso,
+    concursoId,
     pedidoId: p.id,
     expiraEm: isoOuNull(p.pixExpiraEm),
     pagoEm: isoOuNull(p.pagoEm),
@@ -219,12 +267,20 @@ export async function confirmarPagamento(
       })
       .where(eq(pedidos.id, p.id))
       .returning();
-    const [u] = await tx.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, p.usuarioId)).returning();
-    return { pedido: pago!, usuario: u! };
+    // D21: o pagamento libera o CONCURSO do pedido (pedidos antigos sem concurso: o do aluno).
+    const concursoId = p.concursoId ?? (await concursoDoUsuario(tx, await usuarioDe(tx, p.usuarioId)))?.id;
+    if (concursoId) await liberarConcurso(tx, p.usuarioId, concursoId, agora);
+    else await tx.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, p.usuarioId));
+    return { pedido: pago!, usuario: await usuarioDe(tx, p.usuarioId) };
   });
   if (!resultado) return false;
   enviarEmailConfirmacao(deps, resultado.pedido, resultado.usuario);
   return true;
+}
+
+async function usuarioDe(db: Db, id: string): Promise<Usuario> {
+  const [u] = await db.select().from(usuarios).where(eq(usuarios.id, id));
+  return u!;
 }
 
 /** O Asaas informou um valor pago menor que o do pedido? (sem valor informado: não). */
@@ -233,24 +289,36 @@ export function valorMenorQueOPedido(valorPagoCentavos: number | null | undefine
 }
 
 /**
- * Estorno ou chargeback: pedido estornado; acesso revogado e sessões derrubadas, a menos que
- * o aluno tenha outro pedido pago (ex.: Pix em dobro ou aprovação manual), como no desfazerManual.
+ * Estorno ou chargeback: pedido estornado e o acesso AO CONCURSO do pedido revogado (D21). O aluno
+ * só perde o acesso geral, com as sessões derrubadas, se não sobrar nenhum concurso liberado. Se
+ * houver outro pedido pago do mesmo concurso (Pix em dobro, aprovação manual), nada é revogado.
  */
 export async function estornarPagamento(deps: Deps, paymentId: string, agora: Date): Promise<boolean> {
   const resultado = await deps.db.transaction(async (tx) => {
     const [p] = await tx.select().from(pedidos).where(eq(pedidos.asaasPaymentId, paymentId)).for('update');
     if (!p || p.status === 'estornado') return null;
     await tx.update(pedidos).set({ status: 'estornado', estornadoEm: agora }).where(eq(pedidos.id, p.id));
+    const concursoId = p.concursoId ?? (await concursoDoUsuario(tx, await usuarioDe(tx, p.usuarioId)))?.id ?? null;
     const [outroPago] = await tx
       .select({ id: pedidos.id })
       .from(pedidos)
-      .where(and(eq(pedidos.usuarioId, p.usuarioId), eq(pedidos.status, 'pago'), ne(pedidos.id, p.id)))
+      .where(
+        and(
+          eq(pedidos.usuarioId, p.usuarioId),
+          eq(pedidos.status, 'pago'),
+          ne(pedidos.id, p.id),
+          concursoId ? eq(pedidos.concursoId, concursoId) : undefined,
+        ),
+      )
       .limit(1);
-    const [u] = outroPago
-      ? await tx.select().from(usuarios).where(eq(usuarios.id, p.usuarioId))
-      : await tx.update(usuarios).set({ acesso: false }).where(eq(usuarios.id, p.usuarioId)).returning();
-    if (!outroPago) await encerrarSessoesDoUsuario(tx, p.usuarioId);
-    return { pedido: p, usuario: u! };
+    let temAcesso = true;
+    if (!outroPago) {
+      temAcesso = concursoId
+        ? await revogarConcurso(tx, p.usuarioId, concursoId)
+        : (await tx.update(usuarios).set({ acesso: false }).where(eq(usuarios.id, p.usuarioId)), false);
+    }
+    if (!temAcesso) await encerrarSessoesDoUsuario(tx, p.usuarioId);
+    return { pedido: p, usuario: await usuarioDe(tx, p.usuarioId) };
   });
   if (!resultado) return false;
   if (!resultado.usuario.excluidoEm) {

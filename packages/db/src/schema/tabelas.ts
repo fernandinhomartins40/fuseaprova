@@ -140,6 +140,36 @@ export const concursos = pgTable('concursos', {
   atualizadoEm: atualizadoEm(),
 });
 
+/**
+ * Concursos que o aluno acompanha (D21). O acesso é POR CONCURSO: cada concurso é uma compra
+ * (R$ 397 o primeiro, R$ 197 cada adicional) e `acesso` diz se este está liberado. A linha guarda
+ * também o cargo e a área do aluno NAQUELE concurso. `usuarios.concurso_id`, `cargo_id` e `area`
+ * continuam sendo o concurso ATIVO (a trilha, o simulado e a liga leem deles) e
+ * `usuarios.acesso` = algum concurso liberado (a guarda 402 lê dele); trocar de concurso copia a
+ * linha para lá. Progresso, XP, ofensiva e revisão são do aluno, não do concurso.
+ */
+export const usuariosConcursos = pgTable(
+  'usuarios_concursos',
+  {
+    usuarioId: uuid('usuario_id')
+      .notNull()
+      .references(() => usuarios.id, { onDelete: 'cascade' }),
+    concursoId: uuid('concurso_id')
+      .notNull()
+      .references(() => concursos.id, { onDelete: 'cascade' }),
+    cargoId: uuid('cargo_id').references(() => cargos.id, { onDelete: 'set null' }),
+    area: areaCargoEnum('area'),
+    /** Este concurso está liberado para o aluno (pago, ou liberado à mão pelo admin). */
+    acesso: boolean('acesso').notNull().default(false),
+    acessoEm: ts('acesso_em'),
+    criadoEm: criadoEm(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.usuarioId, t.concursoId] }),
+    index('usuarios_concursos_concurso_idx').on(t.concursoId),
+  ],
+);
+
 export const cargos = pgTable(
   'cargos',
   {
@@ -465,6 +495,8 @@ export const pedidos = pgTable(
     usuarioId: uuid('usuario_id')
       .notNull()
       .references(() => usuarios.id),
+    /** extra D21: de qual concurso é a compra (o acesso é por concurso). Pedidos antigos: o do aluno. */
+    concursoId: uuid('concurso_id').references(() => concursos.id),
     asaasCustomerId: text('asaas_customer_id'),
     asaasPaymentId: text('asaas_payment_id').unique(),
     valorCentavos: integer('valor_centavos').notNull(),

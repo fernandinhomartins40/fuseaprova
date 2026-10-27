@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { count, eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { schema } from '@fuse/db';
-import { DESCRICAO_COBRANCA, EVENTOS_ASAAS_WEBHOOK } from '@fuse/shared/api';
+import { descricaoCobranca, EVENTOS_ASAAS_WEBHOOK } from '@fuse/shared/api';
 import { criarAmbienteTeste, type AmbienteTeste } from '../src/teste/index.js';
 import { usuario } from './ajuda.js';
 
@@ -29,7 +29,7 @@ describe('pagamento Pix (PRD 8.3)', () => {
     const r2 = await t.chamar('pagamentoPix', { cookie: a.cookie });
     expect(r2.json().pedidoId).toBe(pix.pedidoId);
     const cob = t.asaas.cobrancas.get((await pedidoDe(pix.pedidoId)).asaasPaymentId!)!;
-    expect(cob.dados).toMatchObject({ billingType: 'PIX', value: 397, description: DESCRICAO_COBRANCA });
+    expect(cob.dados).toMatchObject({ billingType: 'PIX', value: 397, description: descricaoCobranca(pix.concursoNome) });
     expect(cob.dados.description).toMatch(/^Fuse Aprova: /);
     expect(cob.dados.externalReference).toBe(`fuseaprova:usuario:${a.id}`);
     expect(t.asaas.clientes.at(-1)).toMatchObject({ externalReference: `fuseaprova:usuario:${a.id}`, mobilePhone: '42998765432' });

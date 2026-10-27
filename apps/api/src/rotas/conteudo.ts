@@ -1,75 +1,27 @@
 /**
  * GET /concurso, /trilha e /guia/:unidadeId (exigirAcesso).
  */
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { inArray } from 'drizzle-orm';
 import { schema } from '@fuse/db';
-import {
-  AREAS_CARGO,
-  AVISO_EDITAL,
-  diaSP,
-  diferencaDias,
-  NOMES_AREA,
-  NOMES_STATUS_CONCURSO,
-  type Dia,
-} from '@fuse/shared';
 import type { ConcursoResposta, GuiaResposta } from '@fuse/shared/api';
 import type { Registrador } from '../http/registrar.js';
 import { existe } from '../http/erros.js';
 import { estruturaDaTrilha, montarTrilhaResposta, secaoNaTrilha, tituloDaLicao } from '../servicos/trilha.js';
-import { concursoDoUsuario, modoEdital, siglaConcurso } from '../servicos/usuario.js';
-import type { Cargo } from '../servicos/usuario.js';
+import { concursoDoUsuario } from '../servicos/usuario.js';
+import { concursoAbertoPorId, montarConcursoResposta } from '../servicos/concursos.js';
 
-const { cargos, assuntos } = schema;
-
-export function diasParaProva(dataProva: Dia | null, agora: Date): number | null {
-  return dataProva ? Math.max(0, diferencaDias(dataProva, diaSP(agora))) : null;
-}
-
-export function cargoResumo(c: Cargo) {
-  return {
-    id: c.id,
-    nome: c.nome,
-    area: c.area,
-    escolaridade: c.escolaridade,
-    vagas: c.vagas,
-    generico: c.generico,
-    distribuicao: c.distribuicao,
-  };
-}
+const { assuntos } = schema;
 
 export function rotasConteudo(r: Registrador): void {
   r.rota('concurso', async ({ usuario, deps, agora }): Promise<ConcursoResposta> => {
     const c = existe(await concursoDoUsuario(deps.db, usuario), 'Nenhum concurso ativo.');
-    const edital = modoEdital(c);
-    const lista = await deps.db
-      .select()
-      .from(cargos)
-      .where(and(eq(cargos.concursoId, c.id), eq(cargos.ativo, true), eq(cargos.generico, !edital)))
-      .orderBy(asc(cargos.ordem), asc(cargos.nome));
-    return {
-      id: c.id,
-      nome: c.nome,
-      sigla: siglaConcurso(c),
-      banca: c.banca,
-      orgao: c.orgao,
-      municipio: c.municipio,
-      uf: c.uf,
-      ano: c.ano,
-      status: c.status,
-      statusTexto: NOMES_STATUS_CONCURSO[c.status],
-      dataProva: c.dataProva,
-      diasParaProva: diasParaProva(c.dataProva, agora),
-      links: c.links,
-      modoEdital: edital,
-      cargos: lista.map(cargoResumo),
-      areas: AREAS_CARGO.filter((a) => lista.some((x) => x.area === a)).map((area) => ({
-        area,
-        nome: NOMES_AREA[area],
-        exemplos: lista.filter((x) => x.area === area).map((x) => x.nome),
-      })),
-      avisoEdital: AVISO_EDITAL,
-    };
+    return montarConcursoResposta(deps.db, c, agora);
   });
+
+  // Concurso aberto qualquer (para o aluno escolher o cargo antes de acompanhá-lo, D21).
+  r.rota('concursoPorId', async ({ params, deps, agora }): Promise<ConcursoResposta> =>
+    montarConcursoResposta(deps.db, await concursoAbertoPorId(deps.db, params.id), agora),
+  );
 
   r.rota('trilha', async ({ usuario, deps, agora }) => montarTrilhaResposta(deps.db, usuario, agora));
 

@@ -4,9 +4,18 @@
 import { z } from 'zod';
 import { DataHora, Uuid, ZStatusPedido } from './comum.js';
 
-/** POST /pagamento/pix — gera ou reaproveita o Pix pendente não expirado. Sem corpo. */
+/**
+ * POST /pagamento/pix — gera ou reaproveita o Pix pendente não expirado de UM concurso (D21).
+ * Sem `concursoId`, é o concurso ativo do aluno (a 1ª compra).
+ */
+export const PixEntrada = z.object({ concursoId: Uuid.optional() }).default({});
+export type PixEntrada = z.input<typeof PixEntrada>;
+
 export const PixResposta = z.object({
   pedidoId: Uuid,
+  /** Concurso que este pagamento libera. */
+  concursoId: Uuid,
+  concursoNome: z.string(),
   valorCentavos: z.number().int(),
   /** PNG em base64 (sem o prefixo data:), vindo do Asaas (`encodedImage`). */
   imagem: z.string(),
@@ -17,10 +26,15 @@ export const PixResposta = z.object({
 });
 export type PixResposta = z.infer<typeof PixResposta>;
 
-/** GET /pagamento/status — consultado a cada 4 s pela PWA. */
+/** GET /pagamento/status?concursoId= — consultado a cada 4 s pela PWA. */
+export const StatusPagamentoQuery = z.object({ concursoId: Uuid.optional() });
+export type StatusPagamentoQuery = z.input<typeof StatusPagamentoQuery>;
+
 export const StatusPagamentoResposta = z.object({
   status: z.union([ZStatusPedido, z.literal('nenhum')]),
+  /** O concurso consultado está liberado para o aluno. */
   acesso: z.boolean(),
+  concursoId: Uuid.nullable(),
   pedidoId: Uuid.nullable(),
   expiraEm: DataHora.nullable(),
   pagoEm: DataHora.nullable(),
@@ -107,4 +121,6 @@ export function referenciaEhDoFuseAprova(ref: string | null | undefined): boolea
 }
 
 /** Aparece para o pagador e no painel da conta compartilhada: identifica o produto. */
-export const DESCRICAO_COBRANCA = 'Fuse Aprova: acesso ao preparatório do concurso da Prefeitura de Palmital-PR (FAU)';
+export function descricaoCobranca(concursoNome: string): string {
+  return `Fuse Aprova: acesso ao preparatório do ${concursoNome}`.slice(0, 200);
+}

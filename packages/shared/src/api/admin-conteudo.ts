@@ -73,6 +73,33 @@ export const ConcursoEntrada = z.object({
 export type ConcursoEntrada = z.input<typeof ConcursoEntrada>;
 export const ConcursoAtualizarEntrada = ConcursoEntrada.partial();
 
+/**
+ * POST /admin/concursos/:id/clonar — cria um concurso novo (status `aguardando_edital`, cargos
+ * genéricos) com a mesma trilha do modelo: unidades, seções e lições apontam para os mesmos
+ * assuntos, então as questões já valem. O edital do concurso novo é cadastrado depois.
+ */
+export const ConcursoClonarEntrada = ConcursoEntrada.pick({
+  nome: true,
+  slug: true,
+  banca: true,
+  orgao: true,
+  municipio: true,
+  uf: true,
+  ano: true,
+  dataProva: true,
+  links: true,
+});
+export type ConcursoClonarEntrada = z.input<typeof ConcursoClonarEntrada>;
+
+export const ConcursoClonarResposta = z.object({
+  concurso: ConcursoAdmin,
+  unidades: z.number().int(),
+  secoes: z.number().int(),
+  licoes: z.number().int(),
+  cargos: z.number().int(),
+});
+export type ConcursoClonarResposta = z.infer<typeof ConcursoClonarResposta>;
+
 /** GET /admin/concursos */
 export const ConcursosListaResposta = z.object({ itens: z.array(ConcursoAdmin) });
 

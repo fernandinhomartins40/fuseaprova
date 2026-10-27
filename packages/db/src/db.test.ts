@@ -1,5 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { and, count, eq, sql } from 'drizzle-orm';
+import { and, count, eq, inArray, sql } from 'drizzle-orm';
 import type { PgTable } from 'drizzle-orm/pg-core';
 import { conectar, migrar } from './cliente.js';
 import * as s from './schema/index.js';
@@ -42,6 +45,7 @@ describe('migrações em PGlite', () => {
       'sessoes',
       'redefinicoes_senha',
       'pedidos',
+      'usuarios_concursos',
       'webhook_eventos',
       'progresso_licoes',
       'sessoes_estudo',
@@ -58,6 +62,68 @@ describe('migrações em PGlite', () => {
     ]) {
       expect(nomes, t).toContain(t);
     }
+  });
+
+  it('migração 0005 (D21): aluno antigo segue o concurso que usava, com o acesso que tinha', async () => {
+    const [pal] = await banco.db.select().from(s.concursos).orderBy(s.concursos.criadoEm).limit(1);
+    const id = (n: number) => `00000000-0000-4000-8000-00000000000${n}`;
+    await banco.db.insert(s.usuarios).values([
+      {
+        id: id(1),
+        nome: 'Pago com concurso',
+        email: 'mig1@x.com',
+        acesso: true,
+        concursoId: pal!.id,
+      },
+      { id: id(2), nome: 'Pago sem concurso', email: 'mig2@x.com', acesso: true },
+      {
+        id: id(3),
+        nome: 'Cadastro sem pagar',
+        email: 'mig3@x.com',
+        acesso: false,
+        concursoId: pal!.id,
+      },
+      { id: id(4), nome: 'Nada ainda', email: 'mig4@x.com', acesso: false },
+    ]);
+    await banco.db.insert(s.pedidos).values([
+      { usuarioId: id(1), valorCentavos: 39700, status: 'pago' },
+      { usuarioId: id(2), valorCentavos: 39700, status: 'pago' },
+      { usuarioId: id(4), valorCentavos: 39700, status: 'pendente' },
+    ]);
+    // o preenchimento é a parte da migração depois das mudanças de estrutura
+    const arquivo = join(
+      dirname(fileURLToPath(import.meta.url)),
+      '../drizzle/0005_acesso_por_concurso.sql',
+    );
+    const sqlArquivo = readFileSync(arquivo, 'utf8');
+    const preenchimento = sqlArquivo
+      .slice(sqlArquivo.indexOf('UPDATE "usuarios" SET'))
+      .split('--> statement-breakpoint')
+      .map((x) => x.trim())
+      .filter(Boolean);
+    expect(preenchimento).toHaveLength(3);
+    for (const comando of preenchimento) await banco.db.execute(sql.raw(comando));
+
+    const linhas = await banco.db
+      .select()
+      .from(s.usuariosConcursos)
+      .where(inArray(s.usuariosConcursos.usuarioId, [id(1), id(2), id(3), id(4)]));
+    const por = new Map(linhas.map((l) => [l.usuarioId, l]));
+    expect(por.get(id(1))).toMatchObject({ concursoId: pal!.id, acesso: true });
+    expect(por.get(id(1))!.acessoEm).not.toBeNull();
+    expect(por.get(id(2))).toMatchObject({ concursoId: pal!.id, acesso: true }); // sem concurso: o mais antigo
+    expect(por.get(id(3))).toMatchObject({ concursoId: pal!.id, acesso: false });
+    expect(por.has(id(4))).toBe(false);
+    const [u2] = await banco.db
+      .select()
+      .from(s.usuarios)
+      .where(eq(s.usuarios.id, id(2)));
+    expect(u2!.concursoId).toBe(pal!.id);
+    const pedidos = await banco.db
+      .select()
+      .from(s.pedidos)
+      .where(inArray(s.pedidos.usuarioId, [id(1), id(2), id(4)]));
+    expect(pedidos.map((p) => p.concursoId)).toEqual([pal!.id, pal!.id, pal!.id]);
   });
 
   it('cria os índices pedidos (GIN em areas e parcial em revisoes)', async () => {
