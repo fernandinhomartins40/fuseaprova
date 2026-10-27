@@ -7,8 +7,10 @@ import 'fake-indexeddb/auto';
 import { cleanup, configure } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
 
-// Os testes de tela rodam em paralelo com os do admin; 1 s padrão é curto sob carga.
-configure({ asyncUtilTimeout: 4000 });
+// Os testes de tela rodam em paralelo com os do admin; 1 s padrão é curto sob carga. O 1º
+// findBy de cada arquivo ainda paga o carregamento preguiçoso da rota: 4 s já estourou no
+// `pnpm test` completo (auditoria PIE R4-01). Continua abaixo do testTimeout de 30 s.
+configure({ asyncUtilTimeout: 15_000 });
 
 afterEach(() => {
   cleanup();

@@ -76,6 +76,8 @@ export default defineConfig(({ mode }) => {
           navigateFallback: '/index.html',
           navigateFallbackDenylist: [/^\/api\//],
           cleanupOutdatedCaches: true,
+          // Mostra os lembretes e as comunicações enviados pelo worker (auditoria PIE R2-01).
+          importScripts: ['/sw-push.js'],
           runtimeCaching: [
             {
               // Conteúdo que muda pouco: stale-while-revalidate. Invalidado pela versao_conteudo.

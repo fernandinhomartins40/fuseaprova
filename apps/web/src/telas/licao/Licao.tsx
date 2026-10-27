@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { GEMAS, LINHA_REVISAO_AMANHA, TEXTO_SAIR_LICAO, type Letra } from '@fuse/shared';
-import { mensagemDeErro } from '../../api/cliente';
+import { ErroApi, mensagemDeErro } from '../../api/cliente';
 import { CHAVES, useMe } from '../../api/consultas';
 import { baixarPacote } from '../../offline/pacote';
 import {
@@ -50,6 +50,8 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
 
   const [fase, setFase] = useState<Fase>('carregando');
   const [erro, setErro] = useState<string | null>(null);
+  /** O erro veio do "concluir": tentar de novo conclui a mesma sessão (não sorteia outra). */
+  const [falhouAoConcluir, setFalhouAoConcluir] = useState(false);
   const [sessao, setSessao] = useState<Sessao | null>(null);
   const [indice, setIndice] = useState(0);
   const [selecionada, setSelecionada] = useState<Letra | null>(null);
@@ -138,23 +140,36 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
     }
   }
 
+  function atualizarDepoisDeConcluir() {
+    return Promise.all([
+      qc.invalidateQueries({ queryKey: CHAVES.me }),
+      qc.invalidateQueries({ queryKey: CHAVES.trilha }),
+      qc.invalidateQueries({ queryKey: CHAVES.revisao }),
+      qc.invalidateQueries({ queryKey: CHAVES.estatisticas }),
+      qc.invalidateQueries({ queryKey: CHAVES.liga }),
+    ]);
+  }
+
   async function concluir() {
     if (!sessao) return;
     setFase('carregando');
+    setFalhouAoConcluir(false);
     try {
       const f = await sessao.concluir();
       setFim(f);
       setFase('fim');
-      void Promise.all([
-        qc.invalidateQueries({ queryKey: CHAVES.me }),
-        qc.invalidateQueries({ queryKey: CHAVES.trilha }),
-        qc.invalidateQueries({ queryKey: CHAVES.revisao }),
-        qc.invalidateQueries({ queryKey: CHAVES.estatisticas }),
-        qc.invalidateQueries({ queryKey: CHAVES.liga }),
-      ]);
+      void atualizarDepoisDeConcluir();
       if (!f.offline && me.data) void baixarPacote(me.data.id).catch(() => undefined);
     } catch (e) {
+      // A resposta se perdeu, mas o servidor já tinha concluído: o progresso está salvo.
+      if (e instanceof ErroApi && e.codigo === 'sessao_encerrada') {
+        void atualizarDepoisDeConcluir();
+        toast('Lição concluída. Seu progresso foi salvo.', 'sucesso');
+        navegar(revisao ? '/revisar' : '/aprender', { replace: true });
+        return;
+      }
       setErro(mensagemDeErro(e));
+      setFalhouAoConcluir(true);
       setFase('erro');
     }
   }
@@ -204,7 +219,10 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
   if (fase === 'erro') {
     return (
       <Pagina>
-        <ErroTela mensagem={erro ?? 'Algo deu errado.'} onTentar={() => void comecar()} />
+        <ErroTela
+          mensagem={erro ?? 'Algo deu errado.'}
+          onTentar={() => void (falhouAoConcluir ? concluir() : comecar())}
+        />
         <Botao3D variante="secundario" onClick={() => navegar(revisao ? '/revisar' : '/aprender')}>
           Voltar
         </Botao3D>
