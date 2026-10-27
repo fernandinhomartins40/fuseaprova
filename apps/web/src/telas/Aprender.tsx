@@ -21,6 +21,7 @@ import {
   useToast,
 } from '../ui';
 import { formatarNumero, NOME_CURTO_DISCIPLINA, plural, saudacao } from './comum';
+import { iconeDaLicao, iconeEspecial, temaDaUnidade, variaveisDoTema } from './temaTrilha';
 import s from './Aprender.module.css';
 
 /** Zigue-zague a partir do centro: 0, −56, −112, −56, 0, +56, +112, +56… */
@@ -240,15 +241,22 @@ function Unidade({
           secoes.findIndex((sec) => sec.licoes.some((l) => l.estado !== 'concluida')),
         );
   const sb = secoes[secaoBanner] ?? secoes[0]!;
+  const tema = temaDaUnidade(unidade);
   let passo = 0;
+  let nLicao = 0;
   return (
-    <section className={s.unidade} aria-label={`Unidade ${unidade.numero}: ${unidade.titulo}`}>
+    <section
+      className={s.unidade}
+      style={variaveisDoTema(tema)}
+      aria-label={`Unidade ${unidade.numero}: ${unidade.titulo}`}
+    >
       <BannerUnidade
         unidade={unidade.numero}
         secao={sb.ordem}
         titulo={unidade.titulo}
         coroada={unidade.coroada}
         noEdital={sb.noEdital}
+        emblema={iconeEspecial(tema.nome, 'emblema')}
         onGuia={() => onGuia(unidade.id)}
       />
       {secoes.map((sec, si) => (
@@ -263,6 +271,14 @@ function Unidade({
             {sec.licoes.map((l) => {
               const desloc = ZIGUE[passo++ % ZIGUE.length]!;
               const ehAtual = trilha.atual?.licaoId === l.id;
+              // Ícone da coleção da trilha: lição → um dos 6 (em ordem, sem repetir em sequência);
+              // baú (aberto/fechado) e troféu têm o seu. Sem a coleção, o nó usa o ícone simples.
+              const imagem =
+                l.tipo === 'bau'
+                  ? iconeEspecial(tema.nome, l.estado === 'concluida' ? 'bau-aberto' : 'bau')
+                  : l.tipo === 'desafio'
+                    ? iconeEspecial(tema.nome, 'trofeu')
+                    : iconeDaLicao(tema.nome, nLicao++);
               return (
                 <li key={l.id} className={s.noLinha}>
                   <NoTrilha
@@ -272,6 +288,7 @@ function Unidade({
                     anel={l.anel}
                     deslocamento={desloc}
                     podeAbrir={l.podeAbrir && !(l.tipo === 'bau' && l.estado === 'concluida')}
+                    imagem={imagem}
                     balao={
                       ehAtual
                         ? 'COMEÇAR'

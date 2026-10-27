@@ -15,7 +15,8 @@
     "capturas": "node scripts/capturar-telas.mjs",
     "tamanho": "node scripts/medir-bundle.mjs",
     "build:app": "tsc --noEmit && vite build --mode app",
-    "capturas:loja": "node scripts/capturar-loja.mjs"
+    "capturas:loja": "node scripts/capturar-loja.mjs",
+    "assets:trilha": "node scripts/gerar-icones-trilha.mjs"
   },
   "dependencies": {
     "@capacitor/app": "8.1.2",

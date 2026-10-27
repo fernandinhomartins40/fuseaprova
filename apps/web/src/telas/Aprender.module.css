@@ -123,12 +123,22 @@
 }
 .secao {
   margin-top: 18px;
+  /* faixa suave na cor da trilha, com uma luz atrás do caminho */
+  padding: 14px 0 22px;
+  border-radius: 28px;
+  background:
+    radial-gradient(60% 38% at 50% 0%, var(--tema-suave, transparent), rgba(255, 255, 255, 0) 100%),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--tema-suave, #fff) 55%, transparent),
+      rgba(255, 255, 255, 0)
+    );
 }
 .secaoRotulo {
   text-align: center;
   font-size: 13.5px;
   font-weight: 800;
-  color: var(--fa-muted);
+  color: var(--tema-tinta, var(--fa-muted));
   margin-bottom: 10px;
 }
 .fora {
@@ -178,6 +188,7 @@
 .divisor::after {
   content: '';
   flex: 1;
-  height: 2px;
+  height: 3px;
+  border-radius: 999px;
   background: var(--fa-line);
 }

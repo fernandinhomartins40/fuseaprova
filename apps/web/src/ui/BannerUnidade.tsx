@@ -9,6 +9,7 @@ export function BannerUnidade({
   titulo,
   coroada = false,
   noEdital = null,
+  emblema = null,
   onGuia,
 }: {
   unidade: number;
@@ -16,10 +17,15 @@ export function BannerUnidade({
   titulo: string;
   coroada?: boolean;
   noEdital?: boolean | null;
+  /** Emblema 3D da trilha (coleção de ícones); a cor vem das variáveis `--tema*` do pai. */
+  emblema?: string | null;
   onGuia: () => void;
 }) {
   return (
-    <section className={s.banner} aria-label={`Unidade ${unidade}, seção ${secao}: ${titulo}`}>
+    <section
+      className={[s.banner, emblema ? s.comEmblema : ''].join(' ')}
+      aria-label={`Unidade ${unidade}, seção ${secao}: ${titulo}`}
+    >
       <div className={s.texto}>
         <p className={s.rotulo}>
           UNIDADE {unidade} · SEÇÃO {secao}
@@ -32,6 +38,7 @@ export function BannerUnidade({
           </Chip>
         ) : null}
       </div>
+      {emblema ? <img src={emblema} alt="" className={s.emblema} draggable={false} /> : null}
       <button
         type="button"
         className={s.guia}

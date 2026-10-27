@@ -2,8 +2,10 @@
   display: flex;
   align-items: stretch;
   border-radius: var(--fa-r-xl);
-  background: var(--fa-petroleo);
-  box-shadow: 0 5px 0 var(--fa-petroleo-shade);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 55%),
+    var(--tema, var(--fa-petroleo));
+  box-shadow: 0 6px 0 var(--tema-sombra, var(--fa-petroleo-shade));
   color: #fff;
   overflow: hidden;
   position: relative;
@@ -16,18 +18,31 @@
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.1);
+}
+.emblema {
+  position: absolute;
+  right: 80px;
+  bottom: -6px;
+  width: 78px;
+  height: 78px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.25));
+  pointer-events: none;
 }
 .texto {
   flex: 1;
   padding: 16px 18px;
   position: relative;
 }
+.comEmblema .texto {
+  padding-right: 88px;
+}
 .rotulo {
   font-size: 12.5px;
   font-weight: 900;
   letter-spacing: 0.08em;
-  color: #bfe6e3;
+  color: rgba(255, 255, 255, 0.88);
 }
 .coroa {
   color: var(--fa-gold);

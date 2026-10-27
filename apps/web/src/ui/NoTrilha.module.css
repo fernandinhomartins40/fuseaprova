@@ -1,98 +1,153 @@
+/*
+ * Nó da trilha na cor da trilha. As variáveis --tema, --tema-sombra e --tema-suave vêm do
+ * elemento pai (ver telas/temaTrilha.ts); sem elas, o nó cai no laranja da marca.
+ */
 .posicao {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100px;
+  width: 108px;
   margin: 0 auto;
   position: relative;
 }
 .envoltorio {
   position: relative;
-  width: 100px;
-  height: 92px;
+  width: 108px;
+  height: 100px;
   display: grid;
   place-items: center;
 }
 .anel {
   position: absolute;
   inset: -6px 0 0;
-  width: 100px;
-  height: 100px;
+  width: 108px;
+  height: 108px;
   transform: rotate(-90deg);
 }
 .anelTrilho {
   fill: none;
-  stroke: var(--fa-laranja-soft);
+  stroke: var(--tema-suave, var(--fa-laranja-soft));
   stroke-width: 7;
 }
 .anelValor {
   fill: none;
-  stroke: var(--fa-laranja);
+  stroke: var(--tema, var(--fa-laranja));
   stroke-width: 7;
   stroke-linecap: round;
 }
 .no {
-  --fundo: var(--fa-locked);
-  --sombra: var(--fa-locked-shade);
-  --tinta: var(--fa-locked-ink);
+  --fundo: var(--tema, var(--fa-laranja));
+  --sombra: var(--tema-sombra, #c24b07);
+  --tinta: #fff;
   position: relative;
-  width: 76px;
-  height: 70px;
+  width: 84px;
+  height: 78px;
   border-radius: 50%;
   border: 0;
-  background: var(--fundo);
+  /* brilho de cima + cor cheia: o relevo "de botão" */
+  background:
+    radial-gradient(120% 90% at 30% 12%, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0) 52%),
+    var(--fundo);
   color: var(--tinta);
-  box-shadow: 0 7px 0 var(--sombra);
+  box-shadow:
+    0 8px 0 var(--sombra),
+    0 14px 18px -6px rgba(0, 40, 45, 0.28);
   display: grid;
   place-items: center;
   transition: transform var(--fa-dur-botao);
-  margin-bottom: 7px;
+  margin-bottom: 8px;
 }
 .no:active:not(:disabled) {
-  transform: translateY(5px);
-  box-shadow: 0 2px 0 var(--sombra);
+  transform: translateY(6px);
+  box-shadow:
+    0 2px 0 var(--sombra),
+    0 4px 8px -4px rgba(0, 40, 45, 0.3);
 }
 .no:disabled {
   cursor: not-allowed;
 }
+.no:focus-visible {
+  outline: 3px solid var(--tema-sombra, var(--fa-petroleo));
+  outline-offset: 4px;
+}
 .icone {
   display: inline-flex;
 }
+.imagem {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.22));
+  pointer-events: none;
+}
+
+/* concluída: cor cheia da trilha */
 .concluida {
-  --fundo: var(--fa-gold);
-  --sombra: var(--fa-gold-shade);
-  --tinta: #fff;
+  --fundo: var(--tema, var(--fa-gold));
+  --sombra: var(--tema-sombra, var(--fa-gold-shade));
 }
+
+/* atual: um tom mais vivo, ancorado pelo anel e pelo balão */
 .atual {
-  --fundo: var(--fa-laranja);
-  --sombra: #c24b07;
-  --tinta: #fff;
+  --fundo: var(--tema, var(--fa-laranja));
+  --sombra: var(--tema-sombra, #c24b07);
+  animation: pulsa 2.2s ease-in-out infinite;
 }
+@keyframes pulsa {
+  0%,
+  100% {
+    filter: saturate(1) brightness(1);
+  }
+  50% {
+    filter: saturate(1.18) brightness(1.06);
+  }
+}
+
+/* bloqueada: a cor da trilha lavada, para a trilha continuar colorida sem parecer liberada */
 .bloqueada {
-  --fundo: var(--fa-locked);
+  --fundo: color-mix(in srgb, var(--tema, #cfc9bb) 18%, var(--fa-locked));
+  --sombra: color-mix(in srgb, var(--tema, #b5af9f) 28%, var(--fa-locked-shade));
+  --tinta: var(--fa-locked-ink);
+  background: var(--fundo);
 }
+.bloqueada .imagem {
+  filter: grayscale(0.85) opacity(0.55);
+}
+
+.comImagem.concluida,
+.comImagem.atual {
+  box-shadow:
+    0 8px 0 var(--sombra),
+    0 14px 18px -6px rgba(0, 40, 45, 0.28);
+}
+
+/* baú e desafio */
 .bau {
-  border-radius: 20px;
-}
-.bau.bloqueada {
-  --fundo: var(--fa-locked);
+  border-radius: 24px;
+  width: 88px;
+  height: 78px;
 }
 .bau.concluida {
-  --fundo: var(--fa-gold-soft);
-  --sombra: var(--fa-gold);
+  --fundo: color-mix(in srgb, var(--tema, var(--fa-gold)) 22%, #fff6db);
+  --sombra: color-mix(in srgb, var(--tema, var(--fa-gold)) 55%, var(--fa-gold));
+  background: var(--fundo);
 }
 .bau.atual {
-  --fundo: var(--fa-gold-soft);
+  --fundo: color-mix(in srgb, var(--tema, var(--fa-gold)) 28%, #fff1bf);
   --sombra: var(--fa-gold-shade);
+  background: var(--fundo);
   animation: balanca 1.6s ease-in-out infinite;
+}
+.desafio {
+  border-radius: 30px;
 }
 .desafio.concluida {
   --fundo: var(--fa-gold);
-  --tinta: #fff;
+  --sombra: var(--fa-gold-shade);
 }
 .desafio.atual {
-  --fundo: var(--fa-petroleo);
-  --sombra: var(--fa-petroleo-shade);
+  --fundo: var(--tema-sombra, var(--fa-petroleo));
+  --sombra: color-mix(in srgb, var(--tema-sombra, var(--fa-petroleo)) 60%, #000);
   --tinta: var(--fa-gold);
 }
 @keyframes balanca {
@@ -107,14 +162,37 @@
     transform: rotate(4deg);
   }
 }
+
+/* selos de estado sobre o ícone da coleção */
+.selo {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--fa-surface);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
+}
+.seloOk {
+  background: var(--fa-green);
+  color: #fff;
+}
+.seloTrava {
+  background: var(--fa-locked-ink);
+  color: #fff;
+}
+
 .balao {
   position: relative;
   margin-bottom: 10px;
   padding: 7px 14px;
   border-radius: 14px;
   background: var(--fa-surface);
-  border: 2px solid var(--fa-line);
-  color: var(--fa-laranja-forte);
+  border: 2px solid var(--tema, var(--fa-line));
+  color: var(--tema-tinta, var(--fa-laranja-forte));
   font-weight: 900;
   font-size: 15px;
   letter-spacing: 0.06em;
@@ -129,8 +207,8 @@
   width: 12px;
   height: 12px;
   background: var(--fa-surface);
-  border-right: 2px solid var(--fa-line);
-  border-bottom: 2px solid var(--fa-line);
+  border-right: 2px solid var(--tema, var(--fa-line));
+  border-bottom: 2px solid var(--tema, var(--fa-line));
   transform: translateX(-50%) rotate(45deg);
 }
 @keyframes flutua {
@@ -140,5 +218,13 @@
   }
   50% {
     transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atual,
+  .bau.atual,
+  .balao {
+    animation: none;
   }
 }
