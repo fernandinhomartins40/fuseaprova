@@ -79,75 +79,78 @@ export async function criarSimulado(
   cargoId: string,
   agora: Date,
 ): Promise<SimuladoAndamento> {
-  const { db } = deps;
   await entregarExpirados(deps, u.id, agora);
-  const [aberto] = await db
-    .select()
-    .from(simulados)
-    .where(and(eq(simulados.usuarioId, u.id), isNull(simulados.entregueEm)))
-    .orderBy(desc(simulados.iniciadoEm))
-    .limit(1);
-  if (aberto) return andamento(db, aberto, agora);
+  // Linha do aluno travada: dois toques em COMEÇAR não abrem 2 simulados (auditoria PIE R3-06).
+  return deps.db.transaction(async (db) => {
+    await travarUsuario(db, u.id);
+    const [aberto] = await db
+      .select()
+      .from(simulados)
+      .where(and(eq(simulados.usuarioId, u.id), isNull(simulados.entregueEm)))
+      .orderBy(desc(simulados.iniciadoEm))
+      .limit(1);
+    if (aberto) return andamento(db, aberto, agora);
 
-  const concurso = await concursoDoUsuario(db, u);
-  const [cargo] = await db
-    .select()
-    .from(cargos)
-    .where(and(eq(cargos.id, cargoId), eq(cargos.ativo, true)));
-  if (!cargo || (concurso && cargo.concursoId !== concurso.id)) {
-    throw falha('validacao', 'Escolha um cargo da lista.', {
-      cargoId: 'Escolha um cargo da lista.',
-    });
-  }
-  const edital = concurso ? modoEdital(concurso) : false;
-  const fora = edital && concurso ? await assuntosForaDoEdital(db, concurso.id) : [];
-  const dist = edital
-    ? cargo.distribuicao
-    : {
-        ...DISTRIBUICAO_PADRAO,
-        ...(cargo.distribuicao.pesos ? { pesos: cargo.distribuicao.pesos } : {}),
-      };
+    const concurso = await concursoDoUsuario(db, u);
+    const [cargo] = await db
+      .select()
+      .from(cargos)
+      .where(and(eq(cargos.id, cargoId), eq(cargos.ativo, true)));
+    if (!cargo || (concurso && cargo.concursoId !== concurso.id)) {
+      throw falha('validacao', 'Escolha um cargo da lista.', {
+        cargoId: 'Escolha um cargo da lista.',
+      });
+    }
+    const edital = concurso ? modoEdital(concurso) : false;
+    const fora = edital && concurso ? await assuntosForaDoEdital(db, concurso.id) : [];
+    const dist = edital
+      ? cargo.distribuicao
+      : {
+          ...DISTRIBUICAO_PADRAO,
+          ...(cargo.distribuicao.pesos ? { pesos: cargo.distribuicao.pesos } : {}),
+        };
 
-  const cands = await db
-    .select({ id: questoes.id, slug: disciplinas.slug })
-    .from(questoes)
-    .innerJoin(disciplinas, eq(disciplinas.id, questoes.disciplinaId))
-    .where(
-      and(
-        questaoVisivel(),
-        fora.length
-          ? sql`${questoes.assuntoId} <> all(${sql.raw(`'{${fora.join(',')}}'`)}::uuid[])`
-          : undefined,
-        sql`(${disciplinas.slug} <> 'especificos' or ${questoes.areas} @> array[${cargo.area}]::text[])`,
-      ),
-    )
-    // Ordem estável: o sorteio depende só do rng, não da ordem física das linhas.
-    .orderBy(asc(questoes.id));
-  const porBloco: Partial<Record<SlugDisciplina, string[]>> = {};
-  for (const c of cands) (porBloco[c.slug] ??= []).push(c.id);
-  const montagem = montarSimulado(porBloco, dist, deps.rng);
-  if (!montagem.ok) {
-    const falta = montagem.faltando
-      .map((f) => `${NOMES_DISCIPLINA[f.bloco]}: ${f.disponiveis} de ${f.necessarias}`)
-      .join('; ');
-    throw falha(
-      'questoes_insuficientes',
-      `Ainda não há questões suficientes para o simulado deste cargo (${falta}).`,
-    );
-  }
-  const [s] = await db
-    .insert(simulados)
-    .values({
-      usuarioId: u.id,
-      cargoId: cargo.id,
-      questoes: montagem.questoes,
-      distribuicao: dist,
-      respostas: {},
-      iniciadoEm: agora,
-      terminaEm: terminoDoSimulado(agora),
-    })
-    .returning();
-  return andamento(db, s!, agora);
+    const cands = await db
+      .select({ id: questoes.id, slug: disciplinas.slug })
+      .from(questoes)
+      .innerJoin(disciplinas, eq(disciplinas.id, questoes.disciplinaId))
+      .where(
+        and(
+          questaoVisivel(),
+          fora.length
+            ? sql`${questoes.assuntoId} <> all(${sql.raw(`'{${fora.join(',')}}'`)}::uuid[])`
+            : undefined,
+          sql`(${disciplinas.slug} <> 'especificos' or ${questoes.areas} @> array[${cargo.area}]::text[])`,
+        ),
+      )
+      // Ordem estável: o sorteio depende só do rng, não da ordem física das linhas.
+      .orderBy(asc(questoes.id));
+    const porBloco: Partial<Record<SlugDisciplina, string[]>> = {};
+    for (const c of cands) (porBloco[c.slug] ??= []).push(c.id);
+    const montagem = montarSimulado(porBloco, dist, deps.rng);
+    if (!montagem.ok) {
+      const falta = montagem.faltando
+        .map((f) => `${NOMES_DISCIPLINA[f.bloco]}: ${f.disponiveis} de ${f.necessarias}`)
+        .join('; ');
+      throw falha(
+        'questoes_insuficientes',
+        `Ainda não há questões suficientes para o simulado deste cargo (${falta}).`,
+      );
+    }
+    const [s] = await db
+      .insert(simulados)
+      .values({
+        usuarioId: u.id,
+        cargoId: cargo.id,
+        questoes: montagem.questoes,
+        distribuicao: dist,
+        respostas: {},
+        iniciadoEm: agora,
+        terminaEm: terminoDoSimulado(agora),
+      })
+      .returning();
+    return andamento(db, s!, agora);
+  });
 }
 
 export async function andamento(db: Db, s: Simulado, agora: Date): Promise<SimuladoAndamento> {

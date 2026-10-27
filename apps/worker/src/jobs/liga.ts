@@ -17,6 +17,16 @@ export interface ResultadoFechamento {
 }
 
 /**
+ * A semana que o job pode fechar: a corrente só no último minuto do domingo (23:59); fora
+ * dele, a anterior. Assim o job pode rodar de hora em hora para recuperar um domingo perdido
+ * (worker fora do ar) sem fechar a semana nova (auditoria PIE R3-05).
+ */
+export function semanaAFechar(agora: Date): Dia {
+  const atual = semanaSP(agora);
+  return semanaSP(new Date(agora.getTime() + 60_000)) !== atual ? atual : somarDias(atual, -7);
+}
+
+/**
  * Fecha os grupos abertos até a semana `semana` (padrão: a semana corrente, pois o job roda
  * no domingo 23:59). Semanas anteriores esquecidas abertas também são fechadas.
  */

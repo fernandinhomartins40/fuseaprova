@@ -153,6 +153,19 @@ describe('simulado (PRD 5.14)', () => {
     expect(db!.entregaAutomatica).toBe(true);
   });
 
+  it('dois toques simultâneos em COMEÇAR abrem um simulado só (auditoria PIE R3-06)', async () => {
+    const a = await t.alunoPago();
+    t.relogio.definir('2026-12-14T08:00:00-03:00');
+    const cargoId = (await cargoAdm()).id;
+    const [r1, r2] = await Promise.all([
+      t.chamar('simuladoCriar', { cookie: a.cookie, corpo: { cargoId } }),
+      t.chamar('simuladoCriar', { cookie: a.cookie, corpo: { cargoId } }),
+    ]);
+    expect(r1.json().id).toBe(r2.json().id);
+    const abertos = await t.db.select().from(schema.simulados).where(eq(schema.simulados.usuarioId, a.id));
+    expect(abertos).toHaveLength(1);
+  });
+
   it('sem questões suficientes: 409 com explicação', async () => {
     const a = await t.alunoPago({}, 'Motorista');
     const [c] = await t.db.select().from(schema.cargos).where(eq(schema.cargos.nome, 'Motorista'));

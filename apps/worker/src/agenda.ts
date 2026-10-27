@@ -5,7 +5,6 @@
  */
 import { lt } from 'drizzle-orm';
 import { schema, type BancoDados } from '@fuse/db';
-import { semanaSP } from '@fuse/shared';
 import { JOBS_WORKER, type NomeJobWorker } from '@fuse/shared/api';
 import {
   enviarComunicacoes,
@@ -13,6 +12,7 @@ import {
   executarBackup,
   expirarPix,
   fecharLiga,
+  semanaAFechar,
   limparSessoes,
   resetarVidas,
   verificarOfensivas,
@@ -53,7 +53,7 @@ export function definirJobs(d: DependenciasWorker): DefinicaoJob[] {
     executar: () => executarRegistrado(d.db, nome, fn, d.log, agora),
   });
   return [
-    job('fechar-liga', () => fecharLiga(d.db, agora(), semanaSP(agora()))),
+    job('fechar-liga', () => fecharLiga(d.db, agora(), semanaAFechar(agora()))),
     job('resetar-vidas', () => resetarVidas(d.db, agora())),
     job('verificar-ofensivas', () => verificarOfensivas(d.db, agora())),
     job('enviar-lembretes', async () =>

@@ -948,7 +948,11 @@ export function gerarCsv(cabecalho: readonly string[], linhas: readonly (readonl
 
 /** Jobs do worker (PRD 8.7 + D13), no fuso de São Paulo. O worker agenda exatamente estes. */
 export const JOBS_WORKER = [
-  { nome: 'fechar-liga', cron: '59 23 * * 0', descricao: 'Fecha a liga da semana (domingo 23:59)' },
+  {
+    nome: 'fechar-liga',
+    cron: '59 * * * *',
+    descricao: 'Fecha a liga da semana (domingo 23:59; de hora em hora recupera um fechamento perdido)',
+  },
   { nome: 'resetar-vidas', cron: '0 0 * * *', descricao: 'Recarrega as vidas à meia-noite' },
   { nome: 'verificar-ofensivas', cron: '5 0 * * *', descricao: 'Zera ofensivas e gasta protetores' },
   { nome: 'enviar-lembretes', cron: '*/5 * * * *', descricao: 'Lembretes por push' },

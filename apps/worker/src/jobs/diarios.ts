@@ -40,10 +40,21 @@ export async function verificarOfensivas(db: Db, agora: Date): Promise<Resultado
       hoje,
     );
     if (!q.zerou && q.protetoresUsados === 0) continue;
-    await db
+    // Só grava se nada mudou desde a leitura: se o aluno estudou ou comprou protetor agora
+    // (00:05), o valor dele vale e este não o sobrescreve (auditoria PIE R3-04).
+    const gravado = await db
       .update(usuarios)
       .set({ ofensiva: q.estado.ofensiva, protetores: q.estado.protetores, ultimoDiaEstudo: q.estado.ultimoDia })
-      .where(eq(usuarios.id, u.id));
+      .where(
+        and(
+          eq(usuarios.id, u.id),
+          eq(usuarios.ofensiva, u.ofensiva),
+          eq(usuarios.protetores, u.protetores),
+          eq(usuarios.ultimoDiaEstudo, u.ultimoDiaEstudo!),
+        ),
+      )
+      .returning({ id: usuarios.id });
+    if (gravado.length === 0) continue;
     if (q.zerou) r.zeradas++;
     r.protetoresUsados += q.protetoresUsados;
   }

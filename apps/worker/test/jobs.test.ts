@@ -14,6 +14,7 @@ import {
   executarBackup,
   expirarPix,
   fecharLiga,
+  semanaAFechar,
   horariosDaRodada,
   limparSessoes,
   resetarVidas,
@@ -76,6 +77,13 @@ describe('fechar liga (domingo 23:59)', () => {
     expect(novos.map((x) => x.divisao).sort()).toEqual(['bronze', 'ouro', 'prata']);
     // rodar de novo não fecha duas vezes
     expect((await fecharLiga(b.db, agora)).grupos).toBe(0);
+  });
+
+  it('semana a fechar: a corrente só no último minuto do domingo (auditoria PIE R3-05)', () => {
+    expect(semanaAFechar(new Date('2026-11-08T23:59:00-03:00'))).toBe('2026-11-02');
+    expect(semanaAFechar(new Date('2026-11-08T22:59:00-03:00'))).toBe('2026-10-26');
+    // worker fora no domingo: na segunda fecha a semana que acabou, não a nova
+    expect(semanaAFechar(new Date('2026-11-09T00:59:00-03:00'))).toBe('2026-11-02');
   });
 
   it('empate: vence quem chegou primeiro; grupo pequeno não rebaixa; bronze não desce', async () => {
@@ -214,7 +222,7 @@ describe('backup e agendamento', () => {
   it('todos os jobs da seção 8.7 com os horários certos', () => {
     const jobs = definirJobs({ db: b.db, push: null, log: logMudo });
     expect(Object.fromEntries(jobs.map((j) => [j.nome, j.cron]))).toEqual({
-      'fechar-liga': '59 23 * * 0',
+      'fechar-liga': '59 * * * *',
       'resetar-vidas': '0 0 * * *',
       'verificar-ofensivas': '5 0 * * *',
       'enviar-lembretes': '*/5 * * * *',
