@@ -5,13 +5,23 @@ import { TEXTO_EDITAL_SAIU } from '@fuse/shared';
 import { chamar, mensagemDeErro } from '../api/cliente';
 import { CHAVES, useConcurso, useMe } from '../api/consultas';
 import { Botao3D, Capi, Modal, NavInferior } from '../ui';
+import { rotaInicial } from './rotaInicial';
 import s from './LayoutAbas.module.css';
 
 /** Abas com a navegação inferior e o modal "O edital saiu! Confirme seu cargo". */
 export function LayoutAbas() {
   const me = useMe();
+  const equipe = me.data && me.data.papel !== 'aluno' ? me.data : null;
   return (
     <>
+      {equipe ? (
+        <div className={s.faixaEquipe} role="note">
+          <span>Você está vendo o app como aluno.</span>
+          <a href={rotaInicial({ papel: equipe.papel, acesso: equipe.acesso })}>
+            Voltar ao painel {equipe.papel === 'superadmin' ? 'superadmin' : 'admin'}
+          </a>
+        </div>
+      ) : null}
       <Outlet />
       <NavInferior revisoesPendentes={me.data?.revisoesPendentes ?? 0} />
       {me.data?.confirmarCargoEdital ? (

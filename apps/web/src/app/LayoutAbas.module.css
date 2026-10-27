@@ -40,3 +40,19 @@
   color: var(--fa-red-shade);
   font-weight: 800;
 }
+
+.faixaEquipe {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--cor-texto, #1f2937);
+  color: #fff;
+  font-size: 13px;
+}
+.faixaEquipe a {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+}

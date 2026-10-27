@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { LoginEntrada } from '@fuse/shared/api';
 import { camposDoErro, chamar, mensagemDeErro } from '../api/cliente';
-import { CHAVES } from '../api/consultas';
+import { rotaInicial } from '../app/rotaInicial';
+import { CHAVES, useMe } from '../api/consultas';
 import { Botao3D, CabecalhoVoltar, Campo, IconeTraco, Pagina } from '../ui';
 import { errosPorCampo, rotaDoProximo } from './formulario';
 import s from './Auth.module.css';
@@ -12,6 +13,11 @@ import s from './Auth.module.css';
 export default function Entrar() {
   const navegar = useNavigate();
   const qc = useQueryClient();
+  const me = useMe({ semRedirecionar: true });
+  // Quem já está logado vai direto para a casa do seu papel (aluno, admin ou superadmin).
+  useEffect(() => {
+    if (me.data) navegar(rotaInicial(me.data), { replace: true });
+  }, [me.data, navegar]);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erros, setErros] = useState<Record<string, string>>({});

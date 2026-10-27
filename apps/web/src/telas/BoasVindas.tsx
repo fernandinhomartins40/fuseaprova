@@ -1,18 +1,19 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RODAPE_LEGAL } from '@fuse/shared';
+import { rotaInicial } from '../app/rotaInicial';
 import { useMe } from '../api/consultas';
 import { Botao3D, Capi, Chip, IconeTraco, Imagem } from '../ui';
 import s from './BoasVindas.module.css';
 
-/** 01 Boas-vindas (`/`). Com sessão: acesso → Trilha; sem acesso → Pagamento. */
+/** 01 Boas-vindas (`/`). Com sessão: aluno com acesso → Trilha; sem acesso → Pagamento; equipe → seu painel. */
 export default function BoasVindas() {
   const navegar = useNavigate();
   const me = useMe({ semRedirecionar: true });
 
   useEffect(() => {
     if (!me.data) return;
-    navegar(me.data.acesso ? '/aprender' : '/pagamento', { replace: true });
+    navegar(rotaInicial(me.data), { replace: true });
   }, [me.data, navegar]);
 
   return (

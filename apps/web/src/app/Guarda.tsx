@@ -4,12 +4,13 @@ import { ehAdmin } from '@fuse/shared';
 import { ErroApi } from '../api/cliente';
 import { useMe } from '../api/consultas';
 import { Carregando, ErroTela } from '../ui';
+import { rotaInicial } from './rotaInicial';
 
 /**
  * Guardas do lado da PWA (espelham as da API, que é quem decide de verdade):
  * - login: precisa de sessão (senão /entrar);
  * - acesso: precisa de pagamento confirmado (senão /pagamento) e de onboarding feito;
- * - admin: papel admin ou superadmin (senão /aprender);
+ * - admin: papel admin ou superadmin (senão a casa do papel);
  * - super: papel superadmin (D13). Superadmin sem 2FA nesta sessão vai para /super/2fa.
  */
 export function Guarda({
@@ -36,14 +37,14 @@ export function Guarda({
   const u = me.data!;
   if (nivel === 'admin' || nivel === 'super') {
     const pode = nivel === 'admin' ? ehAdmin(u.papel) : u.papel === 'superadmin';
-    if (!pode) return <Navigate to="/aprender" replace />;
+    if (!pode) return <Navigate to={rotaInicial(u)} replace />;
     if (u.papel === 'superadmin' && u.doisFatoresPendente && pathname !== '/super/2fa') {
       return <Navigate to="/super/2fa" replace />;
     }
     return <>{children}</>;
   }
   if (nivel === 'acesso') {
-    if (!u.acesso) return <Navigate to="/pagamento" replace />;
+    if (!u.acesso) return <Navigate to={rotaInicial(u)} replace />;
     if (!u.onboardingConcluido && pathname !== '/onboarding')
       return <Navigate to="/onboarding" replace />;
   }

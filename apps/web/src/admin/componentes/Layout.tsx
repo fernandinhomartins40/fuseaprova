@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useMe } from '../../api/consultas';
 import { BASE_ADMIN, juntarClasses } from '../util';
 import s from './Layout.module.css';
 
@@ -33,6 +34,7 @@ const MENU: { grupo: string; itens: ItemMenu[] }[] = [
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
+  const me = useMe({ semRedirecionar: true });
   return (
     <div className={s.raiz} data-painel-admin="">
       <nav className={s.lateral} aria-label="Menu do painel admin">
@@ -61,7 +63,8 @@ export function Layout({ children }: { children: ReactNode }) {
           </div>
         ))}
         <div className={s.rodapeLateral}>
-          <a href="/aprender">Voltar ao app do aluno</a>
+          {me.data?.papel === 'superadmin' ? <a href="/super">Voltar ao painel superadmin</a> : null}
+          <a href="/aprender">Ver o app como aluno</a>
         </div>
       </nav>
       <main className={s.conteudo}>{children}</main>
