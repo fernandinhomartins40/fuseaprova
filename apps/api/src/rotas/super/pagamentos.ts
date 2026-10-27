@@ -144,6 +144,7 @@ const NOMES_RESULTADO: Record<string, string> = {
   sem_mudanca: 'sem mudança (já estava assim)',
   ignorado: 'evento ignorado',
   sem_pedido: 'sem pedido correspondente',
+  valor_divergente: 'valor pago menor que o do pedido (acesso não liberado)',
   erro: 'falhou',
 };
 

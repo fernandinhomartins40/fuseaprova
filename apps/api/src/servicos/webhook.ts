@@ -14,16 +14,32 @@ import { confirmarPagamento, estornarPagamento, vencerPagamento } from './pagame
 
 const { webhookEventos, pedidos } = schema;
 
-export type ResultadoEvento = 'pago' | 'estornado' | 'vencido' | 'sem_mudanca' | 'ignorado' | 'sem_pedido';
+export type ResultadoEvento =
+  | 'pago'
+  | 'estornado'
+  | 'vencido'
+  | 'sem_mudanca'
+  | 'ignorado'
+  | 'sem_pedido'
+  | 'valor_divergente';
 
 /** Executa a ação do evento. Lança em caso de erro. */
 export async function executarEvento(deps: Deps, corpo: AsaasWebhookCorpo, agora: Date): Promise<ResultadoEvento> {
   const paymentId = corpo.payment?.id;
   const acao = acaoDoEventoAsaas(corpo.event);
   if (acao === 'ignorar' || !paymentId) return 'ignorado';
-  const [p] = await deps.db.select({ id: pedidos.id }).from(pedidos).where(eq(pedidos.asaasPaymentId, paymentId));
+  const [p] = await deps.db
+    .select({ id: pedidos.id, valorCentavos: pedidos.valorCentavos })
+    .from(pedidos)
+    .where(eq(pedidos.asaasPaymentId, paymentId));
   if (!p) return 'sem_pedido';
   if (acao === 'pagar') {
+    // Cobrança alterada no painel do Asaas para menos que o pedido: não libera (o superadmin vê o evento).
+    const valor = corpo.payment?.value;
+    if (typeof valor === 'number' && Math.round(valor * 100) < p.valorCentavos) {
+      deps.log.warn({ pedidoId: p.id, valorCentavos: Math.round(valor * 100) }, 'webhook com valor menor que o pedido');
+      return 'valor_divergente';
+    }
     const liquido = typeof corpo.payment?.netValue === 'number' ? Math.round(corpo.payment.netValue * 100) : null;
     return (await confirmarPagamento(deps, paymentId, agora, { valorLiquidoCentavos: liquido })) ? 'pago' : 'sem_mudanca';
   }

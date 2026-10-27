@@ -150,6 +150,47 @@ describe('pagamento Pix (PRD 8.3)', () => {
     expect(t.mailer.enviados.at(-1)!.assunto).toMatch(/reembolso/i);
   });
 
+  // Auditoria PIE (R1-03, R1-04, R3-03)
+  it('estorno de um pedido não revoga o acesso se há outro pedido pago', async () => {
+    const a = await t.alunoPago();
+    const [pago] = await t.db.select().from(schema.pedidos).where(eq(schema.pedidos.usuarioId, a.id));
+    const [segundo] = await t.db
+      .insert(schema.pedidos)
+      .values({ usuarioId: a.id, asaasPaymentId: 'pay_segundo_pix', valorCentavos: 39700, status: 'pago', pagoEm: t.relogio.agora() })
+      .returning();
+    await t.webhook('PAYMENT_REFUNDED', segundo!.asaasPaymentId!);
+    expect((await pedidoDe(segundo!.id)).status).toBe('estornado');
+    expect((await pedidoDe(pago!.id)).status).toBe('pago');
+    expect((await usuario(t, a.id)).acesso).toBe(true);
+    expect((await t.chamar('trilha', { cookie: a.cookie })).statusCode).toBe(200);
+  });
+
+  it('webhook com valor menor que o do pedido não libera o acesso', async () => {
+    const a = await t.cadastrar();
+    const pix = (await t.chamar('pagamentoPix', { cookie: a.cookie })).json();
+    const pid = (await pedidoDe(pix.pedidoId)).asaasPaymentId!;
+    const r = await t.chamar('webhookAsaas', {
+      headers: { 'asaas-access-token': t.config.asaas.webhookToken },
+      corpo: { id: 'evt_valor_menor', event: 'PAYMENT_RECEIVED', payment: { id: pid, value: 1 } },
+    });
+    expect(r.statusCode).toBe(200);
+    expect((await pedidoDe(pix.pedidoId)).status).toBe('pendente');
+    expect((await usuario(t, a.id)).acesso).toBe(false);
+    const [e] = await t.db.select().from(schema.webhookEventos).where(eq(schema.webhookEventos.id, 'evt_valor_menor'));
+    expect(e!.resultado).toBe('valor_divergente');
+  });
+
+  it('dois pedidos de Pix ao mesmo tempo geram uma cobrança só', async () => {
+    const a = await t.cadastrar();
+    const antes = t.asaas.cobrancas.size;
+    const [r1, r2] = await Promise.all([
+      t.chamar('pagamentoPix', { cookie: a.cookie }),
+      t.chamar('pagamentoPix', { cookie: a.cookie }),
+    ]);
+    expect(r1.json().pedidoId).toBe(r2.json().pedidoId);
+    expect(t.asaas.cobrancas.size - antes).toBe(1);
+  });
+
   it('status consulta o Asaas depois de 60 s pendente (webhook atrasado)', async () => {
     const a = await t.cadastrar();
     const pix = (await t.chamar('pagamentoPix', { cookie: a.cookie })).json();
