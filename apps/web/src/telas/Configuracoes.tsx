@@ -170,6 +170,10 @@ export default function Configuracoes() {
       <CabecalhoVoltar para="/perfil" titulo="Configurações" />
 
       <Grupo titulo="Estudo">
+        <Link className={s.item} to="/meus-concursos">
+          <span>Meus concursos · {u.concurso?.sigla ?? ''}</span>
+          <IconeTraco nome="chevron" tamanho={20} />
+        </Link>
         <label className={s.campo}>
           <span className={s.rotulo}>Cargo</span>
           <select

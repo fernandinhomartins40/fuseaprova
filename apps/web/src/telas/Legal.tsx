@@ -19,16 +19,16 @@ export function Termos() {
         {EH_APP ? (
           // App nativo: sem preço nem meio de pagamento (regras das lojas, D20).
           <p>
-            O Fuse Aprova é um <strong>produto digital de acesso único</strong>: um app de estudo
-            para o concurso da Prefeitura Municipal de Palmital-PR 2026/27. O acesso é pessoal, sem
+            O Fuse Aprova é um <strong>produto digital de acesso por concurso</strong>: um app de
+            estudo para concursos da banca FAU. Cada concurso tem o seu acesso, que é pessoal, sem
             mensalidade, renovação automática, período de teste nem acesso gratuito.
           </p>
         ) : (
           <p>
-            O Fuse Aprova é um <strong>produto digital de acesso único</strong>: um app de estudo
-            para o concurso da Prefeitura Municipal de Palmital-PR 2026/27. O pagamento é de R$
-            397,00, à vista e só por Pix. Não há mensalidade, renovação automática, período de teste
-            nem acesso gratuito.
+            O Fuse Aprova é um <strong>produto digital de acesso por concurso</strong>: um app de
+            estudo para concursos da banca FAU. <strong>Cada concurso é um acesso separado</strong>:
+            o primeiro custa R$ 397,00 e cada concurso adicional custa R$ 197,00, sempre à vista e só
+            por Pix. Não há mensalidade, renovação automática, período de teste nem acesso gratuito.
           </p>
         )}
 
@@ -36,9 +36,9 @@ export function Termos() {
         <p>
           O acesso vale{' '}
           <strong>
-            até a homologação do concurso de Palmital ou por 24 meses, o que vier primeiro
+            até a homologação do concurso contratado ou por 24 meses, o que vier primeiro
           </strong>
-          , contados da confirmação do pagamento.
+          , contados da confirmação do pagamento daquele concurso.
         </p>
         <p>{AVISO_EDITAL}</p>
 

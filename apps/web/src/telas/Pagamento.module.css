@@ -244,3 +244,59 @@
   font-size: 17px;
   color: var(--fa-ink-2);
 }
+.escolha {
+  margin: 14px 0 6px;
+  padding: 16px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-turquesa-soft);
+  border: 2px solid var(--fa-turquesa-line);
+}
+.escolhaTitulo {
+  font-size: 19px;
+  margin: 0;
+}
+.escolhaTexto {
+  margin: 4px 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fa-ink-2);
+}
+.escolhaLista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.escolhaItem {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 2px solid var(--fa-line);
+  background: var(--fa-surface);
+  color: var(--fa-ink);
+}
+.escolhaItem:active:not(:disabled) {
+  transform: translateY(2px);
+}
+.escolhaNome {
+  font-weight: 900;
+  font-size: 15.5px;
+}
+.escolhaPreco {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  align-self: center;
+  font-weight: 900;
+  font-size: 17px;
+  color: var(--fa-turquesa-acao);
+}
+.escolhaMeta {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--fa-muted);
+}

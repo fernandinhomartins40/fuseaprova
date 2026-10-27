@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AVISO_EDITAL,
@@ -10,10 +10,15 @@ import {
   TEXTO_PIX_EXPIRADO,
   TEXTO_PIX_STATUS,
 } from '@fuse/shared';
-import { INTERVALO_STATUS_MS, type PixResposta } from '@fuse/shared/api';
+import {
+  INTERVALO_STATUS_MS,
+  type MeusConcursosResposta,
+  type PixResposta,
+} from '@fuse/shared/api';
 import { chamar, ErroApi } from '../api/cliente';
-import { CHAVES, useMe } from '../api/consultas';
+import { CHAVES, useMe, useMeusConcursos } from '../api/consultas';
 import { sair } from '../app/sair';
+import { apagarPacote, limparCachesApi } from '../offline/pacote';
 import {
   Botao3D,
   CabecalhoVoltar,
@@ -35,12 +40,23 @@ const BENEFICIOS = [
 
 type Estado = 'gerando' | 'aguardando' | 'expirado' | 'erro' | 'pago';
 
-/** 03 Pagamento Pix (`/pagamento`), etapa 2 de 2. O acesso libera sozinho (polling de 4 s). */
+/**
+ * 03 Pagamento Pix (`/pagamento`), etapa 2 de 2. O acesso libera sozinho (polling de 4 s).
+ * `?concurso=<id>` paga um concurso ADICIONAL de quem já é aluno (D21): preço com desconto e,
+ * depois de pago, o concurso novo vira o ativo.
+ */
 export default function Pagamento() {
   const navegar = useNavigate();
   const qc = useQueryClient();
   const toast = useToast();
   const me = useMe();
+  const [params] = useSearchParams();
+  const concursoPedido = params.get('concurso') ?? undefined;
+  // Quem ainda não pagou e há mais de um concurso aberto escolhe para qual vai pagar.
+  const lista = useMeusConcursos(!concursoPedido && !!me.data && !me.data.acesso);
+  const [escolhido, setEscolhido] = useState(false);
+  const total = lista.data ? lista.data.seguidos.length + lista.data.disponiveis.length : 0;
+  const precisaEscolher = !concursoPedido && !escolhido && total > 1;
   const [pix, setPix] = useState<PixResposta | null>(null);
   const [estado, setEstado] = useState<Estado>('gerando');
   const [erro, setErro] = useState<string>(TEXTO_PIX_ERRO);
@@ -49,15 +65,15 @@ export default function Pagamento() {
 
   // Quem já tem acesso não fica aqui.
   useEffect(() => {
-    if (me.data?.acesso && estado !== 'pago') {
+    if (!concursoPedido && me.data?.acesso && estado !== 'pago') {
       navegar(me.data.onboardingConcluido ? '/aprender' : '/onboarding', { replace: true });
     }
-  }, [me.data, estado, navegar]);
+  }, [concursoPedido, me.data, estado, navegar]);
 
   const gerar = useCallback(async () => {
     setEstado('gerando');
     try {
-      const r = await chamar('pagamentoPix');
+      const r = await chamar('pagamentoPix', { corpo: { concursoId: concursoPedido } });
       setPix(r);
       setEstado(
         r.status === 'pago'
@@ -80,19 +96,21 @@ export default function Pagamento() {
       );
       setEstado('erro');
     }
-  }, [qc]);
+  }, [qc, concursoPedido]);
 
   useEffect(() => {
-    if (pedido.current || me.data?.acesso) return;
+    if (pedido.current || (!concursoPedido && me.data?.acesso)) return;
     if (!me.data) return;
+    // Espera saber se há mais de um concurso para o aluno escolher antes de gerar o Pix.
+    if (!concursoPedido && (lista.isPending || precisaEscolher)) return;
     pedido.current = true;
     void gerar();
-  }, [gerar, me.data]);
+  }, [gerar, me.data, concursoPedido, lista.isPending, precisaEscolher]);
 
   // Polling do status a cada 4 s.
   const status = useQuery({
-    queryKey: CHAVES.pagamentoStatus,
-    queryFn: () => chamar('pagamentoStatus'),
+    queryKey: CHAVES.pagamentoStatus(concursoPedido),
+    queryFn: () => chamar('pagamentoStatus', { query: { concursoId: concursoPedido } }),
     enabled: estado === 'aguardando',
     refetchInterval: INTERVALO_STATUS_MS,
     refetchIntervalInBackground: true,
@@ -103,17 +121,34 @@ export default function Pagamento() {
     if (d.acesso || d.status === 'pago') {
       setEstado('pago');
       void qc.invalidateQueries({ queryKey: CHAVES.me });
+      void qc.invalidateQueries({ queryKey: CHAVES.meusConcursos });
     } else if (d.expirado) {
       setEstado('expirado');
     }
   }, [status.data, qc]);
 
-  // Celebração e depois a escolha do cargo.
+  // Concurso adicional pago: ativa o concurso novo (o pacote offline e os caches eram do outro).
+  const concluirAdicional = useCallback(async () => {
+    try {
+      await chamar('meuConcursoAtivar', { params: { id: concursoPedido! } });
+      await Promise.allSettled([apagarPacote(), limparCachesApi()]);
+      await qc.invalidateQueries();
+      navegar('/aprender', { replace: true });
+    } catch (e) {
+      toast(e instanceof ErroApi ? e.message : 'Não deu para trocar de concurso agora.', 'erro');
+      navegar('/meus-concursos', { replace: true });
+    }
+  }, [concursoPedido, qc, navegar, toast]);
+
+  // Celebração e depois a escolha do cargo (1º concurso) ou a troca para o concurso novo.
   useEffect(() => {
     if (estado !== 'pago') return;
-    const id = window.setTimeout(() => navegar('/onboarding', { replace: true }), 2800);
+    const id = window.setTimeout(
+      () => (concursoPedido ? void concluirAdicional() : navegar('/onboarding', { replace: true })),
+      2800,
+    );
     return () => window.clearTimeout(id);
-  }, [estado, navegar]);
+  }, [estado, navegar, concursoPedido, concluirAdicional]);
 
   // Contagem regressiva até expirar.
   useEffect(() => {
@@ -151,17 +186,46 @@ export default function Pagamento() {
         <h1 className={s.tituloPago} role="status">
           Pagamento confirmado!
         </h1>
-        <p className={s.textoPago}>Seu acesso está liberado. Agora escolha o seu cargo.</p>
-        <Botao3D onClick={() => navegar('/onboarding', { replace: true })}>Continuar</Botao3D>
+        <p className={s.textoPago}>
+          {concursoPedido
+            ? 'O concurso foi liberado. Vamos abrir a sua trilha.'
+            : 'Seu acesso está liberado. Agora escolha o seu cargo.'}
+        </p>
+        <Botao3D
+          onClick={() =>
+            concursoPedido ? void concluirAdicional() : navegar('/onboarding', { replace: true })
+          }
+        >
+          Continuar
+        </Botao3D>
       </Pagina>
     );
   }
 
   return (
     <Pagina>
-      <CabecalhoVoltar semVoltar etapa={{ atual: 2, total: 2 }} />
-      <h1 className={s.titulo}>Comece sua preparação</h1>
-      <p className={s.subtitulo}>Finalize o pagamento e tenha acesso imediato a todo o conteúdo.</p>
+      {concursoPedido ? (
+        <CabecalhoVoltar para="/meus-concursos" titulo="Liberar concurso" />
+      ) : (
+        <CabecalhoVoltar semVoltar etapa={{ atual: 2, total: 2 }} />
+      )}
+      {precisaEscolher && lista.data ? (
+        <EscolherConcurso
+          lista={lista.data}
+          onEscolhido={() => {
+            setEscolhido(true);
+            void qc.invalidateQueries({ queryKey: CHAVES.me });
+          }}
+        />
+      ) : null}
+      <h1 className={s.titulo}>
+        {concursoPedido ? 'Libere este concurso' : 'Comece sua preparação'}
+      </h1>
+      <p className={s.subtitulo}>
+        {pix
+          ? `Acesso ao ${pix.concursoNome}. Finalize o pagamento e tenha acesso imediato.`
+          : 'Finalize o pagamento e tenha acesso imediato a todo o conteúdo.'}
+      </p>
 
       <section className={s.oferta} aria-label="Acesso completo">
         <div className={s.ofertaTopo}>
@@ -171,7 +235,11 @@ export default function Pagamento() {
           <div>
             <p className={s.rotulo}>ACESSO COMPLETO</p>
             <p className={s.preco}>
-              {formatarReais(pix?.valorCentavos ?? 39700).replace(',00', '')}
+              {pix
+                ? formatarReais(pix.valorCentavos).replace(',00', '')
+                : concursoPedido
+                  ? 'R$ …'
+                  : formatarReais(39700).replace(',00', '')}
             </p>
             <p className={s.precoSub}>à vista no Pix · pagamento único</p>
           </div>
@@ -279,5 +347,57 @@ export default function Pagamento() {
         </button>
       </p>
     </Pagina>
+  );
+}
+
+/** 1ª compra com mais de um concurso aberto: o aluno escolhe qual vai pagar (D21). */
+function EscolherConcurso({
+  lista,
+  onEscolhido,
+}: {
+  lista: MeusConcursosResposta;
+  onEscolhido: () => void;
+}) {
+  const toast = useToast();
+  const [enviando, setEnviando] = useState<string | null>(null);
+  const todos = [...lista.seguidos, ...lista.disponiveis];
+  async function escolher(id: string) {
+    setEnviando(id);
+    try {
+      await chamar('meuConcursoSeguir', { corpo: { concursoId: id } });
+      onEscolhido();
+    } catch (e) {
+      toast(e instanceof ErroApi ? e.message : 'Não deu para escolher o concurso.', 'erro');
+    } finally {
+      setEnviando(null);
+    }
+  }
+  return (
+    <section className={s.escolha} aria-label="Escolha do concurso">
+      <h2 className={s.escolhaTitulo}>Para qual concurso você vai estudar?</h2>
+      <p className={s.escolhaTexto}>
+        Cada concurso tem o seu acesso. Depois você pode adicionar outros com desconto.
+      </p>
+      <ul className={s.escolhaLista}>
+        {todos.map((c) => (
+          <li key={c.id}>
+            <button
+              type="button"
+              className={s.escolhaItem}
+              disabled={enviando !== null}
+              aria-busy={enviando === c.id}
+              onClick={() => void escolher(c.id)}
+            >
+              <span className={s.escolhaNome}>{c.orgao}</span>
+              <span className={s.escolhaMeta}>
+                {c.municipio} · {c.uf}
+                {c.dataProva ? ` · prova ${c.dataProva.split('-').reverse().join('/')}` : ''}
+              </span>
+              <span className={s.escolhaPreco}>{formatarReais(c.precoCentavos)}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

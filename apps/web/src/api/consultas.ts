@@ -15,7 +15,9 @@ export const CHAVES = {
   estatisticas: ['estatisticas'] as const,
   simulados: ['simulados'] as const,
   simulado: (id: string) => ['simulado', id] as const,
-  pagamentoStatus: ['pagamento', 'status'] as const,
+  pagamentoStatus: (concursoId?: string) => ['pagamento', 'status', concursoId ?? 'ativo'] as const,
+  meusConcursos: ['meus-concursos'] as const,
+  concursoPorId: (id: string) => ['concurso', id] as const,
 };
 
 export function criarQueryClient() {
@@ -51,6 +53,16 @@ export function useConcurso() {
     queryKey: CHAVES.concurso,
     queryFn: ({ signal }) => chamar('concurso', { signal }),
     staleTime: 5 * 60_000,
+  });
+}
+
+/** Concursos que o aluno acompanha, o ativo e os que ainda pode adicionar (D21). */
+export function useMeusConcursos(habilitado = true) {
+  return useQuery({
+    queryKey: CHAVES.meusConcursos,
+    queryFn: ({ signal }) => chamar('meusConcursos', { signal }),
+    enabled: habilitado,
+    staleTime: 10_000,
   });
 }
 

@@ -39,6 +39,7 @@ const NaoEncontrada = lazy(() => import('../telas/NaoEncontrada'));
 // painéis da equipe; o site não tem os recursos nativos.
 const Admin = EH_APP ? Vazio : lazy(() => import('../admin/rotas'));
 const Super = EH_APP ? Vazio : lazy(() => import('../super/rotas'));
+const MeusConcursos = lazy(() => import('../telas/MeusConcursos'));
 const AcessoApp = EH_APP ? lazy(() => import('../telas/AcessoApp')) : Vazio;
 const RecursosNativos = EH_APP ? lazy(() => import('../nativo/RecursosNativos')) : Vazio;
 
@@ -186,6 +187,14 @@ export function Rotas() {
           element={
             <Guarda nivel="acesso">
               <SimuladoProva />
+            </Guarda>
+          }
+        />
+        <Route
+          path="/meus-concursos"
+          element={
+            <Guarda nivel="login">
+              <MeusConcursos />
             </Guarda>
           }
         />

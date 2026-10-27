@@ -1,7 +1,14 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { STATUS_CONCURSO } from '@fuse/shared';
-import type { ConcursoAdmin, ConcursoEntrada, ProvaOrigemAdmin, ProvaOrigemEntrada, ProvasQuery } from '@fuse/shared/api';
+import type {
+  ConcursoAdmin,
+  ConcursoClonarEntrada,
+  ConcursoEntrada,
+  ProvaOrigemAdmin,
+  ProvaOrigemEntrada,
+  ProvasQuery,
+} from '@fuse/shared/api';
 import { api, camposDoErro, mensagemDeErro } from '../api';
 import { chaves, useConcursos } from '../consultas';
 import { EditorLinks, type LinkForm } from '../componentes/EditorLinks';
@@ -30,7 +37,10 @@ export default function Concursos() {
   const [aba, setAba] = useState<Aba>('concursos');
   return (
     <>
-      <Cabecalho titulo="Concursos e provas" subtitulo="Concurso de Palmital, provas de origem da FAU e seus links." />
+      <Cabecalho
+        titulo="Concursos e provas"
+        subtitulo="Concurso de Palmital, provas de origem da FAU e seus links."
+      />
       <div role="tablist" aria-label="Seções" className={s.acoes}>
         {(
           [
@@ -92,6 +102,7 @@ const CONCURSO_VAZIO: FormConcurso = {
 function AbaConcursos() {
   const consulta = useConcursos();
   const [editando, setEditando] = useState<ConcursoAdmin | 'novo' | null>(null);
+  const [clonando, setClonando] = useState<ConcursoAdmin | null>(null);
   return (
     <>
       <div className={s.cabecalho}>
@@ -100,7 +111,17 @@ function AbaConcursos() {
           Novo concurso
         </Botao>
       </div>
-      <Consulta consulta={consulta} vazio={(d) => d.itens.length === 0} textoVazio="Nenhum concurso cadastrado.">
+      <p className={s.suave}>
+        Cada concurso é um acesso separado para o aluno (R$ 397 o primeiro, R$ 197 cada adicional).
+        Para abrir um concurso novo da FAU, use <strong>Criar a partir deste</strong>: a trilha e os
+        cargos genéricos são copiados, o concurso entra <strong>inativo</strong> e só aparece para
+        os alunos quando você marcar <strong>Concurso ativo</strong> em Editar.
+      </p>
+      <Consulta
+        consulta={consulta}
+        vazio={(d) => d.itens.length === 0}
+        textoVazio="Nenhum concurso cadastrado."
+      >
         {(d) => (
           <Tabela rotulo="Concursos">
             <thead>
@@ -141,6 +162,9 @@ function AbaConcursos() {
                   <td>
                     <Botao pequeno onClick={() => setEditando(c)}>
                       Editar
+                    </Botao>{' '}
+                    <Botao pequeno onClick={() => setClonando(c)}>
+                      Criar a partir deste
                     </Botao>
                   </td>
                 </tr>
@@ -150,13 +174,146 @@ function AbaConcursos() {
         )}
       </Consulta>
       {editando ? (
-        <ModalConcurso concurso={editando === 'novo' ? null : editando} aoFechar={() => setEditando(null)} />
+        <ModalConcurso
+          concurso={editando === 'novo' ? null : editando}
+          aoFechar={() => setEditando(null)}
+        />
       ) : null}
+      {clonando ? <ModalClonar modelo={clonando} aoFechar={() => setClonando(null)} /> : null}
     </>
   );
 }
 
-function ModalConcurso({ concurso, aoFechar }: { concurso: ConcursoAdmin | null; aoFechar: () => void }) {
+/** Cria um concurso novo com a trilha e os cargos genéricos de um concurso modelo (D21). */
+function ModalClonar({ modelo, aoFechar }: { modelo: ConcursoAdmin; aoFechar: () => void }) {
+  const [f, setF] = useState({
+    nome: '',
+    slug: '',
+    banca: modelo.banca,
+    orgao: '',
+    municipio: '',
+    uf: modelo.uf,
+    ano: String(new Date().getFullYear()),
+    dataProva: '',
+  });
+  const qc = useQueryClient();
+  const clonar = useMutation({
+    mutationFn: (corpo: ConcursoClonarEntrada) =>
+      api('adminConcursoClonar', { params: { id: modelo.id }, corpo }),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: chaves.concursos }),
+  });
+  const erros = camposDoErro(clonar.error);
+  const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => setF((a) => ({ ...a, [k]: v }));
+  function enviar(e: FormEvent) {
+    e.preventDefault();
+    clonar.mutate({
+      nome: f.nome,
+      slug: f.slug,
+      banca: f.banca,
+      orgao: f.orgao,
+      municipio: f.municipio,
+      uf: f.uf,
+      ano: Number(f.ano),
+      dataProva: f.dataProva || null,
+    });
+  }
+  const feito = clonar.data;
+  return (
+    <Modal titulo={`Criar a partir de: ${modelo.nome}`} aberto aoFechar={aoFechar} largo>
+      {feito ? (
+        <div className={s.formulario}>
+          <Alerta tom="sucesso">
+            Concurso criado, <strong>inativo</strong>: {feito.unidades} unidades, {feito.secoes}{' '}
+            seções, {feito.licoes} lições e {feito.cargos} cargos genéricos copiados. Cadastre o
+            edital na tela Edital e marque <strong>Concurso ativo</strong> em Editar quando quiser
+            vender.
+          </Alerta>
+          <div className={s.modalRodape}>
+            <Botao variante="primario" onClick={aoFechar}>
+              Fechar
+            </Botao>
+          </div>
+        </div>
+      ) : (
+        <form className={s.formulario} onSubmit={enviar} noValidate>
+          {clonar.isError ? <Alerta tom="erro">{mensagemDeErro(clonar.error)}</Alerta> : null}
+          <div className={s.linha}>
+            <CampoTexto
+              rotulo="Nome"
+              value={f.nome}
+              onChange={(e) => set('nome', e.target.value)}
+              erro={erros.nome}
+            />
+            <CampoTexto
+              rotulo="Slug"
+              value={f.slug}
+              onChange={(e) => set('slug', e.target.value)}
+              erro={erros.slug}
+              ajuda="Só letras minúsculas, números e hífen. Ex.: siqueira-campos-2026."
+            />
+            <CampoTexto
+              rotulo="Banca"
+              value={f.banca}
+              onChange={(e) => set('banca', e.target.value)}
+              erro={erros.banca}
+            />
+          </div>
+          <div className={s.linha}>
+            <CampoTexto
+              rotulo="Órgão"
+              value={f.orgao}
+              onChange={(e) => set('orgao', e.target.value)}
+              erro={erros.orgao}
+            />
+            <CampoTexto
+              rotulo="Município"
+              value={f.municipio}
+              onChange={(e) => set('municipio', e.target.value)}
+              erro={erros.municipio}
+            />
+            <CampoTexto
+              rotulo="UF"
+              maxLength={2}
+              value={f.uf}
+              onChange={(e) => set('uf', e.target.value)}
+              erro={erros.uf}
+            />
+            <CampoTexto
+              rotulo="Ano"
+              type="number"
+              value={f.ano}
+              onChange={(e) => set('ano', e.target.value)}
+              erro={erros.ano}
+            />
+          </div>
+          <CampoTexto
+            rotulo="Data da prova"
+            type="date"
+            value={f.dataProva}
+            onChange={(e) => set('dataProva', e.target.value)}
+            erro={erros.dataProva}
+          />
+          <div className={s.modalRodape}>
+            <Botao data-fechar onClick={aoFechar}>
+              Cancelar
+            </Botao>
+            <Botao type="submit" variante="primario" carregando={clonar.isPending}>
+              Criar concurso
+            </Botao>
+          </div>
+        </form>
+      )}
+    </Modal>
+  );
+}
+
+function ModalConcurso({
+  concurso,
+  aoFechar,
+}: {
+  concurso: ConcursoAdmin | null;
+  aoFechar: () => void;
+}) {
   const [f, setF] = useState<FormConcurso>(() =>
     concurso
       ? {
@@ -186,7 +343,8 @@ function ModalConcurso({ concurso, aoFechar }: { concurso: ConcursoAdmin | null;
     },
   });
   const erros = camposDoErro(salvar.error);
-  const set = <K extends keyof FormConcurso>(k: K, v: FormConcurso[K]) => setF((a) => ({ ...a, [k]: v }));
+  const set = <K extends keyof FormConcurso>(k: K, v: FormConcurso[K]) =>
+    setF((a) => ({ ...a, [k]: v }));
 
   function enviar(e: FormEvent) {
     e.preventDefault();
@@ -210,26 +368,61 @@ function ModalConcurso({ concurso, aoFechar }: { concurso: ConcursoAdmin | null;
       <form className={s.formulario} onSubmit={enviar} noValidate>
         {salvar.isError ? <Alerta tom="erro">{mensagemDeErro(salvar.error)}</Alerta> : null}
         <div className={s.linha}>
-          <CampoTexto rotulo="Nome" value={f.nome} onChange={(e) => set('nome', e.target.value)} erro={erros.nome} />
-          <CampoTexto rotulo="Slug" value={f.slug} onChange={(e) => set('slug', e.target.value)} erro={erros.slug} />
-          <CampoTexto rotulo="Banca" value={f.banca} onChange={(e) => set('banca', e.target.value)} erro={erros.banca} />
+          <CampoTexto
+            rotulo="Nome"
+            value={f.nome}
+            onChange={(e) => set('nome', e.target.value)}
+            erro={erros.nome}
+          />
+          <CampoTexto
+            rotulo="Slug"
+            value={f.slug}
+            onChange={(e) => set('slug', e.target.value)}
+            erro={erros.slug}
+          />
+          <CampoTexto
+            rotulo="Banca"
+            value={f.banca}
+            onChange={(e) => set('banca', e.target.value)}
+            erro={erros.banca}
+          />
         </div>
         <div className={s.linha}>
-          <CampoTexto rotulo="Órgão" value={f.orgao} onChange={(e) => set('orgao', e.target.value)} erro={erros.orgao} />
+          <CampoTexto
+            rotulo="Órgão"
+            value={f.orgao}
+            onChange={(e) => set('orgao', e.target.value)}
+            erro={erros.orgao}
+          />
           <CampoTexto
             rotulo="Município"
             value={f.municipio}
             onChange={(e) => set('municipio', e.target.value)}
             erro={erros.municipio}
           />
-          <CampoTexto rotulo="UF" maxLength={2} value={f.uf} onChange={(e) => set('uf', e.target.value)} erro={erros.uf} />
-          <CampoTexto rotulo="Ano" type="number" value={f.ano} onChange={(e) => set('ano', e.target.value)} erro={erros.ano} />
+          <CampoTexto
+            rotulo="UF"
+            maxLength={2}
+            value={f.uf}
+            onChange={(e) => set('uf', e.target.value)}
+            erro={erros.uf}
+          />
+          <CampoTexto
+            rotulo="Ano"
+            type="number"
+            value={f.ano}
+            onChange={(e) => set('ano', e.target.value)}
+            erro={erros.ano}
+          />
         </div>
         <div className={s.linha}>
           <CampoSelecao
             rotulo="Status"
             value={f.status}
-            opcoes={STATUS_CONCURSO.map((st) => ({ valor: st, rotulo: NOMES_STATUS_CONCURSO_CURTO[st] }))}
+            opcoes={STATUS_CONCURSO.map((st) => ({
+              valor: st,
+              rotulo: NOMES_STATUS_CONCURSO_CURTO[st],
+            }))}
             onChange={(e) => set('status', e.target.value as FormConcurso['status'])}
             erro={erros.status}
             ajuda="Para publicar o edital (modo edital), use a tela Edital."
@@ -243,7 +436,11 @@ function ModalConcurso({ concurso, aoFechar }: { concurso: ConcursoAdmin | null;
           />
         </div>
         <EditorLinks links={f.links} aoMudar={(l) => set('links', l)} erros={erros} />
-        <Marcar rotulo="Concurso ativo" checked={f.ativo} onChange={(e) => set('ativo', e.target.checked)} />
+        <Marcar
+          rotulo="Concurso ativo"
+          checked={f.ativo}
+          onChange={(e) => set('ativo', e.target.checked)}
+        />
         <div className={s.modalRodape}>
           <Botao data-fechar onClick={aoFechar}>
             Cancelar
@@ -279,11 +476,35 @@ function AbaProvas() {
           Nova prova
         </Botao>
       </div>
-      <form className={s.filtros} role="search" aria-label="Filtros de provas" onSubmit={(e) => e.preventDefault()}>
-        <CampoTexto rotulo="Buscar" type="search" value={filtros.q ?? ''} onChange={(e) => mudar('q', e.target.value)} />
-        <CampoTexto rotulo="Banca" value={filtros.banca ?? ''} onChange={(e) => mudar('banca', e.target.value)} />
-        <CampoTexto rotulo="UF" maxLength={2} value={filtros.uf ?? ''} onChange={(e) => mudar('uf', e.target.value.toUpperCase())} />
-        <CampoTexto rotulo="Ano" type="number" value={filtros.ano ?? ''} onChange={(e) => mudar('ano', e.target.value)} />
+      <form
+        className={s.filtros}
+        role="search"
+        aria-label="Filtros de provas"
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <CampoTexto
+          rotulo="Buscar"
+          type="search"
+          value={filtros.q ?? ''}
+          onChange={(e) => mudar('q', e.target.value)}
+        />
+        <CampoTexto
+          rotulo="Banca"
+          value={filtros.banca ?? ''}
+          onChange={(e) => mudar('banca', e.target.value)}
+        />
+        <CampoTexto
+          rotulo="UF"
+          maxLength={2}
+          value={filtros.uf ?? ''}
+          onChange={(e) => mudar('uf', e.target.value.toUpperCase())}
+        />
+        <CampoTexto
+          rotulo="Ano"
+          type="number"
+          value={filtros.ano ?? ''}
+          onChange={(e) => mudar('ano', e.target.value)}
+        />
         <CampoSelecao
           rotulo="Status"
           vazio="Todos"
@@ -300,7 +521,11 @@ function AbaProvas() {
           onChange={(e) => mudar('relevanciaPalmital', e.target.checked ? 'true' : '')}
         />
       </form>
-      <Consulta consulta={consulta} vazio={(d) => d.itens.length === 0} textoVazio="Nenhuma prova com esses filtros.">
+      <Consulta
+        consulta={consulta}
+        vazio={(d) => d.itens.length === 0}
+        textoVazio="Nenhuma prova com esses filtros."
+      >
         {(d) => (
           <>
             <Tabela rotulo="Provas de origem">
@@ -325,7 +550,9 @@ function AbaProvas() {
                         {p.cargo ? ` · ${p.cargo}` : ''}
                         {p.nivel ? ` · ${p.nivel}` : ''}
                       </div>
-                      {p.relevanciaPalmital ? <Selo tom="destaque">Relevante p/ Palmital</Selo> : null}
+                      {p.relevanciaPalmital ? (
+                        <Selo tom="destaque">Relevante p/ Palmital</Selo>
+                      ) : null}
                     </td>
                     <td>
                       {p.orgao}
@@ -368,7 +595,12 @@ function AbaProvas() {
           </>
         )}
       </Consulta>
-      {editando ? <ModalProva prova={editando === 'nova' ? null : editando} aoFechar={() => setEditando(null)} /> : null}
+      {editando ? (
+        <ModalProva
+          prova={editando === 'nova' ? null : editando}
+          aoFechar={() => setEditando(null)}
+        />
+      ) : null}
       {retirando ? <ModalRetirada prova={retirando} aoFechar={() => setRetirando(null)} /> : null}
     </>
   );
@@ -435,7 +667,9 @@ function ModalProva({ prova, aoFechar }: { prova: ProvaOrigemAdmin | null; aoFec
   const qc = useQueryClient();
   const salvar = useMutation({
     mutationFn: (corpo: ProvaOrigemEntrada) =>
-      prova ? api('adminProvaAtualizar', { params: { id: prova.id }, corpo }) : api('adminProvaCriar', { corpo }),
+      prova
+        ? api('adminProvaAtualizar', { params: { id: prova.id }, corpo })
+        : api('adminProvaCriar', { corpo }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['admin', 'provas'] });
       aoFechar();
@@ -443,8 +677,18 @@ function ModalProva({ prova, aoFechar }: { prova: ProvaOrigemAdmin | null; aoFec
   });
   const erros = camposDoErro(salvar.error);
   const set = (k: keyof FormProva, v: string) => setF((a) => ({ ...a, [k]: v }));
-  const texto = (k: keyof FormProva, rotulo: string, extra: { type?: string; maxLength?: number } = {}) => (
-    <CampoTexto rotulo={rotulo} value={String(f[k])} onChange={(e) => set(k, e.target.value)} erro={erros[k]} {...extra} />
+  const texto = (
+    k: keyof FormProva,
+    rotulo: string,
+    extra: { type?: string; maxLength?: number } = {},
+  ) => (
+    <CampoTexto
+      rotulo={rotulo}
+      value={String(f[k])}
+      onChange={(e) => set(k, e.target.value)}
+      erro={erros[k]}
+      {...extra}
+    />
   );
 
   function enviar(e: FormEvent) {
@@ -471,7 +715,12 @@ function ModalProva({ prova, aoFechar }: { prova: ProvaOrigemAdmin | null; aoFec
   }
 
   return (
-    <Modal titulo={prova ? 'Editar prova de origem' : 'Nova prova de origem'} aberto aoFechar={aoFechar} largo>
+    <Modal
+      titulo={prova ? 'Editar prova de origem' : 'Nova prova de origem'}
+      aberto
+      aoFechar={aoFechar}
+      largo
+    >
       <form className={s.formulario} onSubmit={enviar} noValidate>
         {salvar.isError ? <Alerta tom="erro">{mensagemDeErro(salvar.error)}</Alerta> : null}
         <div className={s.linha}>
@@ -535,7 +784,9 @@ function ModalRetirada({ prova, aoFechar }: { prova: ProvaOrigemAdmin; aoFechar:
   const qc = useQueryClient();
   const retirar = useMutation({
     mutationFn: async () => {
-      const r = await api('adminQuestoesRetirarOrigem', { corpo: { provaOrigemId: prova.id, motivo } });
+      const r = await api('adminQuestoesRetirarOrigem', {
+        corpo: { provaOrigemId: prova.id, motivo },
+      });
       await api('adminProvaAtualizar', { params: { id: prova.id }, corpo: { status: 'retirada' } });
       return r;
     },
@@ -571,16 +822,22 @@ function ModalRetirada({ prova, aoFechar }: { prova: ProvaOrigemAdmin; aoFechar:
     >
       {retirar.isSuccess ? (
         <Alerta tom="sucesso">
-          {retirar.data.questoesRetiradas} questões retiradas. Elas somem do app no próximo carregamento.
+          {retirar.data.questoesRetiradas} questões retiradas. Elas somem do app no próximo
+          carregamento.
         </Alerta>
       ) : (
         <>
           <p>
             Todas as questões de <strong>{prova.nome ?? prova.orgao}</strong>
-            {prova.ano ? ` (${prova.ano})` : ''} passam para <strong>retirada</strong> e somem do app
-            do aluno no próximo carregamento, inclusive offline.
+            {prova.ano ? ` (${prova.ano})` : ''} passam para <strong>retirada</strong> e somem do
+            app do aluno no próximo carregamento, inclusive offline.
           </p>
-          <CampoArea rotulo="Motivo" value={motivo} onChange={(e) => setMotivo(e.target.value)} ajuda="Fica na auditoria." />
+          <CampoArea
+            rotulo="Motivo"
+            value={motivo}
+            onChange={(e) => setMotivo(e.target.value)}
+            ajuda="Fica na auditoria."
+          />
           {retirar.isError ? <Alerta tom="erro">{mensagemDeErro(retirar.error)}</Alerta> : null}
         </>
       )}
@@ -605,15 +862,21 @@ function AbaRetirada() {
       <TituloSecao>Retirar toda a origem fau_real de uma banca</TituloSecao>
       <Cartao>
         <p>
-          Use em caso de pedido da banca ou problema de direitos: todas as questões <strong>fau_real</strong> da
-          banca passam para <strong>retirada</strong>. As questões autorais não mudam. Para retirar uma prova só,
-          use o botão Retirar na aba Provas de origem.
+          Use em caso de pedido da banca ou problema de direitos: todas as questões{' '}
+          <strong>fau_real</strong> da banca passam para <strong>retirada</strong>. As questões
+          autorais não mudam. Para retirar uma prova só, use o botão Retirar na aba Provas de
+          origem.
         </p>
         <div className={s.formulario}>
           <div className={s.linha}>
             <CampoTexto rotulo="Banca" value={banca} onChange={(e) => setBanca(e.target.value)} />
           </div>
-          <CampoArea rotulo="Motivo" value={motivo} onChange={(e) => setMotivo(e.target.value)} ajuda="Fica na auditoria." />
+          <CampoArea
+            rotulo="Motivo"
+            value={motivo}
+            onChange={(e) => setMotivo(e.target.value)}
+            ajuda="Fica na auditoria."
+          />
           <div>
             <Botao
               variante="perigo"
@@ -640,13 +903,20 @@ function AbaRetirada() {
             <Botao data-fechar onClick={() => setConfirmar(false)}>
               Cancelar
             </Botao>
-            <Botao variante="perigo" carregando={retirar.isPending} onClick={() => retirar.mutate()}>
+            <Botao
+              variante="perigo"
+              carregando={retirar.isPending}
+              onClick={() => retirar.mutate()}
+            >
               Sim, retirar tudo
             </Botao>
           </>
         }
       >
-        <p>Essa ação tira do ar todas as questões reais dessa banca. Para voltar, será preciso republicar uma a uma ou em lote.</p>
+        <p>
+          Essa ação tira do ar todas as questões reais dessa banca. Para voltar, será preciso
+          republicar uma a uma ou em lote.
+        </p>
         {retirar.isError ? <Alerta tom="erro">{mensagemDeErro(retirar.error)}</Alerta> : null}
       </Modal>
     </>

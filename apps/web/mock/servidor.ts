@@ -109,6 +109,13 @@ interface SimuladoMock {
 
 function novoEstado() {
   return {
+    /** D21: concursos que o aluno acompanha ({ id, acesso }) e qual está ativo. */
+    // (o id é o de CONCURSO_ID, declarado mais abaixo: novoEstado() roda antes dele existir)
+    seguidos: [{ id: '00000000-0000-4000-8000-0000000c0001', acesso: false }] as {
+      id: string;
+      acesso: boolean;
+    }[],
+    ativoId: '00000000-0000-4000-8000-0000000c0001',
     logado: false,
     usuario: {
       nome: 'Marina Souza',
@@ -137,6 +144,7 @@ function novoEstado() {
     },
     pedido: null as null | {
       id: string;
+      concursoId: string;
       criadoEm: Date;
       expiraEm: Date;
       status: 'pendente' | 'pago' | 'vencido';
@@ -232,6 +240,10 @@ const CARGOS_EDITAL = [
   },
 ];
 const CONCURSO_ID = '00000000-0000-4000-8000-0000000c0001';
+/** 2º concurso do mock (D21): aparece em "outros concursos" com o preço de adicional. */
+const CONCURSO2_ID = '00000000-0000-4000-8000-0000000c0002';
+const PRECO_CHEIO = 39700;
+const PRECO_ADICIONAL = 19700;
 function cargosAtivos() {
   return estado.modoEdital ? [...CARGOS, ...CARGOS_EDITAL] : CARGOS;
 }
@@ -397,6 +409,7 @@ function aplicarCenario(nome: string) {
   estado.logado = true;
   if (nome === 'semAcesso') return;
   u.acesso = true;
+  estado.seguidos[0]!.acesso = true;
   if (nome === 'onboarding') return;
   u.onboardingConcluido = true;
   u.cargoId = CARGOS[0]!.id;
@@ -639,11 +652,51 @@ const H: Partial<Record<NomeRota, Handler>> = {
     return { gemas: u.gemas, protetores: u.protetores };
   },
 
-  pagamentoPix: () => {
+  meusConcursos: () => meusConcursos(),
+  meuConcursoSeguir: ({ corpo }) => {
+    const c = corpo as { concursoId: string };
+    if (!CONCURSOS_MOCK.some((x) => x.id === c.concursoId)) throw new Falha(404, 'nao_encontrado');
+    if (!estado.seguidos.some((x) => x.id === c.concursoId)) {
+      estado.seguidos.push({ id: c.concursoId, acesso: false });
+    }
+    const linha = estado.seguidos.find((x) => x.id === c.concursoId)!;
+    if (!estado.usuario.acesso || linha.acesso) estado.ativoId = c.concursoId;
+    return meusConcursos();
+  },
+  meuConcursoAtivar: ({ params }) => {
+    const linha = estado.seguidos.find((x) => x.id === params.id);
+    if (!linha) throw new Falha(404, 'nao_encontrado');
+    if (!linha.acesso) throw new Falha(402, 'sem_acesso');
+    estado.ativoId = linha.id;
+    return meusConcursos();
+  },
+  meuConcursoDeixar: ({ params }) => {
+    const linha = estado.seguidos.find((x) => x.id === params.id);
+    if (!linha) throw new Falha(404, 'nao_encontrado');
+    if (linha.acesso) throw new Falha(409, 'conflito');
+    estado.seguidos = estado.seguidos.filter((x) => x.id !== params.id);
+    if (estado.ativoId === params.id)
+      estado.ativoId = estado.seguidos.find((x) => x.acesso)?.id ?? CONCURSO_ID;
+    return meusConcursos();
+  },
+  concursoPorId: ({ params }) => {
+    const c = CONCURSOS_MOCK.find((x) => x.id === params.id);
+    if (!c) throw new Falha(404, 'nao_encontrado');
+    return {
+      ...(H.concurso!({ params: {}, corpo: undefined, query: new URLSearchParams() }) as object),
+      ...c,
+      id: c.id,
+    };
+  },
+
+  pagamentoPix: ({ corpo }) => {
+    const alvo = (corpo as { concursoId?: string } | undefined)?.concursoId ?? estado.ativoId;
     const p = estado.pedido;
-    if (p && p.status === 'pendente' && p.expiraEm.getTime() > Date.now()) return pix();
+    if (p && p.status === 'pendente' && p.expiraEm.getTime() > Date.now() && p.concursoId === alvo)
+      return pix();
     estado.pedido = {
       id: uuid(),
+      concursoId: alvo,
       criadoEm: agora(),
       expiraEm: new Date(Date.now() + 30 * 60_000),
       status: 'pendente',
@@ -655,6 +708,7 @@ const H: Partial<Record<NomeRota, Handler>> = {
     return {
       status: p ? p.status : ('nenhum' as const),
       acesso: estado.usuario.acesso,
+      concursoId: p?.concursoId ?? estado.ativoId,
       pedidoId: p?.id ?? null,
       expiraEm: p?.expiraEm.toISOString() ?? null,
       pagoEm: p?.status === 'pago' ? agora().toISOString() : null,
@@ -1244,11 +1298,68 @@ const H: Partial<Record<NomeRota, Handler>> = {
   pushRemover: () => ({ ok: true }),
 };
 
+const CONCURSOS_MOCK = [
+  {
+    id: CONCURSO_ID,
+    nome: 'Prefeitura Municipal de Palmital-PR 2026/27',
+    sigla: 'PAL · FAU',
+    orgao: 'Prefeitura Municipal de Palmital',
+    municipio: 'Palmital',
+    uf: 'PR',
+    ano: 2026,
+    dataProva: null as string | null,
+  },
+  {
+    id: CONCURSO2_ID,
+    nome: 'Prefeitura Municipal de Siqueira Campos-PR 2026',
+    sigla: 'SIQ · FAU',
+    orgao: 'Prefeitura Municipal de Siqueira Campos',
+    municipio: 'Siqueira Campos',
+    uf: 'PR',
+    ano: 2026,
+    dataProva: '2026-11-29',
+  },
+];
+
+function meusConcursos() {
+  const jaPagou = estado.seguidos.some((x) => x.acesso);
+  const resumo = (c: (typeof CONCURSOS_MOCK)[number], preco: number, comDesconto: boolean) => ({
+    ...c,
+    banca: 'FAU-Unicentro',
+    status: 'aguardando_edital' as const,
+    statusTexto: 'Edital em elaboração pela FAU',
+    diasParaProva: c.dataProva ? 33 : null,
+    precoCentavos: preco,
+    comDesconto,
+  });
+  return {
+    ativoId: estado.ativoId,
+    seguidos: estado.seguidos.map((x) => {
+      const c = CONCURSOS_MOCK.find((y) => y.id === x.id)!;
+      return {
+        ...resumo(c, x.acesso ? 0 : jaPagou ? PRECO_ADICIONAL : PRECO_CHEIO, !x.acesso && jaPagou),
+        cargo: null,
+        acesso: x.acesso,
+        ativo: x.id === estado.ativoId,
+      };
+    }),
+    disponiveis: CONCURSOS_MOCK.filter((c) => !estado.seguidos.some((x) => x.id === c.id)).map(
+      (c) => resumo(c, jaPagou ? PRECO_ADICIONAL : PRECO_CHEIO, jaPagou),
+    ),
+    precoCheioCentavos: PRECO_CHEIO,
+    precoAdicionalCentavos: PRECO_ADICIONAL,
+  };
+}
+
 function pix() {
   const p = estado.pedido!;
+  const c = CONCURSOS_MOCK.find((x) => x.id === p.concursoId) ?? CONCURSOS_MOCK[0]!;
+  const jaPagou = estado.seguidos.some((x) => x.acesso && x.id !== c.id);
   return {
     pedidoId: p.id,
-    valorCentavos: 39700,
+    concursoId: c.id,
+    concursoNome: c.nome,
+    valorCentavos: jaPagou ? PRECO_ADICIONAL : PRECO_CHEIO,
     imagem: pngQrFalso(),
     payload: `00020126580014br.gov.bcb.pix0136mock-${p.id}5204000053039865406397.005802BR5911FUSE APROVA6008PALMITAL62070503***6304ABCD`,
     expiraEm: p.expiraEm.toISOString(),
@@ -1445,8 +1556,12 @@ export async function tratar(req: Req, res: Res): Promise<void> {
     return responder(res, 200, { ok: true, cenario: nome }, cookie);
   }
   if (caminho === '/__mock/pagar') {
+    const alvo = estado.pedido?.concursoId ?? estado.ativoId;
     if (estado.pedido) estado.pedido.status = 'pago';
     estado.usuario.acesso = true;
+    const linha = estado.seguidos.find((x) => x.id === alvo);
+    if (linha) linha.acesso = true;
+    else estado.seguidos.push({ id: alvo, acesso: true });
     return responder(res, 200, { ok: true });
   }
 

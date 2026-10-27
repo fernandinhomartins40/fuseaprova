@@ -143,9 +143,9 @@ export function Contadores({
   return (
     <div className={s.contadores}>
       <Link
-        to="/concurso"
+        to="/meus-concursos"
         className={s.chipConcurso}
-        aria-label={`Sobre o concurso: ${a} ${b}${diasParaProva != null ? ` ${diasParaProva}d` : ''}`}
+        aria-label={`Meus concursos. Ativo: ${a} ${b}${diasParaProva != null ? `, ${diasParaProva} dias para a prova` : ''}`}
       >
         {/* Os espaços entre os spans não aparecem (flex), mas separam as palavras no nome. */}
         <span className={s.chipA}>{a}</span> <span className={s.chipB}>{b}</span>{' '}

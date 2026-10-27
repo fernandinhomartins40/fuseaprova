@@ -1,0 +1,123 @@
+.intro {
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fa-ink-2);
+}
+.secao {
+  font-size: var(--fa-t-secao);
+  margin: 24px 0 12px;
+}
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.cartao {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-surface);
+  border: 2px solid var(--fa-line);
+}
+.ativo {
+  border-color: var(--fa-turquesa);
+  box-shadow: 0 4px 0 var(--fa-turquesa-line);
+}
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.status {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fa-muted);
+  text-align: right;
+}
+.selo {
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--fa-turquesa-acao);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+.nome {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--fa-ink);
+  margin: 2px 0 0;
+}
+.meta {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fa-ink-2);
+}
+.preco {
+  display: flex;
+  flex-direction: column;
+  margin: 6px 0 2px;
+  font-size: 22px;
+  color: var(--fa-ink);
+}
+.desconto {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--fa-green-shade);
+}
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.aviso {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fa-muted);
+}
+.pagar {
+  font-weight: 900;
+  font-size: 15px;
+  color: #fff;
+  background: var(--fa-turquesa-acao);
+  border-radius: 14px;
+  padding: 12px 16px;
+  text-decoration: none;
+  box-shadow: 0 4px 0 var(--fa-petroleo);
+}
+.rodape {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+}
+.campoCargo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 900;
+  font-size: 14.5px;
+}
+.select {
+  min-height: 52px;
+  padding: 0 14px;
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--fa-ink);
+  border-radius: 14px;
+  border: 1.5px solid var(--fa-line-forte);
+  background: var(--fa-surface);
+}
