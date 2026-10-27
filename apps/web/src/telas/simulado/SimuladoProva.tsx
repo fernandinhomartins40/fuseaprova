@@ -75,12 +75,19 @@ function Prova({ sim }: { sim: SimuladoAndamento }) {
         } else {
           ok = false;
           entregue.current = false;
-          proximaTentativa.current = Date.now() + 10_000;
-          // As respostas já salvas estão no servidor, que entrega sozinho quando o tempo acaba.
+          const semRede = e instanceof ErroApi && e.semConexao;
+          // Sem rede: tenta de novo a cada 10 s. Outro erro: para de insistir (o servidor
+          // entrega sozinho quando o tempo acaba; as respostas já salvas estão lá).
+          proximaTentativa.current = semRede ? Date.now() + 10_000 : Number.POSITIVE_INFINITY;
           if (!automatica) toast(mensagemDeErro(e), 'erro');
           else if (!avisouFalha.current) {
             avisouFalha.current = true;
-            toast('O tempo acabou. Sem conexão agora: a prova será entregue assim que a internet voltar.', 'erro');
+            toast(
+              semRede
+                ? 'O tempo acabou. Sem conexão agora: a prova será entregue assim que a internet voltar.'
+                : `O tempo acabou. ${mensagemDeErro(e)} Suas respostas salvas serão entregues pelo servidor.`,
+              'erro',
+            );
           }
         }
       } finally {

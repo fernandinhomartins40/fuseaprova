@@ -265,7 +265,10 @@ O worker roda `/app/infra/backup/backup.sh` todo dia às **03:30** (America/Sao_
 - grava em `/root/fuseaprova/backups/diario/fuse_AAAA-MM-DD_HHMMSS.dump`;
 - guarda o primeiro backup de cada semana ISO em `semanal/` (hardlink);
 - mantém **14 dias** de diários e **8** semanais;
+- compacta os uploads e as figuras das questões (`/root/fuseaprova/arquivos`) em `arquivos/fuse_arquivos_AAAA-MM-DD.tar.gz`, um por dia, mantendo 14 dias (se o `tar` falhar, só avisa: o dump do banco continua valendo);
 - escreve o último sucesso em `/root/fuseaprova/backups/ULTIMO_BACKUP`.
+
+Confira se o job das 03:30 rodou: `/super/sistema` mostra as execuções do `backup` (até out/2026 ele falhava sempre por rodar com `sh`; corrigido na auditoria PIE).
 
 ```bash
 cat /root/fuseaprova/backups/ULTIMO_BACKUP
@@ -309,6 +312,15 @@ bash /root/fuseaprova/deploy/backup/teste-restore.sh
 ```
 
 Ele restaura num banco temporário, compara tabelas e linhas com a produção e termina com `TESTE DE RESTORE OK`. O resultado fica em `/root/fuseaprova/backups/teste-restore.log`.
+
+**Arquivos (uploads e figuras):** o `restore.sh` só restaura o banco. As imagens das questões ficam no tarball do mesmo dia. Para restaurá-las (o diretório atual é guardado ao lado):
+
+```bash
+cd /root/fuseaprova
+mv arquivos "arquivos.antes-restore-$(date +%Y%m%d%H%M%S)"
+mkdir arquivos && tar -xzf backups/arquivos/fuse_arquivos_2026-10-23.tar.gz -C arquivos
+chown -R 1000:1000 arquivos
+```
 
 **Restore em outra VPS:** rode o workflow nela (com o IP novo, `.github/vps_known_hosts` e `VPS_HOST_FINGERPRINT` atualizados nos workflows), restaure o **mesmo `.env`** em `/root/fuseaprova/deploy/.env`, faça um deploy, copie o `.dump` e `/root/fuseaprova/arquivos`, rode o `restore.sh` e só então aponte o DNS.
 

@@ -17,7 +17,7 @@
 #   semanal/fuse_AAAA-Wss.dump           1 por semana ISO, mantém 8
 #   ULTIMO_BACKUP                        data e caminho do último sucesso
 #
-#   arquivos/fuse_arquivos_AAAA-MM-DD_HHMMSS.tar.gz  uploads e figuras
+#   arquivos/fuse_arquivos_AAAA-MM-DD.tar.gz  uploads e figuras (1 por dia)
 #                                        ($ARQUIVOS_DIR), mantém os KEEP_DAILY mais recentes
 # Variáveis: BACKUP_DIR, KEEP_DAILY (14), KEEP_WEEKLY (8), TZ, DATABASE_URL,
 #            COMPOSE_FILE (modo docker), BACKUP_MODO, ARQUIVOS_DIR.
@@ -131,15 +131,25 @@ podar_por_quantidade "$BACKUP_DIR/semanal" "$KEEP_WEEKLY"
 
 # Uploads e figuras das questões (auditoria PIE R5-03): sem eles, o banco restaurado aponta
 # para imagens que não existem.
+# Um por dia (o do deploy e o das 03:30 se sobrescrevem), mantém os KEEP_DAILY dias mais
+# recentes. Falha aqui só gera aviso: o dump do banco já está salvo e o deploy não pode travar.
 if [[ -d "$ARQUIVOS_DIR" ]]; then
   mkdir -p "$BACKUP_DIR/arquivos"
-  ARQ="$BACKUP_DIR/arquivos/fuse_arquivos_${CARIMBO}.tar.gz"
-  tar -czf "$ARQ.parcial" -C "$ARQUIVOS_DIR" . || fail "falha ao compactar $ARQUIVOS_DIR"
-  mv -f -- "$ARQ.parcial" "$ARQ"
+  ARQ="$BACKUP_DIR/arquivos/fuse_arquivos_$(date '+%Y-%m-%d').tar.gz"
+  rc=0
+  tar -czf "$ARQ.parcial" -C "$ARQUIVOS_DIR" . 2>/dev/null || rc=$?
+  # tar 1 = "arquivo mudou durante a leitura" (upload no meio): o pacote é utilizável.
+  if (( rc <= 1 )) && [[ -s "$ARQ.parcial" ]]; then
+    mv -f -- "$ARQ.parcial" "$ARQ"
+    log "arquivos: $(basename "$ARQ") ($(du -h "$ARQ" | cut -f1))"
+  else
+    rm -f -- "$ARQ.parcial"
+    log "AVISO: falha ao compactar $ARQUIVOS_DIR (tar $rc); o dump do banco foi salvo"
+  fi
   mapfile -t antigos < <(find "$BACKUP_DIR/arquivos" -maxdepth 1 -type f -name 'fuse_arquivos_*.tar.gz' \
                            | sort -r | tail -n +"$(( KEEP_DAILY + 1 ))")
   for f in "${antigos[@]}"; do rm -f -- "$f"; log "removido (retenção de arquivos): $(basename "$f")"; done
-  log "arquivos: $(basename "$ARQ") ($(du -h "$ARQ" | cut -f1))"
+  find "$BACKUP_DIR/arquivos" -maxdepth 1 -type f -name '*.parcial' -delete 2>/dev/null || true
 else
   log "aviso: $ARQUIVOS_DIR não existe; uploads fora do backup"
 fi

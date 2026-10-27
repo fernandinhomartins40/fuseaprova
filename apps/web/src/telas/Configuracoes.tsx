@@ -338,7 +338,12 @@ export default function Configuracoes() {
           setSaindo(true);
           try {
             // Tenta enviar a fila offline antes; o que não subir é perdido ao sair (R2-06).
-            if (navigator.onLine) await sincronizar(u.id).catch(() => null);
+            // No máximo 8 s esperando a rede (V2-09): depois, decide com o que ficou pendente.
+            if (navigator.onLine)
+              await Promise.race([
+                sincronizar(u.id).catch(() => null),
+                new Promise((ok) => window.setTimeout(ok, 8000)),
+              ]);
             const n = await contarPendentes(u.id).catch(() => 0);
             if (n > 0) {
               setPendentesAoSair(n);
