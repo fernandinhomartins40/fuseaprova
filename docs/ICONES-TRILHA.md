@@ -54,10 +54,12 @@ ESTILO (igual em todos, para parecerem da mesma família)
   (referências: Fuse_Aprova_Assets_4K/mascote, Fuse_Aprova_Assets_4K/icones, Catalogo_visual.jpg).
 - Cada ícone é UM objeto, simples e legível a 54 px, silhueta clara, centralizado. Sem texto, sem
   letras (exceto onde a lista pede), sem moldura, sem fundo, sem personagens.
-- Cada tema usa a cor indicada como cor principal do objeto, com um tom mais escuro para sombras e
-  um acento pequeno em branco-creme #FAF8F2 ou dourado #FFC233. Nada de preto puro.
+- O botão da trilha JÁ tem a cor do tema, então o ícone NÃO pode ser dessa cor. Cada objeto usa as
+  suas cores naturais e cores variadas e vivas (amarelo, vermelho, laranja, azul, verde, rosa,
+  roxo, creme, dourado), 2 ou 3 por ícone. A cor do tema aparece em no máximo 25% do ícone, só como
+  detalhe. Os 6 ícones de lição têm cor principal diferente entre si. Nada de preto puro.
 - Os 6 ícones de lição de um mesmo tema devem ser objetos DIFERENTES entre si (nada de variações
-  da mesma coisa), mas todos na mesma cor do tema, para a trilha ter identidade.
+  da mesma coisa).
 - PROIBIDO: coruja, qualquer personagem, cor ou elemento que lembre o Duolingo; logotipos; texto
   em outro idioma; símbolos de governo, prefeitura ou banca.
 
