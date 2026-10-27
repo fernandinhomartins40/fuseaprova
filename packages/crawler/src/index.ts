@@ -21,6 +21,7 @@ export * from './importacao/pdf.js';
 export * from './importacao/texto-pdf.js';
 export * from './importacao/caderno.js';
 export * from './importacao/gabarito.js';
+export * from './importacao/pareamento.js';
 export * from './importacao/confronto.js';
 export * from './importacao/importar.js';
 export * from './prova.js';
