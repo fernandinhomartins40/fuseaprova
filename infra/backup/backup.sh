@@ -17,8 +17,10 @@
 #   semanal/fuse_AAAA-Wss.dump           1 por semana ISO, mantém 8
 #   ULTIMO_BACKUP                        data e caminho do último sucesso
 #
+#   arquivos/fuse_arquivos_AAAA-MM-DD_HHMMSS.tar.gz  uploads e figuras
+#                                        ($ARQUIVOS_DIR), mantém os KEEP_DAILY mais recentes
 # Variáveis: BACKUP_DIR, KEEP_DAILY (14), KEEP_WEEKLY (8), TZ, DATABASE_URL,
-#            COMPOSE_FILE (modo docker), BACKUP_MODO.
+#            COMPOSE_FILE (modo docker), BACKUP_MODO, ARQUIVOS_DIR.
 # Saída: 0 em sucesso; diferente de 0 em qualquer falha (o worker deve logar).
 # =============================================================================
 set -Eeuo pipefail
@@ -28,6 +30,7 @@ export TZ="${TZ:-America/Sao_Paulo}"
 BACKUP_DIR="${BACKUP_DIR:-$( [[ -f /.dockerenv ]] && echo /srv/fuse/backups || echo /root/fuseaprova/backups )}"
 KEEP_DAILY="${KEEP_DAILY:-14}"
 KEEP_WEEKLY="${KEEP_WEEKLY:-8}"
+ARQUIVOS_DIR="${ARQUIVOS_DIR:-$( [[ -f /.dockerenv ]] && echo /srv/fuse/arquivos || echo /root/fuseaprova/arquivos )}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMPOSE_FILE="${COMPOSE_FILE:-$SCRIPT_DIR/../docker-compose.yml}"
 
@@ -125,6 +128,21 @@ fi
 
 podar_diarios "$BACKUP_DIR/diario" "$KEEP_DAILY"
 podar_por_quantidade "$BACKUP_DIR/semanal" "$KEEP_WEEKLY"
+
+# Uploads e figuras das questões (auditoria PIE R5-03): sem eles, o banco restaurado aponta
+# para imagens que não existem.
+if [[ -d "$ARQUIVOS_DIR" ]]; then
+  mkdir -p "$BACKUP_DIR/arquivos"
+  ARQ="$BACKUP_DIR/arquivos/fuse_arquivos_${CARIMBO}.tar.gz"
+  tar -czf "$ARQ.parcial" -C "$ARQUIVOS_DIR" . || fail "falha ao compactar $ARQUIVOS_DIR"
+  mv -f -- "$ARQ.parcial" "$ARQ"
+  mapfile -t antigos < <(find "$BACKUP_DIR/arquivos" -maxdepth 1 -type f -name 'fuse_arquivos_*.tar.gz' \
+                           | sort -r | tail -n +"$(( KEEP_DAILY + 1 ))")
+  for f in "${antigos[@]}"; do rm -f -- "$f"; log "removido (retenção de arquivos): $(basename "$f")"; done
+  log "arquivos: $(basename "$ARQ") ($(du -h "$ARQ" | cut -f1))"
+else
+  log "aviso: $ARQUIVOS_DIR não existe; uploads fora do backup"
+fi
 
 printf '%s %s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$DESTINO" > "$BACKUP_DIR/ULTIMO_BACKUP"
 TAMANHO="$(du -h "$DESTINO" | cut -f1)"

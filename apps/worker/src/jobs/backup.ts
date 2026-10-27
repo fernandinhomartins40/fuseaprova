@@ -25,7 +25,9 @@ export function executarBackup(
     return Promise.resolve({ ok: false, codigo: null, ms: 0, erro });
   }
   return new Promise((resolve) => {
-    const filho = spawn(script.endsWith('.sh') ? 'sh' : script, script.endsWith('.sh') ? [script] : [], {
+    // bash, não sh: o backup.sh usa `set -o pipefail`, mapfile e [[ ]], que o dash (sh do Debian)
+    // recusa — o backup diário falhava sempre em produção (auditoria PIE R5-01).
+    const filho = spawn(script.endsWith('.sh') ? 'bash' : script, script.endsWith('.sh') ? [script] : [], {
       env: { ...process.env, ...opcoes.env },
       stdio: ['ignore', 'pipe', 'pipe'],
       timeout: opcoes.timeoutMs ?? 60 * 60_000,

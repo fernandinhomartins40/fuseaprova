@@ -201,7 +201,8 @@ describe('backup e agendamento', () => {
     const pasta = mkdtempSync(join(tmpdir(), 'fuse-bkp-'));
     const ok = join(pasta, 'ok.sh');
     const falha = join(pasta, 'falha.sh');
-    writeFileSync(ok, 'echo feito\nexit 0\n');
+    // Recursos de bash que o dash (sh do Debian) recusa, como no infra/backup/backup.sh (R5-01).
+    writeFileSync(ok, 'set -Eeuo pipefail\nmapfile -t x < <(echo a)\n[[ -n "${x[0]}" ]]\necho feito\nexit 0\n');
     writeFileSync(falha, 'echo erro >&2\nexit 3\n');
     expect((await executarBackup(ok, log)).ok).toBe(true);
     const r = await executarBackup(falha, log);
