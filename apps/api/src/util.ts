@@ -6,6 +6,13 @@ export type Db = BancoDados | Transacao;
 export const iso = (d: Date): string => d.toISOString();
 export const isoOuNull = (d: Date | null | undefined): string | null => (d ? d.toISOString() : null);
 
+/**
+ * Data como parâmetro de `sql` cru. O postgres.js de produção recusa `Date` solto
+ * (ERR_INVALID_ARG_TYPE); o PGlite dos testes aceita, então o erro só aparecia em produção
+ * (auditoria PIE R5-05). Use sempre isto para datas dentro de sql`...`.
+ */
+export const dataSql = (d: Date): SQL => sql`${d.toISOString()}::timestamptz`;
+
 /** Linhas de um `db.execute` (postgres.js devolve array; PGlite devolve `{ rows }`). */
 export function linhas<T>(res: unknown): T[] {
   const r = res as { rows?: T[] };

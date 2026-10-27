@@ -10,7 +10,7 @@ import { LIMITE_COMUNICACAO, type ComunicacaoSuper } from '@fuse/shared/api';
 import type { Deps } from '../../contexto.js';
 import type { Registrador } from '../../http/registrar.js';
 import { existe, falha } from '../../http/erros.js';
-import { consultar, contar, iso, isoOuNull, type Db } from '../../util.js';
+import { consultar, contar, dataSql, iso, isoOuNull, type Db } from '../../util.js';
 import { paginacao } from '../admin/comum.js';
 import { auditarSuper } from './comum.js';
 
@@ -28,7 +28,7 @@ export function condicaoSegmento(canal: Canal, segmento: Segmento, diasInativo: 
   if (segmento === 'inativos') {
     const desde = new Date(agora.getTime() - (diasInativo ?? 7) * MS_DIA);
     partes.push(sql`u.acesso = true`);
-    partes.push(sql`not exists (select 1 from tentativas t where t.usuario_id = u.id and t.respondida_em >= ${desde})`);
+    partes.push(sql`not exists (select 1 from tentativas t where t.usuario_id = u.id and t.respondida_em >= ${dataSql(desde)})`);
   }
   if (canal === 'push') partes.push(sql`exists (select 1 from push_inscricoes pi where pi.usuario_id = u.id)`);
   return sql.join(partes, sql` and `);

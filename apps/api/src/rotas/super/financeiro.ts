@@ -11,7 +11,7 @@ import { diaSP, MS_DIA, segundaDaSemana, somarDias, STATUS_PEDIDO } from '@fuse/
 import { gerarCsv, type FinanceiroResposta, type PontoFinanceiro } from '@fuse/shared/api';
 import type { Deps } from '../../contexto.js';
 import type { Registrador } from '../../http/registrar.js';
-import { consultar, contar, iso } from '../../util.js';
+import { consultar, contar, dataSql, iso } from '../../util.js';
 import { auditarSuper, nomeArquivoCsv, periodo, reais } from './comum.js';
 
 const { pedidos, usuarios } = schema;
@@ -126,7 +126,7 @@ export async function calcularFinanceiro(
     const [c] = await consultar<{ n: number }>(
       db,
       sql`select count(distinct p.usuario_id)::int n from pedidos p join usuarios u on u.id = p.usuario_id
-          where u.papel = 'aluno' and u.criado_em >= ${inicio} and u.criado_em < ${fim} and p.status in ('pago','estornado')`,
+          where u.papel = 'aluno' and u.criado_em >= ${dataSql(inicio)} and u.criado_em < ${dataSql(fim)} and p.status in ('pago','estornado')`,
     );
     convertidos = contar(c?.n);
   }
@@ -135,7 +135,7 @@ export async function calcularFinanceiro(
   const ativos = async (dias: number) => {
     const [r] = await consultar<{ n: number }>(
       db,
-      sql`select count(distinct usuario_id)::int n from tentativas where respondida_em >= ${new Date(ref.getTime() - dias * MS_DIA)} and respondida_em < ${ref}`,
+      sql`select count(distinct usuario_id)::int n from tentativas where respondida_em >= ${dataSql(new Date(ref.getTime() - dias * MS_DIA))} and respondida_em < ${dataSql(ref)}`,
     );
     return contar(r?.n);
   };

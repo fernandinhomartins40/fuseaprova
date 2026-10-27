@@ -17,7 +17,7 @@ import { dominioPorDisciplina } from '../../servicos/dominio.js';
 import { anonimizarUsuario, exportarDadosUsuario } from '../../servicos/lgpd.js';
 import { encerrarSessoesDoUsuario, gerarToken } from '../../servicos/sessoes.js';
 import { cargoDoUsuario, revisoesPendentes } from '../../servicos/usuario.js';
-import { contar, iso, isoOuNull, type Db } from '../../util.js';
+import { contar, dataSql, iso, isoOuNull, type Db } from '../../util.js';
 import { paginacao } from '../admin/comum.js';
 import { auditarSuper, celularOculto, garantirOutroSuperadmin, mapPagamento, nomeArquivoCsv, periodo } from './comum.js';
 
@@ -71,8 +71,8 @@ function ondeUsuarios(q: FiltrosUsuarios, agora: Date): SQL | undefined {
     q.acesso !== undefined ? eq(usuarios.acesso, q.acesso) : undefined,
     q.pago === true ? subPago : q.pago === false ? sql`not ${subPago}` : undefined,
     q.bloqueado === true ? isNotNull(usuarios.bloqueadoEm) : q.bloqueado === false ? isNull(usuarios.bloqueadoEm) : undefined,
-    q.ativoDias ? sql`exists (select 1 from tentativas t where t.usuario_id = "usuarios"."id" and t.respondida_em >= ${desde(q.ativoDias)})` : undefined,
-    q.inativoDias ? sql`not exists (select 1 from tentativas t where t.usuario_id = "usuarios"."id" and t.respondida_em >= ${desde(q.inativoDias)})` : undefined,
+    q.ativoDias ? sql`exists (select 1 from tentativas t where t.usuario_id = "usuarios"."id" and t.respondida_em >= ${dataSql(desde(q.ativoDias))})` : undefined,
+    q.inativoDias ? sql`not exists (select 1 from tentativas t where t.usuario_id = "usuarios"."id" and t.respondida_em >= ${dataSql(desde(q.inativoDias))})` : undefined,
     q.incluirExcluidos ? undefined : isNull(usuarios.excluidoEm),
     per ? gte(usuarios.criadoEm, per.inicio) : undefined,
     per ? lt(usuarios.criadoEm, per.fim) : undefined,
@@ -125,7 +125,7 @@ async function ficha(db: Db, id: string, agora: Date): Promise<FichaUsuarioRespo
     db.select({ n: count() }).from(simulados).where(and(eq(simulados.usuarioId, id), isNotNull(simulados.entregueEm))),
     db.select({ n: count() }).from(sessoesEstudo).where(eq(sessoesEstudo.usuarioId, id)),
     db.select().from(pedidos).where(eq(pedidos.usuarioId, id)).orderBy(desc(pedidos.criadoEm)),
-    db.select().from(sessoes).where(and(eq(sessoes.usuarioId, id), sql`${sessoes.expiraEm} > ${agora}`)).orderBy(desc(sessoes.ultimoUsoEm)),
+    db.select().from(sessoes).where(and(eq(sessoes.usuarioId, id), sql`${sessoes.expiraEm} > ${dataSql(agora)}`)).orderBy(desc(sessoes.ultimoUsoEm)),
     db.select().from(pushInscricoes).where(eq(pushInscricoes.usuarioId, id)).orderBy(desc(pushInscricoes.criadoEm)),
     cargoDoUsuario(db, u),
   ]);

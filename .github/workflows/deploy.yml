@@ -140,6 +140,21 @@ jobs:
     if: inputs.acao != 'rollback'
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Postgres 16 real (a mesma versão da VPS) para a 2ª rodada da API e do worker.
+    services:
+      postgres:
+        image: postgres:16-bookworm
+        env:
+          POSTGRES_USER: fuse
+          POSTGRES_PASSWORD: fuse
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fuse"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
     steps:
       - uses: actions/checkout@v5
 
@@ -160,9 +175,19 @@ jobs:
       - name: Tipos
         run: pnpm typecheck
 
-      # Os testes de banco usam PGlite (Postgres em WebAssembly): sem serviço postgres.
+      # Os testes de banco usam PGlite (Postgres em WebAssembly).
       - name: Testes
         run: pnpm test
+
+      # PGlite aceita coisas que o postgres.js de produção recusa (Date solto em sql cru
+      # derrubava o financeiro e o painel em produção, auditoria PIE R5-05): a API e o
+      # worker rodam de novo num Postgres 16 real, um banco novo por arquivo de teste.
+      - name: Testes da API e do worker no Postgres real
+        env:
+          TESTE_DATABASE_URL: postgres://fuse:fuse@localhost:5432/postgres
+        run: |
+          pnpm --filter @fuse/api test
+          pnpm --filter @fuse/worker test
 
   # ---------------------------------------------------------------------------
   # Playwright com a API real (PGlite em memória, Asaas falso). Roda em paralelo

@@ -20,7 +20,7 @@ import { existe, falha } from '../../http/erros.js';
 import { dominioPorDisciplina } from '../../servicos/dominio.js';
 import { encerrarSessoesDoUsuario } from '../../servicos/sessoes.js';
 import { cargoDoUsuario, revisoesPendentes } from '../../servicos/usuario.js';
-import { consultar, contar, iso, isoOuNull, type Db } from '../../util.js';
+import { consultar, contar, dataSql, iso, isoOuNull, type Db } from '../../util.js';
 import { auditar, paginacao } from './comum.js';
 
 const { pedidos, usuarios, reports, questoes, tentativas, sessoes, simulados, progressoLicoes, auditoria } = schema;
@@ -68,12 +68,12 @@ async function metricas(db: Db, agora: Date) {
   const alunos = await n(sql`select count(*)::int n from usuarios where papel = 'aluno'`);
   const pagantes = await n(sql`select count(distinct usuario_id)::int n from pedidos where status in ('pago','estornado')`);
   const d7 = new Date(agora.getTime() - 7 * MS_DIA);
-  const coorte = await n(sql`select count(distinct usuario_id)::int n from pedidos where status = 'pago' and pago_em <= ${d7}`);
+  const coorte = await n(sql`select count(distinct usuario_id)::int n from pedidos where status = 'pago' and pago_em <= ${dataSql(d7)}`);
   // Retenção D7: pagou há 7+ dias e respondeu alguma questão 7 dias ou mais depois do pagamento.
   const retidos = await n(sql`select count(distinct p.usuario_id)::int n from pedidos p
-      where p.status = 'pago' and p.pago_em <= ${d7}
+      where p.status = 'pago' and p.pago_em <= ${dataSql(d7)}
       and exists (select 1 from tentativas t where t.usuario_id = p.usuario_id and t.respondida_em >= p.pago_em + interval '7 days')`);
-  const licoes7 = await n(sql`select count(*)::int n from sessoes_estudo where tipo in ('licao','desafio') and concluida_em >= ${d7}`);
+  const licoes7 = await n(sql`select count(*)::int n from sessoes_estudo where tipo in ('licao','desafio') and concluida_em >= ${dataSql(d7)}`);
   const comAcesso = await n(sql`select count(*)::int n from usuarios where acesso = true and papel = 'aluno'`);
   const of7 = await n(sql`select count(*)::int n from usuarios where acesso = true and papel = 'aluno' and ofensiva >= 7`);
   const estornados = await n(sql`select count(*)::int n from pedidos where status = 'estornado' or reembolso_solicitado_em is not null`);
