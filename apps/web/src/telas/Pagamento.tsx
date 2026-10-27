@@ -67,6 +67,12 @@ export default function Pagamento() {
             : 'aguardando',
       );
     } catch (e) {
+      // Pagou no último segundo do Pix: o servidor já liberou o acesso (auditoria PIE R2-04).
+      if (e instanceof ErroApi && e.codigo === 'conflito') {
+        setEstado('pago');
+        void qc.invalidateQueries({ queryKey: CHAVES.me });
+        return;
+      }
       setErro(
         e instanceof ErroApi && e.codigo !== 'interno' && e.codigo !== 'pix_indisponivel'
           ? e.message
@@ -74,7 +80,7 @@ export default function Pagamento() {
       );
       setEstado('erro');
     }
-  }, []);
+  }, [qc]);
 
   useEffect(() => {
     if (pedido.current || me.data?.acesso) return;
@@ -124,14 +130,17 @@ export default function Pagamento() {
 
   async function copiar() {
     if (!pix) return;
+    let copiado = true;
     try {
       await navigator.clipboard.writeText(pix.payload);
     } catch {
       const campo = document.getElementById('pix-copia-cola') as HTMLInputElement | null;
       campo?.select();
-      document.execCommand?.('copy');
+      copiado = document.execCommand?.('copy') ?? false;
     }
-    toast('Código copiado', 'sucesso');
+    // Sem "copiado" falso (auditoria PIE R2-15): o código fica selecionado para copiar à mão.
+    if (copiado) toast('Código copiado', 'sucesso');
+    else toast('Não deu para copiar. Toque no código e copie manualmente.', 'erro');
   }
 
   if (estado === 'pago') {

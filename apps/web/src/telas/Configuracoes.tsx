@@ -12,6 +12,7 @@ import { camposDoErro, chamar, mensagemDeErro } from '../api/cliente';
 import { CHAVES, useConcurso, useMe } from '../api/consultas';
 import { ativarPush, desativarPush } from '../app/push';
 import { limparLocal, sair } from '../app/sair';
+import { contarPendentes, sincronizar } from '../offline/fila';
 import {
   Botao3D,
   CabecalhoVoltar,
@@ -74,6 +75,9 @@ export default function Configuracoes() {
   const [senhaAberta, setSenhaAberta] = useState(false);
   const [excluirAberto, setExcluirAberto] = useState(false);
   const [baixando, setBaixando] = useState(false);
+  /** Respostas offline ainda não enviadas: sair as apaga, então pede confirmação. */
+  const [pendentesAoSair, setPendentesAoSair] = useState(0);
+  const [saindo, setSaindo] = useState(false);
 
   const atualizar = useMutation({
     mutationFn: (corpo: MeAtualizarEntrada) => chamar('meAtualizar', { corpo }),
@@ -329,13 +333,51 @@ export default function Configuracoes() {
       <Botao3D
         variante="secundario"
         iconeEsquerda={<IconeTraco nome="sair" tamanho={20} />}
+        carregando={saindo}
         onClick={async () => {
-          await sair(qc);
-          navegar('/', { replace: true });
+          setSaindo(true);
+          try {
+            // Tenta enviar a fila offline antes; o que não subir é perdido ao sair (R2-06).
+            if (navigator.onLine) await sincronizar(u.id).catch(() => null);
+            const n = await contarPendentes(u.id).catch(() => 0);
+            if (n > 0) {
+              setPendentesAoSair(n);
+              return;
+            }
+            await sair(qc);
+            navegar('/', { replace: true });
+          } finally {
+            setSaindo(false);
+          }
         }}
       >
         SAIR
       </Botao3D>
+
+      <Modal
+        aberto={pendentesAoSair > 0}
+        titulo="Respostas ainda não enviadas"
+        onFechar={() => setPendentesAoSair(0)}
+        formato="folha"
+        descricao={`Você tem ${pendentesAoSair} ${pendentesAoSair === 1 ? 'resposta feita' : 'respostas feitas'} sem internet que ainda não ${pendentesAoSair === 1 ? 'foi enviada' : 'foram enviadas'}. Se sair agora, elas não contam para o seu progresso. Conecte-se e espere a sincronização para não perder nada.`}
+        rodape={
+          <>
+            <Botao3D variante="secundario" onClick={() => setPendentesAoSair(0)}>
+              FICAR E SINCRONIZAR
+            </Botao3D>
+            <Botao3D
+              variante="perigo"
+              onClick={async () => {
+                setPendentesAoSair(0);
+                await sair(qc);
+                navegar('/', { replace: true });
+              }}
+            >
+              SAIR MESMO ASSIM
+            </Botao3D>
+          </>
+        }
+      />
 
       <AlterarSenha aberto={senhaAberta} onFechar={() => setSenhaAberta(false)} />
       <ExcluirConta
