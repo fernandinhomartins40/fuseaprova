@@ -2,7 +2,7 @@
  * Layout dos e-mails (PRD 8.6), compartilhado entre a API (transacionais) e o worker
  * (comunicação do superadmin, D13). HTML de tabela, sem imagem externa nem CDN.
  */
-import { primeiroNome, RODAPE_LEGAL } from './copy.js';
+import { EMPRESA, primeiroNome, RODAPE_LEGAL } from './copy.js';
 
 // Paleta D1: petróleo, turquesa, laranja, marfim, texto.
 export const CORES_EMAIL = {
@@ -30,7 +30,7 @@ export function layoutEmail(titulo: string, corpoHtml: string, rodapeExtra = '')
 <h1 style="margin:0 0 16px;font-size:22px;color:${COR.petroleo}">${escHtml(titulo)}</h1>
 ${corpoHtml}
 </td></tr>
-<tr><td style="padding:16px 28px;background:${COR.marfim};font-size:12px;color:#5b6b6c">${rodapeExtra}${escHtml(RODAPE_LEGAL)}</td></tr>
+<tr><td style="padding:16px 28px;background:${COR.marfim};font-size:12px;color:#5b6b6c">${rodapeExtra}${escHtml(RODAPE_LEGAL)}<br>${escHtml(`${EMPRESA.razaoSocial} · CNPJ ${EMPRESA.cnpj}`)}</td></tr>
 </table></td></tr></table></body></html>`;
 }
 

@@ -8,7 +8,7 @@ import { normalizarEmail, SENHA_MINIMA, validarEmail, validarNomeCompleto } from
 import { AREAS_CONTA } from '../dominio.js';
 import { Uuid, ZPapel } from './comum.js';
 
-export const VERSAO_TERMOS_ATUAL = '2026-10-27';
+export const VERSAO_TERMOS_ATUAL = '2026-10-28';
 
 export const MENSAGENS_CADASTRO = {
   nome: 'Informe seu nome completo (nome e sobrenome).',

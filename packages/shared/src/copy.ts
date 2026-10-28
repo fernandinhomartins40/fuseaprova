@@ -10,6 +10,18 @@ export const NOME_PRODUTO = 'Fuse Aprova';
 export const AVISO_EDITAL =
   'Quando o edital de Palmital sair, as trilhas e os simulados se ajustam ao seu cargo, sem custo extra.';
 
+/**
+ * D26: quem vende e quem controla os dados (CDC; Decreto 7.962/2013, art. 2º; LGPD, arts. 9º e 41).
+ * Dados públicos do cartão CNPJ. Mudou o contrato social? Atualize aqui e a versão dos termos.
+ */
+export const EMPRESA = {
+  razaoSocial: 'FUSE AGENCIA LTDA',
+  cnpj: '42.761.086/0001-15',
+  endereco: 'Rua Antonio Gregorio Ferreira, 298, Conradinho, Guarapuava/PR, CEP 85055-270',
+  encarregado: 'Luiz Fernando Martins Oliveira',
+  foro: 'Guarapuava/PR',
+} as const;
+
 export const RODAPE_LEGAL =
   'Fuse Aprova não tem vínculo com a FAU-Unicentro nem com a Prefeitura de Palmital.';
 
