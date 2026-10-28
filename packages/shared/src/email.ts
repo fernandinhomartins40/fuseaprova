@@ -47,6 +47,26 @@ export function paragrafosHtml(texto: string): string {
 }
 
 /**
+ * S-09: alerta da operação para os superadmins (job falho ou atrasado, backup velho, rajada de
+ * 5xx, disco cheio), enviado pelo job `alertas` do worker com o SMTP do .env.
+ */
+export function emailAlertaOperacao(d: {
+  nome: string;
+  problemas: readonly string[];
+  painel: string;
+}): { assunto: string; html: string; texto: string } {
+  const ola = `Olá, ${primeiroNome(d.nome)}.`;
+  const qtd = d.problemas.length === 1 ? 'um problema' : `${d.problemas.length} problemas`;
+  const lista = d.problemas.map((p) => `<li>${escHtml(p)}</li>`).join('\n');
+  const html = layoutEmail(
+    'Alerta do Fuse Aprova',
+    `<p>${escHtml(ola)} O monitoramento encontrou ${qtd}:</p>\n<ul>${lista}</ul>\n${botaoEmail(d.painel, 'ABRIR O PAINEL SISTEMA')}\n<p style="font-size:14px;color:#5b6b6c">O mesmo alerta não se repete antes de 6 horas.</p>`,
+  );
+  const texto = `${ola} O monitoramento do Fuse Aprova encontrou ${qtd}:\n${d.problemas.map((p) => `- ${p}`).join('\n')}\n\nPainel: ${d.painel}`;
+  return { assunto: `Fuse Aprova: alerta da operação (${d.problemas.length})`, html, texto };
+}
+
+/**
  * E-mail de comunicação (marketing, só para quem deu opt-in). Leva no rodapé como deixar
  * de receber (Configurações → Novidades por e-mail e push).
  */

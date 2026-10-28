@@ -339,7 +339,16 @@ export const ConciliarLoteResposta = z.object({
   /** Havia mais pedidos que o limite; rode de novo com um período menor. */
   limiteAtingido: z.boolean(),
   itens: z.array(ConciliacaoItem),
+  /**
+   * S-20: pedidos do lote que ficaram sem conferir porque o tempo da requisição acabou (o Asaas
+   * estava lento). A resposta é parcial e honesta: rode de novo para conferir o resto.
+   */
+  naoConferidos: z.number().int().default(0),
+  /** Resumo pronto para a tela ("Conferidos 80 de 100. Rode de novo para o resto."). */
+  mensagem: z.string().nullable().default(null),
 });
+/** S-20: até quantos pedidos um lote confere e quantas consultas ao Asaas em paralelo. */
+export const LIMITE_CONCILIACAO_LOTE = { pedidos: 100, paralelas: 4 } as const;
 export type ConciliarLoteResposta = z.infer<typeof ConciliarLoteResposta>;
 
 /** POST /super/pagamentos/:id/reembolso — estorno total no Asaas. */
@@ -1069,7 +1078,7 @@ const RE_NUMERO_CSV = /^-?\d+([.,]\d+)?$/;
  * Começo que vira fórmula na planilha, também depois de espaços e com os sinais de largura total
  * (＝ ＋ － ＠) que o Excel converte (S-18, R1-15).
  */
-const RE_FORMULA_CSV = /^[\s 　]*[=+\-@\t\r＝＋－＠]/;
+const RE_FORMULA_CSV = /^[\s\u00a0\u3000]*[=+\-@\t\r\uff1d\uff0b\uff0d\uff20]/;
 
 /**
  * Escapa um valor para CSV com `;` (Excel pt-BR). Fórmulas viram texto (prefixo `'`), mas números,

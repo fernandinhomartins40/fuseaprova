@@ -51,7 +51,7 @@ export interface UltimoBackup {
   em: Date | null;
   /** Caminho do dump. */
   caminho: string | null;
-  /** `arquivos=ok|falhou` (o tar dos uploads); null em arquivos antigos, sem a marca. */
+  /** `arquivos=ok|falhou` (o tar dos uploads); null sem a marca ou com `arquivos=ausente`. */
   arquivosOk: boolean | null;
 }
 
@@ -70,6 +70,6 @@ export function lerUltimoBackup(texto: string): UltimoBackup {
   return {
     em,
     caminho: caminho ?? null,
-    arquivosOk: marca ? marca === 'arquivos=ok' : null,
+    arquivosOk: marca === 'arquivos=ok' ? true : marca === 'arquivos=falhou' ? false : null,
   };
 }

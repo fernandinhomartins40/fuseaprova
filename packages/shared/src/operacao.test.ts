@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MS_HORA, MS_MINUTO } from './datas.js';
+import { emailAlertaOperacao } from './email.js';
 import {
   folgaDoIntervalo,
   idadeEmHoras,
@@ -69,6 +70,7 @@ describe('S-09: agenda dos jobs', () => {
       false,
     );
     expect(lerUltimoBackup('2026-10-26T22:12:50-03:00 /x.dump arquivos=ok').arquivosOk).toBe(true);
+    expect(lerUltimoBackup('2026-10-26T22:12:50-03:00 /x.dump arquivos=ausente').arquivosOk).toBeNull();
     expect(lerUltimoBackup('lixo')).toEqual({ em: null, caminho: null, arquivosOk: null });
     expect(lerUltimoBackup('2026-99-99T99:99:99-0300 /x').em).toBeNull();
   });
@@ -76,6 +78,17 @@ describe('S-09: agenda dos jobs', () => {
   it('todo job tem nome em português e a agenda tem o job de alertas', () => {
     for (const j of JOBS_WORKER) expect(j.titulo.length).toBeGreaterThan(3);
     expect(JOBS_WORKER.find((j) => j.nome === 'alertas')?.cron).toBe('*/15 * * * *');
+  });
+});
+
+describe('S-09: e-mail de alerta', () => {
+  it('lista os problemas escapados e leva ao painel', () => {
+    const um = emailAlertaOperacao({ nome: 'Luiz Oliveira', problemas: ['Backup <atrasado>'], painel: 'https://app.x/super/sistema' });
+    expect(um.assunto).toBe('Fuse Aprova: alerta da operação (1)');
+    expect(um.html).toContain('um problema');
+    expect(um.html).toContain('Backup &#60;atrasado&#62;');
+    expect(um.texto).toContain('https://app.x/super/sistema');
+    expect(emailAlertaOperacao({ nome: 'Ana', problemas: ['a', 'b'], painel: 'x' }).texto).toContain('2 problemas');
   });
 });
 
