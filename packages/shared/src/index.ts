@@ -23,4 +23,5 @@ export * from './copy.js';
 export * from './licao.js';
 export * from './cifra.js';
 export * from './email.js';
+export * from './operacao.js';
 export * as api from './api/index.js';

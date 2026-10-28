@@ -19,7 +19,7 @@ describe('contratos de preço (D23)', () => {
 });
 
 describe('contratos de cupom (D23)', () => {
-  const base = { descricao: '', validoAte: null, limiteUsos: null, concursoId: null, ativo: true, motivo: 'Campanha' };
+  const base = { descricao: '', validoAte: null, limiteUsos: null, concursoId: null, ativo: true, motivo: 'Campanha', confirmacao: { senha: 'x' } };
 
   it('normaliza o código e limita o desconto', () => {
     expect(CupomSalvarEntrada.parse({ ...base, codigo: ' palmital 10 ', tipo: 'percentual', valor: 10 }).codigo).toBe('PALMITAL10');

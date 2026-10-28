@@ -1213,13 +1213,14 @@ export const ROTAS = {
     limite: LIMITE_SENSIVEL,
   }),
   superUsuarioExportar: rota({
-    metodo: 'GET',
+    metodo: 'POST',
     caminho: '/super/usuarios/:id/exportar',
     guarda: 'superadmin',
-    descricao: 'LGPD: exporta os dados do usuário (JSON).',
+    descricao: 'LGPD: exporta os dados do usuário (JSON), com motivo e reconfirmação (S-21).',
     params: IdParams,
+    corpo: sa.ExportarUsuarioEntrada,
     resposta: sa.ExportarUsuarioResposta,
-    limite: LIMITE_SUPER,
+    limite: LIMITE_SENSIVEL,
   }),
   superUsuarioAnonimizar: rota({
     metodo: 'POST',
@@ -1295,12 +1296,23 @@ export const ROTAS = {
     resposta: sa.ComunicacaoSuper,
     limite: LIMITE_SUPER,
   }),
+  superComunicacaoRetomar: rota({
+    metodo: 'POST',
+    caminho: '/super/comunicacoes/:id/retomar',
+    guarda: 'superadmin',
+    descricao: 'Põe de volta na fila uma comunicação pausada por falha do SMTP (S-17).',
+    params: IdParams,
+    corpo: sa.ComunicacaoRetomarEntrada,
+    resposta: sa.ComunicacaoSuper,
+    limite: LIMITE_SUPER,
+  }),
 
   superSistema: rota({
     metodo: 'GET',
     caminho: '/super/sistema',
     guarda: 'superadmin',
-    descricao: 'Saúde da API, do banco, do worker, backup, versão e SMTP.',
+    descricao:
+      'Saúde da API, do banco, do worker (atrasos e sinal de vida), backup (idade), SMTP e Asaas testados, disco e erros 5xx.',
     resposta: sa.SistemaResposta,
     limite: LIMITE_SUPER,
   }),

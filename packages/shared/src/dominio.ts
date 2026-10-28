@@ -103,7 +103,8 @@ export const NOMES_SEGMENTO_COMUNICACAO: Record<SegmentoComunicacao, string> = {
   sem_pagamento: 'Cadastrados sem pagamento',
 };
 
-export const STATUS_COMUNICACAO = ['na_fila', 'enviando', 'concluida', 'cancelada'] as const;
+/** `pausada` (S-17): o disjuntor parou a fila por falha do SMTP; os envios seguem pendentes. */
+export const STATUS_COMUNICACAO = ['na_fila', 'enviando', 'concluida', 'cancelada', 'pausada'] as const;
 export type StatusComunicacao = (typeof STATUS_COMUNICACAO)[number];
 
 export const STATUS_ENVIO_COMUNICACAO = ['pendente', 'enviado', 'falhou', 'ignorado'] as const;

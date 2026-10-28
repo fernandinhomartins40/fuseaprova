@@ -95,17 +95,27 @@ function regraValorCupom(v: { tipo: string; valor: number }, ctx: z.RefinementCt
   }
 }
 
-/** POST /super/cupons e PUT /super/cupons/:id */
-export const CupomSalvarEntrada = CupomBase.extend({ motivo: MotivoObrigatorio }).superRefine(regraValorCupom);
+/**
+ * POST /super/cupons e PUT /super/cupons/:id. S-12: um cupom muda o preço na prática, então pede
+ * a mesma reconfirmação do preço (D23).
+ */
+export const CupomSalvarEntrada = CupomBase.extend({ motivo: MotivoObrigatorio, confirmacao: Reconfirmacao }).superRefine(
+  regraValorCupom,
+);
 export type CupomSalvarEntrada = z.input<typeof CupomSalvarEntrada>;
 
 export const CupomItem = CupomBase.extend({
   id: Uuid,
   concursoNome: z.string().nullable(),
-  /** Pagamentos confirmados com o cupom (é o que conta para o limite). */
+  /** Pagamentos confirmados com o cupom. */
   usos: z.number().int(),
   /** Pix gerados com o cupom e ainda não pagos. */
   pendentes: z.number().int(),
+  /**
+   * S-12 (C8): o que conta para o limite = pagos + Pix pendentes ainda não expirados (reserva).
+   * Quando chega ao limite, ninguém mais gera Pix com o cupom; o Pix já pago é sempre honrado.
+   */
+  reservados: z.number().int(),
   criadoEm: DataHora,
   atualizadoEm: DataHora,
 });

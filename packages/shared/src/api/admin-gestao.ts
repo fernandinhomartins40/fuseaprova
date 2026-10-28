@@ -292,5 +292,10 @@ export const ACOES_AUDITORIA = [
   'precos.salvar',
   'cupom.criar',
   'cupom.atualizar',
+  // Lote 2 da auditoria do painel (S-16, S-17)
+  '2fa.falha',
+  '2fa.bloqueio',
+  'reconfirmacao.falha',
+  'comunicacao.retomar',
 ] as const;
 export type AcaoAuditoria = (typeof ACOES_AUDITORIA)[number];

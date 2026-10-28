@@ -55,6 +55,8 @@ export const CODIGOS_ERRO = {
   ultimo_superadmin: 409,
   asaas_indisponivel: 502,
   manutencao: 503,
+  banco_indisponivel: 503,
+  dois_fatores_bloqueado: 429,
   interno: 500,
 } as const;
 export type CodigoErro = keyof typeof CODIGOS_ERRO;
@@ -90,6 +92,10 @@ export const MENSAGENS_ERRO: Record<CodigoErro, string> = {
   ultimo_superadmin: 'Não é possível remover o último superadmin ativo.',
   asaas_indisponivel: 'O Asaas não respondeu agora. Tente de novo em alguns minutos.',
   manutencao: 'O Fuse Aprova está em manutenção. Volte em alguns minutos.',
+  banco_indisponivel:
+    'O banco de dados não está respondendo. O app volta sozinho quando ele voltar; se passar de alguns minutos, confira a VPS.',
+  dois_fatores_bloqueado:
+    'Muitos códigos errados. Por segurança, a verificação ficou bloqueada por alguns minutos.',
   interno: 'Algo deu errado do nosso lado. Tente de novo em instantes.',
 };
 
@@ -120,6 +126,13 @@ export function erroDeValidacao(e: z.ZodError): ErroApi {
   const primeira = e.issues[0]?.message;
   return erroApi('validacao', e.issues.length === 1 && primeira ? primeira : undefined, campos);
 }
+
+/**
+ * S-15: cabeçalho das requisições automáticas (polling, atualização em segundo plano). A API
+ * atende normalmente, mas não conta como uso da sessão: a ociosidade de 2 h do superadmin
+ * (D13) continua correndo. Valor: "1".
+ */
+export const HEADER_SEGUNDO_PLANO = 'x-fuse-segundo-plano';
 
 /* --------------------------------------------------------------- primitivos */
 

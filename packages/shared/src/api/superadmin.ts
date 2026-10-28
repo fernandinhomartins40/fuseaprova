@@ -70,8 +70,19 @@ export const MotivoObrigatorio = z
 
 export const MotivoOpcional = z.string().trim().max(500).optional();
 
-/** Exportação: o CSV (separador `;`, UTF-8 com BOM) pronto para baixar. */
-export const ArquivoCsvResposta = z.object({ nomeArquivo: z.string(), conteudo: z.string() });
+/**
+ * Exportação: o CSV (separador `;`, UTF-8 com BOM) pronto para baixar. S-18: nada é cortado em
+ * silêncio. `linhas` = linhas de dados no arquivo; `aviso` explica um corte (acima de
+ * `LIMITE_LINHAS_CSV`, com o total do filtro), e o próprio CSV traz o aviso na última linha.
+ */
+export const ArquivoCsvResposta = z.object({
+  nomeArquivo: z.string(),
+  conteudo: z.string(),
+  linhas: z.number().int().optional(),
+  aviso: z.string().nullable().default(null),
+});
+/** Teto de linhas de um CSV do painel (acima disso, filtre por período). */
+export const LIMITE_LINHAS_CSV = 100_000;
 export type ArquivoCsvResposta = z.infer<typeof ArquivoCsvResposta>;
 
 /** Período padrão de consultas: `de` e `ate` em 'AAAA-MM-DD' (São Paulo). */
@@ -662,6 +673,8 @@ export const EditarUsuarioEntrada = z
     email: CampoEmail.optional(),
     celular: CampoCelular.optional(),
     motivo: MotivoObrigatorio,
+    /** S-11: obrigatória para trocar o e-mail de uma conta da equipe (admin ou superadmin). */
+    confirmacao: Reconfirmacao.optional(),
   })
   .refine((o) => o.nome !== undefined || o.email !== undefined || o.celular !== undefined, 'Nada para atualizar.');
 export type EditarUsuarioEntrada = z.input<typeof EditarUsuarioEntrada>;
@@ -671,11 +684,17 @@ export const ForcarSenhaEntrada = z.object({
   motivo: MotivoObrigatorio,
   /** Também encerra as sessões abertas. */
   revogarSessoes: z.boolean().default(true),
+  /** S-11: obrigatória quando a conta é da equipe (admin ou superadmin). */
+  confirmacao: Reconfirmacao.optional(),
 });
 export type ForcarSenhaEntrada = z.input<typeof ForcarSenhaEntrada>;
 
 /** POST /super/usuarios/:id/bloquear e /desbloquear */
-export const BloqueioEntrada = z.object({ motivo: MotivoObrigatorio });
+export const BloqueioEntrada = z.object({
+  motivo: MotivoObrigatorio,
+  /** S-11: obrigatória para bloquear um superadmin. */
+  confirmacao: Reconfirmacao.optional(),
+});
 export type BloqueioEntrada = z.input<typeof BloqueioEntrada>;
 
 /** POST /super/usuarios/:id/papel */
@@ -695,7 +714,15 @@ export const AnonimizarEntrada = z.object({
 });
 export type AnonimizarEntrada = z.input<typeof AnonimizarEntrada>;
 
-/** GET /super/usuarios/:id/exportar (LGPD). */
+/**
+ * POST /super/usuarios/:id/exportar (LGPD). S-21: exportar os dados de outra pessoa (com o CPF
+ * completo) exige motivo e reconfirmação e fica na auditoria.
+ */
+export const ExportarUsuarioEntrada = z.object({
+  motivo: MotivoObrigatorio,
+  confirmacao: Reconfirmacao,
+});
+export type ExportarUsuarioEntrada = z.input<typeof ExportarUsuarioEntrada>;
 export const ExportarUsuarioResposta = ExportarResposta;
 
 /** DELETE /super/usuarios/:id/sessoes/:sessaoId */
@@ -773,8 +800,19 @@ export const ComunicacaoPreviaResposta = z.object({
 });
 export type ComunicacaoPreviaResposta = z.infer<typeof ComunicacaoPreviaResposta>;
 
-/** POST /super/comunicacoes — entra na fila do worker. */
-export const ComunicacaoCriarEntrada = comInativos(ComunicacaoBase.extend({ motivo: MotivoOpcional }));
+/**
+ * POST /super/comunicacoes — entra na fila do worker. S-17: pede motivo e reconfirmação (vai para
+ * todos os alunos pelo domínio oficial). `chaveIdempotencia` (um UUID gerado pela tela a cada
+ * prévia) faz o 2º clique devolver a mesma comunicação em vez de criar outra; sem a chave, uma
+ * comunicação idêntica criada nos últimos `LIMITE_COMUNICACAO.duplicadaMs` é recusada (409).
+ */
+export const ComunicacaoCriarEntrada = comInativos(
+  ComunicacaoBase.extend({
+    motivo: MotivoObrigatorio,
+    confirmacao: Reconfirmacao,
+    chaveIdempotencia: Uuid.optional(),
+  }),
+);
 export type ComunicacaoCriarEntrada = z.input<typeof ComunicacaoCriarEntrada>;
 
 export const ComunicacaoSuper = z.object({
@@ -795,8 +833,15 @@ export const ComunicacaoSuper = z.object({
   criadoEm: DataHora,
   iniciadoEm: DataHora.nullable(),
   concluidoEm: DataHora.nullable(),
+  /** S-17: por que o worker pausou (SMTP fora); null = não está pausada. */
+  pausadaMotivo: z.string().nullable(),
+  pausadaEm: DataHora.nullable(),
 });
 export type ComunicacaoSuper = z.infer<typeof ComunicacaoSuper>;
+
+/** POST /super/comunicacoes/:id/retomar — volta para a fila uma comunicação pausada (S-17). */
+export const ComunicacaoRetomarEntrada = z.object({ motivo: MotivoObrigatorio });
+export type ComunicacaoRetomarEntrada = z.input<typeof ComunicacaoRetomarEntrada>;
 export const ComunicacoesQuery = PaginacaoQuery;
 export const ComunicacoesListaResposta = paginada(ComunicacaoSuper);
 export type ComunicacoesListaResposta = z.infer<typeof ComunicacoesListaResposta>;
@@ -809,13 +854,34 @@ export const LIMITE_COMUNICACAO = {
   intervaloPorAlunoMs: 24 * 60 * 60 * 1000,
   /** Comunicações criadas por dia (todas as contas). */
   porDia: 5,
+  /** S-17: sem chave de idempotência, uma comunicação idêntica nesse intervalo é recusada. */
+  duplicadaMs: 10 * 60 * 1000,
+  /** S-17: tentativas de um envio com falha temporária do SMTP (espera crescente entre elas). */
+  tentativasEnvio: 3,
+  /** S-17: falhas temporárias seguidas numa rodada que pausam a comunicação (disjuntor). */
+  falhasParaPausar: 3,
 } as const;
 
 /* ----------------------------------------------------------------- sistema */
 
+/** S-09: estado de um job no painel. */
+export const ESTADOS_JOB = ['ok', 'atrasado', 'falhou', 'nunca_rodou'] as const;
+export const ZEstadoJob = z.enum(ESTADOS_JOB);
+/** S-09: estado de um indicador (banco, backup, SMTP, Asaas, push, disco). */
+export const ESTADOS_INDICADOR = ['ok', 'atencao', 'falhou', 'nao_testado', 'nao_configurado'] as const;
+export const ZEstadoIndicador = z.enum(ESTADOS_INDICADOR);
+
 export const ExecucaoJob = z.object({
   job: z.string(),
+  /** S-09: nome em português ("Backup do banco"). */
+  nome: z.string(),
+  descricao: z.string().nullable(),
   cron: z.string().nullable(),
+  estado: ZEstadoJob,
+  /** A última execução é mais velha que o intervalo da agenda (com folga). */
+  atrasado: z.boolean(),
+  /** Até quando a próxima execução precisa acontecer para não ficar atrasado. */
+  esperadaAte: DataHora.nullable(),
   ultima: z
     .object({
       iniciadoEm: DataHora,
@@ -847,22 +913,84 @@ export const SistemaResposta = z.object({
     tamanhoBytes: z.number().nullable(),
     conexoes: z.number().int().nullable(),
     maxConexoes: z.number().int().nullable(),
+    /** S-09: mensagem do erro quando `ok` é false. */
+    erro: z.string().nullable(),
   }),
-  worker: z.object({ jobs: z.array(ExecucaoJob) }),
+  worker: z.object({
+    jobs: z.array(ExecucaoJob),
+    /** S-09: o worker não dá sinal de vida há mais de `LIMITES_SISTEMA.workerParadoMin`. */
+    parado: z.boolean(),
+    ultimoSinalEm: DataHora.nullable(),
+    versao: z.string().nullable(),
+  }),
   backup: z.object({
     ultimo: z.string().nullable(),
     ultimoJob: DataHora.nullable(),
     ultimoJobOk: z.boolean().nullable(),
     fonte: z.string(),
     aviso: z.string().nullable(),
+    /** S-09: `ok`, `atencao` (mais de 26 h), `falhou` (o último job falhou) ou `nao_configurado`. */
+    estado: ZEstadoIndicador,
+    /** Quando o último backup bem-sucedido terminou (ULTIMO_BACKUP). */
+    ultimoEm: DataHora.nullable(),
+    idadeHoras: z.number().nullable(),
+    atrasado: z.boolean(),
   }),
-  smtp: z.object({ configurado: z.boolean(), host: z.string().nullable() }),
-  asaas: z.object({ chaveConfigurada: z.boolean(), ambiente: AmbienteAsaas }),
-  push: z.object({ configurado: z.boolean() }),
+  smtp: z.object({
+    configurado: z.boolean(),
+    host: z.string().nullable(),
+    /** S-09: `ok`/`falhou` vêm de um teste real (verify, sem enviar e-mail, com cache curto). */
+    estado: ZEstadoIndicador,
+    mensagem: z.string(),
+    testadoEm: DataHora.nullable(),
+  }),
+  asaas: z.object({
+    chaveConfigurada: z.boolean(),
+    ambiente: AmbienteAsaas,
+    estado: ZEstadoIndicador,
+    mensagem: z.string(),
+    testadoEm: DataHora.nullable(),
+  }),
+  /** Push não tem teste barato sem enviar: fica `nao_testado` ("configurado, não testado"). */
+  push: z.object({ configurado: z.boolean(), estado: ZEstadoIndicador, mensagem: z.string() }),
+  /** S-09: espaço livre no disco de ARQUIVOS_DIR (null = não deu para medir). */
+  disco: z
+    .object({
+      caminho: z.string(),
+      livreBytes: z.number(),
+      totalBytes: z.number(),
+      percentualLivre: z.number(),
+      estado: ZEstadoIndicador,
+    })
+    .nullable(),
+  /** S-09: respostas 5xx da API nas últimas 24 h (sem dados pessoais). */
+  erros5xx: z.object({
+    ultimas24h: z.number().int(),
+    ultimaEm: DataHora.nullable(),
+    porRota: z.array(z.object({ rota: z.string(), status: z.number().int(), quantidade: z.number().int() })),
+  }),
+  /** S-09: resumo para o topo da tela ("Tudo certo" ou a lista de problemas). */
+  resumo: z.object({ estado: z.enum(['ok', 'atencao', 'falhou']), problemas: z.array(z.string()) }),
   precoCentavos: z.number().int(),
   geradoEm: DataHora,
 });
 export type SistemaResposta = z.infer<typeof SistemaResposta>;
+
+/** S-09: limites do painel Sistema e dos alertas por e-mail. */
+export const LIMITES_SISTEMA = {
+  /** Backup mais velho que isso = atrasado (vermelho e alerta). */
+  backupHoras: 26,
+  /** Sem sinal do worker por mais que isso = worker parado. */
+  workerParadoMin: 5,
+  /** Disco com menos que isso livre = alerta. */
+  discoPercentualMinimo: 10,
+  /** 5xx numa janela de 15 min a partir disso = rajada (alerta). */
+  rajada5xx: 10,
+  /** Um mesmo alerta não se repete antes disso. */
+  repetirAlertaHoras: 6,
+  /** Erros 5xx guardados por (dias). */
+  retencaoErrosDias: 30,
+} as const;
 
 /* ---------------------------------------------------------- configurações */
 
@@ -935,11 +1063,22 @@ export type SuperAuditoriaListaResposta = z.infer<typeof SuperAuditoriaListaResp
 
 /* -------------------------------------------------------------------- CSV */
 
-/** Escapa um valor para CSV com `;` (Excel pt-BR). Fórmulas viram texto. */
+/** Número como o Excel pt-BR lê (inteiro ou decimal com vírgula ou ponto, com sinal). */
+const RE_NUMERO_CSV = /^-?\d+([.,]\d+)?$/;
+/**
+ * Começo que vira fórmula na planilha, também depois de espaços e com os sinais de largura total
+ * (＝ ＋ － ＠) que o Excel converte (S-18, R1-15).
+ */
+const RE_FORMULA_CSV = /^[\s 　]*[=+\-@\t\r＝＋－＠]/;
+
+/**
+ * Escapa um valor para CSV com `;` (Excel pt-BR). Fórmulas viram texto (prefixo `'`), mas números,
+ * inclusive negativos ("-397,00"), continuam números para a planilha somar (R4-10).
+ */
 export function celulaCsv(v: unknown): string {
   if (v === null || v === undefined) return '';
   let s = typeof v === 'string' ? v : String(v);
-  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
+  if (!RE_NUMERO_CSV.test(s) && RE_FORMULA_CSV.test(s)) s = `'${s}`;
   return /[;"\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
@@ -950,19 +1089,39 @@ export function gerarCsv(cabecalho: readonly string[], linhas: readonly (readonl
 
 /* --------------------------------------------------------- jobs do worker */
 
-/** Jobs do worker (PRD 8.7 + D13), no fuso de São Paulo. O worker agenda exatamente estes. */
+/**
+ * Jobs do worker (PRD 8.7 + D13), no fuso de São Paulo. O worker agenda exatamente estes.
+ * `titulo` é o nome que o dono vê no painel (S-09, R2-19).
+ */
 export const JOBS_WORKER = [
   {
     nome: 'fechar-liga',
+    titulo: 'Fechamento da liga',
     cron: '59 * * * *',
     descricao: 'Fecha a liga da semana (domingo 23:59; de hora em hora recupera um fechamento perdido)',
   },
-  { nome: 'resetar-vidas', cron: '0 0 * * *', descricao: 'Recarrega as vidas à meia-noite' },
-  { nome: 'verificar-ofensivas', cron: '5 0 * * *', descricao: 'Zera ofensivas e gasta protetores' },
-  { nome: 'enviar-lembretes', cron: '*/5 * * * *', descricao: 'Lembretes por push' },
-  { nome: 'expirar-pix', cron: '*/10 * * * *', descricao: 'Marca Pix vencidos' },
-  { nome: 'limpar-sessoes', cron: '0 3 * * *', descricao: 'Apaga sessões expiradas e execuções antigas' },
-  { nome: 'backup', cron: '30 3 * * *', descricao: 'pg_dump diário' },
-  { nome: 'enviar-comunicacoes', cron: '* * * * *', descricao: 'Fila de e-mail e push do superadmin' },
+  { nome: 'resetar-vidas', titulo: 'Recarga das vidas', cron: '0 0 * * *', descricao: 'Recarrega as vidas à meia-noite' },
+  { nome: 'verificar-ofensivas', titulo: 'Verificação das ofensivas', cron: '5 0 * * *', descricao: 'Zera ofensivas e gasta protetores' },
+  { nome: 'enviar-lembretes', titulo: 'Lembretes de estudo', cron: '*/5 * * * *', descricao: 'Lembretes por push' },
+  { nome: 'expirar-pix', titulo: 'Expiração dos Pix', cron: '*/10 * * * *', descricao: 'Marca Pix vencidos' },
+  {
+    nome: 'limpar-sessoes',
+    titulo: 'Limpeza diária',
+    cron: '0 3 * * *',
+    descricao: 'Apaga sessões expiradas, execuções antigas e erros antigos da API',
+  },
+  { nome: 'backup', titulo: 'Backup do banco e dos arquivos', cron: '30 3 * * *', descricao: 'pg_dump diário e os uploads' },
+  {
+    nome: 'enviar-comunicacoes',
+    titulo: 'Envio de comunicações',
+    cron: '* * * * *',
+    descricao: 'Fila de e-mail e push do superadmin (só registra quando há fila)',
+  },
+  {
+    nome: 'alertas',
+    titulo: 'Alertas por e-mail',
+    cron: '*/15 * * * *',
+    descricao: 'Avisa os superadmins de job falho ou atrasado, backup velho, rajada de erros e disco cheio',
+  },
 ] as const;
 export type NomeJobWorker = (typeof JOBS_WORKER)[number]['nome'];
