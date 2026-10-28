@@ -119,16 +119,82 @@ describe('autenticação (PRD 8.2)', () => {
   });
 });
 
+describe('logins separados por portal (D24, RQ2)', () => {
+  const portais = ['authLogin', 'authLoginConteudo', 'authLoginSuper'] as const;
+  const area = { authLogin: 'aluno', authLoginConteudo: 'conteudo', authLoginSuper: 'super' } as const;
+
+  it('cada papel entra só pelo seu portal; o portal errado dá a MESMA resposta de senha errada e não abre sessão', async () => {
+    const aluno = await t.cadastrar();
+    const adm = await t.admin();
+    const sup = await t.superadmin({ doisFatores: false });
+    const contas = { authLogin: aluno, authLoginConteudo: adm, authLoginSuper: sup };
+    const senhaErrada = await t.chamar('authLogin', { corpo: { email: aluno.email, senha: 'errada-errada' } });
+    const inexistente = await t.chamar('authLoginSuper', { corpo: { email: 'nao.existe@teste.com', senha: 'qualquer-1' } });
+    expect(senhaErrada.statusCode).toBe(401);
+    expect(inexistente.body).toBe(senhaErrada.body);
+    for (const portal of portais) {
+      for (const [dono, conta] of Object.entries(contas)) {
+        const r = await t.chamar(portal, { corpo: { email: conta.email, senha: conta.senha } });
+        if (dono === portal) {
+          expect(r.statusCode, `${conta.email} em ${portal}`).toBe(200);
+          expect(r.json().area).toBe(area[portal]);
+          expect(cookieDe(r)).toBeDefined();
+        } else {
+          expect(r.statusCode, `${conta.email} em ${portal}`).toBe(401);
+          expect(r.body).toBe(senhaErrada.body);
+          expect(cookieDe(r)).toBeUndefined();
+        }
+      }
+    }
+    expect((await t.chamar('authLogin', { corpo: { email: aluno.email, senha: aluno.senha } })).json()).toMatchObject({ proximo: 'pagamento', area: 'aluno' });
+    expect((await t.chamar('authLoginConteudo', { corpo: { email: adm.email, senha: adm.senha } })).json()).toMatchObject({ proximo: 'conteudo', area: 'conteudo' });
+    expect((await t.chamar('authLoginSuper', { corpo: { email: sup.email, senha: sup.senha } })).json()).toMatchObject({ proximo: 'dois_fatores', area: 'super' });
+  });
+
+  it('recuperação única: a redefinição devolve a área da conta; o link antigo /recuperar aceita token de convite', async () => {
+    const adm = await t.admin();
+    await t.chamar('authRecuperar', { corpo: { email: adm.email } });
+    await t.app.deps.aguardarTarefas();
+    const email = t.mailer.enviados.at(-1)!;
+    expect(email.para).toBe(adm.email);
+    const token = /\/recuperar\/([\w-]+)/.exec(email.texto)![1]!;
+    const r = await t.chamar('authRedefinir', { corpo: { token, senha: 'senha-nova-adm-123' } });
+    expect(r.statusCode, r.body).toBe(200);
+    expect(r.json()).toMatchObject({ area: 'conteudo', proximo: 'conteudo', usuario: { papel: 'admin' } });
+    expect((await t.chamar('authLoginConteudo', { corpo: { email: adm.email, senha: 'senha-nova-adm-123' } })).statusCode).toBe(200);
+  });
+});
+
 describe('rate limit (PRD 8.2)', () => {
-  it('login: 20 por 15 min por IP; cadastro: 10 por hora', async () => {
+  it('login: 20 por 15 min por IP num balde só para os três portais (D24); cadastro: 10 por hora', async () => {
     const t2 = await criarAmbienteTeste({ rateLimit: true, seed: false });
     try {
+      const portais = ['authLogin', 'authLoginConteudo', 'authLoginSuper'] as const;
       const codigos: number[] = [];
       for (let i = 0; i < 21; i++) {
-        codigos.push((await t2.chamar('authLogin', { corpo: { email: 'x@teste.com', senha: 'y' } })).statusCode);
+        // E-mails diferentes: só o balde por IP conta. Os três portais somam no mesmo balde.
+        codigos.push((await t2.chamar(portais[i % 3]!, { corpo: { email: `x${i}@teste.com`, senha: 'y' } })).statusCode);
       }
       expect(codigos.slice(0, 20).every((c) => c === 401)).toBe(true);
       expect(codigos[20]).toBe(429);
+      for (const n of portais) {
+        const r = await t2.chamar(n, { corpo: { email: 'outro@teste.com', senha: 'y' } });
+        expect(r.statusCode, n).toBe(429);
+        expect(r.json().codigo).toBe('limite_requisicoes');
+      }
+      // Por e-mail (D24): 10 tentativas por conta em 15 min, somando os portais, mesmo de IPs diferentes.
+      const porEmail: number[] = [];
+      for (let i = 0; i < 11; i++) {
+        const r = await t2.app.inject({
+          method: 'POST',
+          url: `/api/auth/login${['', '/conteudo', '/super'][i % 3]}`,
+          remoteAddress: `10.0.0.${i + 2}`,
+          payload: { email: 'alvo@teste.com', senha: 'y' },
+        });
+        porEmail.push(r.statusCode);
+      }
+      expect(porEmail.slice(0, 10).every((c) => c === 401)).toBe(true);
+      expect(porEmail[10]).toBe(429);
       const corpo = (i: number) => ({
         nome: 'Ana Souza',
         email: `rl${i}@teste.com`,

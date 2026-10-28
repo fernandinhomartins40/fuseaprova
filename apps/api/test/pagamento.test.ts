@@ -244,29 +244,60 @@ describe('pagamento Pix (PRD 8.3)', () => {
     expect(r.json().erro).toBe('Não foi possível gerar o Pix agora. Tente de novo em alguns minutos.');
   });
 
-  it('reembolso pelo admin chama o estorno do Asaas e espera o webhook', async () => {
+  it('D24/S-10: o estorno é do superadmin — chama o Asaas UMA vez, espera o webhook e a 2ª chamada dá 409', async () => {
     const a = await t.alunoPago();
     const adm = await t.admin();
+    const sup = await t.superadmin();
     const [p] = await t.db.select().from(schema.pedidos).where(eq(schema.pedidos.usuarioId, a.id));
-    const r = await t.chamar('adminPedidoReembolso', { cookie: adm.cookie, params: { id: p!.id }, corpo: { motivo: 'Arrependimento (CDC 49)' } });
+    const corpo = { motivo: 'Arrependimento (CDC 49)', confirmacao: { senha: sup.senha } };
+    expect((await t.chamar('superPagamentoEstornar', { cookie: adm.cookie, params: { id: p!.id }, corpo })).statusCode).toBe(403);
+    const r = await t.chamar('superPagamentoEstornar', { cookie: sup.cookie, params: { id: p!.id }, corpo });
     expect(r.statusCode, r.body).toBe(200);
-    expect(r.json().status).toBe('aguardando_webhook');
-    expect(t.asaas.estornos).toContain(p!.asaasPaymentId);
+    expect(r.json()).toMatchObject({ modo: 'asaas', status: 'aguardando_webhook' });
+    expect(r.json().pagamento.reembolsoSolicitadoEm).not.toBeNull();
+    expect(t.asaas.estornos.filter((x) => x === p!.asaasPaymentId)).toHaveLength(1);
     expect((await usuario(t, a.id)).acesso).toBe(true);
-    const lista = (await t.chamar('adminPedidosListar', { cookie: adm.cookie, query: { status: 'pago' } })).json();
-    expect(lista.itens[0].usuario.cpfOculto).toMatch(/^\*\*\*\.\d{3}\.\d{3}-\*\*$/);
-    const aud = (await t.chamar('adminAuditoria', { cookie: adm.cookie, query: { acao: 'pedido.reembolso' } })).json();
-    expect(aud.total).toBeGreaterThan(0);
+    // 2º clique (pelo botão novo ou pela rota antiga): 409 e nenhum 2º estorno no Asaas.
+    const r2 = await t.chamar('superPagamentoEstornar', { cookie: sup.cookie, params: { id: p!.id }, corpo });
+    expect(r2.statusCode).toBe(409);
+    expect(r2.json().erro).toMatch(/já foi pedido/);
+    const r3 = await t.chamar('superPagamentoReembolso', { cookie: sup.cookie, params: { id: p!.id }, corpo });
+    expect(r3.statusCode).toBe(409);
+    expect(t.asaas.estornos.filter((x) => x === p!.asaasPaymentId)).toHaveLength(1);
+    const lista = (await t.chamar('superPagamentosListar', { cookie: sup.cookie, query: { status: 'pago' } })).json();
+    expect(lista.itens.find((x: { id: string }) => x.id === p!.id).usuario.cpfOculto).toMatch(/^\*\*\*\.\d{3}\.\d{3}-\*\*$/);
+    const aud = (await t.chamar('superAuditoria', { cookie: sup.cookie, query: { acao: 'pedido.reembolso' } })).json();
+    expect(aud.total).toBe(1);
+    // O webhook do estorno revoga.
+    await t.webhook('PAYMENT_REFUNDED', p!.asaasPaymentId!);
+    expect((await usuario(t, a.id)).acesso).toBe(false);
+  });
+
+  it('S-10: se o Asaas recusar o estorno, a trava é desfeita e dá para tentar de novo', async () => {
+    const a = await t.alunoPago();
+    const sup = await t.superadmin();
+    const [p] = await t.db.select().from(schema.pedidos).where(eq(schema.pedidos.usuarioId, a.id));
+    const corpo = { motivo: 'Pedido do cliente', confirmacao: { senha: sup.senha } };
+    t.asaas.falharProxima();
+    const r = await t.chamar('superPagamentoReembolso', { cookie: sup.cookie, params: { id: p!.id }, corpo });
+    expect(r.statusCode).toBe(502);
+    expect(r.json().codigo).toBe('asaas_indisponivel');
+    const [depois] = await t.db.select().from(schema.pedidos).where(eq(schema.pedidos.id, p!.id));
+    expect(depois!.reembolsoSolicitadoEm).toBeNull();
+    expect((await t.chamar('superPagamentoReembolso', { cookie: sup.cookie, params: { id: p!.id }, corpo })).statusCode).toBe(200);
   });
 
   it('reembolso fora dos 7 dias exige confirmação', async () => {
     const a = await t.alunoPago();
-    const adm = await t.admin();
     t.relogio.avancar(8 * 24 * 3600_000);
+    // A sessão do superadmin dura no máximo 12 h (D13): entra depois do avanço do relógio.
+    const sup = await t.superadmin();
     const [p] = await t.db.select().from(schema.pedidos).where(eq(schema.pedidos.usuarioId, a.id));
-    const r = await t.chamar('adminPedidoReembolso', { cookie: adm.cookie, params: { id: p!.id }, corpo: { motivo: 'Pedido do cliente' } });
+    const corpo = { motivo: 'Pedido do cliente', confirmacao: { senha: sup.senha } };
+    const r = await t.chamar('superPagamentoEstornar', { cookie: sup.cookie, params: { id: p!.id }, corpo });
     expect(r.statusCode).toBe(409);
-    const r2 = await t.chamar('adminPedidoReembolso', { cookie: adm.cookie, params: { id: p!.id }, corpo: { motivo: 'Pedido do cliente', foraDoPrazo: true } });
-    expect(r2.statusCode).toBe(200);
+    expect(r.json().codigo).toBe('fora_do_prazo');
+    const r2 = await t.chamar('superPagamentoEstornar', { cookie: sup.cookie, params: { id: p!.id }, corpo: { ...corpo, foraDoPrazo: true } });
+    expect(r2.statusCode, r2.body).toBe(200);
   });
 });

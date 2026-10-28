@@ -107,7 +107,13 @@ describe('preço por concurso', () => {
 
   it('acesso liberado à mão (sem pedido) não dá desconto', async () => {
     const a = await t.cadastrar();
-    await t.chamar('adminUsuarioLiberarAcesso', { cookie: adm.cookie, params: { id: a.id }, corpo: { motivo: 'Cortesia de teste' } });
+    const sup = await t.superadmin();
+    const lib = await t.chamar('superUsuarioConcursoLiberar', {
+      cookie: sup.cookie,
+      params: { id: a.id, concursoId: palmitalId },
+      corpo: { motivo: 'Cortesia de teste', confirmacao: { senha: sup.senha } },
+    });
+    expect(lib.statusCode, lib.body).toBe(200);
     expect((await usuario(t, a.id)).acesso).toBe(true);
     const r = await pix(a, siqueiraId);
     expect(r.json().valorCentavos).toBe(39700);

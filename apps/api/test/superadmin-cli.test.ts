@@ -33,9 +33,18 @@ describe('CLI superadmin:criar (D13)', () => {
     const u = await usuarioPorEmail('dona.nova@teste.com');
     expect(u.papel).toBe('superadmin');
     expect(u.senhaHash).not.toContain(r.senhaGerada!);
-    const login = await t.chamar('authLogin', { corpo: { email: r.email, senha: r.senhaGerada! } });
+    const login = await t.chamar('authLoginSuper', { corpo: { email: r.email, senha: r.senhaGerada! } });
     expect(login.statusCode, login.body).toBe(200);
-    expect(login.json().proximo).toBe('dois_fatores');
+    expect(login.json()).toMatchObject({ proximo: 'dois_fatores', area: 'super' });
+    // D24 (A1.6): a CLI não liga o acesso de estudo da equipe.
+    expect(u.acesso).toBe(false);
+    expect(u.concursoId).toBeNull();
+    const ucs = await t.db.select().from(schema.usuariosConcursos).where(eq(schema.usuariosConcursos.usuarioId, r.id));
+    expect(ucs).toHaveLength(0);
+    // O portal do aluno não aceita a conta do superadmin (mesma resposta de senha errada).
+    const errado = await t.chamar('authLogin', { corpo: { email: r.email, senha: r.senhaGerada! } });
+    expect(errado.statusCode).toBe(401);
+    expect(errado.json().codigo).toBe('credenciais_invalidas');
     const aud = await t.db.select().from(schema.auditoria).where(eq(schema.auditoria.alvo, `usuario:${r.id}`));
     expect(aud.map((x) => x.acao)).toContain('superadmin.criar');
   });
@@ -43,7 +52,7 @@ describe('CLI superadmin:criar (D13)', () => {
   it('conta nova com --senha: usa a senha informada e não gera outra', async () => {
     const r = await criarOuPromoverSuperadmin(t.db, { email: 'com.senha@teste.com', nome: 'Com Senha Fuse', senha: 'senha-escolhida-123' });
     expect(r.senhaGerada).toBeNull();
-    const login = await t.chamar('authLogin', { corpo: { email: r.email, senha: 'senha-escolhida-123' } });
+    const login = await t.chamar('authLoginSuper', { corpo: { email: r.email, senha: 'senha-escolhida-123' } });
     expect(login.statusCode).toBe(200);
   });
 
@@ -54,6 +63,8 @@ describe('CLI superadmin:criar (D13)', () => {
     expect(r).toMatchObject({ id: antes.id, promovido: true, senhaGerada: null });
     const depois = await usuarioPorEmail(aluno.email);
     expect(depois.papel).toBe('superadmin');
+    // D24: a promoção não mexe no acesso (o aluno sem pagamento continua sem).
+    expect(depois.acesso).toBe(antes.acesso);
     expect(depois.senhaHash).toBe(antes.senhaHash);
     expect(depois.nome).toBe(antes.nome);
     const sessoes = await t.db.select().from(schema.sessoes).where(eq(schema.sessoes.usuarioId, antes.id));
