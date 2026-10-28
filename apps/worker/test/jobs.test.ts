@@ -17,6 +17,7 @@ import {
   semanaAFechar,
   horariosDaRodada,
   limparSessoes,
+  limpezaLegal,
   resetarVidas,
   verificarOfensivas,
   type EnviadorPush,
@@ -141,6 +142,27 @@ describe('jobs diários', () => {
       { usuarioId: a.id, tokenHash: `h${n}b`, expiraEm: new Date(agora.getTime() + 1e6) },
     ]);
     expect((await limparSessoes(b.db, agora)).sessoes).toBe(1);
+  });
+
+  it('D26: apaga só o que passou do prazo legal (acesso 6 meses; auditoria e webhooks 5 anos)', async () => {
+    const a = await aluno();
+    const agora = new Date('2026-11-10T12:00:00-03:00');
+    const dias = (d: number) => new Date(agora.getTime() - d * 86_400_000);
+    await b.db.insert(schema.registrosAcesso).values([
+      { usuarioId: a.id, evento: 'login', ip: '200.1.1.1', criadoEm: dias(190) },
+      { usuarioId: a.id, evento: 'login', ip: '200.1.1.2', criadoEm: dias(170) },
+    ]);
+    await b.db.insert(schema.auditoria).values([
+      { acao: 'teste.velho', alvo: `usuario:${a.id}`, criadoEm: dias(5 * 366) },
+      { acao: 'teste.novo', alvo: `usuario:${a.id}`, criadoEm: dias(30) },
+    ]);
+    await b.db.insert(schema.webhookEventos).values([
+      { id: `evt_velho_${n}`, evento: 'PAYMENT_RECEIVED', corpo: {}, recebidoEm: dias(5 * 366) },
+      { id: `evt_novo_${n}`, evento: 'PAYMENT_RECEIVED', corpo: {}, recebidoEm: dias(30) },
+    ]);
+    expect(await limpezaLegal(b.db, agora)).toEqual({ acessos: 1, auditoria: 1, webhooks: 1 });
+    const ips = (await b.db.select().from(schema.registrosAcesso).where(eq(schema.registrosAcesso.usuarioId, a.id))).map((r) => r.ip);
+    expect(ips).toEqual(['200.1.1.2']);
   });
 });
 

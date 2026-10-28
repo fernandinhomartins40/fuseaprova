@@ -23,7 +23,7 @@ import { conferirSenha, gerarHashSenha } from '../servicos/senhas.js';
 import { abrirSessao, encerrarSessao, encerrarSessoesDoUsuario, gerarToken } from '../servicos/sessoes.js';
 import { concursoAtivo } from '../servicos/usuario.js';
 
-const { usuarios, redefinicoesSenha, usuariosConcursos } = schema;
+const { usuarios, redefinicoesSenha, usuariosConcursos, registrosAcesso } = schema;
 
 export function proximoPasso(u: Pick<Usuario, 'papel' | 'acesso' | 'onboardingConcluidoEm'>): ProximoPasso {
   // D13: o superadmin sempre passa pelo 2FA (configurar ou digitar o código) ao entrar.
@@ -60,7 +60,7 @@ export async function iniciarSessao(
   reply: Parameters<typeof definirCookieSessao>[0],
   usuarioId: string,
   agora: Date,
-  opcoes: { superadmin?: boolean } = {},
+  opcoes: { superadmin?: boolean; evento?: EventoAcesso } = {},
 ): Promise<void> {
   const { token, expiraEm } = await abrirSessao(
     deps.db,
@@ -69,7 +69,26 @@ export async function iniciarSessao(
     { userAgent: req.headers['user-agent'], ip: req.ip, superadmin: opcoes.superadmin },
     agora,
   );
+  await registrarAcesso(deps, req, usuarioId, opcoes.evento ?? 'login', agora);
   definirCookieSessao(reply, deps.config, token, expiraEm);
+}
+
+type EventoAcesso = 'login' | 'cadastro' | 'redefinicao';
+
+/**
+ * D26 (Marco Civil, art. 15): data, hora, IP e porta de origem de cada acesso, guardados por
+ * 6 meses. A porta vem do nginx do host (`X-Real-Port`); sem ela, fica nula.
+ */
+async function registrarAcesso(deps: Deps, req: FastifyRequest, usuarioId: string, evento: EventoAcesso, agora: Date) {
+  const porta = Number(req.headers['x-real-port']);
+  await deps.db.insert(registrosAcesso).values({
+    usuarioId,
+    evento,
+    ip: req.ip,
+    porta: Number.isInteger(porta) && porta > 0 && porta < 65536 ? porta : null,
+    userAgent: req.headers['user-agent']?.slice(0, 300) ?? null,
+    criadoEm: agora,
+  });
 }
 
 const hashSimples = (t: string) => createHash('sha256').update(t).digest('hex');
@@ -115,7 +134,7 @@ export function rotasAuth(r: Registrador): void {
         .values({ usuarioId: novo.id, concursoId: concurso.id, criadoEm: agora })
         .onConflictDoNothing();
     }
-    await iniciarSessao(deps, req, reply, novo.id, agora);
+    await iniciarSessao(deps, req, reply, novo.id, agora, { evento: 'cadastro' });
     reply.status(201);
     return respostaSessao(novo);
   });
@@ -200,7 +219,7 @@ export function rotasAuth(r: Registrador): void {
       await encerrarSessoesDoUsuario(tx, u.id);
       return u;
     });
-    await iniciarSessao(deps, req, reply, usuario.id, agora, { superadmin: usuario.papel === 'superadmin' });
+    await iniciarSessao(deps, req, reply, usuario.id, agora, { superadmin: usuario.papel === 'superadmin', evento: 'redefinicao' });
     return respostaSessao(usuario);
   });
 }

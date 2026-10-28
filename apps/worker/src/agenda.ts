@@ -17,6 +17,7 @@ import {
   fecharLiga,
   semanaAFechar,
   limparSessoes,
+  limpezaLegal,
   resetarVidas,
   verificarOfensivas,
   type EnviadorEmail,
@@ -76,7 +77,9 @@ export function definirJobs(d: DependenciasWorker): DefinicaoJob[] {
       const corteErros = new Date(agora().getTime() - LIMITES_SISTEMA.retencaoErrosDias * 86_400_000);
       const er = await d.db.delete(schema.errosApi).where(lt(schema.errosApi.criadoEm, corteErros)).returning({ id: schema.errosApi.id });
       const li = await d.db.delete(schema.limitesContagem).where(lt(schema.limitesContagem.janelaFim, agora())).returning({ c: schema.limitesContagem.chave });
-      return { ...r, execucoes: ex.length, errosApi: er.length, limites: li.length };
+      // D26: prazos legais de guarda (registros de acesso, auditoria e eventos do Asaas).
+      const legal = await limpezaLegal(d.db, agora());
+      return { ...r, execucoes: ex.length, errosApi: er.length, limites: li.length, ...legal };
     }),
     job('backup', () => executarBackup(d.backupScript, d.log)),
     {

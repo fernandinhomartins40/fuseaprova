@@ -1061,6 +1061,26 @@ export const errosApi = pgTable(
 );
 
 /**
+ * D26 (Marco Civil da Internet, Lei 12.965/2014, art. 15): registro de acesso à aplicação (data,
+ * hora e IP de cada login, cadastro ou redefinição de senha). Guardado por 6 meses e então apagado
+ * pelo worker (`limpezaLegal`). Fica mesmo depois da exclusão da conta (obrigação legal, LGPD
+ * art. 16, I): o vínculo é só o id, e a conta anonimizada não tem mais nome, e-mail nem CPF.
+ */
+export const registrosAcesso = pgTable(
+  'registros_acesso',
+  {
+    id: id(),
+    usuarioId: uuid('usuario_id').references(() => usuarios.id, { onDelete: 'set null' }),
+    evento: text('evento').notNull(),
+    ip: text('ip').notNull(),
+    porta: integer('porta'),
+    userAgent: text('user_agent'),
+    criadoEm: criadoEm(),
+  },
+  (t) => [index('registros_acesso_criado_idx').on(t.criadoEm), index('registros_acesso_usuario_idx').on(t.usuarioId, t.criadoEm)],
+);
+
+/**
  * S-09: estado pequeno da operação, chave → valor. Guarda o sinal de vida do worker
  * (`worker:sinal`) e quando cada alerta foi enviado (`alerta:<id>`), para não repetir.
  */

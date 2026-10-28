@@ -50,6 +50,8 @@ server {
         # SOBRESCREVE os cabeçalhos de IP com o IP real da conexão: o aluno
         # não consegue forjar o IP que o rate limit da API enxerga.
         proxy_set_header X-Real-IP $remote_addr;
+        # Porta de origem do aluno: o registro de acesso do Marco Civil (D26) guarda IP e porta.
+        proxy_set_header X-Real-Port $remote_port;
         proxy_set_header X-Forwarded-For $remote_addr;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Host $host;

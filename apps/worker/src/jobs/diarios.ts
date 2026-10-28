@@ -7,7 +7,7 @@ import { schema } from '@fuse/db';
 import { diaSP, somarDias, VIDAS_MAX, verificarOfensiva } from '@fuse/shared';
 import type { Db } from '../util.js';
 
-const { usuarios, pedidos, sessoes, redefinicoesSenha, pacotesOffline } = schema;
+const { usuarios, pedidos, sessoes, redefinicoesSenha, pacotesOffline, registrosAcesso, auditoria, webhookEventos } = schema;
 
 /** 00:00 — todo mundo volta para 5 vidas. */
 export async function resetarVidas(db: Db, agora: Date): Promise<number> {
@@ -89,3 +89,34 @@ export async function limparSessoes(
   return { sessoes: s.length, redefinicoes: rd.length, pacotes: pc.length };
 }
 
+
+/**
+ * D26: prazos de guarda da política de privacidade (P-10).
+ * - Registros de acesso (IP, porta, data e hora): 6 meses (Marco Civil da Internet, art. 15).
+ * - Auditoria das ações da equipe e eventos de pagamento do Asaas: 5 anos (prazos do CDC, art.
+ *   27, e tributários, CTN art. 173 e 174). Os pedidos em si não são apagados (registro fiscal).
+ */
+export const RETENCAO_LEGAL = { acessoMeses: 6, auditoriaAnos: 5, webhookAnos: 5 } as const;
+
+function menosMeses(d: Date, meses: number): Date {
+  const r = new Date(d);
+  r.setUTCMonth(r.getUTCMonth() - meses);
+  return r;
+}
+
+/** 03:00, no mesmo job da limpeza: apaga o que passou do prazo legal de guarda. */
+export async function limpezaLegal(db: Db, agora: Date): Promise<{ acessos: number; auditoria: number; webhooks: number }> {
+  const a = await db
+    .delete(registrosAcesso)
+    .where(lt(registrosAcesso.criadoEm, menosMeses(agora, RETENCAO_LEGAL.acessoMeses)))
+    .returning({ id: registrosAcesso.id });
+  const au = await db
+    .delete(auditoria)
+    .where(lt(auditoria.criadoEm, menosMeses(agora, RETENCAO_LEGAL.auditoriaAnos * 12)))
+    .returning({ id: auditoria.id });
+  const w = await db
+    .delete(webhookEventos)
+    .where(lt(webhookEventos.recebidoEm, menosMeses(agora, RETENCAO_LEGAL.webhookAnos * 12)))
+    .returning({ id: webhookEventos.id });
+  return { acessos: a.length, auditoria: au.length, webhooks: w.length };
+}

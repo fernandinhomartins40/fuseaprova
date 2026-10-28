@@ -22,6 +22,7 @@ const {
   ligasMembros,
   codigosRecuperacao,
   usuariosConcursos,
+  registrosAcesso,
 } = schema;
 
 /** JSON com perfil, pedidos e progresso. Sem hash de senha, segredo do 2FA nem a imagem do QR. */
@@ -34,13 +35,19 @@ export async function exportarDadosUsuario(db: Db, usuario: Usuario, agora: Date
   } = usuario as Usuario & { sessaoId?: string; sessaoDoisFatoresEm?: Date | null };
   delete (perfil as { sessaoId?: string }).sessaoId;
   delete (perfil as { sessaoDoisFatoresEm?: unknown }).sessaoDoisFatoresEm;
-  const [ped, tent, sess, sims, conq, revs] = await Promise.all([
+  const [ped, tent, sess, sims, conq, revs, acessos] = await Promise.all([
     db.select().from(pedidos).where(eq(pedidos.usuarioId, usuario.id)).orderBy(desc(pedidos.criadoEm)),
     db.select().from(tentativas).where(eq(tentativas.usuarioId, usuario.id)).orderBy(tentativas.respondidaEm),
     db.select().from(sessoesEstudo).where(eq(sessoesEstudo.usuarioId, usuario.id)).orderBy(sessoesEstudo.iniciadaEm),
     db.select().from(simulados).where(eq(simulados.usuarioId, usuario.id)).orderBy(simulados.iniciadoEm),
     db.select().from(conquistasUsuario).where(eq(conquistasUsuario.usuarioId, usuario.id)),
     db.select().from(revisoes).where(eq(revisoes.usuarioId, usuario.id)),
+    // D26: os registros de acesso (Marco Civil) também são dados do titular (LGPD, art. 18, II).
+    db
+      .select({ evento: registrosAcesso.evento, ip: registrosAcesso.ip, porta: registrosAcesso.porta, criadoEm: registrosAcesso.criadoEm })
+      .from(registrosAcesso)
+      .where(eq(registrosAcesso.usuarioId, usuario.id))
+      .orderBy(desc(registrosAcesso.criadoEm)),
   ]);
   // Datas viram ISO na serialização JSON. A imagem do QR (base64) é omitida.
   return JSON.parse(
@@ -53,6 +60,7 @@ export async function exportarDadosUsuario(db: Db, usuario: Usuario, agora: Date
       simulados: sims,
       conquistas: conq,
       revisoes: revs,
+      registrosAcesso: acessos,
     }),
   ) as ExportarResposta;
 }

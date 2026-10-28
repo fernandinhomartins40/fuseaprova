@@ -518,3 +518,29 @@ describe('revalidação: V-01, V-02 e V-07', () => {
     }
   });
 });
+
+describe('D26: registro de acesso (Marco Civil, art. 15)', () => {
+  it('login grava data, IP e porta de origem, e a exportação LGPD traz os registros', async () => {
+    const a = await t.alunoPago();
+    const r = await t.app.inject({
+      method: 'POST',
+      url: '/api/auth/login',
+      remoteAddress: '200.10.20.30',
+      headers: { 'x-real-port': '51234', 'user-agent': 'Teste/1.0' },
+      payload: { email: a.email, senha: a.senha },
+    });
+    expect(r.statusCode, r.body).toBe(200);
+    const regs = await t.db.select().from(schema.registrosAcesso).where(eq(schema.registrosAcesso.usuarioId, a.id));
+    expect(regs.map((x) => x.evento)).toEqual(expect.arrayContaining(['cadastro', 'login']));
+    expect(regs.find((x) => x.porta === 51234)).toMatchObject({ evento: 'login', ip: '200.10.20.30', userAgent: 'Teste/1.0' });
+    const exp = (await t.chamar('meExportar', { cookie: a.cookie })).json();
+    expect(exp.registrosAcesso.some((x: { porta: number | null }) => x.porta === 51234)).toBe(true);
+  });
+
+  it('o portal errado não abre sessão nem grava acesso', async () => {
+    const a = await t.alunoPago();
+    const antes = (await t.db.select().from(schema.registrosAcesso).where(eq(schema.registrosAcesso.usuarioId, a.id))).length;
+    expect((await t.chamar('authLoginSuper', { corpo: { email: a.email, senha: a.senha } })).statusCode).toBe(401);
+    expect(await t.db.select().from(schema.registrosAcesso).where(eq(schema.registrosAcesso.usuarioId, a.id))).toHaveLength(antes);
+  });
+});

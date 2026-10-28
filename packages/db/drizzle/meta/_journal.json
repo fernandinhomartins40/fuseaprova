@@ -57,6 +57,13 @@
       "when": 1793209654604,
       "tag": "0007_operacao_alertas_indices",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793227540996,
+      "tag": "0008_registros_acesso",
+      "breakpoints": true
     }
   ]
 }
