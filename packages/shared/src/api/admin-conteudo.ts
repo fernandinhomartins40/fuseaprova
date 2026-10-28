@@ -71,6 +71,10 @@ export const ConcursoEntrada = z.object({
   ativo: z.boolean().default(true),
 });
 export type ConcursoEntrada = z.input<typeof ConcursoEntrada>;
+/** PATCH sem nenhum campo é 400 (antes caía num 500 do banco: "nada para atualizar"). */
+const NADA_PARA_ATUALIZAR = 'Nada para atualizar: informe pelo menos um campo.';
+const algumCampo = (o: Record<string, unknown>) => Object.values(o).some((v) => v !== undefined);
+
 export const ConcursoAtualizarEntrada = ConcursoEntrada.partial();
 
 /**
@@ -127,7 +131,7 @@ export const CargoEntrada = z.object({
   ativo: z.boolean().default(true),
 });
 export type CargoEntrada = z.input<typeof CargoEntrada>;
-export const CargoAtualizarEntrada = CargoEntrada.partial();
+export const CargoAtualizarEntrada = CargoEntrada.partial().refine(algumCampo, NADA_PARA_ATUALIZAR);
 
 /** GET /admin/cargos?concursoId= */
 export const CargosQuery = z.object({ concursoId: Uuid.optional() });
@@ -208,7 +212,7 @@ export const ProvaOrigemEntrada = z.object({
   situacaoCertame: ZSituacaoCertame.nullable().optional(),
 });
 export type ProvaOrigemEntrada = z.input<typeof ProvaOrigemEntrada>;
-export const ProvaOrigemAtualizarEntrada = ProvaOrigemEntrada.partial();
+export const ProvaOrigemAtualizarEntrada = ProvaOrigemEntrada.partial().refine(algumCampo, NADA_PARA_ATUALIZAR);
 
 /* ---------------------------------------------------------------- questões */
 
@@ -436,7 +440,7 @@ export const AssuntoEntrada = z.object({
   dicaExemplo: textoOpcional,
 });
 export type AssuntoEntrada = z.input<typeof AssuntoEntrada>;
-export const AssuntoAtualizarEntrada = AssuntoEntrada.partial();
+export const AssuntoAtualizarEntrada = AssuntoEntrada.partial().refine(algumCampo, NADA_PARA_ATUALIZAR);
 
 /* ----------------------------------------------------------------- trilhas */
 
@@ -492,7 +496,7 @@ export const UnidadeEntrada = z.object({
   disciplinaId: Uuid,
 });
 export type UnidadeEntrada = z.infer<typeof UnidadeEntrada>;
-export const UnidadeAtualizarEntrada = UnidadeEntrada.partial();
+export const UnidadeAtualizarEntrada = UnidadeEntrada.partial().refine(algumCampo, NADA_PARA_ATUALIZAR);
 
 /** POST /admin/secoes · PATCH /admin/secoes/:id */
 export const SecaoEntrada = z.object({
@@ -503,7 +507,7 @@ export const SecaoEntrada = z.object({
   noEdital: z.boolean().nullable().default(null),
 });
 export type SecaoEntrada = z.input<typeof SecaoEntrada>;
-export const SecaoAtualizarEntrada = SecaoEntrada.partial();
+export const SecaoAtualizarEntrada = SecaoEntrada.partial().refine(algumCampo, NADA_PARA_ATUALIZAR);
 
 /** POST /admin/licoes · PATCH /admin/licoes/:id */
 export const LicaoEntrada = z

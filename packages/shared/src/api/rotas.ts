@@ -25,15 +25,21 @@ export const PREFIXO_API = '/api';
 
 export type Metodo = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 /**
- * nenhuma · login (401) · acesso (402) · admin (403) · webhook (token do Asaas, 401)
- * superadmin (403; exige 2FA ativo e verificado na sessão) · superadmin_2fa (403; só o papel,
- * para configurar ou verificar o 2FA). D13.
+ * Guardas (D13, D24):
+ * - nenhuma · webhook (token do Asaas, 401);
+ * - login (401): qualquer papel logado (`/me`, senha, sair);
+ * - aluno (401/403): só o papel aluno, sem exigir pagamento (pagamento, cupom, concursos, LGPD);
+ * - acesso (401/403/402): só o papel aluno, com pagamento confirmado (conteúdo de estudo);
+ * - conteudo (401/403): admin, ou superadmin com 2FA verificado na sessão;
+ * - superadmin (403; exige 2FA ativo e verificado na sessão);
+ * - superadmin_2fa (403; só o papel, para configurar ou verificar o 2FA).
  */
 export type Guarda =
   | 'nenhuma'
   | 'login'
+  | 'aluno'
   | 'acesso'
-  | 'admin'
+  | 'conteudo'
   | 'webhook'
   | 'superadmin'
   | 'superadmin_2fa';
@@ -47,8 +53,11 @@ export interface DefinicaoRota {
   query?: z.ZodTypeAny;
   corpo?: z.ZodTypeAny;
   resposta: z.ZodTypeAny | null;
-  /** Limite de requisições (PRD 8.2). */
-  limite?: { max: number; janelaMs: number; por: 'ip' | 'usuario' };
+  /**
+   * Limite de requisições (PRD 8.2). Com `balde`, o contador é compartilhado entre todas as
+   * rotas do mesmo balde (os três logins, D24), em vez de um por rota.
+   */
+  limite?: { max: number; janelaMs: number; por: 'ip' | 'usuario'; balde?: string };
 }
 
 const rota = <const T extends DefinicaoRota>(r: T): T => r;
@@ -58,6 +67,8 @@ const HORA = 60 * MIN;
 /** D13: limite padrão das rotas /super e o das ações sensíveis. */
 const LIMITE_SUPER = { max: 120, janelaMs: MIN, por: 'usuario' } as const;
 const LIMITE_SENSIVEL = { max: 20, janelaMs: 15 * MIN, por: 'usuario' } as const;
+/** D24: um só balde para os três logins (por IP; o handler também conta por e-mail). */
+const LIMITE_LOGIN = { max: 20, janelaMs: 15 * MIN, por: 'ip', balde: 'login' } as const;
 
 export const ROTAS = {
   /* --------------------------------------------------------------- auth */
@@ -74,10 +85,28 @@ export const ROTAS = {
     metodo: 'POST',
     caminho: '/auth/login',
     guarda: 'nenhuma',
-    descricao: 'Login com e-mail e senha.',
+    descricao: 'Login do aluno (página /entrar). Conta da equipe recebe "credenciais inválidas" (D24).',
     corpo: auth.LoginEntrada,
     resposta: auth.SessaoResposta,
-    limite: { max: 20, janelaMs: 15 * MIN, por: 'ip' },
+    limite: LIMITE_LOGIN,
+  }),
+  authLoginConteudo: rota({
+    metodo: 'POST',
+    caminho: '/auth/login/conteudo',
+    guarda: 'nenhuma',
+    descricao: 'Login da equipe de conteúdo (página /admin/entrar). Só o papel admin (D24).',
+    corpo: auth.LoginEntrada,
+    resposta: auth.SessaoResposta,
+    limite: LIMITE_LOGIN,
+  }),
+  authLoginSuper: rota({
+    metodo: 'POST',
+    caminho: '/auth/login/super',
+    guarda: 'nenhuma',
+    descricao: 'Login do superadmin (página /super/entrar); sempre segue para o 2FA (D24).',
+    corpo: auth.LoginEntrada,
+    resposta: auth.SessaoResposta,
+    limite: LIMITE_LOGIN,
   }),
   authSair: rota({
     metodo: 'POST',
@@ -99,7 +128,7 @@ export const ROTAS = {
     metodo: 'POST',
     caminho: '/auth/redefinir',
     guarda: 'nenhuma',
-    descricao: 'Define a nova senha com o token e encerra as outras sessões.',
+    descricao: 'Define a nova senha com o token (recuperação ou convite), encerra as outras sessões e devolve a área da conta.',
     corpo: auth.RedefinirEntrada,
     resposta: auth.SessaoResposta,
   }),
@@ -131,14 +160,14 @@ export const ROTAS = {
   meExportar: rota({
     metodo: 'GET',
     caminho: '/me/exportar',
-    guarda: 'login',
+    guarda: 'aluno',
     descricao: 'LGPD: JSON com perfil, pedidos e tentativas.',
     resposta: me.ExportarResposta,
   }),
   meExcluir: rota({
     metodo: 'DELETE',
     caminho: '/me',
-    guarda: 'login',
+    guarda: 'aluno',
     descricao: 'LGPD: anonimiza o perfil (mantém o pedido) e encerra as sessões.',
     corpo: me.ExcluirContaEntrada,
     resposta: OkResposta,
@@ -146,14 +175,14 @@ export const ROTAS = {
   meusConcursos: rota({
     metodo: 'GET',
     caminho: '/me/concursos',
-    guarda: 'login',
+    guarda: 'aluno',
     descricao: 'Concursos que o aluno acompanha, o ativo e os abertos que ainda não acompanha (D21).',
     resposta: mc.MeusConcursosResposta,
   }),
   meuConcursoSeguir: rota({
     metodo: 'POST',
     caminho: '/me/concursos',
-    guarda: 'login',
+    guarda: 'aluno',
     descricao: 'Passa a acompanhar um concurso; se já está liberado, ele vira o ativo (a trilha muda).',
     corpo: mc.SeguirConcursoEntrada,
     resposta: mc.MeusConcursosResposta,
@@ -161,7 +190,7 @@ export const ROTAS = {
   meuConcursoAtivar: rota({
     metodo: 'POST',
     caminho: '/me/concursos/:id/ativar',
-    guarda: 'login',
+    guarda: 'aluno',
     descricao: 'Troca o concurso ativo por outro já liberado para o aluno (402 se ainda não pagou).',
     params: IdParams,
     resposta: mc.MeusConcursosResposta,
@@ -169,7 +198,7 @@ export const ROTAS = {
   meuConcursoDeixar: rota({
     metodo: 'DELETE',
     caminho: '/me/concursos/:id',
-    guarda: 'login',
+    guarda: 'aluno',
     descricao: 'Deixa de acompanhar um concurso ainda não pago. Concurso liberado não sai da lista.',
     params: IdParams,
     resposta: mc.MeusConcursosResposta,
@@ -186,7 +215,7 @@ export const ROTAS = {
   pagamentoPix: rota({
     metodo: 'POST',
     caminho: '/pagamento/pix',
-    guarda: 'login',
+    guarda: 'aluno',
     descricao: 'Gera ou reaproveita o Pix pendente não expirado de um concurso (padrão: o ativo).',
     corpo: pag.PixEntrada,
     resposta: pag.PixResposta,
@@ -195,7 +224,7 @@ export const ROTAS = {
   pagamentoCupom: rota({
     metodo: 'POST',
     caminho: '/pagamento/cupom',
-    guarda: 'login',
+    guarda: 'aluno',
     descricao: 'D23: confere um cupom e devolve o valor do Pix com o desconto (não gera cobrança).',
     corpo: pr.CupomConsultaEntrada,
     resposta: pr.CupomConsultaResposta,
@@ -204,7 +233,7 @@ export const ROTAS = {
   pagamentoStatus: rota({
     metodo: 'GET',
     caminho: '/pagamento/status',
-    guarda: 'login',
+    guarda: 'aluno',
     descricao: 'Status do pagamento de um concurso; após 60 s pendente consulta o Asaas.',
     query: pag.StatusPagamentoQuery,
     resposta: pag.StatusPagamentoResposta,
@@ -222,7 +251,7 @@ export const ROTAS = {
   concursoPorId: rota({
     metodo: 'GET',
     caminho: '/concursos/:id',
-    guarda: 'login',
+    guarda: 'aluno',
     descricao: 'Dados de um concurso aberto (edital, cargos e áreas), para escolher o cargo antes de seguir.',
     params: IdParams,
     resposta: cont.ConcursoResposta,
@@ -427,22 +456,22 @@ export const ROTAS = {
   adminPainel: rota({
     metodo: 'GET',
     caminho: '/admin/painel',
-    guarda: 'admin',
-    descricao: 'Vendas, ativos, reports, rascunhos e métricas.',
+    guarda: 'conteudo',
+    descricao: 'Painel de conteúdo: reports, questões por status e métricas de aprendizagem (sem receita, D24).',
     resposta: ag.PainelResposta,
   }),
 
   adminConcursosListar: rota({
     metodo: 'GET',
     caminho: '/admin/concursos',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Lista os concursos.',
     resposta: ac.ConcursosListaResposta,
   }),
   adminConcursoCriar: rota({
     metodo: 'POST',
     caminho: '/admin/concursos',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Cria um concurso.',
     corpo: ac.ConcursoEntrada,
     resposta: ac.ConcursoAdmin,
@@ -450,7 +479,7 @@ export const ROTAS = {
   adminConcursoClonar: rota({
     metodo: 'POST',
     caminho: '/admin/concursos/:id/clonar',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Cria um concurso novo com a trilha e os cargos genéricos de um concurso modelo.',
     params: IdParams,
     corpo: ac.ConcursoClonarEntrada,
@@ -460,7 +489,7 @@ export const ROTAS = {
   adminConcursoObter: rota({
     metodo: 'GET',
     caminho: '/admin/concursos/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Detalhe do concurso.',
     params: IdParams,
     resposta: ac.ConcursoAdmin,
@@ -468,7 +497,7 @@ export const ROTAS = {
   adminConcursoAtualizar: rota({
     metodo: 'PATCH',
     caminho: '/admin/concursos/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Edita o concurso (status, data da prova, links).',
     params: IdParams,
     corpo: ac.ConcursoAtualizarEntrada,
@@ -478,7 +507,7 @@ export const ROTAS = {
   adminCargosListar: rota({
     metodo: 'GET',
     caminho: '/admin/cargos',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Lista os cargos (filtro por concurso).',
     query: ac.CargosQuery,
     resposta: ac.CargosListaResposta,
@@ -486,7 +515,7 @@ export const ROTAS = {
   adminCargoCriar: rota({
     metodo: 'POST',
     caminho: '/admin/cargos',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Cria um cargo.',
     corpo: ac.CargoEntrada,
     resposta: ac.CargoAdmin,
@@ -494,7 +523,7 @@ export const ROTAS = {
   adminCargoAtualizar: rota({
     metodo: 'PATCH',
     caminho: '/admin/cargos/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Edita um cargo.',
     params: IdParams,
     corpo: ac.CargoAtualizarEntrada,
@@ -504,7 +533,7 @@ export const ROTAS = {
   adminProvasListar: rota({
     metodo: 'GET',
     caminho: '/admin/provas',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Provas de origem com filtros.',
     query: ac.ProvasQuery,
     resposta: ac.ProvasListaResposta,
@@ -512,7 +541,7 @@ export const ROTAS = {
   adminProvaCriar: rota({
     metodo: 'POST',
     caminho: '/admin/provas',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Cadastra uma prova de origem e seus links.',
     corpo: ac.ProvaOrigemEntrada,
     resposta: ac.ProvaOrigemAdmin,
@@ -520,7 +549,7 @@ export const ROTAS = {
   adminProvaObter: rota({
     metodo: 'GET',
     caminho: '/admin/provas/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Detalhe da prova de origem.',
     params: IdParams,
     resposta: ac.ProvaOrigemAdmin,
@@ -528,7 +557,7 @@ export const ROTAS = {
   adminProvaAtualizar: rota({
     metodo: 'PATCH',
     caminho: '/admin/provas/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Edita a prova (links, status ativa/retirada).',
     params: IdParams,
     corpo: ac.ProvaOrigemAtualizarEntrada,
@@ -538,7 +567,7 @@ export const ROTAS = {
   adminQuestoesListar: rota({
     metodo: 'GET',
     caminho: '/admin/questoes',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Questões com filtros (disciplina, assunto, status, origem, área…).',
     query: ac.QuestoesQuery,
     resposta: ac.QuestoesListaResposta,
@@ -546,7 +575,7 @@ export const ROTAS = {
   adminQuestaoCriar: rota({
     metodo: 'POST',
     caminho: '/admin/questoes',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Cria uma questão.',
     corpo: ac.QuestaoEntrada,
     resposta: ac.QuestaoAdmin,
@@ -554,7 +583,7 @@ export const ROTAS = {
   adminQuestaoObter: rota({
     metodo: 'GET',
     caminho: '/admin/questoes/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Questão completa, com pendências para publicar.',
     params: IdParams,
     resposta: ac.QuestaoAdmin,
@@ -562,7 +591,7 @@ export const ROTAS = {
   adminQuestaoAtualizar: rota({
     metodo: 'PUT',
     caminho: '/admin/questoes/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Salva a questão (incrementa a versão).',
     params: IdParams,
     corpo: ac.QuestaoEntrada,
@@ -571,7 +600,7 @@ export const ROTAS = {
   adminQuestaoPrevia: rota({
     metodo: 'GET',
     caminho: '/admin/questoes/:id/previa',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Pré-visualização no formato da tela de Pergunta.',
     params: IdParams,
     resposta: ac.QuestaoPreviaResposta,
@@ -579,7 +608,7 @@ export const ROTAS = {
   adminQuestoesLote: rota({
     metodo: 'POST',
     caminho: '/admin/questoes/lote',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Ações em lote: publicar, retirar, revisão, rascunho, anular.',
     corpo: ac.QuestoesLoteEntrada,
     resposta: ac.QuestoesLoteResposta,
@@ -587,7 +616,7 @@ export const ROTAS = {
   adminQuestoesRetirarOrigem: rota({
     metodo: 'POST',
     caminho: '/admin/questoes/retirar-origem',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Retira todas as questões de uma prova ou de uma banca (fau_real).',
     corpo: ac.RetirarOrigemEntrada,
     resposta: ac.RetirarOrigemResposta,
@@ -595,7 +624,7 @@ export const ROTAS = {
   adminUpload: rota({
     metodo: 'POST',
     caminho: '/admin/uploads',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Upload de imagem (multipart, campo "arquivo").',
     resposta: ac.UploadResposta,
   }),
@@ -603,14 +632,14 @@ export const ROTAS = {
   adminDisciplinas: rota({
     metodo: 'GET',
     caminho: '/admin/disciplinas',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Lista as disciplinas.',
     resposta: ac.DisciplinasListaResposta,
   }),
   adminAssuntosListar: rota({
     metodo: 'GET',
     caminho: '/admin/assuntos',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Assuntos com dicas e contagem de questões.',
     query: ac.AssuntosQuery,
     resposta: ac.AssuntosListaResposta,
@@ -618,7 +647,7 @@ export const ROTAS = {
   adminAssuntoCriar: rota({
     metodo: 'POST',
     caminho: '/admin/assuntos',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Cria um assunto.',
     corpo: ac.AssuntoEntrada,
     resposta: ac.AssuntoAdmin,
@@ -626,7 +655,7 @@ export const ROTAS = {
   adminAssuntoAtualizar: rota({
     metodo: 'PATCH',
     caminho: '/admin/assuntos/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Edita um assunto e sua dica.',
     params: IdParams,
     corpo: ac.AssuntoAtualizarEntrada,
@@ -636,7 +665,7 @@ export const ROTAS = {
   adminTrilhas: rota({
     metodo: 'GET',
     caminho: '/admin/trilhas',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Árvore de unidades, seções e lições.',
     query: ac.TrilhasQuery,
     resposta: ac.TrilhasResposta,
@@ -644,7 +673,7 @@ export const ROTAS = {
   adminTrilhasOrdem: rota({
     metodo: 'PUT',
     caminho: '/admin/trilhas/ordem',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Reordena unidades, seções ou lições.',
     corpo: ac.ReordenarEntrada,
     resposta: OkResposta,
@@ -652,7 +681,7 @@ export const ROTAS = {
   adminUnidadeCriar: rota({
     metodo: 'POST',
     caminho: '/admin/unidades',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Cria uma unidade.',
     corpo: ac.UnidadeEntrada,
     resposta: ac.UnidadeAdmin,
@@ -660,7 +689,7 @@ export const ROTAS = {
   adminUnidadeAtualizar: rota({
     metodo: 'PATCH',
     caminho: '/admin/unidades/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Edita uma unidade.',
     params: IdParams,
     corpo: ac.UnidadeAtualizarEntrada,
@@ -669,7 +698,7 @@ export const ROTAS = {
   adminUnidadeExcluir: rota({
     metodo: 'DELETE',
     caminho: '/admin/unidades/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Exclui uma unidade vazia.',
     params: IdParams,
     resposta: OkResposta,
@@ -677,7 +706,7 @@ export const ROTAS = {
   adminSecaoCriar: rota({
     metodo: 'POST',
     caminho: '/admin/secoes',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Cria uma seção (arrastando um assunto).',
     corpo: ac.SecaoEntrada,
     resposta: ac.SecaoAdmin,
@@ -685,7 +714,7 @@ export const ROTAS = {
   adminSecaoAtualizar: rota({
     metodo: 'PATCH',
     caminho: '/admin/secoes/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Edita uma seção.',
     params: IdParams,
     corpo: ac.SecaoAtualizarEntrada,
@@ -694,7 +723,7 @@ export const ROTAS = {
   adminSecaoExcluir: rota({
     metodo: 'DELETE',
     caminho: '/admin/secoes/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Exclui uma seção.',
     params: IdParams,
     resposta: OkResposta,
@@ -702,7 +731,7 @@ export const ROTAS = {
   adminLicaoCriar: rota({
     metodo: 'POST',
     caminho: '/admin/licoes',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Cria uma lição, baú ou desafio.',
     corpo: ac.LicaoEntrada,
     resposta: ac.LicaoAdmin,
@@ -710,7 +739,7 @@ export const ROTAS = {
   adminLicaoAtualizar: rota({
     metodo: 'PATCH',
     caminho: '/admin/licoes/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Edita a lição (ordem, tipo, dica).',
     params: IdParams,
     corpo: ac.LicaoAtualizarEntrada,
@@ -719,7 +748,7 @@ export const ROTAS = {
   adminLicaoExcluir: rota({
     metodo: 'DELETE',
     caminho: '/admin/licoes/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Exclui uma lição.',
     params: IdParams,
     resposta: OkResposta,
@@ -728,7 +757,7 @@ export const ROTAS = {
   adminEditalObter: rota({
     metodo: 'GET',
     caminho: '/admin/edital',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Edital do concurso: cargos, conteúdo, seções no edital.',
     query: ac.EditalQuery,
     resposta: ac.EditalResposta,
@@ -736,7 +765,7 @@ export const ROTAS = {
   adminEditalSalvar: rota({
     metodo: 'PUT',
     caminho: '/admin/edital',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Salva o edital (cargos, vagas, conteúdo, data da prova).',
     corpo: ac.EditalEntrada,
     resposta: ac.EditalResposta,
@@ -744,7 +773,7 @@ export const ROTAS = {
   adminEditalPublicar: rota({
     metodo: 'POST',
     caminho: '/admin/edital/publicar',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Publica o edital e liga o modo edital.',
     corpo: ac.PublicarEditalEntrada,
     resposta: ac.PublicarEditalResposta,
@@ -753,7 +782,7 @@ export const ROTAS = {
   adminImportacoesListar: rota({
     metodo: 'GET',
     caminho: '/admin/importacoes',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Fila do coletor (PDFs, questões extraídas, confronto).',
     query: ac.ImportacoesQuery,
     resposta: ac.ImportacoesListaResposta,
@@ -761,7 +790,7 @@ export const ROTAS = {
   adminImportacaoObter: rota({
     metodo: 'GET',
     caminho: '/admin/importacoes/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Detalhe da importação com o confronto do gabarito.',
     params: IdParams,
     resposta: ac.ImportacaoDetalhe,
@@ -769,35 +798,18 @@ export const ROTAS = {
   adminImportacaoAtualizar: rota({
     metodo: 'PATCH',
     caminho: '/admin/importacoes/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Muda o status da importação.',
     params: IdParams,
     corpo: ac.ImportacaoAtualizarEntrada,
     resposta: ac.ImportacaoDetalhe,
   }),
 
-  adminPedidosListar: rota({
-    metodo: 'GET',
-    caminho: '/admin/pedidos',
-    guarda: 'admin',
-    descricao: 'Pagamentos com filtros.',
-    query: ag.PedidosQuery,
-    resposta: ag.PedidosListaResposta,
-  }),
-  adminPedidoReembolso: rota({
-    metodo: 'POST',
-    caminho: '/admin/pedidos/:id/reembolso',
-    guarda: 'admin',
-    descricao: 'Estorno no Asaas; o webhook revoga o acesso.',
-    params: IdParams,
-    corpo: ag.ReembolsoEntrada,
-    resposta: ag.ReembolsoResposta,
-  }),
 
   adminReportsListar: rota({
     metodo: 'GET',
     caminho: '/admin/reports',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Fila de reports.',
     query: ag.ReportsQuery,
     resposta: ag.ReportsListaResposta,
@@ -805,63 +817,13 @@ export const ROTAS = {
   adminReportAtualizar: rota({
     metodo: 'PATCH',
     caminho: '/admin/reports/:id',
-    guarda: 'admin',
+    guarda: 'conteudo',
     descricao: 'Resolve ou descarta um report.',
     params: IdParams,
     corpo: ag.ReportAtualizarEntrada,
     resposta: ag.ReportAdmin,
   }),
 
-  adminUsuariosListar: rota({
-    metodo: 'GET',
-    caminho: '/admin/usuarios',
-    guarda: 'admin',
-    descricao: 'Busca de usuários.',
-    query: ag.UsuariosQuery,
-    resposta: ag.UsuariosListaResposta,
-  }),
-  adminUsuarioObter: rota({
-    metodo: 'GET',
-    caminho: '/admin/usuarios/:id',
-    guarda: 'admin',
-    descricao: 'Progresso, pedidos e sessões do usuário.',
-    params: IdParams,
-    resposta: ag.UsuarioAdminDetalhe,
-  }),
-  adminUsuarioRevogarSessoes: rota({
-    metodo: 'POST',
-    caminho: '/admin/usuarios/:id/revogar-sessoes',
-    guarda: 'admin',
-    descricao: 'Encerra todas as sessões do usuário.',
-    params: IdParams,
-    resposta: ag.RevogarSessoesResposta,
-  }),
-  adminUsuarioLiberarAcesso: rota({
-    metodo: 'POST',
-    caminho: '/admin/usuarios/:id/liberar-acesso',
-    guarda: 'admin',
-    descricao: 'Liberação manual de acesso (motivo obrigatório, auditoria).',
-    params: IdParams,
-    corpo: ag.LiberarAcessoEntrada,
-    resposta: OkResposta,
-  }),
-  adminUsuarioRevogarAcesso: rota({
-    metodo: 'POST',
-    caminho: '/admin/usuarios/:id/revogar-acesso',
-    guarda: 'admin',
-    descricao: 'Revoga o acesso manualmente (motivo obrigatório, auditoria).',
-    params: IdParams,
-    corpo: ag.RevogarAcessoEntrada,
-    resposta: OkResposta,
-  }),
-  adminAuditoria: rota({
-    metodo: 'GET',
-    caminho: '/admin/auditoria',
-    guarda: 'admin',
-    descricao: 'Log de ações administrativas.',
-    query: ag.AuditoriaQuery,
-    resposta: ag.AuditoriaListaResposta,
-  }),
 
   /* ========================================================= superadmin (D13) */
   configPublica: rota({
@@ -922,6 +884,14 @@ export const ROTAS = {
     descricao: 'Receita bruta e líquida, pedidos, Pix, conversão e alunos ativos.',
     query: sa.FinanceiroQuery,
     resposta: sa.FinanceiroResposta,
+    limite: LIMITE_SUPER,
+  }),
+  superMetricas: rota({
+    metodo: 'GET',
+    caminho: '/super/metricas',
+    guarda: 'superadmin',
+    descricao: 'Métricas da seção 13 do PRD (conversão, retenção D7, lições, ofensiva, reembolso, melhora).',
+    resposta: ag.MetricasSuperResposta,
     limite: LIMITE_SUPER,
   }),
   superFinanceiroCsv: rota({
@@ -1023,10 +993,43 @@ export const ROTAS = {
     metodo: 'POST',
     caminho: '/super/usuarios/:id/aprovar-pagamento',
     guarda: 'superadmin',
-    descricao: 'Registra um pagamento recebido por fora (preço vigente) e libera o acesso.',
+    descricao:
+      'Pagamento recebido por fora, sem pedido na tela: concurso explícito, preço daquele concurso para o aluno; usa o Pix pendente ou vencido dele, se houver.',
     params: IdParams,
     corpo: sa.AprovarManualEntrada,
     resposta: sa.AprovarManualResposta,
+    limite: LIMITE_SENSIVEL,
+  }),
+  superPagamentoAprovarManual: rota({
+    metodo: 'POST',
+    caminho: '/super/pagamentos/:id/aprovar-manual',
+    guarda: 'superadmin',
+    descricao:
+      'RQ4: Pix pendente ou vencido pago por fora. Consulta o Asaas antes; senão marca ESTE pedido como pago (manual), com o valor e o concurso dele.',
+    params: IdParams,
+    corpo: sa.AprovarManualPedidoEntrada,
+    resposta: sa.AprovarManualResposta,
+    limite: LIMITE_SENSIVEL,
+  }),
+  superPagamentoLiberar: rota({
+    metodo: 'POST',
+    caminho: '/super/pagamentos/:id/liberar',
+    guarda: 'superadmin',
+    descricao: 'RQ4: pedido pago cujo concurso não ficou liberado — libera o concurso do pedido (idempotente).',
+    params: IdParams,
+    corpo: sa.LiberarPedidoEntrada,
+    resposta: sa.LiberarPedidoResposta,
+    limite: LIMITE_SENSIVEL,
+  }),
+  superPagamentoEstornar: rota({
+    metodo: 'POST',
+    caminho: '/super/pagamentos/:id/estornar',
+    guarda: 'superadmin',
+    descricao:
+      'RQ4: estorno pelo método do pedido (Asaas: reembolso uma vez só; manual: desfaz). Revoga só o concurso do pedido.',
+    params: IdParams,
+    corpo: sa.EstornarEntrada,
+    resposta: sa.EstornarResposta,
     limite: LIMITE_SENSIVEL,
   }),
   superComprovanteEnviar: rota({
@@ -1229,6 +1232,26 @@ export const ROTAS = {
     params: IdParams,
     corpo: sa.AnonimizarEntrada,
     resposta: OkResposta,
+    limite: LIMITE_SENSIVEL,
+  }),
+  superUsuarioConcursoLiberar: rota({
+    metodo: 'POST',
+    caminho: '/super/usuarios/:id/concursos/:concursoId/liberar',
+    guarda: 'superadmin',
+    descricao: 'Libera um concurso para o aluno sem pedido (cortesia; não dá desconto D21). Só aluno.',
+    params: sa.UsuarioConcursoParams,
+    corpo: sa.UsuarioConcursoAcaoEntrada,
+    resposta: sa.UsuarioConcursoAcaoResposta,
+    limite: LIMITE_SENSIVEL,
+  }),
+  superUsuarioConcursoRevogar: rota({
+    metodo: 'POST',
+    caminho: '/super/usuarios/:id/concursos/:concursoId/revogar',
+    guarda: 'superadmin',
+    descricao: 'Revoga UM concurso do aluno (os outros continuam). Só aluno.',
+    params: sa.UsuarioConcursoParams,
+    corpo: sa.UsuarioConcursoAcaoEntrada,
+    resposta: sa.UsuarioConcursoAcaoResposta,
     limite: LIMITE_SENSIVEL,
   }),
   superUsuarioRevogarSessao: rota({
