@@ -3,10 +3,14 @@
  */
 import { and, count, eq, isNull } from 'drizzle-orm';
 import { schema } from '@fuse/db';
+import { horaMinutoSP, MS_MINUTO } from '@fuse/shared';
 import type { Reconfirmacao } from '@fuse/shared/api';
 import type { Deps, Usuario, UsuarioSessao } from '../contexto.js';
 import { falha } from '../http/erros.js';
+import { emailAlertaSeguranca } from '../integracoes/email.js';
+import { auditar } from '../rotas/admin/comum.js';
 import type { Db } from '../util.js';
+import { consumirLimite, lerLimite, minutosAte } from './limitador.js';
 import { conferirSenha } from './senhas.js';
 import {
   cifrarSegredo,
@@ -53,17 +57,68 @@ export async function conferirCodigoTotp(deps: Deps, u: Usuario, codigo: string,
   return r.length === 1;
 }
 
+/* ------------------------------------------- S-16: falhas do 2FA persistidas */
+
+/**
+ * Códigos (e senhas de reconfirmação) errados aceitos por conta antes do bloqueio temporário. O
+ * contador fica no banco (`limites_contagem`): deploy e reinício não devolvem as tentativas.
+ */
+export const LIMITE_FALHAS_2FA = { max: 10, janelaMs: 15 * MS_MINUTO } as const;
+const chaveFalhas = (usuarioId: string) => `2fa-falhas:u:${usuarioId}`;
+
+/** 429 `dois_fatores_bloqueado` enquanto a conta estiver bloqueada por códigos errados. */
+export async function exigirSemBloqueio2fa(deps: Deps, usuarioId: string, agora: Date): Promise<void> {
+  const l = await lerLimite(deps.db, chaveFalhas(usuarioId), agora);
+  if (l && l.n >= LIMITE_FALHAS_2FA.max) {
+    throw falha(
+      'dois_fatores_bloqueado',
+      `Muitos códigos ou senhas errados nesta conta. Por segurança, tente de novo ${minutosAte(l.janelaFim, agora)}.`,
+    );
+  }
+}
+
+/**
+ * Conta a falha, audita (`2fa.falha`, sem o código) e, na falha que atinge o limite, audita o
+ * bloqueio e avisa o dono da conta por e-mail.
+ */
+export async function registrarFalha2fa(
+  deps: Deps,
+  u: Pick<Usuario, 'id' | 'nome' | 'email'>,
+  origem: 'verificar' | 'reconfirmar_codigo' | 'reconfirmar_senha',
+  agora: Date,
+  ip?: string,
+): Promise<void> {
+  const r = await consumirLimite(deps.db, chaveFalhas(u.id), LIMITE_FALHAS_2FA.max, LIMITE_FALHAS_2FA.janelaMs, agora);
+  const alvo = `usuario:${u.id}`;
+  await auditar(deps.db, u.id, '2fa.falha', alvo, { origem, falhasNaJanela: r.n }, agora, { ip: ip ?? null });
+  if (r.n === LIMITE_FALHAS_2FA.max) {
+    await auditar(deps.db, u.id, '2fa.bloqueio', alvo, { ate: r.janelaFim.toISOString() }, agora, { ip: ip ?? null });
+    deps.enviarEmail(
+      emailAlertaSeguranca({
+        nome: u.nome,
+        email: u.email,
+        titulo: 'Muitos códigos errados na sua conta',
+        texto: `Houve ${r.n} tentativas erradas de código do app autenticador (ou de senha de confirmação) na sua conta do painel do Fuse Aprova. A verificação ficou bloqueada até ${horaMinutoSP(r.janelaFim)} (Brasília). Se não foi você, troque a senha e encerre as sessões abertas.`,
+      }),
+    );
+  }
+}
+
 /**
  * Reconfirmação das ações sensíveis: senha da conta ou código TOTP novo. 403
- * `reconfirmacao_invalida` se não conferir.
+ * `reconfirmacao_invalida` se não conferir. S-16: cada erro conta no mesmo limite persistente
+ * do 2FA (e fica na auditoria); com a conta bloqueada, responde 429 antes de conferir.
  */
 export async function reconfirmar(deps: Deps, u: UsuarioSessao, c: Reconfirmacao, agora: Date): Promise<'senha' | 'totp'> {
+  await exigirSemBloqueio2fa(deps, u.id, agora);
   if (c.codigo) {
     const codigo = c.codigo.replace(/\s+/g, '');
     if (u.totpAtivadoEm && (await conferirCodigoTotp(deps, u, codigo, agora))) return 'totp';
+    await registrarFalha2fa(deps, u, 'reconfirmar_codigo', agora);
     throw falha('reconfirmacao_invalida', 'O código do app autenticador não confere. Use um código novo.');
   }
   if (c.senha && (await conferirSenha(u.senhaHash, c.senha))) return 'senha';
+  await registrarFalha2fa(deps, u, 'reconfirmar_senha', agora);
   throw falha('reconfirmacao_invalida', 'A senha não confere. Confirme de novo para continuar.');
 }
 
@@ -132,10 +187,15 @@ export async function verificarDoisFatores(
   u: UsuarioSessao,
   entrada: { codigo?: string | undefined; codigoRecuperacao?: string | undefined },
   agora: Date,
+  ip?: string,
 ): Promise<'totp' | 'recuperacao'> {
   if (!u.totpAtivadoEm) throw falha('dois_fatores_necessario');
+  await exigirSemBloqueio2fa(deps, u.id, agora);
   if (entrada.codigo) {
-    if (!(await conferirCodigoTotp(deps, u, entrada.codigo, agora))) throw falha('codigo_invalido');
+    if (!(await conferirCodigoTotp(deps, u, entrada.codigo, agora))) {
+      await registrarFalha2fa(deps, u, 'verificar', agora, ip);
+      throw falha('codigo_invalido');
+    }
     await marcarSessaoVerificada(deps.db, u.sessaoId, agora);
     return 'totp';
   }
@@ -151,7 +211,10 @@ export async function verificarDoisFatores(
       ),
     )
     .returning({ id: codigosRecuperacao.id });
-  if (!usado.length) throw falha('codigo_invalido', 'Código de recuperação inválido ou já usado.');
+  if (!usado.length) {
+    await registrarFalha2fa(deps, u, 'verificar', agora, ip);
+    throw falha('codigo_invalido', 'Código de recuperação inválido ou já usado.');
+  }
   await marcarSessaoVerificada(deps.db, u.sessaoId, agora);
   return 'recuperacao';
 }

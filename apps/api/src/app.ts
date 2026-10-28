@@ -15,11 +15,12 @@ import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastif
 import { sql } from 'drizzle-orm';
 import type { BancoDados } from '@fuse/db';
 import { ehAdmin, rngPadrao, type Rng } from '@fuse/shared';
-import { NOME_COOKIE_SESSAO, erroApi, instalarMensagensPtBr } from '@fuse/shared/api';
+import { HEADER_SEGUNDO_PLANO, NOME_COOKIE_SESSAO, erroApi, instalarMensagensPtBr } from '@fuse/shared/api';
 import { lerConfig, type Config } from './config.js';
 import { relogioSistema, type Deps, type Relogio, type UsuarioSessao } from './contexto.js';
 import { definirCookieSessao } from './http/cookies.js';
 import { ErroHttp } from './http/erros.js';
+import { ehErroDeBanco, instalarOperacao } from './http/operacao.js';
 import { conferirRegistro, criarRegistrador, exigirSuperadmin } from './http/registrar.js';
 import { criarClienteAsaasHttp, type ClienteAsaas } from './integracoes/asaas.js';
 import { criarMailerPadrao, type Mailer, type MensagemEmail } from './integracoes/email.js';
@@ -138,10 +139,19 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
   });
 
   // Sessão: carrega o usuário pelo cookie em toda requisição e renova o prazo.
+  // S-15: requisição automática (x-fuse-segundo-plano: 1) não renova a sessão.
+  // S-09: banco fora do ar responde 503 banco_indisponivel, não um 500 genérico.
   app.addHook('onRequest', async (req, reply) => {
     const token = req.cookies[NOME_COOKIE_SESSAO];
     if (!token) return;
-    const s = await carregarSessao(deps.db, config.segredoSessao, token, deps.relogio.agora());
+    const segundoPlano = req.headers[HEADER_SEGUNDO_PLANO] === '1';
+    let s;
+    try {
+      s = await carregarSessao(deps.db, config.segredoSessao, token, deps.relogio.agora(), { segundoPlano });
+    } catch (e) {
+      if (ehErroDeBanco(e)) throw new ErroHttp('banco_indisponivel');
+      throw e;
+    }
     if (!s) return;
     req.usuario = s.usuario;
     if (s.renovada) definirCookieSessao(reply, config, token, s.expiraEm);
@@ -154,6 +164,10 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
     if (e.code === 'FST_REQ_FILE_TOO_LARGE') return reply.status(400).send(erroApi('validacao', 'A imagem pode ter no máximo 2 MB.'));
     if (e.statusCode && e.statusCode >= 400 && e.statusCode < 500) {
       return reply.status(e.statusCode).send(erroApi('validacao', 'Requisição inválida.'));
+    }
+    if (ehErroDeBanco(erro)) {
+      req.log.error({ err: erro }, 'banco indisponível');
+      return reply.status(503).send(erroApi('banco_indisponivel'));
     }
     req.log.error({ err: erro }, 'erro interno');
     return reply.status(500).send(erroApi('interno'));
@@ -206,6 +220,8 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
   });
 
   /* ------------------------------------------------- rotas do registro */
+  // Lote 2: 5xx em erros_api (S-09) e limite persistente por usuário no /super (S-16).
+  instalarOperacao(app, deps, { rateLimit: opcoes.rateLimit ?? true });
   const r = criarRegistrador(app, deps, { rateLimit: opcoes.rateLimit ?? true });
   rotasAuth(r);
   rotasMe(r);

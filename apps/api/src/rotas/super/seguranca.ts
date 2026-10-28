@@ -24,7 +24,8 @@ export function rotasSuperSeguranca(r: Registrador): void {
   });
 
   r.rota('super2faVerificar', async (ctx) => {
-    const como = await verificarDoisFatores(ctx.deps, ctx.usuario, ctx.corpo, ctx.agora);
+    // S-16: código errado conta num limite persistente por conta e fica na auditoria (2fa.falha).
+    const como = await verificarDoisFatores(ctx.deps, ctx.usuario, ctx.corpo, ctx.agora, ctx.req.ip);
     if (como === 'recuperacao') {
       await auditarSuper(ctx, '2fa.recuperacao_usada', `usuario:${ctx.usuario.id}`);
     }

@@ -48,12 +48,17 @@ export async function abrirSessao(
   return { token, expiraEm };
 }
 
-/** Carrega o usuário da sessão e renova o prazo. `renovada` indica se o cookie deve ser reenviado. */
+/**
+ * Carrega o usuário da sessão e renova o prazo. `renovada` indica se o cookie deve ser reenviado.
+ * S-15: com `segundoPlano` (requisição automática, cabeçalho `x-fuse-segundo-plano: 1`), a sessão
+ * vale normalmente, mas não é renovada: o polling não conta como uso e a ociosidade continua.
+ */
 export async function carregarSessao(
   db: BancoDados,
   segredo: string,
   token: string,
   agora: Date,
+  opcoes: { segundoPlano?: boolean } = {},
 ): Promise<{ usuario: UsuarioSessao; renovada: boolean; expiraEm: Date } | null> {
   const [linha] = await db
     .select({ sessao: sessoes, usuario: usuarios })
@@ -80,7 +85,7 @@ export async function carregarSessao(
   }
   let expiraEm = linha.sessao.expiraEm;
   let renovada = false;
-  if (agora.getTime() - linha.sessao.ultimoUsoEm.getTime() >= RENOVAR_A_CADA_MS) {
+  if (!opcoes.segundoPlano && agora.getTime() - linha.sessao.ultimoUsoEm.getTime() >= RENOVAR_A_CADA_MS) {
     expiraEm = superadmin
       ? new Date(Math.min(linha.sessao.criadoEm.getTime() + VALIDADE_SESSAO_SUPER_MS, agora.getTime() + OCIOSIDADE_SESSAO_SUPER_MS))
       : new Date(agora.getTime() + VALIDADE_SESSAO_MS);

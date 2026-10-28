@@ -138,6 +138,26 @@ export function emailReembolso(d: {
   return { para: d.email, assunto: 'Fuse Aprova: reembolso confirmado', html, texto };
 }
 
+/** S-16: aviso de segurança para o dono da conta (ex.: muitos códigos errados). */
+export function emailAlertaSeguranca(d: { nome: string; email: string; titulo: string; texto: string }): MensagemEmail {
+  const nome = primeiroNome(d.nome);
+  const html = layout(d.titulo, `<p>Olá, ${esc(nome)}.</p>\n<p>${esc(d.texto)}</p>`);
+  return { para: d.email, assunto: `Fuse Aprova: ${d.titulo.toLowerCase()}`, html, texto: `Olá, ${nome}. ${d.texto}` };
+}
+
+/**
+ * S-11: o e-mail de uma conta da equipe foi trocado pelo superadmin. Vai para o endereço ANTIGO,
+ * para o dono perceber uma troca que não pediu.
+ */
+export function emailAvisoTrocaEmail(d: { nome: string; emailAntigo: string; emailNovo: string; quando: Date }): MensagemEmail {
+  const nome = primeiroNome(d.nome);
+  const data = `${formatarDataBR(diaSP(d.quando))} às ${horaMinutoSP(d.quando)}`;
+  const novo = d.emailNovo.replace(/^(.).*(@.*)$/, '$1***$2');
+  const texto = `O e-mail de acesso da sua conta no painel do Fuse Aprova foi trocado por um superadmin em ${data} (Brasília), para ${novo}. A partir de agora os links de senha vão para o endereço novo. Se você não pediu essa troca, avise o responsável pelo Fuse Aprova imediatamente.`;
+  const html = layout('O e-mail da sua conta foi trocado', `<p>Olá, ${esc(nome)}.</p>\n<p>${esc(texto)}</p>`);
+  return { para: d.emailAntigo, assunto: 'Fuse Aprova: o e-mail da sua conta foi trocado', html, texto: `Olá, ${nome}. ${texto}` };
+}
+
 /** D13: convite da equipe (admin ou superadmin) com o link para definir a senha. */
 export function emailConvite(d: {
   nome: string;
