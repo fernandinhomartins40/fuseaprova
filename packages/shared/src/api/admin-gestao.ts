@@ -289,5 +289,8 @@ export const ACOES_AUDITORIA = [
   'comunicacao.criar',
   'comunicacao.cancelar',
   'config.salvar',
+  'precos.salvar',
+  'cupom.criar',
+  'cupom.atualizar',
 ] as const;
 export type AcaoAuditoria = (typeof ACOES_AUDITORIA)[number];

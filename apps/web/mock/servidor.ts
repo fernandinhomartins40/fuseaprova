@@ -148,6 +148,7 @@ function novoEstado() {
       criadoEm: Date;
       expiraEm: Date;
       status: 'pendente' | 'pago' | 'vencido';
+      cupom?: string | null;
     },
     progresso: new Map<string, number>(),
     bausAbertos: new Set<string>(),
@@ -244,6 +245,17 @@ const CONCURSO_ID = '00000000-0000-4000-8000-0000000c0001';
 const CONCURSO2_ID = '00000000-0000-4000-8000-0000000c0002';
 const PRECO_CHEIO = 39700;
 const PRECO_ADICIONAL = 19700;
+/** D23: cupons do mock (percentual de desconto). */
+const CUPONS_MOCK: Record<string, number> = { PALMITAL10: 10 };
+
+function cupomMock(codigo: string | undefined): string | null {
+  if (!codigo) return null;
+  const c = codigo.replace(/\s+/g, '').toUpperCase();
+  if (!(c in CUPONS_MOCK)) {
+    throw new Falha(400, 'validacao', 'Cupom não encontrado ou desativado.', { cupom: 'Cupom não encontrado ou desativado.' });
+  }
+  return c;
+}
 function cargosAtivos() {
   return estado.modoEdital ? [...CARGOS, ...CARGOS_EDITAL] : CARGOS;
 }
@@ -690,9 +702,11 @@ const H: Partial<Record<NomeRota, Handler>> = {
   },
 
   pagamentoPix: ({ corpo }) => {
-    const alvo = (corpo as { concursoId?: string } | undefined)?.concursoId ?? estado.ativoId;
+    const c = corpo as { concursoId?: string; cupom?: string } | undefined;
+    const alvo = c?.concursoId ?? estado.ativoId;
+    const cupom = cupomMock(c?.cupom);
     const p = estado.pedido;
-    if (p && p.status === 'pendente' && p.expiraEm.getTime() > Date.now() && p.concursoId === alvo)
+    if (p && p.status === 'pendente' && p.expiraEm.getTime() > Date.now() && p.concursoId === alvo && (p.cupom ?? null) === cupom)
       return pix();
     estado.pedido = {
       id: uuid(),
@@ -700,9 +714,26 @@ const H: Partial<Record<NomeRota, Handler>> = {
       criadoEm: agora(),
       expiraEm: new Date(Date.now() + 30 * 60_000),
       status: 'pendente',
+      cupom,
     };
     return pix();
   },
+  pagamentoCupom: ({ corpo }) => {
+    const c = corpo as { codigo: string };
+    const codigo = cupomMock(c.codigo)!;
+    const original = PRECO_CHEIO;
+    const valor = Math.round((original * (100 - CUPONS_MOCK[codigo]!)) / 100);
+    return { codigo, descricao: `${CUPONS_MOCK[codigo]}% de desconto`, valorCentavos: valor, valorOriginalCentavos: original, descontoCentavos: original - valor };
+  },
+  configPublica: () => ({
+    suporte: { whatsapp: '5542999999999', email: 'suporte@fuseaprova.com.br' },
+    manutencao: { ativa: false, mensagem: '' },
+    aviso: null,
+    avisoEdital: AVISO_EDITAL,
+    precoCentavos: PRECO_CHEIO,
+    precoAdicionalCentavos: PRECO_ADICIONAL,
+    precoDeCentavos: null,
+  }),
   pagamentoStatus: () => {
     const p = estado.pedido;
     return {
@@ -1359,7 +1390,12 @@ function pix() {
     pedidoId: p.id,
     concursoId: c.id,
     concursoNome: c.nome,
-    valorCentavos: jaPagou ? PRECO_ADICIONAL : PRECO_CHEIO,
+    ...(() => {
+      const base = jaPagou ? PRECO_ADICIONAL : PRECO_CHEIO;
+      const desconto = p.cupom ? CUPONS_MOCK[p.cupom]! : 0;
+      const valor = Math.round((base * (100 - desconto)) / 100);
+      return { valorCentavos: valor, valorOriginalCentavos: desconto ? base : null, cupom: p.cupom ?? null };
+    })(),
     imagem: pngQrFalso(),
     payload: `00020126580014br.gov.bcb.pix0136mock-${p.id}5204000053039865406397.005802BR5911FUSE APROVA6008PALMITAL62070503***6304ABCD`,
     expiraEm: p.expiraEm.toISOString(),

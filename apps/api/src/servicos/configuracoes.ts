@@ -2,12 +2,12 @@
  * Configurações do produto que não são segredo (D13): contato de suporte, modo manutenção,
  * aviso global e texto do aviso do edital. Ficam na tabela `configuracoes` (chave
  * `produto`) e são lidas com um cache curto em memória, porque o modo manutenção é
- * conferido em toda rota de conteúdo. O preço NÃO é configuração: é o PRICE_CENTS do .env.
+ * conferido em toda rota de conteúdo. Os preços têm a própria chave (D23, servicos/precos.ts).
  */
 import { eq } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { AVISO_EDITAL } from '@fuse/shared';
-import { ConfiguracoesProduto, type ConfigPublicaResposta } from '@fuse/shared/api';
+import { ConfiguracoesProduto, type ConfigPublicaResposta, type PrecosProduto } from '@fuse/shared/api';
 import type { Config } from '../config.js';
 import type { Db } from '../util.js';
 
@@ -67,7 +67,7 @@ export async function salvarConfiguracoes(db: Db, valores: ValoresProduto, porId
   limparCacheConfiguracoes();
 }
 
-export function configPublica(v: ValoresProduto, config: Config): ConfigPublicaResposta {
+export function configPublica(v: ValoresProduto, precos: PrecosProduto): ConfigPublicaResposta {
   return {
     suporte: { whatsapp: v.suporteWhatsapp, email: v.suporteEmail || 'suporte@fuseaprova.com.br' },
     manutencao: {
@@ -76,6 +76,8 @@ export function configPublica(v: ValoresProduto, config: Config): ConfigPublicaR
     },
     aviso: v.aviso.ativo && v.aviso.texto ? { texto: v.aviso.texto, tom: v.aviso.tom } : null,
     avisoEdital: v.avisoEdital || AVISO_EDITAL,
-    precoCentavos: config.precoCentavos,
+    precoCentavos: precos.precoCentavos,
+    precoAdicionalCentavos: precos.precoAdicionalCentavos,
+    precoDeCentavos: precos.precoDeCentavos,
   };
 }

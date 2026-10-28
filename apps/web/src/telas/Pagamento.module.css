@@ -300,3 +300,39 @@
   font-weight: 600;
   color: var(--fa-muted);
 }
+/* D23: preço riscado e cupom de desconto */
+.precoDe {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+  text-decoration: line-through;
+}
+.cupomAbrir {
+  margin-top: 8px;
+  font-size: 15px;
+}
+.cupom {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.cupom > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+.cupom > button {
+  margin-top: 26px;
+}
+.cupomAplicado {
+  margin-top: 12px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  background: var(--fa-turquesa-soft);
+  color: var(--fa-petroleo);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 15px;
+}

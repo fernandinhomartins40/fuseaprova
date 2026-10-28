@@ -896,7 +896,7 @@ export const ConfiguracoesResposta = z.object({
   valores: ConfiguracoesProduto,
   atualizadoEm: DataHora.nullable(),
   atualizadoPor: z.object({ id: Uuid, nome: z.string() }).nullable(),
-  /** PRICE_CENTS do .env (fixo, só exibição). */
+  /** Preço vigente do 1º concurso (D23: editável em /super/precos). */
   precoCentavos: z.number().int(),
 });
 export type ConfiguracoesResposta = z.infer<typeof ConfiguracoesResposta>;
@@ -914,7 +914,11 @@ export const ConfigPublicaResposta = z.object({
   manutencao: z.object({ ativa: z.boolean(), mensagem: z.string() }),
   aviso: z.object({ texto: z.string(), tom: z.enum(TOM_AVISO) }).nullable(),
   avisoEdital: z.string(),
+  /** D23: preços vigentes (editáveis em /super/precos). */
   precoCentavos: z.number().int(),
+  precoAdicionalCentavos: z.number().int(),
+  /** Preço "de" (riscado); null = sem preço riscado. */
+  precoDeCentavos: z.number().int().nullable(),
 });
 export type ConfigPublicaResposta = z.infer<typeof ConfigPublicaResposta>;
 

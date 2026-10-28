@@ -89,4 +89,18 @@
   }), { rootMargin: '-45% 0px -45% 0px' });
   passos.forEach((p) => ioP.observe(p));
   passos[0].classList.add('ativo');
+
+  // preços vigentes (D23: o superadmin muda pelo painel); sem resposta, fica o texto do HTML
+  const reais = (c) => (c % 100 ? (c / 100).toFixed(2).replace('.', ',') : String(c / 100)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  fetch('/api/config/publica', { headers: { accept: 'application/json' } })
+    .then((r) => (r.ok ? r.json() : null))
+    .then((c) => {
+      if (!c || typeof c.precoCentavos !== 'number') return;
+      document.querySelectorAll('.js-preco').forEach((el) => { el.textContent = reais(c.precoCentavos); });
+      document.querySelectorAll('.js-preco-de').forEach((el) => {
+        if (c.precoDeCentavos && c.precoDeCentavos > c.precoCentavos) el.textContent = 'R$ ' + reais(c.precoDeCentavos);
+        else el.remove();
+      });
+    })
+    .catch(() => {});
 })();

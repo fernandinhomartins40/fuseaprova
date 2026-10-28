@@ -146,7 +146,7 @@ export default function VisaoGeral() {
                       </div>
                     ))}
                   </dl>
-                  <p className={a.suave}>Preço fixo: {formatarReais(d.precoCentavos)} (PRICE_CENTS do .env).</p>
+                  <p className={a.suave}>Preço do 1º concurso: {formatarReais(d.precoCentavos)} (muda em Preços e cupons).</p>
                 </Cartao>
               </div>
             </>

@@ -78,6 +78,10 @@ export type MetodoPedido = (typeof METODOS_PEDIDO)[number];
 export const FORMAS_PAGAMENTO_MANUAL = ['transferencia', 'dinheiro', 'pix_direto', 'outro'] as const;
 export type FormaPagamentoManual = (typeof FORMAS_PAGAMENTO_MANUAL)[number];
 
+/** D23: cupom de desconto. `percentual` = % do preço; `fixo` = centavos a menos. */
+export const TIPOS_CUPOM = ['percentual', 'fixo'] as const;
+export type TipoCupom = (typeof TIPOS_CUPOM)[number];
+
 export const NOMES_FORMA_PAGAMENTO_MANUAL: Record<FormaPagamentoManual, string> = {
   transferencia: 'Transferência bancária',
   dinheiro: 'Dinheiro',

@@ -24,6 +24,7 @@ const UsuarioFicha = lazy(() => import('./telas/UsuarioFicha'));
 const Equipe = lazy(() => import('./telas/Equipe'));
 const Comunicacao = lazy(() => import('./telas/Comunicacao'));
 const Sistema = lazy(() => import('./telas/Sistema'));
+const Precos = lazy(() => import('./telas/Precos'));
 const Auditoria = lazy(() => import('./telas/Auditoria'));
 
 function NaoEncontrada() {
@@ -56,6 +57,7 @@ export function RotasSuper({ appCliente }: { appCliente?: QueryClient | undefine
           <Route path="pagamentos" element={<Pagamentos />} />
           <Route path="pagamentos/:id" element={<PagamentoDetalhe />} />
           <Route path="webhooks" element={<Webhooks />} />
+          <Route path="precos" element={<Precos />} />
           <Route path="asaas" element={<Asaas />} />
           <Route path="usuarios" element={<Usuarios />} />
           <Route path="usuarios/:id" element={<UsuarioFicha />} />

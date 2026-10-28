@@ -32,6 +32,7 @@ export const MENU: { grupo: string; itens: ItemMenu[] }[] = [
     grupo: 'Pagamentos',
     itens: [
       { para: 'pagamentos', rotulo: 'Pagamentos', icone: 'pagamentos' },
+      { para: 'precos', rotulo: 'Preços e cupons', icone: 'pagamentos' },
       { para: 'webhooks', rotulo: 'Webhooks', icone: 'webhooks' },
     ],
   },
@@ -56,6 +57,7 @@ const NAV_BAIXO: ItemMenu[] = [
 ];
 
 const MAIS: ItemMenu[] = [
+  { para: 'precos', rotulo: 'Preços e cupons', icone: 'pagamentos' },
   { para: 'equipe', rotulo: 'Equipe', icone: 'equipe' },
   { para: 'comunicacao', rotulo: 'Comunicação', icone: 'comunicacao' },
   { para: 'webhooks', rotulo: 'Webhooks', icone: 'webhooks' },

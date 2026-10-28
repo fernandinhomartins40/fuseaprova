@@ -28,6 +28,7 @@ import type {
 import type { Deps, Usuario } from '../contexto.js';
 import { falha } from '../http/erros.js';
 import type { Db } from '../util.js';
+import { lerPrecos, precoBase } from './precos.js';
 import { concursoDoUsuario, modoEdital, siglaConcurso, type Cargo, type Concurso } from './usuario.js';
 
 const { concursos, cargos, usuarios, usuariosConcursos, pedidos, unidades, secoes, licoes } = schema;
@@ -61,20 +62,8 @@ export async function precoDoConcurso(
   usuarioId: string,
   concursoId: string,
 ): Promise<{ centavos: number; comDesconto: boolean }> {
-  const [outro] = await db
-    .select({ id: pedidos.id })
-    .from(pedidos)
-    .where(
-      and(
-        eq(pedidos.usuarioId, usuarioId),
-        eq(pedidos.status, 'pago'),
-        sql`${pedidos.concursoId} is distinct from ${concursoId}`,
-      ),
-    )
-    .limit(1);
-  return outro
-    ? { centavos: deps.config.precoAdicionalCentavos, comDesconto: true }
-    : { centavos: deps.config.precoCentavos, comDesconto: false };
+  // D23: os valores são os vigentes (painel do superadmin ou, sem nada salvo, o .env).
+  return precoBase(deps, db, usuarioId, concursoId);
 }
 
 /* --------------------------------------------------------- acesso por concurso */
@@ -184,7 +173,8 @@ function resumo(c: Concurso, agora: Date, preco: { centavos: number; comDesconto
 }
 
 export async function montarMeusConcursos(deps: Deps, u: Usuario, agora: Date): Promise<MeusConcursosResposta> {
-  const { db, config } = deps;
+  const { db } = deps;
+  const { valores: precos } = await lerPrecos(db, deps.config);
   const [ativo, linhas, abertos, pagos] = await Promise.all([
     concursoDoUsuario(db, u),
     db
@@ -204,8 +194,8 @@ export async function montarMeusConcursos(deps: Deps, u: Usuario, agora: Date): 
   const precoPara = (concursoId: string) => {
     const desconto = [...pagosIds].some((id) => id !== concursoId);
     return desconto
-      ? { centavos: config.precoAdicionalCentavos, comDesconto: true }
-      : { centavos: config.precoCentavos, comDesconto: false };
+      ? { centavos: precos.precoAdicionalCentavos, comDesconto: true }
+      : { centavos: precos.precoCentavos, comDesconto: false };
   };
   const seguidosIds = new Set(linhas.map((x) => x.l.concursoId));
   return {
@@ -217,8 +207,8 @@ export async function montarMeusConcursos(deps: Deps, u: Usuario, agora: Date): 
       ativo: c.id === ativo?.id,
     })),
     disponiveis: abertos.filter((c) => !seguidosIds.has(c.id)).map((c) => resumo(c, agora, precoPara(c.id))),
-    precoCheioCentavos: config.precoCentavos,
-    precoAdicionalCentavos: config.precoAdicionalCentavos,
+    precoCheioCentavos: precos.precoCentavos,
+    precoAdicionalCentavos: precos.precoAdicionalCentavos,
   };
 }
 

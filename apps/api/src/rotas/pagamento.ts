@@ -3,11 +3,15 @@
  */
 import type { Registrador } from '../http/registrar.js';
 import { falha } from '../http/erros.js';
-import { eventoEhNosso, gerarPix, statusPagamento } from '../servicos/pagamento.js';
+import { consultarCupom, eventoEhNosso, gerarPix, statusPagamento } from '../servicos/pagamento.js';
 import { receberEvento } from '../servicos/webhook.js';
 
 export function rotasPagamento(r: Registrador): void {
-  r.rota('pagamentoPix', async ({ usuario, corpo, deps, agora }) => gerarPix(deps, usuario, agora, corpo.concursoId));
+  r.rota('pagamentoPix', async ({ usuario, corpo, deps, agora }) => gerarPix(deps, usuario, agora, corpo.concursoId, corpo.cupom));
+
+  r.rota('pagamentoCupom', async ({ usuario, corpo, deps, agora }) =>
+    consultarCupom(deps, usuario, agora, corpo.codigo, corpo.concursoId),
+  );
 
   r.rota('pagamentoStatus', async ({ usuario, query, deps, agora }) =>
     statusPagamento(deps, usuario, agora, query.concursoId),

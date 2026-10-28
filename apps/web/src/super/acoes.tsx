@@ -2,7 +2,7 @@
  * Ações sensíveis do /super (D13), reaproveitadas por várias telas:
  * - `AcaoConfirmada`: folha (celular) ou modal (desktop) com motivo obrigatório e, quando a
  *   rota pede, a reconfirmação com senha ou código do app;
- * - `AprovarManual`: registro de pagamento recebido por fora (R$ 397 fixo, PRICE_CENTS),
+ * - `AprovarManual`: registro de pagamento recebido por fora (preço vigente do 1º concurso, D23),
  *   com forma, data, observação, referência, comprovante e a confirmação da senha.
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -251,7 +251,7 @@ export function AprovarManual({
         <div className={a.formulario}>
           <Alerta tom="info">
             Use só para pagamento recebido por fora (transferência, dinheiro, Pix direto). O valor é sempre{' '}
-            {precoCentavos ? formatarReais(precoCentavos) : 'o preço fixo'} e não existe acesso gratuito.
+            {precoCentavos ? formatarReais(precoCentavos) : 'o preço vigente do 1º concurso'} e não existe acesso gratuito.
           </Alerta>
           <dl className={a.dl}>
             <dt>Aluno</dt>

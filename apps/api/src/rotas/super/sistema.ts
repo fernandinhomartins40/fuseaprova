@@ -9,6 +9,7 @@ import { JOBS_WORKER, type ExecucaoJob } from '@fuse/shared/api';
 import type { Registrador } from '../../http/registrar.js';
 import { reconfirmar } from '../../servicos/doisfatores.js';
 import { configPublica, lerConfiguracoes, salvarConfiguracoes } from '../../servicos/configuracoes.js';
+import { lerPrecos } from '../../servicos/precos.js';
 import { consultar, contar, iso, isoOuNull, type Db } from '../../util.js';
 import { paginacao } from '../admin/comum.js';
 import { ambienteAsaas } from './asaas.js';
@@ -63,8 +64,8 @@ async function jobs(db: Db, agora: Date): Promise<ExecucaoJob[]> {
 
 export function rotasSuperSistema(r: Registrador): void {
   r.rota('configPublica', async ({ deps }) => {
-    const { valores } = await lerConfiguracoes(deps.db, deps.config);
-    return configPublica(valores, deps.config);
+    const [{ valores }, precos] = await Promise.all([lerConfiguracoes(deps.db, deps.config), lerPrecos(deps.db, deps.config)]);
+    return configPublica(valores, precos.valores);
   });
 
   r.rota('superSistema', async ({ deps, agora }) => {
@@ -117,7 +118,7 @@ export function rotasSuperSistema(r: Registrador): void {
       smtp: { configurado: !!config.smtp.host, host: config.smtp.host || null },
       asaas: { chaveConfigurada: !!config.asaas.apiKey, ambiente: ambienteAsaas(config.asaas.baseUrl) },
       push: { configurado: !!(config.vapid.publica && config.vapid.privada) },
-      precoCentavos: config.precoCentavos,
+      precoCentavos: (await lerPrecos(db, config)).valores.precoCentavos,
       geradoEm: iso(agora),
     };
   });
@@ -125,7 +126,7 @@ export function rotasSuperSistema(r: Registrador): void {
   const respostaConfig = async (db: Db, config: Parameters<typeof lerConfiguracoes>[1]) => {
     const l = await lerConfiguracoes(db, config, { semCache: true });
     const [autor] = l.atualizadoPor ? await db.select({ id: usuarios.id, nome: usuarios.nome }).from(usuarios).where(eq(usuarios.id, l.atualizadoPor)) : [];
-    return { valores: l.valores, atualizadoEm: isoOuNull(l.atualizadoEm), atualizadoPor: autor ?? null, precoCentavos: config.precoCentavos };
+    return { valores: l.valores, atualizadoEm: isoOuNull(l.atualizadoEm), atualizadoPor: autor ?? null, precoCentavos: (await lerPrecos(db, config)).valores.precoCentavos };
   };
 
   r.rota('superConfiguracoes', async ({ deps }) => respostaConfig(deps.db, deps.config));

@@ -28,6 +28,7 @@ import {
   escolaridadeEnum,
   fonteColetaEnum,
   formaPagamentoManualEnum,
+  tipoCupomEnum,
   letraEnum,
   metodoPedidoEnum,
   origemQuestaoEnum,
@@ -488,6 +489,24 @@ export const licoes = pgTable(
 
 /* -------------------------------------------------------------- pagamento */
 
+/** extra D23: cupom de desconto criado pelo superadmin. O código é único (maiúsculo). */
+export const cupons = pgTable('cupons', {
+  id: id(),
+  codigo: text('codigo').notNull().unique(),
+  descricao: text('descricao').notNull().default(''),
+  tipo: tipoCupomEnum('tipo').notNull(),
+  /** Percentual (1 a 90) ou centavos. */
+  valor: integer('valor').notNull(),
+  validoAte: ts('valido_ate'),
+  limiteUsos: integer('limite_usos'),
+  /** Só para este concurso; null = qualquer um. */
+  concursoId: uuid('concurso_id').references(() => concursos.id, { onDelete: 'cascade' }),
+  ativo: boolean('ativo').notNull().default(true),
+  criadoPor: uuid('criado_por').references(() => usuarios.id, { onDelete: 'set null' }),
+  criadoEm: criadoEm(),
+  atualizadoEm: atualizadoEm(),
+});
+
 export const pedidos = pgTable(
   'pedidos',
   {
@@ -525,6 +544,9 @@ export const pedidos = pgTable(
     /** Nome do arquivo em ARQUIVOS_DIR/comprovantes (servido só ao superadmin). */
     manualComprovante: text('manual_comprovante'),
     aprovadoPor: uuid('aprovado_por').references(() => usuarios.id, { onDelete: 'set null' }),
+    /** extra D23: cupom usado e o preço antes dele. */
+    cupomId: uuid('cupom_id').references(() => cupons.id, { onDelete: 'set null' }),
+    valorOriginalCentavos: integer('valor_original_centavos'),
     criadoEm: criadoEm(),
     /** extra */
     atualizadoEm: atualizadoEm(),
@@ -534,6 +556,7 @@ export const pedidos = pgTable(
     index('pedidos_status_expira_idx').on(t.status, t.pixExpiraEm),
     index('pedidos_pago_em_idx').on(t.pagoEm),
     index('pedidos_criado_em_idx').on(t.criadoEm),
+    index('pedidos_cupom_idx').on(t.cupomId),
   ],
 );
 

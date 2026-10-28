@@ -18,6 +18,14 @@ export function centavosParaReais(centavos: number): number {
   return Math.round(centavos) / 100;
 }
 
+/** "197", "197,5", "R$ 1.297,90" → centavos. Texto que não é valor → null. */
+export function reaisParaCentavos(texto: string): number | null {
+  const limpo = texto.replace(/R\$|\s/g, '');
+  if (!/^\d{1,3}(\.\d{3})*(,\d{1,2})?$|^\d+(,\d{1,2})?$/.test(limpo)) return null;
+  const [inteiro, frac = ''] = limpo.replace(/\./g, '').split(',');
+  return Number(inteiro) * 100 + Number(frac.padEnd(2, '0'));
+}
+
 /** Duração legível: "3 h 20 min", "45 min", "menos de 1 min". */
 export function formatarDuracao(ms: number): string {
   const totalMin = Math.ceil(Math.max(0, ms) / MS_MINUTO);

@@ -18,6 +18,7 @@ export const CHAVES = {
   pagamentoStatus: (concursoId?: string) => ['pagamento', 'status', concursoId ?? 'ativo'] as const,
   meusConcursos: ['meus-concursos'] as const,
   concursoPorId: (id: string) => ['concurso', id] as const,
+  configPublica: ['config', 'publica'] as const,
 };
 
 export function criarQueryClient() {
@@ -57,6 +58,15 @@ export function useConcurso() {
 }
 
 /** Concursos que o aluno acompanha, o ativo e os que ainda pode adicionar (D21). */
+/** Suporte, avisos e preços vigentes (D23: o superadmin muda os preços pelo painel). */
+export function useConfigPublica() {
+  return useQuery({
+    queryKey: CHAVES.configPublica,
+    queryFn: ({ signal }) => chamar('configPublica', { signal }),
+    staleTime: 60_000,
+  });
+}
+
 export function useMeusConcursos(habilitado = true) {
   return useQuery({
     queryKey: CHAVES.meusConcursos,

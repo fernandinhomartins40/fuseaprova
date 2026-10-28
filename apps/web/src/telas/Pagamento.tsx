@@ -16,12 +16,13 @@ import {
   type PixResposta,
 } from '@fuse/shared/api';
 import { chamar, ErroApi } from '../api/cliente';
-import { CHAVES, useMe, useMeusConcursos } from '../api/consultas';
+import { CHAVES, useConfigPublica, useMe, useMeusConcursos } from '../api/consultas';
 import { sair } from '../app/sair';
 import { apagarPacote, limparCachesApi } from '../offline/pacote';
 import {
   Botao3D,
   CabecalhoVoltar,
+  Campo,
   Capi,
   Confete,
   IconeTraco,
@@ -62,6 +63,13 @@ export default function Pagamento() {
   const [erro, setErro] = useState<string>(TEXTO_PIX_ERRO);
   const [restante, setRestante] = useState(0);
   const pedido = useRef(false);
+  const config = useConfigPublica();
+  // D23: cupom de desconto (conferido no servidor ao gerar o Pix).
+  const [cupomAberto, setCupomAberto] = useState(false);
+  const [cupomTexto, setCupomTexto] = useState('');
+  const [cupomErro, setCupomErro] = useState<string | null>(null);
+  const [aplicando, setAplicando] = useState(false);
+  const cupom = useRef<string | undefined>(undefined);
 
   // Quem já tem acesso não fica aqui.
   useEffect(() => {
@@ -73,7 +81,7 @@ export default function Pagamento() {
   const gerar = useCallback(async () => {
     setEstado('gerando');
     try {
-      const r = await chamar('pagamentoPix', { corpo: { concursoId: concursoPedido } });
+      const r = await chamar('pagamentoPix', { corpo: { concursoId: concursoPedido, cupom: cupom.current } });
       setPix(r);
       setEstado(
         r.status === 'pago'
@@ -163,6 +171,24 @@ export default function Pagamento() {
     return () => window.clearInterval(id);
   }, [pix, estado]);
 
+  async function aplicarCupom(codigo: string | undefined) {
+    setCupomErro(null);
+    setAplicando(true);
+    try {
+      // Confere antes: cupom inválido não troca o Pix que já está na tela.
+      if (codigo) await chamar('pagamentoCupom', { corpo: { codigo, concursoId: concursoPedido } });
+      cupom.current = codigo;
+      await gerar();
+      if (!codigo) setCupomTexto('');
+    } catch (e) {
+      setCupomErro(
+        e instanceof ErroApi ? (e.campos.cupom ?? e.campos.codigo ?? e.message) : 'Não deu para conferir o cupom agora.',
+      );
+    } finally {
+      setAplicando(false);
+    }
+  }
+
   async function copiar() {
     if (!pix) return;
     let copiado = true;
@@ -177,6 +203,13 @@ export default function Pagamento() {
     if (copiado) toast('Código copiado', 'sucesso');
     else toast('Não deu para copiar. Toque no código e copie manualmente.', 'erro');
   }
+
+  // Preço riscado: o valor antes do cupom ou, sem cupom, o preço "de" da campanha (1º concurso).
+  const precoRiscado =
+    pix?.valorOriginalCentavos ??
+    (!concursoPedido && config.data?.precoDeCentavos && (!pix || pix.valorCentavos === config.data.precoCentavos)
+      ? config.data.precoDeCentavos
+      : null);
 
   if (estado === 'pago') {
     return (
@@ -234,12 +267,13 @@ export default function Pagamento() {
           </span>
           <div>
             <p className={s.rotulo}>ACESSO COMPLETO</p>
+            {precoRiscado ? <p className={s.precoDe}>de {formatarReais(precoRiscado).replace(',00', '')}</p> : null}
             <p className={s.preco}>
               {pix
                 ? formatarReais(pix.valorCentavos).replace(',00', '')
-                : concursoPedido
-                  ? 'R$ …'
-                  : formatarReais(39700).replace(',00', '')}
+                : !concursoPedido && config.data
+                  ? formatarReais(config.data.precoCentavos).replace(',00', '')
+                  : 'R$ …'}
             </p>
             <p className={s.precoSub}>à vista no Pix · pagamento único</p>
           </div>
@@ -254,6 +288,41 @@ export default function Pagamento() {
             </li>
           ))}
         </ul>
+        {pix?.cupom ? (
+          <p className={s.cupomAplicado}>
+            <span>
+              Cupom <strong>{pix.cupom}</strong> aplicado
+            </span>
+            <button type="button" className={s.linkBotao} disabled={aplicando} onClick={() => void aplicarCupom(undefined)}>
+              Remover
+            </button>
+          </p>
+        ) : cupomAberto ? (
+          <form
+            className={s.cupom}
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (cupomTexto.trim()) void aplicarCupom(cupomTexto.trim());
+            }}
+          >
+            <Campo
+              rotulo="Cupom de desconto"
+              valor={cupomTexto}
+              onValor={(v) => setCupomTexto(v.toUpperCase())}
+              erro={cupomErro}
+              autoComplete="off"
+              autoCapitalize="characters"
+              maxLength={30}
+            />
+            <Botao3D type="submit" variante="azul" compacto bloco={false} disabled={!cupomTexto.trim() || aplicando}>
+              {aplicando ? 'APLICANDO…' : 'APLICAR'}
+            </Botao3D>
+          </form>
+        ) : (
+          <button type="button" className={`${s.linkBotao} ${s.cupomAbrir}`} onClick={() => setCupomAberto(true)}>
+            Tem um cupom de desconto?
+          </button>
+        )}
       </section>
 
       {estado === 'erro' ? (
@@ -278,7 +347,7 @@ export default function Pagamento() {
                 src={`data:image/png;base64,${pix.imagem}`}
                 width={140}
                 height={140}
-                alt="QR Code do Pix de R$ 397,00"
+                alt={`QR Code do Pix de ${formatarReais(pix.valorCentavos)}`}
               />
             ) : (
               <div className={s.qrVazio} aria-hidden="true" />

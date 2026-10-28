@@ -1,6 +1,6 @@
 /**
  * Aprovação manual de pagamento (D13): o aluno pagou por fora (transferência, dinheiro, Pix
- * direto na conta). Registra um pagamento RECEBIDO de R$ 397 (PRICE_CENTS) — não é acesso
+ * direto na conta). Registra um pagamento RECEBIDO pelo preço vigente do 1º concurso (D23) — não é acesso
  * gratuito — e libera o acesso pelo mesmo caminho do webhook (pedido pago + e-mail).
  *
  * Idempotente: se o aluno já tem pedido pago, nada é criado. Um webhook que chegue depois para
@@ -18,6 +18,7 @@ import { liberarConcurso, revogarConcurso } from './concursos.js';
 import { enviarEmailConfirmacao, type Pedido } from './pagamento.js';
 import { concursoDoUsuario } from './usuario.js';
 import { encerrarSessoesDoUsuario } from './sessoes.js';
+import { lerPrecos } from './precos.js';
 
 const { pedidos, usuarios } = schema;
 
@@ -51,6 +52,7 @@ export async function aprovarPagamentoManual(
     throw falha('validacao', 'A data do recebimento é de mais de um ano atrás.', { recebidoEm: 'Confira a data do recebimento.' });
   }
 
+  const preco = (await lerPrecos(deps.db, deps.config)).valores.precoCentavos;
   const r = await deps.db.transaction(async (tx) => {
     // A trava na linha do aluno serializa duas aprovações ao mesmo tempo.
     const [u] = await tx.select().from(usuarios).where(eq(usuarios.id, usuarioId)).for('update');
@@ -91,8 +93,8 @@ export async function aprovarPagamentoManual(
       concursoId,
       status: 'pago' as const,
       metodo: 'manual' as const,
-      valorCentavos: deps.config.precoCentavos,
-      valorLiquidoCentavos: deps.config.precoCentavos,
+      valorCentavos: preco,
+      valorLiquidoCentavos: preco,
       pagoEm: agora,
       manualForma: d.forma,
       manualRecebidoEm: d.recebidoEm,
@@ -124,7 +126,7 @@ export async function aprovarPagamentoManual(
     };
   }
   enviarEmailConfirmacao(deps, r.depois, r.aluno);
-  const asaas = await tratarCobrancaPendente(deps, r.cobranca, d, agora);
+  const asaas = await tratarCobrancaPendente(deps, r.cobranca, d, agora, preco);
   return { resposta: { pedidoId: r.depois.id, jaAprovado: false, asaas }, antes: r.antes, depois: r.depois };
 }
 
@@ -134,6 +136,7 @@ async function tratarCobrancaPendente(
   paymentId: string | null,
   d: DadosAprovacao,
   agora: Date,
+  preco: number,
 ): Promise<AprovarManualResposta['asaas']> {
   if (!paymentId) return { acao: 'nenhuma', ok: true, mensagem: 'Não havia cobrança Pix pendente no Asaas.' };
   if (d.acaoAsaas === 'nenhuma') {
@@ -143,7 +146,7 @@ async function tratarCobrancaPendente(
     if (d.acaoAsaas === 'receber_em_dinheiro') {
       await deps.asaas.receberEmDinheiro(paymentId, {
         paymentDate: d.recebidoEm,
-        value: centavosParaReais(deps.config.precoCentavos),
+        value: centavosParaReais(preco),
         notifyCustomer: false,
       });
       return { acao: 'receber_em_dinheiro', ok: true, mensagem: `Recebimento confirmado no Asaas (cobrança ${paymentId}).` };

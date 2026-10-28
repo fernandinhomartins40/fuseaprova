@@ -13,6 +13,7 @@ import type { Deps } from '../../contexto.js';
 import type { Registrador } from '../../http/registrar.js';
 import { consultar, contar, dataSql, iso } from '../../util.js';
 import { auditarSuper, nomeArquivoCsv, periodo, reais } from './comum.js';
+import { lerPrecos } from '../../servicos/precos.js';
 
 const { pedidos, usuarios } = schema;
 
@@ -149,7 +150,7 @@ export async function calcularFinanceiro(
     ate,
     agrupamento: q.agrupamento,
     metodo: q.metodo,
-    precoCentavos: deps.config.precoCentavos,
+    precoCentavos: (await lerPrecos(deps.db, deps.config)).valores.precoCentavos,
     serie: [...serie.values()],
     totais,
     pedidosPorStatus,

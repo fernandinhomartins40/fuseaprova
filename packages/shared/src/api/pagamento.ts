@@ -8,7 +8,13 @@ import { DataHora, Uuid, ZStatusPedido } from './comum.js';
  * POST /pagamento/pix — gera ou reaproveita o Pix pendente não expirado de UM concurso (D21).
  * Sem `concursoId`, é o concurso ativo do aluno (a 1ª compra).
  */
-export const PixEntrada = z.object({ concursoId: Uuid.optional() }).default({});
+export const PixEntrada = z
+  .object({
+    concursoId: Uuid.optional(),
+    /** D23: código do cupom (conferido no servidor; inválido = 400 com `campos.cupom`). */
+    cupom: z.string().trim().max(40).optional(),
+  })
+  .default({});
 export type PixEntrada = z.input<typeof PixEntrada>;
 
 export const PixResposta = z.object({
@@ -17,6 +23,9 @@ export const PixResposta = z.object({
   concursoId: Uuid,
   concursoNome: z.string(),
   valorCentavos: z.number().int(),
+  /** D23: preço antes do cupom (null = sem cupom). */
+  valorOriginalCentavos: z.number().int().nullable(),
+  cupom: z.string().nullable(),
   /** PNG em base64 (sem o prefixo data:), vindo do Asaas (`encodedImage`). */
   imagem: z.string(),
   /** Pix copia e cola. */

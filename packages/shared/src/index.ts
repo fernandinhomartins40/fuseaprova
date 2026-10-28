@@ -18,6 +18,7 @@ export * from './cpf.js';
 export * from './celular.js';
 export * from './validacao.js';
 export * from './formatacao.js';
+export * from './precos.js';
 export * from './copy.js';
 export * from './licao.js';
 export * from './cifra.js';

@@ -5,6 +5,7 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { formatarReais } from '@fuse/shared';
 import type { ConfiguracoesProduto } from '@fuse/shared/api';
 import { api, camposDoErro, mensagemDeErro } from '../../admin/api';
@@ -132,7 +133,7 @@ function Configuracoes() {
               }}
             >
               <p className={a.suave}>
-                Preço fixo: {formatarReais(c.precoCentavos)} (PRICE_CENTS do .env, não muda por aqui).
+                Preço do 1º concurso: {formatarReais(c.precoCentavos)} (muda em <Link to={caminho('precos')}>Preços e cupons</Link>).
                 {c.atualizadoEm ? ` Última alteração ${dataHora(c.atualizadoEm)} por ${c.atualizadoPor?.nome ?? '—'}.` : ''}
               </p>
               <CampoTexto

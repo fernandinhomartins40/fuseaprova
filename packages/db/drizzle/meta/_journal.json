@@ -43,6 +43,13 @@
       "when": 1793129460606,
       "tag": "0005_acesso_por_concurso",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793196378035,
+      "tag": "0006_precos_cupons",
+      "breakpoints": true
     }
   ]
 }

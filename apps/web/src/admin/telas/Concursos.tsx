@@ -112,7 +112,7 @@ function AbaConcursos() {
         </Botao>
       </div>
       <p className={s.suave}>
-        Cada concurso é um acesso separado para o aluno (R$ 397 o primeiro, R$ 197 cada adicional).
+        Cada concurso é um acesso separado para o aluno (os preços do primeiro e dos adicionais ficam em Preços e cupons, no superadmin).
         Para abrir um concurso novo da FAU, use <strong>Criar a partir deste</strong>: a trilha e os
         cargos genéricos são copiados, o concurso entra <strong>inativo</strong> e só aparece para
         os alunos quando você marcar <strong>Concurso ativo</strong> em Editar.

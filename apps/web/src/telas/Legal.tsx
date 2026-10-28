@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { AVISO_EDITAL, RODAPE_LEGAL } from '@fuse/shared';
+import { AVISO_EDITAL, formatarReais, RODAPE_LEGAL } from '@fuse/shared';
+import { useConfigPublica } from '../api/consultas';
 import { VERSAO_TERMOS_ATUAL } from '@fuse/shared/api';
 import { CabecalhoVoltar, Pagina } from '../ui';
 import { EH_APP } from '../nativo/plataforma';
@@ -8,6 +9,8 @@ import s from './Legal.module.css';
 
 /** Termos de uso (PRD 11): tudo o que a seção exige, em linguagem simples. */
 export function Termos() {
+  // D23: os preços são os vigentes (o superadmin muda pelo painel).
+  const precos = useConfigPublica().data;
   return (
     <Pagina>
       <CabecalhoVoltar titulo="Termos de uso" />
@@ -27,8 +30,17 @@ export function Termos() {
           <p>
             O Fuse Aprova é um <strong>produto digital de acesso por concurso</strong>: um app de
             estudo para concursos da banca FAU. <strong>Cada concurso é um acesso separado</strong>:
-            o primeiro custa R$ 397,00 e cada concurso adicional custa R$ 197,00, sempre à vista e só
-            por Pix. Não há mensalidade, renovação automática, período de teste nem acesso gratuito.
+            {precos ? (
+              <>
+                hoje o primeiro custa {formatarReais(precos.precoCentavos)} e cada concurso adicional
+                custa {formatarReais(precos.precoAdicionalCentavos)}
+              </>
+            ) : (
+              'o preço de cada um aparece na tela de pagamento'
+            )}
+            , sempre à vista e só por Pix. Vale o valor mostrado na tela de pagamento no momento da
+            compra, já com o cupom de desconto, se você usar um. Não há mensalidade, renovação
+            automática, período de teste nem acesso gratuito.
           </p>
         )}
 

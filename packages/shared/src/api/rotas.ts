@@ -19,6 +19,7 @@ import * as soc from './social.js';
 import * as ac from './admin-conteudo.js';
 import * as ag from './admin-gestao.js';
 import * as sa from './superadmin.js';
+import * as pr from './precos.js';
 
 export const PREFIXO_API = '/api';
 
@@ -190,6 +191,15 @@ export const ROTAS = {
     corpo: pag.PixEntrada,
     resposta: pag.PixResposta,
     limite: { max: 10, janelaMs: HORA, por: 'usuario' },
+  }),
+  pagamentoCupom: rota({
+    metodo: 'POST',
+    caminho: '/pagamento/cupom',
+    guarda: 'login',
+    descricao: 'D23: confere um cupom e devolve o valor do Pix com o desconto (não gera cobrança).',
+    corpo: pr.CupomConsultaEntrada,
+    resposta: pr.CupomConsultaResposta,
+    limite: { max: 20, janelaMs: 15 * MIN, por: 'usuario' },
   }),
   pagamentoStatus: rota({
     metodo: 'GET',
@@ -1013,7 +1023,7 @@ export const ROTAS = {
     metodo: 'POST',
     caminho: '/super/usuarios/:id/aprovar-pagamento',
     guarda: 'superadmin',
-    descricao: 'Registra um pagamento recebido por fora (R$ 397) e libera o acesso.',
+    descricao: 'Registra um pagamento recebido por fora (preço vigente) e libera o acesso.',
     params: IdParams,
     corpo: sa.AprovarManualEntrada,
     resposta: sa.AprovarManualResposta,
@@ -1293,6 +1303,50 @@ export const ROTAS = {
     descricao: 'Saúde da API, do banco, do worker, backup, versão e SMTP.',
     resposta: sa.SistemaResposta,
     limite: LIMITE_SUPER,
+  }),
+  superPrecos: rota({
+    metodo: 'GET',
+    caminho: '/super/precos',
+    guarda: 'superadmin',
+    descricao: 'D23: preços vigentes (1º concurso, adicional e preço "de").',
+    resposta: pr.PrecosResposta,
+    limite: LIMITE_SUPER,
+  }),
+  superPrecosSalvar: rota({
+    metodo: 'PUT',
+    caminho: '/super/precos',
+    guarda: 'superadmin',
+    descricao: 'D23: muda os preços (reconfirmação) e cancela no Asaas os Pix pendentes com valor antigo.',
+    corpo: pr.PrecosSalvarEntrada,
+    resposta: pr.PrecosSalvarResposta,
+    limite: LIMITE_SENSIVEL,
+  }),
+  superCupons: rota({
+    metodo: 'GET',
+    caminho: '/super/cupons',
+    guarda: 'superadmin',
+    descricao: 'D23: cupons de desconto, com usos e Pix pendentes.',
+    resposta: pr.CuponsResposta,
+    limite: LIMITE_SUPER,
+  }),
+  superCupomCriar: rota({
+    metodo: 'POST',
+    caminho: '/super/cupons',
+    guarda: 'superadmin',
+    descricao: 'D23: cria um cupom de desconto.',
+    corpo: pr.CupomSalvarEntrada,
+    resposta: pr.CupomSalvarResposta,
+    limite: LIMITE_SENSIVEL,
+  }),
+  superCupomAtualizar: rota({
+    metodo: 'PUT',
+    caminho: '/super/cupons/:id',
+    guarda: 'superadmin',
+    descricao: 'D23: altera ou desativa um cupom; Pix pendentes com valor antigo são cancelados no Asaas.',
+    params: IdParams,
+    corpo: pr.CupomSalvarEntrada,
+    resposta: pr.CupomSalvarResposta,
+    limite: LIMITE_SENSIVEL,
   }),
   superConfiguracoes: rota({
     metodo: 'GET',

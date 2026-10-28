@@ -120,6 +120,9 @@ export const NOMES_ACAO_AUDITORIA: Record<string, string> = {
   'comunicacao.criar': 'Criou comunicação',
   'comunicacao.cancelar': 'Cancelou comunicação',
   'config.salvar': 'Salvou configurações',
+  'precos.salvar': 'Mudou os preços',
+  'cupom.criar': 'Criou cupom',
+  'cupom.atualizar': 'Alterou cupom',
 };
 
 export type TomSelo = 'neutro' | 'sucesso' | 'aviso' | 'erro' | 'info' | 'destaque';

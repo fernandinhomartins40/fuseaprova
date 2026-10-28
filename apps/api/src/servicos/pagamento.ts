@@ -10,6 +10,7 @@ import {
   STATUS_ASAAS_PAGO,
   referenciaEhDoFuseAprova,
   referenciaExterna,
+  type CupomConsultaResposta,
   type PixResposta,
   type StatusPagamentoResposta,
 } from '@fuse/shared/api';
@@ -18,6 +19,7 @@ import { falha } from '../http/erros.js';
 import { emailBoasVindas, emailReembolso } from '../integracoes/email.js';
 import { lerDataAsaas } from '../integracoes/asaas.js';
 import { concursoAbertoPorId, liberarConcurso, precoDoConcurso, revogarConcurso } from './concursos.js';
+import { cupomValido, descricaoCupom, precoComCupom } from './precos.js';
 import { encerrarSessoesDoUsuario } from './sessoes.js';
 import { concursoDoUsuario } from './usuario.js';
 import { iso, isoOuNull, type Db } from '../util.js';
@@ -25,12 +27,14 @@ import { iso, isoOuNull, type Db } from '../util.js';
 const { pedidos, usuarios, usuariosConcursos } = schema;
 export type Pedido = typeof schema.pedidos.$inferSelect;
 
-function respostaPix(p: Pedido, concurso: { id: string; nome: string }): PixResposta {
+function respostaPix(p: Pedido, concurso: { id: string; nome: string }, cupom: string | null): PixResposta {
   return {
     pedidoId: p.id,
     concursoId: concurso.id,
     concursoNome: concurso.nome,
     valorCentavos: p.valorCentavos,
+    valorOriginalCentavos: p.valorOriginalCentavos,
+    cupom,
     imagem: p.pixImagem ?? '',
     payload: p.pixPayload ?? '',
     expiraEm: iso(p.pixExpiraEm ?? p.criadoEm),
@@ -65,6 +69,7 @@ export async function gerarPix(
   usuario: Usuario,
   agora: Date,
   concursoIdPedido?: string,
+  cupomCodigo?: string,
 ): Promise<PixResposta> {
   const { asaas } = deps;
   const { db } = deps;
@@ -83,7 +88,9 @@ export async function gerarPix(
     if (linha?.acesso || (!linha && !concursoIdPedido && u.acesso)) {
       throw falha('conflito', 'Seu acesso a este concurso já está liberado.');
     }
-    const preco = await precoDoConcurso(deps, db, u.id, concurso.id);
+    // D23: cupom conferido aqui (inválido = 400 com campos.cupom); o valor sai só do servidor.
+    const cupom = cupomCodigo ? await cupomValido(db, cupomCodigo, concurso.id, agora) : null;
+    const preco = precoComCupom(await precoDoConcurso(deps, db, u.id, concurso.id), cupom);
     const [pendente] = await db
       .select()
       .from(pedidos)
@@ -91,17 +98,24 @@ export async function gerarPix(
       .orderBy(desc(pedidos.criadoEm))
       .limit(1);
     // O Pix pendente só vale se ainda é o preço de hoje (o aluno pode ter pago outro concurso
-    // desde então e ganhado o desconto).
+    // desde então e ganhado o desconto, o superadmin pode ter mudado o preço) e o mesmo cupom.
     if (
       pendente &&
       pendente.valorCentavos === preco.centavos &&
+      (pendente.cupomId ?? null) === (cupom?.id ?? null) &&
       pendente.pixExpiraEm &&
       pendente.pixExpiraEm > agora &&
       pendente.pixPayload
     ) {
-      return respostaPix(pendente, concurso);
+      return respostaPix(pendente, concurso, cupom?.codigo ?? null);
     }
     if (pendente) {
+      // O Pix antigo sai do Asaas para não ser pago pelo valor velho.
+      if (pendente.asaasPaymentId) {
+        await asaas.removerCobranca(pendente.asaasPaymentId).catch((e: Error) => {
+          deps.log.warn({ pedidoId: pendente.id, erro: e.message }, 'pix substituído não foi removido no asaas');
+        });
+      }
       await db.update(pedidos).set({ status: 'vencido' }).where(eq(pedidos.id, pendente.id));
     }
     if (!u.cpf || !u.celular) throw falha('pix_indisponivel');
@@ -138,6 +152,8 @@ export async function gerarPix(
           asaasCustomerId: customerId,
           asaasPaymentId: cobranca.id,
           valorCentavos: preco.centavos,
+          valorOriginalCentavos: preco.originalCentavos,
+          cupomId: cupom?.id ?? null,
           status: 'pendente',
           pixPayload: qr.payload,
           pixImagem: qr.encodedImage,
@@ -146,7 +162,7 @@ export async function gerarPix(
         })
         .returning();
       deps.log.info({ pedidoId: p!.id, usuarioId: u.id, cpf: ocultarCpf(u.cpf) }, 'pix gerado');
-      return respostaPix(p!, concurso);
+      return respostaPix(p!, concurso, cupom?.codigo ?? null);
     } catch (e) {
       // Sem payload Pix nem dados pessoais no log. O cliente já criado no Asaas fica gravado.
       deps.log.error({ usuarioId: u.id, erro: (e as Error).message }, 'falha ao gerar pix');
@@ -155,6 +171,29 @@ export async function gerarPix(
   });
   if (!resultado) throw falha('pix_indisponivel');
   return resultado;
+}
+
+/** POST /pagamento/cupom (D23): o valor do Pix com o cupom, sem gerar cobrança. */
+export async function consultarCupom(
+  deps: Deps,
+  usuario: Usuario,
+  agora: Date,
+  codigo: string,
+  concursoIdPedido?: string,
+): Promise<CupomConsultaResposta> {
+  const { db } = deps;
+  const concurso = concursoIdPedido ? await concursoAbertoPorId(db, concursoIdPedido) : await concursoDoUsuario(db, usuario);
+  if (!concurso) throw falha('nao_encontrado', 'Concurso não encontrado.');
+  const cupom = await cupomValido(db, codigo, concurso.id, agora);
+  const preco = precoComCupom(await precoDoConcurso(deps, db, usuario.id, concurso.id), cupom);
+  const original = preco.originalCentavos ?? preco.centavos;
+  return {
+    codigo: cupom.codigo,
+    descricao: descricaoCupom(cupom),
+    valorCentavos: preco.centavos,
+    valorOriginalCentavos: original,
+    descontoCentavos: original - preco.centavos,
+  };
 }
 
 const ultimaConsulta = new Map<string, number>();
