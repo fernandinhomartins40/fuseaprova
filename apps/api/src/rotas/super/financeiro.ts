@@ -5,9 +5,9 @@
  * Os pedidos do período são poucos (centenas a milhares), então a agregação por dia, semana
  * ou mês acontece aqui, com o dia de São Paulo de `@fuse/shared` (a mesma regra do app todo).
  */
-import { and, eq, gte, inArray, isNull, lt, sql } from 'drizzle-orm';
+import { and, eq, isNull, sql, type SQL } from 'drizzle-orm';
 import { schema } from '@fuse/db';
-import { diaSP, MS_DIA, segundaDaSemana, somarDias, STATUS_PEDIDO } from '@fuse/shared';
+import { MS_DIA, segundaDaSemana, somarDias, STATUS_PEDIDO } from '@fuse/shared';
 import { gerarCsv, type FinanceiroResposta, type PontoFinanceiro } from '@fuse/shared/api';
 import type { Deps } from '../../contexto.js';
 import type { Registrador } from '../../http/registrar.js';
@@ -15,7 +15,7 @@ import { consultar, contar, dataSql, iso } from '../../util.js';
 import { auditarSuper, nomeArquivoCsv, periodo, reais } from './comum.js';
 import { lerPrecos } from '../../servicos/precos.js';
 
-const { pedidos, usuarios } = schema;
+const { usuarios } = schema;
 
 type Agrupamento = 'dia' | 'semana' | 'mes';
 
@@ -34,6 +34,19 @@ function chavesDoPeriodo(de: string, ate: string, a: Agrupamento): string[] {
   return out;
 }
 
+/** Unidade do `date_trunc` de cada agrupamento (lista fechada: vai como SQL literal). */
+const UNIDADE: Record<Agrupamento, string> = { dia: 'day', semana: 'week', mes: 'month' };
+
+/** Início do dia/semana (segunda)/mês da data em São Paulo, como 'AAAA-MM-DD', no SQL. */
+function chaveSql(coluna: SQL, a: Agrupamento): SQL {
+  return sql`to_char(date_trunc(${sql.raw(`'${UNIDADE[a]}'`)}, ${coluna} at time zone 'America/Sao_Paulo'), 'YYYY-MM-DD')`;
+}
+
+/**
+ * S-08 (R5-01): tudo é agregado no Postgres (soma, contagem e o período em São Paulo). Nenhuma
+ * linha de `pedidos` vem para a memória da API — em especial o QR do Pix (`pix_imagem`, ~4 KB por
+ * pedido), que levava o heap a centenas de MB num período de 2 anos.
+ */
 export async function calcularFinanceiro(
   deps: Deps,
   q: { de?: string | undefined; ate?: string | undefined; agrupamento: Agrupamento; metodo: 'todos' | 'asaas' | 'manual' },
@@ -41,25 +54,52 @@ export async function calcularFinanceiro(
 ): Promise<FinanceiroResposta> {
   const { db } = deps;
   const { de, ate, inicio, fim } = periodo(q, agora);
-  const filtroMetodo = q.metodo === 'todos' ? undefined : eq(pedidos.metodo, q.metodo);
+  const ini = dataSql(inicio);
+  const fi = dataSql(fim);
+  const fMetodo = q.metodo === 'todos' ? sql`true` : sql`p.metodo = ${q.metodo}`;
 
   // Pagos no período (inclui os estornados depois: a receita bruta é do dia do pagamento).
-  const pagos = await db
-    .select()
-    .from(pedidos)
-    .where(and(gte(pedidos.pagoEm, inicio), lt(pedidos.pagoEm, fim), inArray(pedidos.status, ['pago', 'estornado']), filtroMetodo));
-  const estornados = await db
-    .select()
-    .from(pedidos)
-    .where(and(gte(pedidos.estornadoEm, inicio), lt(pedidos.estornadoEm, fim), eq(pedidos.status, 'estornado'), filtroMetodo));
-  const criados = await db
-    .select()
-    .from(pedidos)
-    .where(and(gte(pedidos.criadoEm, inicio), lt(pedidos.criadoEm, fim), filtroMetodo));
-  const novos = await db
-    .select({ id: usuarios.id, criadoEm: usuarios.criadoEm })
-    .from(usuarios)
-    .where(and(eq(usuarios.papel, 'aluno'), gte(usuarios.criadoEm, inicio), lt(usuarios.criadoEm, fim)));
+  const pagos = await consultar<{ k: string; metodo: string; n: number; bruto: string | number; taxas: string | number; sem_liquido: number }>(
+    db,
+    sql`select ${chaveSql(sql`p.pago_em`, q.agrupamento)} k, p.metodo::text metodo, count(*)::int n,
+          coalesce(sum(p.valor_centavos), 0)::bigint bruto,
+          coalesce(sum(case when p.metodo = 'asaas' and p.valor_liquido_centavos is not null
+                            then greatest(0, p.valor_centavos - p.valor_liquido_centavos) else 0 end), 0)::bigint taxas,
+          (count(*) filter (where p.metodo = 'asaas' and p.valor_liquido_centavos is null))::int sem_liquido
+        from pedidos p
+        where p.pago_em >= ${ini} and p.pago_em < ${fi} and p.status in ('pago', 'estornado') and ${fMetodo}
+        group by 1, 2`,
+  );
+  const estornados = await consultar<{ k: string; n: number; total: string | number }>(
+    db,
+    sql`select ${chaveSql(sql`p.estornado_em`, q.agrupamento)} k, count(*)::int n, coalesce(sum(p.valor_centavos), 0)::bigint total
+        from pedidos p
+        where p.estornado_em >= ${ini} and p.estornado_em < ${fi} and p.status = 'estornado' and ${fMetodo}
+        group by 1`,
+  );
+  const [criados] = await consultar<Record<string, number>>(
+    db,
+    sql`select
+          (count(*) filter (where p.status = 'pendente'))::int pendente,
+          (count(*) filter (where p.status = 'pago'))::int pago,
+          (count(*) filter (where p.status = 'vencido'))::int vencido,
+          (count(*) filter (where p.status = 'estornado'))::int estornado,
+          (count(*) filter (where p.metodo = 'asaas'))::int pix_gerados,
+          (count(*) filter (where p.metodo = 'asaas' and p.status in ('pago', 'estornado')))::int pix_pagos,
+          (count(*) filter (where p.metodo = 'asaas' and p.status = 'vencido' and p.cancelado_em is null))::int pix_expirados,
+          (count(*) filter (where p.metodo = 'asaas' and p.cancelado_em is not null))::int pix_cancelados,
+          (count(*) filter (where p.metodo = 'asaas' and p.status = 'pendente'))::int pix_pendentes
+        from pedidos p
+        where p.criado_em >= ${ini} and p.criado_em < ${fi} and ${fMetodo}`,
+  );
+  const novos = await consultar<{ k: string; n: number }>(
+    db,
+    sql`select ${chaveSql(sql`u.criado_em`, q.agrupamento)} k, count(*)::int n
+        from usuarios u
+        where u.papel = 'aluno' and u.criado_em >= ${ini} and u.criado_em < ${fi}
+        group by 1`,
+  );
+  const totalNovos = novos.reduce((s, x) => s + contar(x.n), 0);
 
   const serie = new Map<string, PontoFinanceiro>();
   for (const k of chavesDoPeriodo(de, ate, q.agrupamento)) {
@@ -75,7 +115,7 @@ export async function calcularFinanceiro(
       novosAlunos: 0,
     });
   }
-  const ponto = (d: Date) => serie.get(chavePeriodo(diaSP(d), q.agrupamento));
+  const ponto = (k: string) => serie.get(k);
 
   const totais = {
     brutoCentavos: 0,
@@ -88,42 +128,43 @@ export async function calcularFinanceiro(
     semValorLiquido: 0,
   };
   for (const p of pagos) {
-    const pt = ponto(p.pagoEm!);
-    const taxa = p.metodo === 'asaas' && p.valorLiquidoCentavos !== null ? Math.max(0, p.valorCentavos - p.valorLiquidoCentavos) : 0;
-    if (p.metodo === 'asaas' && p.valorLiquidoCentavos === null) totais.semValorLiquido++;
-    totais.pagos++;
-    totais.brutoCentavos += p.valorCentavos;
-    totais.taxasCentavos += taxa;
+    const n = contar(p.n);
+    const bruto = contar(p.bruto);
+    const taxas = contar(p.taxas);
+    totais.semValorLiquido += contar(p.sem_liquido);
+    totais.pagos += n;
+    totais.brutoCentavos += bruto;
+    totais.taxasCentavos += taxas;
     const grupo = p.metodo === 'manual' ? totais.manual : totais.asaas;
-    grupo.quantidade++;
-    grupo.centavos += p.valorCentavos;
+    grupo.quantidade += n;
+    grupo.centavos += bruto;
+    const pt = ponto(p.k);
     if (pt) {
-      pt.pagos++;
-      pt.brutoCentavos += p.valorCentavos;
-      pt.taxasCentavos += taxa;
-      if (p.metodo === 'manual') pt.manualCentavos += p.valorCentavos;
-      else pt.asaasCentavos += p.valorCentavos;
+      pt.pagos += n;
+      pt.brutoCentavos += bruto;
+      pt.taxasCentavos += taxas;
+      if (p.metodo === 'manual') pt.manualCentavos += bruto;
+      else pt.asaasCentavos += bruto;
     }
   }
   for (const p of estornados) {
-    totais.reembolsos.quantidade++;
-    totais.reembolsos.centavos += p.valorCentavos;
-    const pt = ponto(p.estornadoEm!);
-    if (pt) pt.reembolsosCentavos += p.valorCentavos;
+    totais.reembolsos.quantidade += contar(p.n);
+    totais.reembolsos.centavos += contar(p.total);
+    const pt = ponto(p.k);
+    if (pt) pt.reembolsosCentavos += contar(p.total);
   }
   for (const u of novos) {
-    const pt = ponto(u.criadoEm);
-    if (pt) pt.novosAlunos++;
+    const pt = ponto(u.k);
+    if (pt) pt.novosAlunos += contar(u.n);
   }
   for (const pt of serie.values()) pt.liquidoCentavos = pt.brutoCentavos - pt.taxasCentavos - pt.reembolsosCentavos;
   totais.liquidoCentavos = totais.brutoCentavos - totais.taxasCentavos - totais.reembolsos.centavos;
 
-  const pedidosPorStatus = Object.fromEntries(STATUS_PEDIDO.map((s) => [s, criados.filter((p) => p.status === s).length])) as FinanceiroResposta['pedidosPorStatus'];
-  const pix = criados.filter((p) => p.metodo === 'asaas');
+  const pedidosPorStatus = Object.fromEntries(STATUS_PEDIDO.map((s) => [s, contar(criados?.[s])])) as FinanceiroResposta['pedidosPorStatus'];
 
   // Conversão: dos cadastrados no período, quantos têm pagamento (em qualquer data).
   let convertidos = 0;
-  if (novos.length) {
+  if (totalNovos) {
     const [c] = await consultar<{ n: number }>(
       db,
       sql`select count(distinct p.usuario_id)::int n from pedidos p join usuarios u on u.id = p.usuario_id
@@ -132,14 +173,16 @@ export async function calcularFinanceiro(
     convertidos = contar(c?.n);
   }
   // Ativos: responderam questão no último dia, 7 e 30 dias até o fim do período (ou agora).
+  // S-22: uma varredura só (a dos 30 dias), com o índice (respondida_em, usuario_id).
   const ref = new Date(Math.min(fim.getTime(), agora.getTime()));
-  const ativos = async (dias: number) => {
-    const [r] = await consultar<{ n: number }>(
-      db,
-      sql`select count(distinct usuario_id)::int n from tentativas where respondida_em >= ${dataSql(new Date(ref.getTime() - dias * MS_DIA))} and respondida_em < ${dataSql(ref)}`,
-    );
-    return contar(r?.n);
-  };
+  const desde = (dias: number) => dataSql(new Date(ref.getTime() - dias * MS_DIA));
+  const [ativos] = await consultar<{ dau: number; wau: number; mau: number }>(
+    db,
+    sql`select (count(distinct usuario_id) filter (where respondida_em >= ${desde(1)}))::int dau,
+               (count(distinct usuario_id) filter (where respondida_em >= ${desde(7)}))::int wau,
+               count(distinct usuario_id)::int mau
+        from tentativas where respondida_em >= ${desde(30)} and respondida_em < ${dataSql(ref)}`,
+  );
   const [comAcesso] = await db
     .select({ n: sql<number>`count(*)::int` })
     .from(usuarios)
@@ -155,18 +198,18 @@ export async function calcularFinanceiro(
     totais,
     pedidosPorStatus,
     pix: {
-      gerados: pix.length,
-      pagos: pix.filter((p) => p.status === 'pago' || p.status === 'estornado').length,
-      expirados: pix.filter((p) => p.status === 'vencido' && !p.canceladoEm).length,
-      cancelados: pix.filter((p) => p.canceladoEm !== null).length,
-      pendentes: pix.filter((p) => p.status === 'pendente').length,
+      gerados: contar(criados?.pix_gerados),
+      pagos: contar(criados?.pix_pagos),
+      expirados: contar(criados?.pix_expirados),
+      cancelados: contar(criados?.pix_cancelados),
+      pendentes: contar(criados?.pix_pendentes),
     },
     alunos: {
-      novos: novos.length,
-      conversaoCadastroPago: novos.length ? Math.round((convertidos / novos.length) * 1000) / 10 : null,
-      dau: await ativos(1),
-      wau: await ativos(7),
-      mau: await ativos(30),
+      novos: totalNovos,
+      conversaoCadastroPago: totalNovos ? Math.round((convertidos / totalNovos) * 1000) / 10 : null,
+      dau: contar(ativos?.dau),
+      wau: contar(ativos?.wau),
+      mau: contar(ativos?.mau),
       comAcesso: contar(comAcesso?.n),
     },
     geradoEm: iso(agora),
@@ -194,7 +237,7 @@ export function rotasSuperFinanceiro(r: Registrador): void {
         p.novosAlunos,
       ]),
     );
-    return { nomeArquivo: nomeArquivoCsv(`financeiro-${f.agrupamento}`, ctx.agora), conteudo };
+    return { nomeArquivo: nomeArquivoCsv(`financeiro-${f.agrupamento}`, ctx.agora), conteudo, linhas: f.serie.length, aviso: null };
   });
 }
 

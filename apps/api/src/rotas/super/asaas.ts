@@ -6,16 +6,16 @@
  * o painel só cria ou altera o webhook cuja URL é a deste app. O saldo é o da conta toda.
  * A chave da API nunca é exibida nem trocada pelo painel (fica no .env da VPS).
  */
-import { and, eq, gte, inArray, isNotNull, lt } from 'drizzle-orm';
+import { and, eq, gte, inArray, isNotNull, lt, sql } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { ocultarCpf } from '@fuse/shared';
 import { EVENTOS_ASAAS_WEBHOOK, type AsaasWebhookResposta, type WebhookAsaasConfig } from '@fuse/shared/api';
 import type { Deps } from '../../contexto.js';
 import type { Registrador } from '../../http/registrar.js';
 import { falha } from '../../http/erros.js';
-import { ErroAsaas, type AsaasWebhook } from '../../integracoes/asaas.js';
+import { ErroAsaas, type AsaasTransacao, type AsaasWebhook } from '../../integracoes/asaas.js';
 import { reconfirmar } from '../../servicos/doisfatores.js';
-import { iso } from '../../util.js';
+import { comPrazo, iso } from '../../util.js';
 import { auditarSuper, periodo } from './comum.js';
 
 const { pedidos } = schema;
@@ -83,8 +83,35 @@ async function estadoWebhook(deps: Deps): Promise<AsaasWebhookResposta> {
   };
 }
 
+/** S-20: tempo total de uma consulta longa ao Asaas e de cada chamada (o proxy corta em 60 s). Mutável só nos testes. */
+export const TEMPOS_ASAAS = { orcamentoMs: 25_000, prazoChamadaMs: 10_000 };
+type CacheExtrato = Map<string, { lidos: AsaasTransacao[]; incompleto: boolean; ate: number }>;
+/** Um cache por cliente Asaas (cada app, e cada ambiente de teste, tem o seu). */
+const cachesExtrato = new WeakMap<object, CacheExtrato>();
+function cacheDoExtrato(deps: Deps): CacheExtrato {
+  let c = cachesExtrato.get(deps.asaas);
+  if (!c) cachesExtrato.set(deps.asaas, (c = new Map()));
+  return c;
+}
+
 function paraCentavos(v: number | null | undefined): number {
   return Math.round((v ?? 0) * 100);
+}
+
+/**
+ * Teste real da conexão (consulta o saldo), com prazo curto. Usado pelo botão "Testar" e pelo
+ * /super/sistema (S-09). `ok: null` = sem chave configurada (nada a testar).
+ */
+export async function testarConexaoAsaas(deps: Deps, prazoMs = TEMPOS_ASAAS.prazoChamadaMs): Promise<{ ok: boolean; ms: number; mensagem: string; configurado: boolean }> {
+  const inicio = Date.now();
+  if (!deps.config.asaas.apiKey) return { ok: false, ms: 0, mensagem: 'ASAAS_API_KEY não está configurada no .env da VPS.', configurado: false };
+  try {
+    await comPrazo(deps.asaas.saldo(), prazoMs, `O Asaas não respondeu em ${Math.round(prazoMs / 1000)} s.`);
+    return { ok: true, ms: Date.now() - inicio, mensagem: `Conexão com o Asaas (${ambienteAsaas(deps.config.asaas.baseUrl)}) funcionando.`, configurado: true };
+  } catch (e) {
+    const mensagem = e instanceof ErroAsaas && e.status === 401 ? 'O Asaas recusou a chave (401).' : `Falhou: ${(e as Error).message.slice(0, 160)}`;
+    return { ok: false, ms: Date.now() - inicio, mensagem, configurado: true };
+  }
 }
 
 export function rotasSuperAsaas(r: Registrador): void {
@@ -118,21 +145,7 @@ export function rotasSuperAsaas(r: Registrador): void {
   });
 
   r.rota('superAsaasTestar', async (ctx) => {
-    const { deps } = ctx;
-    const inicio = Date.now();
-    let ok = false;
-    let mensagem: string;
-    if (!deps.config.asaas.apiKey) mensagem = 'ASAAS_API_KEY não está configurada no .env da VPS.';
-    else {
-      try {
-        await deps.asaas.saldo();
-        ok = true;
-        mensagem = `Conexão com o Asaas (${ambienteAsaas(deps.config.asaas.baseUrl)}) funcionando.`;
-      } catch (e) {
-        mensagem = e instanceof ErroAsaas && e.status === 401 ? 'O Asaas recusou a chave (401).' : `Falhou: ${(e as Error).message.slice(0, 160)}`;
-      }
-    }
-    const ms = Date.now() - inicio;
+    const { ok, ms, mensagem } = await testarConexaoAsaas(ctx.deps);
     await auditarSuper(ctx, 'asaas.testar', 'asaas', { detalhes: { ok, ms } });
     return { ok, ms, mensagem };
   });
@@ -151,23 +164,50 @@ export function rotasSuperAsaas(r: Registrador): void {
     semChave(deps);
     const { de, ate } = periodo(query, agora);
     // Lê as páginas do período (até 20 × 100 lançamentos) e fica só com os do Fuse Aprova.
-    const MAX_PAGINAS = 20;
-    const lidos = [];
-    let offset = 0;
+    // S-20: com orçamento de tempo (bem abaixo dos 60 s do proxy) e cache de 60 s por período,
+    // para a troca de página da tela não reler tudo. Estourou o tempo: devolve o que leu,
+    // marcado como incompleto ("reduza o período"), em vez de um 504.
+    const chaveCache = `${de}|${ate}`;
+    const cacheExtrato = cacheDoExtrato(deps);
+    const emCache = cacheExtrato.get(chaveCache);
+    let lidos: AsaasTransacao[] = [];
     let incompleto = false;
-    try {
-      for (let pagina = 0; ; pagina++) {
-        if (pagina >= MAX_PAGINAS) {
-          incompleto = true;
-          break;
+    if (emCache && emCache.ate > Date.now()) {
+      ({ lidos, incompleto } = emCache);
+    } else {
+      const MAX_PAGINAS = 20;
+      const inicio = Date.now();
+      let offset = 0;
+      try {
+        for (let pagina = 0; ; pagina++) {
+          const restante = TEMPOS_ASAAS.orcamentoMs - (Date.now() - inicio);
+          if (pagina >= MAX_PAGINAS || restante <= 1000) {
+            incompleto = true;
+            break;
+          }
+          let r;
+          try {
+            r = await comPrazo(
+              deps.asaas.extrato({ startDate: de, finishDate: ate, offset, limit: 100, order: 'desc' }),
+              Math.min(TEMPOS_ASAAS.prazoChamadaMs, restante),
+              'O Asaas demorou para responder.',
+            );
+          } catch (e) {
+            if (pagina > 0 && !(e instanceof ErroAsaas)) {
+              incompleto = true;
+              break;
+            }
+            throw e;
+          }
+          lidos.push(...r.data);
+          if (!r.hasMore || r.data.length === 0) break;
+          offset += r.data.length;
         }
-        const r = await deps.asaas.extrato({ startDate: de, finishDate: ate, offset, limit: 100, order: 'desc' });
-        lidos.push(...r.data);
-        if (!r.hasMore || r.data.length === 0) break;
-        offset += r.data.length;
+      } catch (e) {
+        asaasFalhou(deps, e instanceof ErroAsaas ? e : new ErroAsaas((e as Error).message, null), 'extrato');
       }
-    } catch (e) {
-      asaasFalhou(deps, e, 'extrato');
+      for (const [k, v] of cacheExtrato) if (v.ate <= Date.now()) cacheExtrato.delete(k);
+      cacheExtrato.set(chaveCache, { lidos, incompleto, ate: Date.now() + 60_000 });
     }
     const ids = [...new Set(lidos.map((t) => t.paymentId).filter((x): x is string => !!x))];
     const nossos = new Set(
@@ -201,19 +241,27 @@ export function rotasSuperAsaas(r: Registrador): void {
 
   r.rota('superAsaasEstatisticas', async ({ query, deps, agora }) => {
     const { de, ate, inicio, fim } = periodo(query, agora);
-    const lista = await deps.db
-      .select()
+    // S-08: agregado no SQL (antes vinha `select *`, com o QR do Pix de cada pedido).
+    const linhas = await deps.db
+      .select({
+        status: pedidos.status,
+        cancelado: sql<boolean>`${pedidos.canceladoEm} is not null`,
+        quantidade: sql<number>`count(*)::int`,
+        valor: sql<string>`coalesce(sum(${pedidos.valorCentavos}), 0)::bigint`,
+        liquido: sql<string>`coalesce(sum(coalesce(${pedidos.valorLiquidoCentavos}, ${pedidos.valorCentavos})), 0)::bigint`,
+      })
       .from(pedidos)
-      .where(and(eq(pedidos.metodo, 'asaas'), isNotNull(pedidos.asaasPaymentId), gte(pedidos.criadoEm, inicio), lt(pedidos.criadoEm, fim)));
+      .where(and(eq(pedidos.metodo, 'asaas'), isNotNull(pedidos.asaasPaymentId), gte(pedidos.criadoEm, inicio), lt(pedidos.criadoEm, fim)))
+      .groupBy(pedidos.status, sql`${pedidos.canceladoEm} is not null`);
     const rotulo = (s: string, cancelado: boolean) =>
       cancelado ? 'CANCELADA' : ({ pendente: 'PENDING', pago: 'RECEIVED', vencido: 'OVERDUE', estornado: 'REFUNDED' } as Record<string, string>)[s] ?? s;
     const grupos = new Map<string, { status: string; quantidade: number; valorCentavos: number; liquidoCentavos: number }>();
-    for (const p of lista) {
-      const k = rotulo(p.status, !!p.canceladoEm);
+    for (const l of linhas) {
+      const k = rotulo(l.status, !!l.cancelado);
       const g = grupos.get(k) ?? { status: k, quantidade: 0, valorCentavos: 0, liquidoCentavos: 0 };
-      g.quantidade++;
-      g.valorCentavos += p.valorCentavos;
-      g.liquidoCentavos += p.valorLiquidoCentavos ?? p.valorCentavos;
+      g.quantidade += Number(l.quantidade);
+      g.valorCentavos += Number(l.valor);
+      g.liquidoCentavos += Number(l.liquido);
       grupos.set(k, g);
     }
     return { de, ate, porStatus: [...grupos.values()].sort((a, b) => b.quantidade - a.quantidade) };
