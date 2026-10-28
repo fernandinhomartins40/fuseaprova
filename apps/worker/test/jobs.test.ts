@@ -231,6 +231,7 @@ describe('backup e agendamento', () => {
       'limpar-sessoes': '0 3 * * *',
       backup: '30 3 * * *',
       'enviar-comunicacoes': '* * * * *',
+      alertas: '*/15 * * * *',
     });
     expect(jobs.map((j) => j.nome)).toEqual(JOBS_WORKER.map((j) => j.nome));
   });
@@ -278,11 +279,12 @@ describe('D13: execuções registradas e fila de comunicação', () => {
     await b.db.insert(comunicacoesEnvios).values({ comunicacaoId: c2!.id, usuarioId: com.id });
     const r2 = await enviarComunicacoes(b.db, { email, push: null, appUrl: 'https://app.teste' }, new Date(agora.getTime() + 60_000));
     expect(r2).toMatchObject({ enviados: 0, ignorados: 1 });
-    // Sem SMTP o envio falha e fica registrado.
+    // Sem SMTP a comunicação é pausada (S-17): nada vira falha nem "concluída".
     const [c3] = await b.db.insert(comunicacoes).values({ canal: 'email', segmento: 'todos', assunto: 'Sem SMTP', mensagem: 'x', total: 1, criadoEm: agora }).returning();
     const outro = await aluno({ marketing: true });
     await b.db.insert(comunicacoesEnvios).values({ comunicacaoId: c3!.id, usuarioId: outro.id });
     const r3 = await enviarComunicacoes(b.db, { email: null, push: null, appUrl: 'https://app.teste' }, agora);
-    expect(r3.falhas).toBe(1);
+    expect(r3).toMatchObject({ falhas: 0, pausadas: 1, ok: false });
+    expect((await b.db.select().from(comunicacoes).where(eq(comunicacoes.id, c3!.id)))[0]!.status).toBe('pausada');
   });
 });

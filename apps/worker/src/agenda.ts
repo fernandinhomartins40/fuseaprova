@@ -5,9 +5,12 @@
  */
 import { lt } from 'drizzle-orm';
 import { schema, type BancoDados } from '@fuse/db';
-import { JOBS_WORKER, type NomeJobWorker } from '@fuse/shared/api';
+import { JOBS_WORKER, LIMITES_SISTEMA, type NomeJobWorker } from '@fuse/shared/api';
 import {
   enviarComunicacoes,
+  registrarSinal,
+  temComunicacaoNaFila,
+  verificarAlertas,
   enviarLembretes,
   executarBackup,
   expirarPix,
@@ -34,6 +37,11 @@ export interface DependenciasWorker {
   /** D13: e-mail da comunicação (null sem SMTP). */
   email?: EnviadorEmail | null;
   appUrl?: string;
+  /** S-09: pasta dos backups (ULTIMO_BACKUP) e dos arquivos (disco), para os alertas. */
+  backupDir?: string | undefined;
+  arquivosDir?: string | undefined;
+  /** Versão da imagem do worker (APP_VERSION), mostrada no /super/sistema. */
+  versao?: string | null;
 }
 
 export interface DefinicaoJob {
@@ -64,11 +72,40 @@ export function definirJobs(d: DependenciasWorker): DefinicaoJob[] {
       const r = await limparSessoes(d.db, agora());
       const limite = new Date(agora().getTime() - DIAS_EXECUCOES * 86_400_000);
       const ex = await d.db.delete(schema.jobsExecucoes).where(lt(schema.jobsExecucoes.iniciadoEm, limite)).returning({ id: schema.jobsExecucoes.id });
-      return { ...r, execucoes: ex.length };
+      // Lote 2: 5xx guardados por LIMITES_SISTEMA.retencaoErrosDias e baldes de limite vencidos.
+      const corteErros = new Date(agora().getTime() - LIMITES_SISTEMA.retencaoErrosDias * 86_400_000);
+      const er = await d.db.delete(schema.errosApi).where(lt(schema.errosApi.criadoEm, corteErros)).returning({ id: schema.errosApi.id });
+      const li = await d.db.delete(schema.limitesContagem).where(lt(schema.limitesContagem.janelaFim, agora())).returning({ c: schema.limitesContagem.chave });
+      return { ...r, execucoes: ex.length, errosApi: er.length, limites: li.length };
     }),
     job('backup', () => executarBackup(d.backupScript, d.log)),
-    job('enviar-comunicacoes', () =>
-      enviarComunicacoes(d.db, { email: d.email ?? null, push: d.push, appUrl: d.appUrl ?? 'http://localhost:5173', log: d.log }, agora()),
+    {
+      // S-26: o sinal de vida vai a cada minuto (o painel detecta o worker parado), mas a execução
+      // só é registrada em jobs_execucoes quando há comunicação na fila (antes: 76% da tabela).
+      nome: 'enviar-comunicacoes',
+      cron: CRON['enviar-comunicacoes'],
+      executar: async () => {
+        try {
+          await registrarSinal(d.db, agora(), d.versao ?? null);
+        } catch (e) {
+          d.log.warn({ erro: (e as Error).message }, 'não foi possível gravar o sinal do worker');
+        }
+        if (!(await temComunicacaoNaFila(d.db))) return null;
+        return executarRegistrado(
+          d.db,
+          'enviar-comunicacoes',
+          () => enviarComunicacoes(d.db, { email: d.email ?? null, push: d.push, appUrl: d.appUrl ?? 'http://localhost:5173', log: d.log }, agora()),
+          d.log,
+          agora,
+        );
+      },
+    },
+    job('alertas', () =>
+      verificarAlertas(
+        d.db,
+        { email: d.email ?? null, appUrl: d.appUrl ?? 'http://localhost:5173', backupDir: d.backupDir, arquivosDir: d.arquivosDir, log: d.log },
+        agora(),
+      ),
     ),
   ];
 }

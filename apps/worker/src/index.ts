@@ -42,6 +42,9 @@ const jobs = definirJobs({
   backupScript: process.env.BACKUP_SCRIPT ?? '/app/infra/backup/backup.sh',
   email,
   appUrl: (process.env.APP_URL ?? 'http://localhost:5173').replace(/\/+$/, ''),
+  backupDir: process.env.BACKUP_DIR,
+  arquivosDir: process.env.ARQUIVOS_DIR,
+  versao: process.env.APP_VERSION || process.env.DEPLOY_COMMIT || null,
 });
 
 const unico = process.argv[2];

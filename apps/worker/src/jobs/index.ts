@@ -3,3 +3,4 @@ export * from './diarios.js';
 export * from './lembretes.js';
 export * from './backup.js';
 export * from './comunicacoes.js';
+export * from './alertas.js';
