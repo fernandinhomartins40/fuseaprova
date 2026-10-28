@@ -7,6 +7,11 @@ export default [
   ...base,
   { ignores: ['dev-dist/**', 'dist/**', 'capturas/**', 'src/assets/gerados/**'] },
   {
+    // Landing de venda (servida pelo nginx em "/"): script clássico de navegador, sem bundler.
+    files: ['public/lp/**/*.js'],
+    languageOptions: { sourceType: 'script', globals: { ...globals.browser } },
+  },
+  {
     files: ['src/**/*.{ts,tsx}'],
     plugins: { 'react-hooks': reactHooks },
     languageOptions: { globals: { ...globals.browser } },

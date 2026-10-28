@@ -93,8 +93,12 @@ export default defineConfig(({ mode }) => {
             workbox: {
               // Precache do shell: JS, CSS, HTML, fontes e imagens geradas (WebP pequenos).
               globPatterns: ['**/*.{js,css,html,woff2,webp,png,svg}'],
+              // A landing (public/lp, servida pelo nginx em "/") fica fora do app offline.
+              globIgnores: ['lp/**'],
               navigateFallback: '/index.html',
-              navigateFallbackDenylist: [/^\/api\//],
+              // "/" é a landing: o SW não troca por index.html nem pelo índice do precache.
+              navigateFallbackDenylist: [/^\/api\//, /^\/$/, /^\/lp\//],
+              directoryIndex: null,
               cleanupOutdatedCaches: true,
               // Mostra os lembretes e as comunicações enviados pelo worker (auditoria PIE R2-01).
               importScripts: ['/sw-push.js'],

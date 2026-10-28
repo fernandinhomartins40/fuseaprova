@@ -209,3 +209,10 @@ O PRD só prevê o papel `admin` (conteúdo e operação). O dono do produto pre
 - **App nativo:** não vende, nem cita preço ou onde comprar (D20). Mostra só os concursos já liberados; concurso sem acesso aparece como "ainda não está ativo".
 - **Liga:** a entrada na semana vale para o concurso ativo na hora do 1º XP; trocar de concurso no meio da semana mantém o grupo daquela semana (a unicidade é por aluno e semana).
 - **Termos de uso:** passam a falar em acesso por concurso, com os dois preços (no site), e a validade vira "até a homologação do concurso contratado ou 24 meses". `VERSAO_TERMOS_ATUAL` → 2026-10-27. **O texto precisa de revisão jurídica do dono**; quem já pagou Palmital não perde direito nenhum.
+
+## D22. Landing page de venda na raiz do domínio (28/10/2026, pedido do dono)
+- **O quê:** `https://www.fuseaprova.com.br/` passa a ser a página de venda (`apps/web/public/lp/`). O app segue nas demais rotas (`/cadastro`, `/entrar`, `/aprender`...), e a tela de Boas-vindas continua existindo dentro do SPA.
+- **Como:** o nginx interno responde `location = /` com `/lp/index.html` e serve `/lp/*` com cache de 1 h. O Vite copia `public/lp` para o `dist`, então a imagem web não mudou.
+- **Service worker:** `lp/**` fica fora do precache, e `/` está no `navigateFallbackDenylist` com `directoryIndex: null`. Sem isso, quem já tinha o PWA instalado receberia o `index.html` do app em `/` e nunca veria a landing. A PWA abre em `/aprender` (`start_url`), então nada muda para o aluno.
+- **CSP:** a página não tem CSS, JS nem `style=""` inline (a CSP é `script-src 'self'; style-src 'self'`). Estilos ficam em `landing.css` e o comportamento em `landing.js`. Conferido com a mesma CSP de produção, sem nenhuma violação, em 1920, 1536, 1366, 1280, 768 e 414 px.
+- **Preço exibido:** lançamento R$ 197 (de R$ 397). Precisa bater com `PRICE_CENTS` do `.env` da VPS, que ainda é 39700.
