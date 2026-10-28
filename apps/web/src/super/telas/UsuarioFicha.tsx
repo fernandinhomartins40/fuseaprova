@@ -8,7 +8,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { formatarReais, PAPEIS, type Papel } from '@fuse/shared';
-import type { FichaUsuarioResposta } from '@fuse/shared/api';
+import type { FichaUsuarioResposta, Reconfirmacao } from '@fuse/shared/api';
 import { api, mensagemDeErro } from '../../admin/api';
 import { Alerta, Botao, Cartao, CampoSelecao, CampoTexto, Consulta, Marcar, Selo, Tabela, estilos as a } from '../../admin/componentes/ui';
 import { cpfMascarado, dataHora, dia, numero, NOMES_STATUS_PEDIDO, TOM_STATUS_PEDIDO } from '../../admin/util';
@@ -16,7 +16,7 @@ import { AcaoConfirmada, AprovarManual } from '../acoes';
 import { AcoesFicha, CartaoLinha, Cartoes, Pagina, estilosSuper as s, useCelular } from '../componentes';
 import { baixarJson, caminho, NOMES_METODO, NOMES_PAPEL, tomPapel } from '../util';
 
-type Aberta = null | 'editar' | 'senha' | 'bloquear' | 'desbloquear' | 'papel' | 'liberar' | 'revogar' | 'manual' | 'excluir';
+type Aberta = null | 'editar' | 'senha' | 'bloquear' | 'desbloquear' | 'papel' | 'liberar' | 'revogar' | 'manual' | 'excluir' | 'exportar';
 
 function Pedidos({ f }: { f: FichaUsuarioResposta }) {
   const celular = useCelular();
@@ -101,8 +101,9 @@ export default function UsuarioFicha() {
   const [papel, setPapel] = useState<Papel>('aluno');
   const [emailConfirmado, setEmailConfirmado] = useState('');
   const consulta = useQuery({ queryKey: ['super', 'usuario', id], queryFn: () => api('superUsuarioObter', { params: { id } }) });
+  // S-21: a exportação LGPD pede motivo e reconfirmação (a confirmação abre pelo botão).
   const exportar = useMutation({
-    mutationFn: () => api('superUsuarioExportar', { params: { id } }),
+    mutationFn: (v: { motivo: string; confirmacao: Reconfirmacao }) => api('superUsuarioExportar', { params: { id }, corpo: v }),
     onSuccess: (d) => baixarJson(`fuse-aprova-dados-${id}.json`, d),
   });
   const fechar = () => {
@@ -157,7 +158,7 @@ export default function UsuarioFicha() {
                     },
                     { rotulo: 'Forçar troca de senha', aoClicar: () => setAberta('senha') },
                     u.bloqueado ? { rotulo: 'Desbloquear', aoClicar: () => setAberta('desbloquear') } : { rotulo: 'Bloquear', aoClicar: () => setAberta('bloquear') },
-                    { rotulo: 'Exportar dados (LGPD)', carregando: exportar.isPending, aoClicar: () => exportar.mutate() },
+                    { rotulo: 'Exportar dados (LGPD)', carregando: exportar.isPending, aoClicar: () => setAberta('exportar') },
                     {
                       rotulo: 'Excluir (LGPD)',
                       variante: 'perigo',
@@ -321,6 +322,15 @@ export default function UsuarioFicha() {
                 rotuloConfirmar="Desbloquear"
                 executar={(motivo) => api('superUsuarioDesbloquear', { params: { id }, corpo: { motivo } })}
                 sucesso="Conta desbloqueada."
+              />
+              <AcaoConfirmada
+                titulo="Exportar os dados (LGPD)"
+                aberta={aberta === 'exportar'}
+                aoFechar={fechar}
+                rotuloConfirmar="Exportar"
+                reconfirmar
+                executar={(motivo, confirmacao) => exportar.mutateAsync({ motivo, confirmacao: confirmacao ?? {} })}
+                sucesso="Arquivo JSON com os dados do usuário gerado."
               />
               <AcaoConfirmada
                 titulo="Mudar o papel"

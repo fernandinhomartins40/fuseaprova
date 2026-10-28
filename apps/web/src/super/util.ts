@@ -46,7 +46,7 @@ export function baixarCsv(a: ArquivoCsvResposta): void {
 }
 
 export function baixarJson(nome: string, dados: unknown): void {
-  baixarCsv({ nomeArquivo: nome, conteudo: JSON.stringify(dados, null, 2) });
+  baixarCsv({ nomeArquivo: nome, conteudo: JSON.stringify(dados, null, 2), aviso: null });
 }
 
 export function reaisCurto(centavos: number): string {

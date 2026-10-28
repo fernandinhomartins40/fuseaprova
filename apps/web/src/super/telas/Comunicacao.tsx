@@ -21,6 +21,7 @@ const NOMES_STATUS: Record<ComunicacaoSuper['status'], string> = {
   enviando: 'Enviando',
   concluida: 'Concluída',
   cancelada: 'Cancelada',
+  pausada: 'Pausada (falha do SMTP)',
 };
 interface Rascunho {
   canal: CanalComunicacao;
@@ -30,12 +31,18 @@ interface Rascunho {
   mensagem: string;
 }
 
-const TOM_STATUS = { na_fila: 'aviso', enviando: 'info', concluida: 'sucesso', cancelada: 'neutro' } as const;
+const TOM_STATUS = { na_fila: 'aviso', enviando: 'info', concluida: 'sucesso', cancelada: 'neutro', pausada: 'erro' } as const;
+
+/** S-17: chave de idempotência da criação (UUID v4). */
+function novaChave(): string {
+  return crypto.randomUUID();
+}
 
 function Nova({ aoCriar }: { aoCriar: () => void }) {
   const [c, setC] = useState<Rascunho>({ canal: 'email', segmento: 'pagos', assunto: '', mensagem: '' });
   const [link, setLink] = useState('');
   const [enviar, setEnviar] = useState(false);
+  const [chave, setChave] = useState(novaChave);
   const corpo = {
     canal: c.canal,
     segmento: c.segmento,
@@ -120,12 +127,16 @@ function Nova({ aoCriar }: { aoCriar: () => void }) {
         aberta={enviar}
         aoFechar={() => {
           setEnviar(false);
+          // S-17: a próxima comunicação ganha outra chave; o 2º clique desta devolve a mesma.
+          setChave(novaChave());
           aoCriar();
         }}
         rotuloConfirmar="Colocar na fila"
-        rotuloMotivo="Motivo (opcional, fica na auditoria)"
-        pedirMotivo={false}
-        executar={() => api('superComunicacaoCriar', { corpo })}
+        rotuloMotivo="Motivo (fica na auditoria)"
+        reconfirmar
+        executar={(motivo, confirmacao) =>
+          api('superComunicacaoCriar', { corpo: { ...corpo, motivo, confirmacao: confirmacao ?? {}, chaveIdempotencia: chave } })
+        }
         sucesso="Comunicação na fila. O worker envia aos poucos, respeitando os limites."
       >
         <p>

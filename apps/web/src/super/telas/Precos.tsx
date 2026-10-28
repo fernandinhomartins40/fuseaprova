@@ -146,7 +146,7 @@ function formDe(c: CupomItem): FormCupom {
   };
 }
 
-function entradaDe(f: FormCupom): CupomSalvarEntrada {
+function entradaDe(f: FormCupom, confirmacao: CupomSalvarEntrada['confirmacao']): CupomSalvarEntrada {
   const valor = f.tipo === 'percentual' ? Number(f.valor.replace(',', '.')) : (reaisParaCentavos(f.valor) ?? Number.NaN);
   return {
     codigo: f.codigo,
@@ -158,6 +158,7 @@ function entradaDe(f: FormCupom): CupomSalvarEntrada {
     concursoId: f.concursoId || null,
     ativo: f.ativo,
     motivo: f.motivo.trim(),
+    confirmacao,
   };
 }
 
@@ -175,12 +176,14 @@ function situacao(c: CupomItem): { tom: 'sucesso' | 'neutro' | 'aviso'; texto: s
 function EditorCupom({ cupom, aoFechar }: { cupom: CupomItem | null; aoFechar: () => void }) {
   const qc = useQueryClient();
   const [f, setF] = useState<FormCupom>(cupom ? formDe(cupom) : VAZIO);
+  // S-12: criar ou editar cupom pede a mesma reconfirmação do preço.
+  const recon = useReconfirmacao();
   const concursos = useQuery({ queryKey: ['super', 'concursos'], queryFn: () => api('adminConcursosListar') });
   const salvar = useMutation({
     mutationFn: () =>
       cupom
-        ? api('superCupomAtualizar', { params: { id: cupom.id }, corpo: entradaDe(f) })
-        : api('superCupomCriar', { corpo: entradaDe(f) }),
+        ? api('superCupomAtualizar', { params: { id: cupom.id }, corpo: entradaDe(f, recon.confirmacao ?? {}) })
+        : api('superCupomCriar', { corpo: entradaDe(f, recon.confirmacao ?? {}) }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['super', 'cupons'] });
       void qc.invalidateQueries({ queryKey: ['super', 'precos'] });
@@ -261,6 +264,7 @@ function EditorCupom({ cupom, aoFechar }: { cupom: CupomItem | null; aoFechar: (
           <CampoTexto rotulo="Descrição interna (opcional)" maxLength={200} value={f.descricao} onChange={(e) => setF({ ...f, descricao: e.target.value })} />
           <Marcar rotulo="Cupom ativo" checked={f.ativo} onChange={(e) => setF({ ...f, ativo: e.target.checked })} />
           <CampoArea rotulo="Motivo (fica na auditoria)" rows={2} maxLength={500} value={f.motivo} onChange={(e) => setF({ ...f, motivo: e.target.value })} erro={erros.motivo} />
+          {recon.campo}
           {salvar.isError && !Object.keys(erros).length ? <Alerta tom="erro">{mensagemDeErro(salvar.error)}</Alerta> : null}
         </form>
       )}
