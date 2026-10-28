@@ -199,8 +199,11 @@ describe('pagamentos, conciliação e webhooks', () => {
     expect(porId.total).toBe(1);
     expect(porId.itens[0].usuario.cpfOculto).toMatch(/^\*\*\*\.\d{3}\.\d{3}-\*\*$/);
     const u = await usuario(t, aluno.id);
-    const porCpf = (await t.chamar('superPagamentosListar', { cookie: sup.cookie, query: { q: u.cpf!.slice(3, 9) } })).json();
+    // S-21: só o CPF completo encontra (o trecho do meio reconstruía o CPF mascarado).
+    const porCpf = (await t.chamar('superPagamentosListar', { cookie: sup.cookie, query: { q: u.cpf! } })).json();
     expect(porCpf.total).toBeGreaterThan(0);
+    const porTrecho = (await t.chamar('superPagamentosListar', { cookie: sup.cookie, query: { q: u.cpf!.slice(3, 9) } })).json();
+    expect(porTrecho.total).toBe(0);
     const det = (await t.chamar('superPagamentoObter', { cookie: sup.cookie, params: { id: p!.id } })).json();
     expect(det.linhaDoTempo.map((e: { titulo: string }) => e.titulo)).toEqual(expect.arrayContaining(['Pix gerado no Asaas', 'Pagamento confirmado', 'Webhook PAYMENT_CONFIRMED']));
     expect(det.webhooks[0]).toMatchObject({ evento: 'PAYMENT_CONFIRMED', resultado: 'pago', pedidoId: p!.id });
@@ -477,7 +480,7 @@ describe('usuários, equipe e LGPD', () => {
 
   it('LGPD: exportar sem segredos; anonimizar exige reconfirmação e o e-mail', async () => {
     const a = await t.alunoPago();
-    const ex = (await t.chamar('superUsuarioExportar', { cookie: sup.cookie, params: { id: a.id } })).json();
+    const ex = (await t.chamar('superUsuarioExportar', { cookie: sup.cookie, params: { id: a.id }, corpo: { motivo: 'Pedido do titular', confirmacao: conf() } })).json();
     expect(ex.perfil.email).toBe(a.email);
     expect(Object.keys(ex.perfil)).not.toEqual(expect.arrayContaining(['senhaHash']));
     expect(JSON.stringify(ex)).not.toMatch(/senhaHash|totpSegredo|argon2/);
@@ -543,10 +546,10 @@ describe('conta Asaas, comunicação e sistema', () => {
     expect(prev.destinatarios).toBe(1);
     expect(prev.semOptIn).toBeGreaterThan(0);
     expect(prev.html).toContain('Chegaram questões novas');
-    const semSmtp = await t.chamar('superComunicacaoCriar', { cookie: sup.cookie, corpo });
+    const semSmtp = await t.chamar('superComunicacaoCriar', { cookie: sup.cookie, corpo: { ...corpo, motivo: 'Novidade', confirmacao: conf() } });
     expect(semSmtp.statusCode).toBe(409);
     t.config.smtp.host = 'smtp.teste.local';
-    const cr = await t.chamar('superComunicacaoCriar', { cookie: sup.cookie, corpo });
+    const cr = await t.chamar('superComunicacaoCriar', { cookie: sup.cookie, corpo: { ...corpo, motivo: 'Novidade', confirmacao: conf() } });
     expect(cr.statusCode, cr.body).toBe(200);
     expect(cr.json()).toMatchObject({ status: 'na_fila', total: 1, pendentes: 1 });
     const can = (await t.chamar('superComunicacaoCancelar', { cookie: sup.cookie, params: { id: cr.json().id } })).json();

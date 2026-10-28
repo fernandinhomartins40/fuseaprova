@@ -29,7 +29,8 @@ const cupomBase = {
   ativo: true,
   motivo: 'Campanha de Palmital',
 };
-const criarCupom = (dados: Record<string, unknown>) => t.chamar('superCupomCriar', { cookie: sup.cookie, corpo: { ...cupomBase, ...dados } });
+const criarCupom = (dados: Record<string, unknown>) =>
+  t.chamar('superCupomCriar', { cookie: sup.cookie, corpo: { ...cupomBase, confirmacao: conf(), ...dados } });
 
 describe('preços pelo painel (D23)', () => {
   it('sem nada salvo valem os do .env', async () => {
@@ -131,7 +132,7 @@ describe('cupons (D23)', () => {
     const r = await t.chamar('superCupomAtualizar', {
       cookie: sup.cookie,
       params: { id: c.id },
-      corpo: { ...cupomBase, codigo: 'SEMANA', tipo: 'fixo', valor: 2000, ativo: false, motivo: 'Fim da campanha' },
+      corpo: { ...cupomBase, codigo: 'SEMANA', tipo: 'fixo', valor: 2000, ativo: false, motivo: 'Fim da campanha', confirmacao: conf() },
     });
     expect(r.statusCode, r.body).toBe(200);
     expect(r.json()).toMatchObject({ cupom: { ativo: false, pendentes: 0 }, cobrancasCanceladas: 1 });
