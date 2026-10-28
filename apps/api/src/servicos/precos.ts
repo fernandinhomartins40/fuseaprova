@@ -160,24 +160,41 @@ export async function cupomValido(db: Db, codigoBruto: string, concursoId: strin
 }
 
 /**
- * S-12: depois de criar o Pix com cupom, confere a reserva de novo (dois alunos podem ter passado
- * pela conferência ao mesmo tempo). Se este Pix ficou além do limite — vale quem gerou primeiro —
- * ele sai do Asaas, fica vencido e o aluno recebe a mensagem do limite (400). Nunca mexe em Pix pago.
+ * S-12/V-03: depois de criar o Pix com cupom, confere a reserva de novo sob a trava da linha do
+ * cupom (`for update`): as conferências de Pix simultâneos ficam em fila, e cada uma conta os
+ * outros pedidos já gravados (pagos e Pix pendentes não expirados de outros alunos), sem depender
+ * de `criado_em` (que é o início da requisição: a mais lenta não enxergava a outra). Além do
+ * limite, este Pix fica vencido na mesma transação, sai do Asaas e o aluno recebe a mensagem do
+ * limite (400). Sempre sobra um. Nunca mexe em Pix pago.
  */
 export async function garantirReservaCupom(deps: Deps, pedido: Pedido, agora: Date): Promise<void> {
-  if (!pedido.cupomId || !pedido.concursoId) return;
-  const [cupom] = await deps.db.select().from(cupons).where(eq(cupons.id, pedido.cupomId));
-  if (!cupom || cupom.limiteUsos === null) return;
-  if ((await reservasAntes(deps.db, cupom.id, agora, { pedido })) < cupom.limiteUsos) return;
+  const cupomId = pedido.cupomId;
+  if (!cupomId || !pedido.concursoId) return;
+  const alemDoLimite = await deps.db.transaction(async (tx) => {
+    const [cupom] = await tx.select().from(cupons).where(eq(cupons.id, cupomId)).for('update');
+    if (!cupom || cupom.limiteUsos === null) return false;
+    const [r] = await tx
+      .select({ n: count() })
+      .from(pedidos)
+      .where(
+        sql`${pedidos.cupomId} = ${cupomId}::uuid and ${pedidos.id} <> ${pedido.id}::uuid and (
+              ${pedidos.status} = 'pago'
+              or (${pedidos.status} = 'pendente' and ${pedidos.pixExpiraEm} > ${dataSql(agora)} and ${pedidos.usuarioId} <> ${pedido.usuarioId}::uuid)
+            )`,
+      );
+    if (Number(r?.n ?? 0) < cupom.limiteUsos) return false;
+    await tx
+      .update(pedidos)
+      .set({ status: 'vencido', canceladoEm: agora })
+      .where(and(eq(pedidos.id, pedido.id), eq(pedidos.status, 'pendente')));
+    return true;
+  });
+  if (!alemDoLimite) return;
   if (pedido.asaasPaymentId) {
     await deps.asaas.removerCobranca(pedido.asaasPaymentId).catch((e: Error) => {
       deps.log.warn({ pedidoId: pedido.id, erro: e.message }, 'pix além do limite do cupom não foi removido no asaas');
     });
   }
-  await deps.db
-    .update(pedidos)
-    .set({ status: 'vencido', canceladoEm: agora })
-    .where(and(eq(pedidos.id, pedido.id), eq(pedidos.status, 'pendente')));
   throw falha('validacao', MENSAGEM_LIMITE_CUPOM, { cupom: MENSAGEM_LIMITE_CUPOM });
 }
 

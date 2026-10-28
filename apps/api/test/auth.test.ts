@@ -182,19 +182,20 @@ describe('rate limit (PRD 8.2)', () => {
         expect(r.statusCode, n).toBe(429);
         expect(r.json().codigo).toBe('limite_requisicoes');
       }
-      // Por e-mail (D24): 10 tentativas por conta em 15 min, somando os portais, mesmo de IPs diferentes.
-      const porEmail: number[] = [];
-      for (let i = 0; i < 11; i++) {
-        const r = await t2.app.inject({
-          method: 'POST',
-          url: `/api/auth/login${['', '/conteudo', '/super'][i % 3]}`,
-          remoteAddress: `10.0.0.${i + 2}`,
-          payload: { email: 'alvo@teste.com', senha: 'y' },
-        });
-        porEmail.push(r.statusCode);
-      }
-      expect(porEmail.slice(0, 10).every((c) => c === 401)).toBe(true);
-      expect(porEmail[10]).toBe(429);
+      // Por e-mail e IP (V-04): 10 tentativas de um mesmo IP em 15 min, somando os portais.
+      const login = (i: number, ip: string, email: string) =>
+        t2.app.inject({ method: 'POST', url: `/api/auth/login${['', '/conteudo', '/super'][i % 3]}`, remoteAddress: ip, payload: { email, senha: 'y' } });
+      const mesmoIp: number[] = [];
+      for (let i = 0; i < 11; i++) mesmoIp.push((await login(i, '10.0.1.1', 'alvo@teste.com')).statusCode);
+      expect(mesmoIp.slice(0, 10).every((c) => c === 401)).toBe(true);
+      expect(mesmoIp[10]).toBe(429);
+      // ...mas o dono, de outro IP, ainda entra: quem sabe o e-mail não trava o login dele.
+      expect((await login(0, '10.0.1.2', 'alvo@teste.com')).statusCode).toBe(401);
+      // Por e-mail somando IPs (força bruta distribuída): 50 em 15 min.
+      const distribuido: number[] = [];
+      for (let i = 0; i < 51; i++) distribuido.push((await login(i, `10.0.2.${i + 2}`, 'alvo2@teste.com')).statusCode);
+      expect(distribuido.slice(0, 50).every((c) => c === 401)).toBe(true);
+      expect(distribuido[50]).toBe(429);
       const corpo = (i: number) => ({
         nome: 'Ana Souza',
         email: `rl${i}@teste.com`,

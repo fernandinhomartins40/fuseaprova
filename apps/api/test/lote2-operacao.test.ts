@@ -242,14 +242,24 @@ describe('S-12: cupom com reconfirmação e limite com reserva (C8)', () => {
       )[0]!;
     const a = await t.cadastrar();
     const b = await t.cadastrar();
-    const p1 = await novo(a.id, 0);
-    const p2 = await novo(b.id, 1);
-    await garantirReservaCupom(t.app.deps, p1, agora);
-    await expect(garantirReservaCupom(t.app.deps, p2, agora)).rejects.toMatchObject({ codigo: 'validacao' });
-    const [d2] = await t.db.select().from(schema.pedidos).where(eq(schema.pedidos.id, p2.id));
-    expect(d2).toMatchObject({ status: 'vencido' });
-    const [d1] = await t.db.select().from(schema.pedidos).where(eq(schema.pedidos.id, p1.id));
-    expect(d1).toMatchObject({ status: 'pendente' });
+    // V-03: o pedido mais lento (criado antes, gravado depois) não escapa mais. A conferência é
+    // em fila (trava do cupom) e conta os outros pedidos já gravados, qualquer que seja o criado_em.
+    const rapido = await novo(b.id, 1_000);
+    await garantirReservaCupom(t.app.deps, rapido, agora);
+    const lento = await novo(a.id, 0);
+    await expect(garantirReservaCupom(t.app.deps, lento, agora)).rejects.toMatchObject({ codigo: 'validacao' });
+    const [dl] = await t.db.select().from(schema.pedidos).where(eq(schema.pedidos.id, lento.id));
+    expect(dl).toMatchObject({ status: 'vencido' });
+    const [dr] = await t.db.select().from(schema.pedidos).where(eq(schema.pedidos.id, rapido.id));
+    expect(dr).toMatchObject({ status: 'pendente' });
+    // Os dois gravados antes de conferir, em paralelo: sobra exatamente um.
+    const c3 = await t.cadastrar();
+    const c4 = await t.cadastrar();
+    await t.db.update(schema.pedidos).set({ status: 'vencido' }).where(eq(schema.pedidos.id, rapido.id));
+    const p3 = await novo(c3.id, 2_000);
+    const p4 = await novo(c4.id, 3_000);
+    const r = await Promise.allSettled([garantirReservaCupom(t.app.deps, p3, agora), garantirReservaCupom(t.app.deps, p4, agora)]);
+    expect(r.filter((x) => x.status === 'fulfilled')).toHaveLength(1);
   });
 });
 

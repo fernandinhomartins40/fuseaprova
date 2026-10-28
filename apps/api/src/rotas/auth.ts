@@ -45,8 +45,14 @@ export function respostaSessao(u: Usuario): SessaoResposta {
 /** D24: cada portal aceita um papel só. */
 const PAPEL_DO_PORTAL = { aluno: 'aluno', conteudo: 'admin', super: 'superadmin' } as const satisfies Record<AreaConta, Papel>;
 
-/** D24: limite por e-mail, somado ao balde por IP dos três logins (definido no registro). */
-const LIMITE_LOGIN_EMAIL = { max: 10, janelaMs: 15 * 60_000 };
+/**
+ * D24 + V-04: além do balde por IP dos três logins (definido no registro), dois limites por conta:
+ * 10 tentativas por e-mail **e IP** (quem tenta de um lugar só) e 50 por e-mail somando todos os IPs
+ * (força bruta distribuída). Com só "10 por e-mail", qualquer um que soubesse o e-mail do dono
+ * travava o login dele com a senha certa.
+ */
+const LIMITE_LOGIN_EMAIL_IP = { max: 10, janelaMs: 15 * 60_000 };
+const LIMITE_LOGIN_EMAIL = { max: 50, janelaMs: 15 * 60_000 };
 
 export async function iniciarSessao(
   deps: Deps,
@@ -121,6 +127,7 @@ export function rotasAuth(r: Registrador): void {
    */
   const entrar = (area: AreaConta) => async (ctx: Contexto<'authLogin'>) => {
     const { corpo, deps, req, reply, agora } = ctx;
+    await ctx.limitar(`login:email-ip:${corpo.email}:${req.ip}`, LIMITE_LOGIN_EMAIL_IP.max, LIMITE_LOGIN_EMAIL_IP.janelaMs);
     await ctx.limitar(`login:email:${corpo.email}`, LIMITE_LOGIN_EMAIL.max, LIMITE_LOGIN_EMAIL.janelaMs);
     const [u] = await deps.db
       .select()

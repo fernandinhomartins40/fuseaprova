@@ -30,6 +30,10 @@ import { confirmarPagamento, enviarEmailConfirmacao, valorMenorQueOPedido, type 
 import { encerrarSessoesDoUsuario } from './sessoes.js';
 import { concursoDoUsuario } from './usuario.js';
 
+/** V-02: reembolso já pedido ao Asaas — o concurso do pagamento não é religado. */
+const MSG_REEMBOLSO_PEDIDO =
+  'Há um reembolso pedido ao Asaas para o pagamento deste concurso: o acesso não pode ser religado. Aguarde a confirmação do estorno.';
+
 const { pedidos, usuarios, usuariosConcursos, concursos } = schema;
 
 export interface DadosAprovacao {
@@ -215,6 +219,8 @@ export async function aprovarPedidoManual(
     if (pedido.status === 'estornado') throw falha('conflito', 'Este pagamento foi estornado. Para cobrar de novo, gere um novo pedido.');
     const jaPago = pedido.status === 'pago' ? pedido : await pagoDoConcurso(tx, aluno.id, concursoId, pedido.id);
     if (jaPago) {
+      // V-02: com reembolso pedido, o concurso não volta (como em "Liberar acesso").
+      if (jaPago.reembolsoSolicitadoEm) throw falha('conflito', MSG_REEMBOLSO_PEDIDO);
       // Idempotente: nada é duplicado; só garante que o concurso do pagamento está liberado.
       const liberadoAntes = await concursoEstaLiberado(tx, aluno, concursoId);
       if (!liberadoAntes) await liberar(tx, aluno, concursoId, agora);
@@ -311,6 +317,7 @@ export async function aprovarPagamentoManual(
     const aluno = await alunoAlvo(tx, usuarioId, aprovadorId, { travar: true });
     const jaPago = await pagoDoConcurso(tx, aluno.id, d.concursoId);
     if (jaPago) {
+      if (jaPago.reembolsoSolicitadoEm) throw falha('conflito', MSG_REEMBOLSO_PEDIDO);
       const liberadoAntes = await concursoEstaLiberado(tx, aluno, d.concursoId);
       if (!liberadoAntes) await liberarConcurso(tx, aluno.id, d.concursoId, agora);
       await auditar(tx, {

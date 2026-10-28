@@ -478,3 +478,43 @@ describe('gerarPix não rebaixa um pedido pago (S-23)', () => {
     expect((await usuario(t, a.id)).acesso).toBe(true);
   });
 });
+
+/* ================================================== revalidação (REVALIDACAO_API.md) */
+
+describe('revalidação: V-01, V-02 e V-07', () => {
+  it('V-01: superadmin só com a senha (sem o código do 2FA) não troca a senha', async () => {
+    const s2 = await t.superadmin();
+    const l = await t.chamar('authLoginSuper', { corpo: { email: s2.email, senha: s2.senha } });
+    const cookie = l.cookies.map((c) => `${c.name}=${c.value}`).join('; ');
+    const r = await t.chamar('meSenha', { cookie, corpo: { senhaAtual: s2.senha, novaSenha: 'outra-senha-forte-123' } });
+    expect(r.statusCode).toBe(403);
+    expect(r.json().codigo).toBe('dois_fatores_pendente');
+    // A sessão verificada do dono continua de pé.
+    expect((await t.chamar('superMetricas', { cookie: s2.cookie })).statusCode).toBe(200);
+    // Com o 2FA desta sessão, troca normalmente.
+    const ok = await t.chamar('meSenha', { cookie: s2.cookie, corpo: { senhaAtual: s2.senha, novaSenha: 'outra-senha-forte-123' } });
+    expect(ok.statusCode, ok.body).toBe(200);
+  });
+
+  it('V-02: com reembolso pedido ao Asaas, a aprovação manual não religa o concurso', async () => {
+    const a = await t.alunoPago();
+    const [pago] = (await pedidosDe(a.id)).filter((p) => p.status === 'pago');
+    const est = await t.chamar('superPagamentoEstornar', { cookie: sup.cookie, params: { id: pago!.id }, corpo: { motivo: 'Pediu o dinheiro de volta', confirmacao: conf() } });
+    expect(est.statusCode, est.body).toBe(200);
+    const pelaTela = await t.chamar('superPagamentoAprovarManual', { cookie: sup.cookie, params: { id: pago!.id }, corpo: corpoManual() });
+    expect(pelaTela.statusCode).toBe(409);
+    const pelaFicha = await t.chamar('superAprovarManual', { cookie: sup.cookie, params: { id: a.id }, corpo: corpoManual({ concursoId: pago!.concursoId }) });
+    expect(pelaFicha.statusCode).toBe(409);
+  });
+
+  it('V-07: a busca do Conteúdo trata % e _ literalmente', async () => {
+    const todas = (await t.chamar('adminQuestoesListar', { cookie: adm.cookie, query: {} })).json().total as number;
+    expect(todas).toBeGreaterThan(0);
+    for (const q of ['%', '_']) {
+      const r = await t.chamar('adminQuestoesListar', { cookie: adm.cookie, query: { q } });
+      expect(r.statusCode, r.body).toBe(200);
+      // Antes, `q=%` trazia todas; agora só as que têm o caractere no enunciado (o seed não tem).
+      expect(r.json().total).toBeLessThan(todas);
+    }
+  });
+});

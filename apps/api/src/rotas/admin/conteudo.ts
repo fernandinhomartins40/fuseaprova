@@ -5,7 +5,7 @@
 import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { and, asc, count, desc, eq, ilike, inArray, isNull, or, sql, type SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, isNull, or, sql, type SQL } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { pendenciasParaPublicar, SLUG_ASSUNTO_A_CLASSIFICAR } from '@fuse/shared';
 import type { z } from 'zod';
@@ -15,7 +15,7 @@ import { ehViolacaoUnica, existe, falha } from '../../http/erros.js';
 import { clonarConcurso } from '../../servicos/concursos.js';
 import { carregarQuestoes } from '../../servicos/questoes.js';
 import { concursoAtivo, subirVersaoConteudo } from '../../servicos/usuario.js';
-import { contar, iso, isoOuNull, type Db } from '../../util.js';
+import { contar, contem, iso, isoOuNull, type Db } from '../../util.js';
 import { auditar, mapCargo, mapConcurso, mapLicao, mapProva, mapSecao, paginacao } from './comum.js';
 
 const {
@@ -200,7 +200,7 @@ export function rotasAdminConteudo(r: Registrador): void {
   r.rota('adminProvasListar', async ({ query, deps }) => {
     const filtros: (SQL | undefined)[] = [
       query.q
-        ? or(ilike(provasOrigem.orgao, `%${query.q}%`), ilike(provasOrigem.nome, `%${query.q}%`), ilike(provasOrigem.cargo, `%${query.q}%`))
+        ? or(contem(provasOrigem.orgao, query.q), contem(provasOrigem.nome, query.q), contem(provasOrigem.cargo, query.q))
         : undefined,
       query.banca ? eq(provasOrigem.banca, query.banca) : undefined,
       query.uf ? eq(provasOrigem.uf, query.uf.toUpperCase()) : undefined,
@@ -246,7 +246,7 @@ export function rotasAdminConteudo(r: Registrador): void {
     const { db } = deps;
     const reportsSql = sql<number>`(select count(*)::int from ${reports} where ${reports.questaoId} = ${questoes.id} and ${reports.status} = 'aberto')`;
     const onde = and(
-      query.q ? ilike(questoes.enunciado, `%${query.q}%`) : undefined,
+      query.q ? contem(questoes.enunciado, query.q) : undefined,
       query.disciplina ? eq(disciplinas.slug, query.disciplina) : undefined,
       query.assuntoId ? eq(questoes.assuntoId, query.assuntoId) : undefined,
       query.status ? eq(questoes.status, query.status) : undefined,
@@ -493,7 +493,7 @@ export function rotasAdminConteudo(r: Registrador): void {
     itens: await mapAssunto(
       deps.db,
       undefined,
-      and(query.disciplina ? eq(disciplinas.slug, query.disciplina) : undefined, query.q ? ilike(assuntos.nome, `%${query.q}%`) : undefined),
+      and(query.disciplina ? eq(disciplinas.slug, query.disciplina) : undefined, query.q ? contem(assuntos.nome, query.q) : undefined),
     ),
   }));
   r.rota('adminAssuntoCriar', async ({ corpo, deps, usuario, agora }) => {

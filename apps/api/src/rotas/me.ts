@@ -5,7 +5,7 @@
 import { and, eq } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { comprarProtetor, podeEstudar } from '@fuse/shared';
-import type { Registrador } from '../http/registrar.js';
+import { exigirDoisFatores, type Registrador } from '../http/registrar.js';
 import { falha } from '../http/erros.js';
 import { limparCookieSessao } from '../http/cookies.js';
 import { conferirSenha, gerarHashSenha } from '../servicos/senhas.js';
@@ -75,6 +75,9 @@ export function rotasMe(r: Registrador): void {
   });
 
   r.rota('meSenha', async ({ usuario, corpo, deps }) => {
+    // V-01: só a senha não basta para o superadmin trocar a senha (derrubaria as sessões
+    // verificadas do dono); exige o 2FA desta sessão, como o resto do painel.
+    if (usuario.papel === 'superadmin') exigirDoisFatores(usuario);
     if (!(await conferirSenha(usuario.senhaHash, corpo.senhaAtual))) {
       throw falha('validacao', 'A senha atual não confere.', { senhaAtual: 'A senha atual não confere.' });
     }
