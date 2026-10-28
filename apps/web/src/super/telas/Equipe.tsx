@@ -39,6 +39,19 @@ export default function Equipe() {
   const consulta = useQuery({ queryKey: ['super', 'equipe'], queryFn: () => api('superEquipe') });
   const [convidar, setConvidar] = useState(false);
   const [novo, setNovo] = useState<{ nome: string; email: string; papel: 'admin' | 'superadmin' }>({ nome: '', email: '', papel: 'admin' });
+  // S-19: reenviar ou cancelar o convite de quem ainda não definiu a senha.
+  const [convite, setConvite] = useState<{ acao: 'reenviar' | 'cancelar'; membro: MembroEquipe } | null>(null);
+  const acoesConvite = (m: MembroEquipe) =>
+    m.convitePendente ? (
+      <span className={a.acoes} style={{ gap: 4 }}>
+        <Botao pequeno onClick={() => setConvite({ acao: 'reenviar', membro: m })}>
+          Reenviar
+        </Botao>
+        <Botao pequeno variante="perigo" onClick={() => setConvite({ acao: 'cancelar', membro: m })}>
+          Cancelar
+        </Botao>
+      </span>
+    ) : null;
 
   return (
     <Pagina
@@ -71,8 +84,9 @@ export default function Equipe() {
                   titulo={m.nome}
                   sub={m.email}
                   extra={
-                    <div style={{ marginTop: 4 }}>
+                    <div style={{ marginTop: 4, display: 'grid', gap: 6 }}>
                       <SelosMembro m={m} />
+                      {acoesConvite(m)}
                     </div>
                   }
                 />
@@ -87,6 +101,9 @@ export default function Equipe() {
                   <th>2FA desde</th>
                   <th>Último acesso</th>
                   <th>Na equipe desde</th>
+                  <th>
+                    <span className="sr-only">Convite</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -104,6 +121,7 @@ export default function Equipe() {
                     <td>{dataHora(m.doisFatoresAtivadoEm)}</td>
                     <td>{dataHora(m.ultimoAcessoEm)}</td>
                     <td>{dataHora(m.criadoEm)}</td>
+                    <td>{acoesConvite(m)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -111,6 +129,35 @@ export default function Equipe() {
           )
         }
       </Consulta>
+      <AcaoConfirmada
+        titulo={convite?.acao === 'cancelar' ? 'Cancelar o convite?' : 'Reenviar o convite?'}
+        aberta={!!convite}
+        aoFechar={() => {
+          setConvite(null);
+          void consulta.refetch();
+        }}
+        rotuloConfirmar={convite?.acao === 'cancelar' ? 'Cancelar convite' : 'Reenviar convite'}
+        perigo={convite?.acao === 'cancelar'}
+        executar={(motivo) =>
+          convite?.acao === 'cancelar'
+            ? api('superEquipeConviteCancelar', { params: { id: convite.membro.id }, corpo: { motivo } })
+            : api('superEquipeConviteReenviar', { params: { id: convite?.membro.id ?? '' }, corpo: { motivo } })
+        }
+        sucesso={
+          convite?.acao === 'cancelar'
+            ? 'Convite cancelado. O link antigo deixou de valer e o e-mail pode ser convidado de novo.'
+            : `Convite reenviado para ${convite?.membro.email ?? ''}. O link anterior deixou de valer; o novo vale 72 horas.`
+        }
+      >
+        <p>
+          {convite?.membro.nome} · {convite?.membro.email}
+        </p>
+        {convite?.acao === 'cancelar' ? (
+          <p>O link deixa de valer e a conta convidada (que nunca entrou) é removida.</p>
+        ) : (
+          <p>Um link novo vai por e-mail e o anterior deixa de valer.</p>
+        )}
+      </AcaoConfirmada>
       <AcaoConfirmada
         titulo="Convidar para a equipe"
         aberta={convidar}

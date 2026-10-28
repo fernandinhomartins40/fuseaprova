@@ -15,6 +15,17 @@ import { Alerta, Botao, CampoArea, CampoSelecao, CampoTexto, estilos as a } from
 import { Folha, useReconfirmacao } from './componentes';
 import { NOMES_FORMA_PAGAMENTO_MANUAL } from './util';
 
+/**
+ * Mensagem de erro das ações do /super. 429 `dois_fatores_bloqueado` (senhas ou códigos errados
+ * demais) ganha a orientação do que fazer.
+ */
+export function textoDoErro(e: unknown): string {
+  if (e instanceof ErroAdminApi && e.codigo === 'dois_fatores_bloqueado') {
+    return `${e.message} Espere esse tempo antes de tentar de novo. Se não foi você quem errou, troque a sua senha.`;
+  }
+  return mensagemDeErro(e);
+}
+
 /** Motivo: mínimo de 5 caracteres (MotivoObrigatorio). */
 export const motivoValido = (m: string, minimo = 5) => m.trim().length >= minimo;
 
@@ -40,34 +51,44 @@ export function AcaoConfirmada(props: {
   podeConfirmar?: boolean;
   executar: (motivo: string, confirmacao: Reconfirmacao | null) => Promise<unknown>;
   sucesso: ReactNode | ((r: unknown) => ReactNode);
+  /** Texto próprio para alguns erros (409, 429…); sem retorno, vale a mensagem da API. */
+  mensagemErro?: (e: unknown) => ReactNode | undefined;
 }) {
   const [motivo, setMotivo] = useState('');
   const recon = useReconfirmacao();
   const qc = useQueryClient();
+  // S-11: a API pediu a reconfirmação (400 `campos.confirmacao`) que a tela não previu.
+  const [exigida, setExigida] = useState(false);
+  const reconfirmar = !!props.reconfirmar || exigida;
   const pedirMotivo = props.pedirMotivo ?? true;
   const acao = useMutation({
-    mutationFn: () => props.executar(motivo.trim(), recon.confirmacao),
+    mutationFn: () => props.executar(motivo.trim(), reconfirmar ? recon.confirmacao : null),
     onSuccess: () => {
       recon.limpar();
       void qc.invalidateQueries({ queryKey: ['super'] });
+    },
+    onError: (e) => {
+      if (camposDoErro(e).confirmacao) setExigida(true);
     },
   });
   const fechar = () => {
     acao.reset();
     setMotivo('');
+    setExigida(false);
     recon.limpar();
     props.aoFechar();
   };
   const pronto =
-    (!pedirMotivo || motivoValido(motivo, props.minMotivo)) && (!props.reconfirmar || !!recon.confirmacao) && (props.podeConfirmar ?? true);
+    (!pedirMotivo || motivoValido(motivo, props.minMotivo)) && (!reconfirmar || !!recon.confirmacao) && (props.podeConfirmar ?? true);
   const erroMotivo = camposDoErro(acao.error).motivo;
+  const erroConfirmacao = camposDoErro(acao.error).confirmacao;
 
   return (
     <Folha
       titulo={props.titulo}
       aberta={props.aberta}
       aoFechar={fechar}
-      cheia={props.reconfirmar ?? false}
+      cheia={reconfirmar}
       rodape={
         acao.isSuccess ? (
           <Botao variante="primario" onClick={fechar}>
@@ -106,8 +127,10 @@ export function AcaoConfirmada(props: {
               ajuda={`Pelo menos ${props.minMotivo ?? 5} caracteres.`}
             />
           ) : null}
-          {props.reconfirmar ? recon.campo : null}
-          {acao.isError && !erroMotivo ? <Alerta tom="erro">{mensagemDeErro(acao.error)}</Alerta> : null}
+          {reconfirmar ? recon.campo : null}
+          {acao.isError && !erroMotivo ? (
+            <Alerta tom={erroConfirmacao ? 'aviso' : 'erro'}>{props.mensagemErro?.(acao.error) ?? textoDoErro(acao.error)}</Alerta>
+          ) : null}
         </div>
       )}
     </Folha>
@@ -335,7 +358,7 @@ export function AprovarManual({
           ) : null}
           {recon.campo}
           {aprovar.isError && !campos.observacao && !campos.recebidoEm ? (
-            <Alerta tom="erro">{mensagemDeErro(aprovar.error)}</Alerta>
+            <Alerta tom="erro">{textoDoErro(aprovar.error)}</Alerta>
           ) : null}
         </div>
       )}

@@ -376,11 +376,14 @@ export default function UsuarioFicha() {
                 aoFechar={fechar}
                 rotuloConfirmar="Salvar"
                 podeConfirmar={edicao.nome.trim().length > 0 && edicao.email.trim().length > 0}
-                executar={(motivo) =>
+                // S-11: trocar o e-mail de uma conta da equipe pede a reconfirmação.
+                reconfirmar={u.papel !== 'aluno' && edicao.email !== u.email}
+                executar={(motivo, confirmacao) =>
                   api('superUsuarioEditar', {
                     params: { id },
                     corpo: {
                       motivo,
+                      ...(confirmacao ? { confirmacao } : {}),
                       ...(edicao.nome !== u.nome ? { nome: edicao.nome } : {}),
                       ...(edicao.email !== u.email ? { email: edicao.email } : {}),
                       ...(edicao.celular !== (u.celular ?? '') ? { celular: edicao.celular } : {}),
@@ -398,7 +401,10 @@ export default function UsuarioFicha() {
                 aberta={aberta === 'senha'}
                 aoFechar={fechar}
                 rotuloConfirmar="Enviar link"
-                executar={(motivo) => api('superUsuarioForcarSenha', { params: { id }, corpo: { motivo, revogarSessoes } })}
+                reconfirmar={u.papel !== 'aluno'}
+                executar={(motivo, confirmacao) =>
+                  api('superUsuarioForcarSenha', { params: { id }, corpo: { motivo, revogarSessoes, ...(confirmacao ? { confirmacao } : {}) } })
+                }
                 sucesso="Link de redefinição enviado por e-mail."
               >
                 <p>O usuário recebe um link para criar uma senha nova.</p>
@@ -410,7 +416,8 @@ export default function UsuarioFicha() {
                 aoFechar={fechar}
                 rotuloConfirmar="Bloquear"
                 perigo
-                executar={(motivo) => api('superUsuarioBloquear', { params: { id }, corpo: { motivo } })}
+                reconfirmar={u.papel === 'superadmin'}
+                executar={(motivo, confirmacao) => api('superUsuarioBloquear', { params: { id }, corpo: { motivo, ...(confirmacao ? { confirmacao } : {}) } })}
                 sucesso="Conta bloqueada e sessões encerradas."
               />
               <AcaoConfirmada
