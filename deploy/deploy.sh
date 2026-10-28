@@ -296,7 +296,8 @@ compose up -d --wait --wait-timeout 120 postgres || fail "o postgres não ficou 
 if [[ "${SKIP_MIGRATIONS:-0}" != 1 ]]; then
   if [[ -x "$DIR/backup/backup.sh" || -f "$DIR/backup/backup.sh" ]]; then
     log "backup antes da migração ..."
-    BACKUP_MODO=docker BACKUP_DIR="$BACKUPS" COMPOSE_FILE="$DIR/docker-compose.yml" \
+    # Falha só no tar dos uploads vira aviso aqui (o dump do banco é o que protege a migração).
+    BACKUP_MODO=docker BACKUP_DIR="$BACKUPS" COMPOSE_FILE="$DIR/docker-compose.yml" BACKUP_ARQUIVOS_FALHA=aviso \
       bash "$DIR/backup/backup.sh" || fail "o backup falhou; nada foi migrado nem trocado"
     chown -R "$UID_APP:$UID_APP" "$BACKUPS"
   else

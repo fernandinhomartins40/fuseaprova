@@ -132,7 +132,10 @@ podar_por_quantidade "$BACKUP_DIR/semanal" "$KEEP_WEEKLY"
 # Uploads e figuras das questões (auditoria PIE R5-03): sem eles, o banco restaurado aponta
 # para imagens que não existem.
 # Um por dia (o do deploy e o das 03:30 se sobrescrevem), mantém os KEEP_DAILY dias mais
-# recentes. Falha aqui só gera aviso: o dump do banco já está salvo e o deploy não pode travar.
+# recentes. S-09 (R5-11): falha aqui = backup com falha (código 3), com o ULTIMO_BACKUP gravado
+# (o dump do banco está salvo e validado) e marcado `arquivos=falhou`. O deploy, que não pode
+# travar por isso, passa BACKUP_ARQUIVOS_FALHA=aviso e recebe só o aviso, como antes.
+ARQUIVOS_ESTADO=ausente
 if [[ -d "$ARQUIVOS_DIR" ]]; then
   mkdir -p "$BACKUP_DIR/arquivos"
   ARQ="$BACKUP_DIR/arquivos/fuse_arquivos_$(date '+%Y-%m-%d').tar.gz"
@@ -142,9 +145,11 @@ if [[ -d "$ARQUIVOS_DIR" ]]; then
   if (( rc <= 1 )) && [[ -s "$ARQ.parcial" ]]; then
     mv -f -- "$ARQ.parcial" "$ARQ"
     log "arquivos: $(basename "$ARQ") ($(du -h "$ARQ" | cut -f1))"
+    ARQUIVOS_ESTADO=ok
   else
     rm -f -- "$ARQ.parcial"
-    log "AVISO: falha ao compactar $ARQUIVOS_DIR (tar $rc); o dump do banco foi salvo"
+    log "ERRO: falha ao compactar $ARQUIVOS_DIR (tar $rc); o dump do banco foi salvo"
+    ARQUIVOS_ESTADO=falhou
   fi
   mapfile -t antigos < <(find "$BACKUP_DIR/arquivos" -maxdepth 1 -type f -name 'fuse_arquivos_*.tar.gz' \
                            | sort -r | tail -n +"$(( KEEP_DAILY + 1 ))")
@@ -154,6 +159,11 @@ else
   log "aviso: $ARQUIVOS_DIR não existe; uploads fora do backup"
 fi
 
-printf '%s %s\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$DESTINO" > "$BACKUP_DIR/ULTIMO_BACKUP"
+# <data ISO> <dump> arquivos=<ok|falhou|ausente> (lido pelo /super/sistema e pelos alertas).
+printf '%s %s arquivos=%s\n' "$(date '+%Y-%m-%dT%H:%M:%S%:z')" "$DESTINO" "$ARQUIVOS_ESTADO" > "$BACKUP_DIR/ULTIMO_BACKUP"
 TAMANHO="$(du -h "$DESTINO" | cut -f1)"
-log "ok: $(basename "$DESTINO") ($TAMANHO, $TABELAS tabelas com dados, $(( SECONDS - inicio ))s)"
+if [[ "$ARQUIVOS_ESTADO" == falhou && "${BACKUP_ARQUIVOS_FALHA:-erro}" != aviso ]]; then
+  log "ERRO: banco salvo ($(basename "$DESTINO"), $TAMANHO), mas os arquivos falharam" >&2
+  exit 3
+fi
+log "ok: $(basename "$DESTINO") ($TAMANHO, $TABELAS tabelas com dados, arquivos=$ARQUIVOS_ESTADO, $(( SECONDS - inicio ))s)"

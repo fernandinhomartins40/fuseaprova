@@ -49,7 +49,9 @@ export function executarBackup(
         resolve({ ok: true, codigo, ms });
       } else {
         log.error({ job: 'backup', codigo, saida: saida.slice(-1000) }, 'backup falhou');
-        resolve({ ok: false, codigo, ms, erro: `código de saída ${codigo}` });
+        // 3 = o dump do banco foi salvo, mas o tar dos arquivos (uploads) falhou (S-09, R5-11).
+        const erro = codigo === 3 ? 'o banco foi salvo, mas a cópia dos arquivos (uploads) falhou' : `código de saída ${codigo}`;
+        resolve({ ok: false, codigo, ms, erro });
       }
     });
   });
