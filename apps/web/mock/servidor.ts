@@ -396,11 +396,14 @@ function sessaoResposta() {
   return {
     usuario: { id: ID_USUARIO, nome: u.nome, email: u.email, papel: u.papel, acesso: u.acesso },
     area: u.papel === 'admin' ? ('conteudo' as const) : ('aluno' as const),
-    proximo: !u.acesso
-      ? ('pagamento' as const)
-      : !u.onboardingConcluido
-        ? ('onboarding' as const)
-        : ('trilha' as const),
+    proximo:
+      u.papel === 'admin'
+        ? ('conteudo' as const)
+        : !u.acesso
+          ? ('pagamento' as const)
+          : !u.onboardingConcluido
+            ? ('onboarding' as const)
+            : ('trilha' as const),
   };
 }
 
@@ -587,6 +590,14 @@ const H: Partial<Record<NomeRota, Handler>> = {
     if (c.senha === 'errada123') throw new Falha(401, 'credenciais_invalidas');
     if (!estado.usuario.acesso && !estado.logado) aplicarCenario('aluno');
     estado.logado = true;
+    return sessaoResposta();
+  },
+  // D24: o portal do conteúdo (mock): entra como admin. O mock não simula o superadmin.
+  authLoginConteudo: ({ corpo }) => {
+    const c = corpo as { email: string; senha: string };
+    if (c.senha === 'errada123') throw new Falha(401, 'credenciais_invalidas');
+    estado.logado = true;
+    estado.usuario.papel = 'admin';
     return sessaoResposta();
   },
   authSair: () => {

@@ -1,4 +1,4 @@
-/* Peças visuais do painel admin. As variáveis --adm-* vêm de Layout.module.css (.raiz). */
+/* Peças visuais do painel admin. As variáveis --adm-* vêm do layout do /super (super.module.css, .raiz). */
 
 /* ---------- cabeçalho de página ---------- */
 .cabecalho {
@@ -17,6 +17,36 @@
   font-size: 28px;
   line-height: 1.1;
   color: var(--adm-petroleo);
+}
+
+.trilha {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 0 0 4px;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--adm-texto-suave);
+}
+
+.trilha li + li::before {
+  content: '›';
+  margin-right: 6px;
+}
+
+.trilha a {
+  color: var(--adm-turquesa);
+  font-weight: 700;
+}
+
+/* No celular o título já está na barra superior do layout (D24). */
+.oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
 }
 
 .subtitulo {

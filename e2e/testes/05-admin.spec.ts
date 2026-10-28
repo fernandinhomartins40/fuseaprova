@@ -3,7 +3,7 @@ import { API, alunoPago, definirRelogio, emailUnico, entrarPelaUI } from './apoi
 
 test.use({ viewport: { width: 1280, height: 900 } });
 
-test.describe('Painel admin', () => {
+test.describe('Conteúdo no painel único (D24)', () => {
   test.beforeEach(async ({ page }) => {
     await definirRelogio(page, '2026-11-17T09:00:00-03:00');
   });
@@ -14,19 +14,22 @@ test.describe('Painel admin', () => {
     await page.request.post(`${API}/__e2e/admin`, {
       data: { email, senha, nome: 'Dona Admin Fuse' },
     });
-    await entrarPelaUI(page, email, senha);
-    await expect(page).not.toHaveURL(/\/entrar$/);
+    // D24: a equipe de conteúdo entra pela página dela e cai direto no /super/conteudo.
+    await entrarPelaUI(page, email, senha, '/admin/entrar');
+    await expect(page).toHaveURL(/\/super\/conteudo$/);
+    await expect(page.getByRole('heading', { name: 'Resumo do conteúdo', exact: true })).toBeVisible();
+    await expect(page.getByText('Aprendizagem')).toBeVisible();
+    const menu = page.getByRole('navigation', { name: 'Menu do painel de conteúdo' });
+    await expect(menu.getByRole('link', { name: 'Pagamentos' })).toHaveCount(0);
+    await expect(menu.getByRole('button', { name: 'Sair' })).toBeVisible();
 
-    await page.goto('/admin');
-    await expect(page.getByRole('heading', { name: 'Painel', exact: true })).toBeVisible();
-    await expect(page.getByText('Métricas do produto')).toBeVisible();
-
-    // Lista de questões → abre a primeira.
+    // O endereço antigo redireciona para a seção Conteúdo.
     await page.goto('/admin/questoes');
+    await expect(page).toHaveURL(/\/super\/conteudo\/questoes$/);
     const link = page.locator('table tbody tr a').first();
     await expect(link).toBeVisible();
     await link.click();
-    await expect(page).toHaveURL(/\/admin\/questoes\/[0-9a-f-]{36}$/);
+    await expect(page).toHaveURL(/\/super\/conteudo\/questoes\/[0-9a-f-]{36}$/);
     const id = page.url().split('/').pop()!;
     const form = page.getByRole('form', { name: 'Editor de questão' });
     await expect(form).toBeVisible();

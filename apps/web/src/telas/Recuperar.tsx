@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   MENSAGEM_RECUPERAR,
@@ -8,18 +8,31 @@ import {
   RedefinirEntrada,
 } from '@fuse/shared/api';
 import { camposDoErro, chamar, mensagemDeErro } from '../api/cliente';
-import { CHAVES } from '../api/consultas';
+import { LOGIN_DA_AREA } from '../app/areaPainel';
+import { EH_APP } from '../nativo/plataforma';
 import { Botao3D, CabecalhoVoltar, Campo, CamposNovaSenha, Capi, Pagina } from '../ui';
-import { errosPorCampo, rotaDoProximo } from './formulario';
+import { errosPorCampo } from './formulario';
+import { concluirRedefinicao } from './redefinicao';
 import s from './Auth.module.css';
 
-/** ✏️ Recuperar senha (`/recuperar`) e definir nova senha (`/recuperar/:token`). */
+/**
+ * ✏️ Recuperar senha (`/recuperar`) e definir nova senha (`/recuperar/:token`). D24: a
+ * recuperação é uma só para todos; `?area=conteudo|super` só muda para qual login voltar, e a
+ * redefinição leva ao login da área devolvida pela API.
+ */
 export default function Recuperar() {
   const { token } = useParams();
   return token ? <NovaSenha token={token} /> : <PedirLink />;
 }
 
+function useLoginDeVolta(): string {
+  const area = useSearchParams()[0].get('area');
+  if (EH_APP) return LOGIN_DA_AREA.aluno;
+  return area === 'conteudo' || area === 'super' ? LOGIN_DA_AREA[area] : LOGIN_DA_AREA.aluno;
+}
+
 function PedirLink() {
+  const login = useLoginDeVolta();
   const [email, setEmail] = useState('');
   const [erro, setErro] = useState<string | null>(null);
   const [enviado, setEnviado] = useState<string | null>(null);
@@ -46,7 +59,7 @@ function PedirLink() {
 
   return (
     <Pagina>
-      <CabecalhoVoltar para="/entrar" />
+      <CabecalhoVoltar para={login} />
       <h1 className={s.titulo}>Recuperar senha</h1>
       <p className={s.subtitulo}>
         Informe seu e-mail. Mandamos um link para você criar uma senha nova.
@@ -57,7 +70,7 @@ function PedirLink() {
           <p className={s.sucesso} role="status">
             Confira também a caixa de spam.
           </p>
-          <Link to="/entrar" className={s.rodape}>
+          <Link to={login} className={s.rodape}>
             Voltar para o login
           </Link>
         </div>
@@ -109,8 +122,8 @@ function NovaSenha({ token }: { token: string }) {
     setEnviando(true);
     try {
       const sessao = await chamar('authRedefinir', { corpo: { token, senha } });
-      await qc.invalidateQueries({ queryKey: CHAVES.me });
-      navegar(rotaDoProximo(sessao.proximo), { replace: true });
+      const { para, estado } = await concluirRedefinicao(sessao, qc);
+      navegar(para, { replace: true, state: estado });
     } catch (err) {
       const c = camposDoErro(err);
       if (c.senha) setErros(c);

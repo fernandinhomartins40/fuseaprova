@@ -34,8 +34,8 @@ async function alunoComPixPendente(request: APIRequestContext, base: string) {
 /** Primeiro login: configura o 2FA e chega à visão geral. */
 async function primeiroLogin(page: Page, email: string) {
   await page.request.post(`${API}/__e2e/superadmin`, { data: { email, senha: SENHA_SUPER, nome: 'Dono Superadmin Fuse' } });
-  await entrarPelaUI(page, email, SENHA_SUPER);
-  await expect(page).toHaveURL(/\/super\/2fa$/);
+  await entrarPelaUI(page, email, SENHA_SUPER, '/super/entrar');
+  await expect(page).toHaveURL(/\/super\/2fa/);
   await page.getByRole('button', { name: 'Gerar QR code' }).click();
   await expect(page.getByRole('img', { name: 'QR code do app autenticador' })).toBeVisible();
   const segredo = (await page.getByTestId('chave-manual').innerText()).trim();
@@ -89,12 +89,13 @@ for (const [nome, viewport] of [
         await expect(folha.getByRole('link', { name: 'Sistema' })).toBeVisible();
         await folha.getByRole('button', { name: 'Sair' }).click();
       }
-      await expect(page).toHaveURL(/\/entrar$/);
+      // D24: Sair volta à página de login do superadmin.
+      await expect(page).toHaveURL(/\/super\/entrar$/);
 
       // Segundo login: o código do app é pedido de novo (passo de 30 s seguinte).
       await avancarRelogio(page, 31_000);
-      await entrarPelaUI(page, email, SENHA_SUPER);
-      await expect(page).toHaveURL(/\/super\/2fa$/);
+      await entrarPelaUI(page, email, SENHA_SUPER, '/super/entrar');
+      await expect(page).toHaveURL(/\/super\/2fa/);
       await expect(page.getByRole('heading', { name: 'Digite o código do app' })).toBeVisible();
       await page.getByLabel('Código de 6 dígitos').fill('000000');
       await page.getByRole('button', { name: 'Confirmar' }).click();
@@ -116,7 +117,8 @@ for (const [nome, viewport] of [
       await expect(page).toHaveURL(/\/super\/usuarios\/[0-9a-f-]{36}$/);
       if (nome === 'celular') await expect(page.getByRole('button', { name: 'Voltar' })).toBeVisible();
 
-      await page.getByRole('button', { name: 'Aprovar pagamento manual' }).click();
+      // D24: pela ficha, a aprovação é por concurso.
+      await page.getByRole('button', { name: /^Aprovar pagamento manual de / }).first().click();
       const folha = page.getByRole('dialog', { name: 'Aprovar pagamento manual' });
       await expect(folha).toBeVisible();
       await folha.getByLabel('Forma do pagamento').selectOption('pix_direto');
@@ -126,10 +128,10 @@ for (const [nome, viewport] of [
       await expect(aprovar).toBeDisabled();
       await folha.getByLabel('Sua senha').fill(SENHA_SUPER);
       await aprovar.click();
-      await expect(folha.getByText('Pagamento manual registrado e acesso liberado.')).toBeVisible();
+      await expect(folha.getByText(/Pagamento aprovado manualmente/)).toBeVisible();
       await folha.getByRole('button', { name: 'Fechar' }).last().click();
 
-      await expect(page.getByText('Com acesso', { exact: true })).toBeVisible();
+      await expect(page.getByText('Com concurso liberado', { exact: true })).toBeVisible();
       const p = await page.request.get(`${API}/__e2e/pagamento`, { params: { email: aluno } });
       expect(((await p.json()) as { status: string }).status).toBe('pago');
 

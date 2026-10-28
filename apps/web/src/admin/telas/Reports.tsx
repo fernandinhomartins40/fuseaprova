@@ -73,7 +73,7 @@ export default function Reports() {
   return (
     <>
       <Cabecalho
-        titulo="Reports"
+        titulo="Erros relatados"
         subtitulo="Problemas reportados pelos alunos. Três reports abertos na mesma questão tiram a questão do ar."
       />
       <div className={s.filtros}>

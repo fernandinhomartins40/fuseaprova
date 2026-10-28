@@ -114,8 +114,9 @@ export async function alunoPago(page: Page, c: Conta = novaConta()): Promise<Con
   return c;
 }
 
-export async function entrarPelaUI(page: Page, email: string, senha: string): Promise<void> {
-  await page.goto('/entrar');
+/** D24: cada papel entra pela sua página (/entrar, /admin/entrar ou /super/entrar). */
+export async function entrarPelaUI(page: Page, email: string, senha: string, pagina = '/entrar'): Promise<void> {
+  await page.goto(pagina);
   await page.getByLabel('E-mail').fill(email);
   await page.getByLabel('Senha', { exact: true }).fill(senha);
   await page.getByRole('button', { name: 'Entrar' }).click();

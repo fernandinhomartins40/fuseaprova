@@ -15,7 +15,7 @@ describe('Questões: filtros e lote', () => {
       'GET /admin/assuntos': ASSUNTOS,
       'GET /admin/questoes': () => lista(),
     });
-    renderizarAdmin('/admin/questoes');
+    renderizarAdmin('/super/conteudo/questoes');
     expect(await screen.findByText('Assinale a crase correta')).toBeInTheDocument();
 
     await usuario.selectOptions(screen.getByLabelText('Status'), 'rascunho');
@@ -48,7 +48,7 @@ describe('Questões: filtros e lote', () => {
         ignoradas: [{ id: IDS.q2, motivo: 'Falta a explicação.' }],
       }),
     });
-    renderizarAdmin('/admin/questoes');
+    renderizarAdmin('/super/conteudo/questoes');
     await screen.findByText('Assinale a crase correta');
 
     await usuario.click(screen.getByLabelText(/Selecionar questão Assinale/));
@@ -77,7 +77,7 @@ describe('Questões: filtros e lote', () => {
       'GET /admin/questoes': () => lista(),
       'POST /admin/questoes/lote': () => ({ atualizadas: 3, ignoradas: [] }),
     });
-    renderizarAdmin('/admin/questoes');
+    renderizarAdmin('/super/conteudo/questoes');
     await screen.findByText('Assinale a crase correta');
     await usuario.click(screen.getByLabelText('Selecionar todas desta página'));
     await usuario.click(screen.getByRole('button', { name: 'Retirar' }));
@@ -99,7 +99,7 @@ describe('Questões: filtros e lote', () => {
       'GET /admin/assuntos': ASSUNTOS,
       'GET /admin/questoes': { status: 403, corpo: { erro: 'Você não tem permissão para isso.', codigo: 'proibido' } },
     });
-    renderizarAdmin('/admin/questoes');
+    renderizarAdmin('/super/conteudo/questoes');
     expect(await screen.findByText('Você não tem permissão para isso.')).toBeInTheDocument();
   });
 
@@ -109,7 +109,7 @@ describe('Questões: filtros e lote', () => {
       'GET /admin/assuntos': ASSUNTOS,
       'GET /admin/questoes': () => lista([]),
     });
-    renderizarAdmin('/admin/questoes');
+    renderizarAdmin('/super/conteudo/questoes');
     expect(await screen.findByText('Nenhuma questão com esses filtros.')).toBeInTheDocument();
   });
 });

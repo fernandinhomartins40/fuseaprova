@@ -88,6 +88,30 @@ async function lerErro(res: Response): Promise<ErroAdminApi> {
   return new ErroAdminApi('Algo deu errado do nosso lado. Tente de novo em instantes.', res.status);
 }
 
+/* ------------------------------------------------ sessão perdida (S-19) */
+
+/** Códigos do 403 que pedem o 2FA de novo (não configurado ou não verificado nesta sessão). */
+const CODIGOS_2FA = new Set(['dois_fatores_necessario', 'dois_fatores_pendente']);
+
+type OuvinteSessao = (motivo: 'login' | 'dois_fatores') => void;
+let ouvinteSessao: OuvinteSessao | null = null;
+
+/**
+ * O layout do painel registra aqui o que fazer quando a sessão cai (401 → página de login do
+ * papel) ou o 2FA vence (403 de 2FA → /super/2fa). Devolve a função de remoção.
+ */
+export function aoPerderSessao(fn: OuvinteSessao): () => void {
+  ouvinteSessao = fn;
+  return () => {
+    if (ouvinteSessao === fn) ouvinteSessao = null;
+  };
+}
+
+function avisarSessao(e: ErroAdminApi): void {
+  if (e.status === 401 && e.codigo !== 'credenciais_invalidas') ouvinteSessao?.('login');
+  else if (e.status === 403 && e.codigo && CODIGOS_2FA.has(e.codigo)) ouvinteSessao?.('dois_fatores');
+}
+
 async function enviar(url: string, init: RequestInit): Promise<Response> {
   try {
     return await fetch(url, { credentials: 'include', ...init });
@@ -157,7 +181,11 @@ export async function api<N extends NomeRota>(
   }
 
   const res = await enviar(url, init);
-  if (!res.ok) throw await lerErro(res);
+  if (!res.ok) {
+    const erro = await lerErro(res);
+    avisarSessao(erro);
+    throw erro;
+  }
   if (res.status === 204 || def.resposta === null) return undefined as RespostaDe<N>;
   return (await res.json()) as RespostaDe<N>;
 }
@@ -170,6 +198,10 @@ export async function enviarImagem(arquivo: File): Promise<RespostaDe<'adminUplo
     method: 'POST',
     body: dados,
   });
-  if (!res.ok) throw await lerErro(res);
+  if (!res.ok) {
+    const erro = await lerErro(res);
+    avisarSessao(erro);
+    throw erro;
+  }
   return (await res.json()) as RespostaDe<'adminUpload'>;
 }

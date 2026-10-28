@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { loginParaCaminho } from './areaPainel';
 import { aoRedirecionar } from '../api/cliente';
 import { criarQueryClient } from '../api/consultas';
 import { EH_APP } from '../nativo/plataforma';
@@ -37,20 +38,43 @@ const Configuracoes = lazy(() => import('../telas/Configuracoes'));
 const NaoEncontrada = lazy(() => import('../telas/NaoEncontrada'));
 // Cada alvo só leva as suas telas (D20): o app nativo não tem cadastro, pagamento nem
 // painéis da equipe; o site não tem os recursos nativos.
-const Admin = EH_APP ? Vazio : lazy(() => import('../admin/rotas'));
+// D24: um painel só (/super), com a seção Conteúdo; as páginas da equipe ficam fora do
+// precache da PWA (S-27, vite.config.ts).
 const Super = EH_APP ? Vazio : lazy(() => import('../super/rotas'));
+const EntrarConteudo = EH_APP
+  ? Vazio
+  : lazy(() => import('../painel/EntrarPainel').then((m) => ({ default: () => <m.default area="conteudo" /> })));
+const EntrarSuper = EH_APP
+  ? Vazio
+  : lazy(() => import('../painel/EntrarPainel').then((m) => ({ default: () => <m.default area="super" /> })));
+const Convite = EH_APP ? Vazio : lazy(() => import('../painel/Convite'));
 const MeusConcursos = lazy(() => import('../telas/MeusConcursos'));
 const AcessoApp = EH_APP ? lazy(() => import('../telas/AcessoApp')) : Vazio;
 const RecursosNativos = EH_APP ? lazy(() => import('../nativo/RecursosNativos')) : Vazio;
 
-/** 401 → /entrar e 402 → /pagamento (no app, /acesso), vindos de qualquer chamada da API. */
+/** /admin/* (antigo painel de conteúdo) → /super/conteudo/* (D24). */
+function RedirecionarAdmin() {
+  const { pathname, search } = useLocation();
+  const resto = pathname.replace(/^\/admin\/?/, '');
+  return <Navigate to={`/super/conteudo${resto ? `/${resto}` : ''}${search}`} replace />;
+}
+
+/**
+ * 401 → login do papel (/entrar, /admin/entrar ou /super/entrar) e 402 → /pagamento (no app,
+ * /acesso), vindos de qualquer chamada da API.
+ */
 function Redirecionador() {
   const navegar = useNavigate();
   const local = useLocation();
   useEffect(
     () =>
       aoRedirecionar((pedido) => {
-        const destino = EH_APP && pedido === '/pagamento' ? '/acesso' : pedido;
+        const destino =
+          EH_APP && pedido === '/pagamento'
+            ? '/acesso'
+            : pedido === '/entrar'
+              ? loginParaCaminho(local.pathname)
+              : pedido;
         if (local.pathname === destino) return;
         if (
           destino === '/entrar' &&
@@ -59,6 +83,7 @@ function Redirecionador() {
           )
         )
           return;
+        if (destino !== '/entrar' && destino.endsWith('/entrar') && local.pathname.endsWith('/entrar')) return;
         navegar(destino, { replace: true });
       }),
     [navegar, local.pathname],
@@ -98,8 +123,20 @@ export function Rotas() {
         <Route path="/entrar" element={<Entrar />} />
         <Route path="/recuperar" element={<Recuperar />} />
         <Route path="/recuperar/:token" element={<Recuperar />} />
-        {/* D24: o e-mail de convite da equipe aponta para /convite/:token (a tela própria vem no Lote 3). */}
-        <Route path="/convite/:token" element={<Recuperar />} />
+        {/* D24: cada papel tem a sua página de login; no app nativo, só a do aluno. */}
+        {EH_APP ? (
+          <>
+            <Route path="/admin/entrar" element={<Navigate to="/entrar" replace />} />
+            <Route path="/super/entrar" element={<Navigate to="/entrar" replace />} />
+            <Route path="/convite/:token" element={<Navigate to="/entrar" replace />} />
+          </>
+        ) : (
+          <>
+            <Route path="/admin/entrar" element={<EntrarConteudo />} />
+            <Route path="/super/entrar" element={<EntrarSuper />} />
+            <Route path="/convite/:token" element={<Convite />} />
+          </>
+        )}
         <Route path="/termos" element={<Termos />} />
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/excluir-conta" element={<ExclusaoDeConta />} />
@@ -211,18 +248,11 @@ export function Rotas() {
 
         {!EH_APP && (
           <>
-            <Route
-              path="/admin/*"
-              element={
-                <Guarda nivel="admin">
-                  <Admin />
-                </Guarda>
-              }
-            />
+            <Route path="/admin/*" element={<RedirecionarAdmin />} />
             <Route
               path="/super/*"
               element={
-                <Guarda nivel="super">
+                <Guarda nivel="painel">
                   <Super />
                 </Guarda>
               }

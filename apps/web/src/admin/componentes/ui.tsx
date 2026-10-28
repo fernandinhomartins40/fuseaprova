@@ -11,17 +11,40 @@ import {
   type SelectHTMLAttributes,
   type TextareaHTMLAttributes,
 } from 'react';
+import { Link } from 'react-router-dom';
 import { mensagemDeErro } from '../api';
-import { juntarClasses, type TomSelo } from '../util';
+import { BASE_ADMIN, juntarClasses, type TomSelo } from '../util';
+import { TITULO_RAIZ_CONTEUDO, useTopoPainel } from './topo';
 import s from './ui.module.css';
 
 /* ------------------------------------------------------------ cabeçalho */
 
+/**
+ * Cabeçalho das telas de conteúdo. Dentro do layout do /super (D24): trilha "Conteúdo › Tela",
+ * o título vai para a barra superior no celular e o `document.title` acompanha.
+ */
 export function Cabecalho(props: { titulo: string; subtitulo?: ReactNode; acoes?: ReactNode }) {
+  const topo = useTopoPainel();
+  const { titulo } = props;
+  const definir = topo?.definirTopo;
+  useEffect(() => {
+    if (!definir) return;
+    definir({ titulo });
+    document.title = `${titulo} · Conteúdo · Fuse Aprova`;
+  }, [definir, titulo]);
+  const naRaiz = titulo === TITULO_RAIZ_CONTEUDO;
   return (
     <header className={s.cabecalho}>
       <div>
-        <h1 className={s.titulo}>{props.titulo}</h1>
+        {topo ? (
+          <nav aria-label="Você está em" className={topo.celular ? s.oculto : undefined}>
+            <ol className={s.trilha}>
+              <li>{naRaiz ? 'Conteúdo' : <Link to={BASE_ADMIN}>Conteúdo</Link>}</li>
+              {naRaiz ? null : <li>{titulo}</li>}
+            </ol>
+          </nav>
+        ) : null}
+        <h1 className={juntarClasses(s.titulo, topo?.celular && s.oculto)}>{props.titulo}</h1>
         {props.subtitulo ? <p className={s.subtitulo}>{props.subtitulo}</p> : null}
       </div>
       {props.acoes ? <div className={s.acoes}>{props.acoes}</div> : null}

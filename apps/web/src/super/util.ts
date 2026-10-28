@@ -56,3 +56,72 @@ export function reaisCurto(centavos: number): string {
 export function porcentagem(v: number | null | undefined): string {
   return v === null || v === undefined ? '—' : `${v.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%`;
 }
+
+/* ------------------------------------------ textos do Asaas em português (S-19) */
+
+/** Status de cobrança do Asaas → rótulo (R2-09). Desconhecido: o próprio código. */
+export const NOMES_STATUS_ASAAS: Record<string, string> = {
+  PENDING: 'Aguardando pagamento',
+  RECEIVED: 'Recebida',
+  CONFIRMED: 'Confirmada',
+  RECEIVED_IN_CASH: 'Recebida em dinheiro',
+  OVERDUE: 'Vencida',
+  REFUNDED: 'Estornada',
+  REFUND_REQUESTED: 'Estorno pedido',
+  REFUND_IN_PROGRESS: 'Estorno em andamento',
+  CHARGEBACK_REQUESTED: 'Contestação aberta',
+  CHARGEBACK_DISPUTE: 'Contestação em disputa',
+  AWAITING_CHARGEBACK_REVERSAL: 'Aguardando reversão da contestação',
+  DUNNING_REQUESTED: 'Em negativação',
+  DUNNING_RECEIVED: 'Recuperada',
+  AWAITING_RISK_ANALYSIS: 'Em análise de risco',
+  DELETED: 'Removida',
+  CANCELADA: 'Cancelada',
+};
+
+/** Tipos de lançamento do extrato do Asaas → rótulo (R2-09). */
+export const NOMES_TIPO_LANCAMENTO_ASAAS: Record<string, string> = {
+  PAYMENT_RECEIVED: 'Pagamento recebido',
+  PAYMENT_FEE: 'Taxa',
+  PAYMENT_REVERSAL: 'Estorno',
+  PAYMENT_REFUND_CANCELLED: 'Estorno cancelado',
+  REFUND: 'Estorno',
+  REFUND_REQUEST_FEE: 'Taxa de estorno',
+  TRANSFER: 'Transferência',
+  TRANSFER_FEE: 'Taxa de transferência',
+  TRANSFER_REVERSAL: 'Transferência devolvida',
+  PIX_TRANSACTION_CREDIT: 'Pix recebido',
+  PIX_TRANSACTION_DEBIT: 'Pix enviado',
+  CHARGEBACK: 'Contestação',
+  CHARGEBACK_REVERSAL: 'Contestação revertida',
+  PAYMENT_CUSTODY_BLOCK: 'Valor bloqueado',
+  PAYMENT_CUSTODY_BLOCK_REVERSAL: 'Valor desbloqueado',
+};
+
+/** Situação da conta Asaas → rótulo. */
+export const NOMES_SITUACAO_CONTA_ASAAS: Record<string, string> = {
+  APPROVED: 'Aprovada',
+  PENDING: 'Em análise',
+  AWAITING_APPROVAL: 'Aguardando aprovação',
+  AWAITING_ACTION_AUTHORIZATION: 'Aguardando autorização',
+  REJECTED: 'Reprovada',
+  DENIED: 'Recusada',
+};
+
+export const statusAsaas = (s: string) => NOMES_STATUS_ASAAS[s] ?? s;
+export const tipoLancamentoAsaas = (t: string) => NOMES_TIPO_LANCAMENTO_ASAAS[t] ?? 'Outro lançamento';
+export const situacaoContaAsaas = (s: string | null | undefined) => (s ? (NOMES_SITUACAO_CONTA_ASAAS[s] ?? s) : '—');
+
+/** Nomes humanos dos jobs do worker (R2-19). Desconhecido: o nome técnico. */
+export const NOMES_JOBS: Record<string, string> = {
+  'fechar-liga': 'Fechamento da liga',
+  'resetar-vidas': 'Recarga das vidas',
+  'verificar-ofensivas': 'Conferência das ofensivas',
+  'enviar-lembretes': 'Lembretes de estudo',
+  'expirar-pix': 'Vencimento dos Pix',
+  'limpar-sessoes': 'Limpeza de sessões',
+  backup: 'Backup do banco',
+  'enviar-comunicacoes': 'Envio de comunicações',
+};
+
+export const nomeJob = (job: string) => NOMES_JOBS[job] ?? job;

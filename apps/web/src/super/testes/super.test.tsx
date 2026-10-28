@@ -6,7 +6,7 @@ import { BASE, ficha, IDS, pagamento, renderizarSuper, simularFetch } from './aj
 const lista = (itens: unknown[]) => ({ itens, total: itens.length, pagina: 1, porPagina: 20 });
 
 describe('Layout do /super', () => {
-  it('desktop: sidebar com marca, selo, menu, /admin e rodapé; recolhe para só ícones', async () => {
+  it('desktop: sidebar com marca, selo, menu (com Conteúdo) e rodapé; recolhe para só ícones', async () => {
     const usuario = userEvent.setup();
     simularFetch({ ...BASE, 'GET /super/equipe': { itens: [] } });
     const { container } = renderizarSuper('/super/equipe', 1280);
@@ -15,7 +15,13 @@ describe('Layout do /super', () => {
     for (const item of ['Visão geral', 'Pagamentos', 'Conta Asaas', 'Usuários', 'Equipe', 'Comunicação', 'Sistema']) {
       expect(within(menu).getByRole('link', { name: item })).toBeInTheDocument();
     }
-    expect(within(menu).getByRole('link', { name: /\/admin/ })).toHaveAttribute('href', '/admin');
+    // D24: o Conteúdo é um grupo do mesmo menu, com links da SPA (nada de /admin nem do app do aluno).
+    const conteudo = within(menu).getByRole('group', { name: 'Conteúdo' });
+    expect(within(conteudo).getByRole('link', { name: 'Questões' })).toHaveAttribute('href', '/super/conteudo/questoes');
+    expect(within(conteudo).getByRole('link', { name: 'Erros relatados' })).toHaveAttribute('href', '/super/conteudo/reports');
+    const hrefs = within(menu).getAllByRole('link').map((l) => l.getAttribute('href'));
+    expect(hrefs.some((h) => h?.startsWith('/admin') || h === '/aprender')).toBe(false);
+    expect(within(menu).queryByText(/Ver o app como aluno/)).not.toBeInTheDocument();
     expect(await within(menu).findByText('2FA ativo nesta sessão')).toBeInTheDocument();
     expect(within(menu).getByRole('button', { name: 'Sair' })).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: 'Navegação do superadmin' })).not.toBeInTheDocument();
@@ -57,6 +63,8 @@ describe('Layout do /super', () => {
     expect(within(folha).getByRole('link', { name: 'Equipe' })).toHaveAttribute('aria-current', 'page');
     expect(within(folha).getByRole('link', { name: 'Comunicação' })).toBeInTheDocument();
     expect(within(folha).getByRole('link', { name: 'Sistema' })).toBeInTheDocument();
+    // D24: a seção Conteúdo também está no "Mais".
+    expect(within(within(folha).getByRole('group', { name: 'Conteúdo' })).getByRole('link', { name: 'Questões' })).toHaveAttribute('href', '/super/conteudo/questoes');
     expect(within(folha).getByRole('button', { name: 'Sair' })).toBeInTheDocument();
     await usuario.keyboard('{Escape}');
     expect(screen.queryByRole('dialog', { name: 'Mais opções' })).not.toBeInTheDocument();
@@ -102,6 +110,7 @@ describe('Aprovação manual de pagamento', () => {
     const { chamadas } = simularFetch({
       ...BASE,
       [`GET /super/pagamentos/${IDS.pedido}`]: { pagamento: pagamento(), linhaDoTempo: [], webhooks: [] },
+      [`GET /super/usuarios/${IDS.usuario}`]: ficha(),
       // D24/RQ4: pela tela do pagamento, a aprovação é DESTE pedido.
       [`POST /super/pagamentos/${IDS.pedido}/aprovar-manual`]: {
         pedidoId: IDS.pedido,
@@ -138,7 +147,11 @@ describe('Aprovação manual de pagamento', () => {
 
   it('celular: o detalhe é uma tela empilhada com voltar e a aprovação abre em folha', async () => {
     const usuario = userEvent.setup();
-    simularFetch({ ...BASE, [`GET /super/pagamentos/${IDS.pedido}`]: { pagamento: pagamento(), linhaDoTempo: [], webhooks: [] } });
+    simularFetch({
+      ...BASE,
+      [`GET /super/pagamentos/${IDS.pedido}`]: { pagamento: pagamento(), linhaDoTempo: [], webhooks: [] },
+      [`GET /super/usuarios/${IDS.usuario}`]: ficha(),
+    });
     renderizarSuper(`/super/pagamentos/${IDS.pedido}`, 390);
     expect(await screen.findByRole('button', { name: 'Voltar' })).toBeInTheDocument();
     await usuario.click(await screen.findByRole('button', { name: 'Aprovar pagamento manual' }));

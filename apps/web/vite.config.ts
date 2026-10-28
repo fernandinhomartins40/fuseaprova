@@ -14,6 +14,36 @@ import { condicoesCliente, condicoesServidor } from '../../vitest.shared';
  *   com a API em VITE_API_URL (padrão https://www.fuseaprova.com.br).
  */
 
+/**
+ * S-27: o código do painel da equipe (src/admin, src/super e src/painel) não entra no precache
+ * da PWA do aluno. Os chunks são lazy; aqui anotamos, no fim do build, os arquivos JS que só têm
+ * módulos do painel e o CSS deles, e o `manifestTransforms` do Workbox tira esses arquivos da
+ * lista. No /super eles vêm da rede, como qualquer página do painel.
+ */
+const MODULO_PAINEL = /[\\/]src[\\/](admin|super|painel)[\\/]/;
+
+function arquivosDoPainel(): { plugin: Plugin; arquivos: Set<string> } {
+  const arquivos = new Set<string>();
+  return {
+    arquivos,
+    plugin: {
+      name: 'fuse-arquivos-do-painel',
+      apply: 'build',
+      generateBundle(_opcoes, bundle) {
+        arquivos.clear();
+        for (const saida of Object.values(bundle)) {
+          if (saida.type !== 'chunk' || saida.isEntry) continue;
+          const ids = saida.moduleIds.filter((id) => !id.startsWith('\0'));
+          if (!ids.length || !ids.every((id) => MODULO_PAINEL.test(id))) continue;
+          arquivos.add(saida.fileName);
+          const meta = (saida as { viteMetadata?: { importedCss?: Set<string> } }).viteMetadata;
+          for (const css of meta?.importedCss ?? []) arquivos.add(css);
+        }
+      },
+    },
+  };
+}
+
 /** Monta a API simulada (mock/servidor.ts) como middleware em /api. */
 function apiSimulada(): Plugin {
   return {
@@ -41,6 +71,7 @@ function apiSimulada(): Plugin {
 export default defineConfig(({ mode }) => {
   const mock = mode === 'mock';
   const app = mode === 'app';
+  const painel = arquivosDoPainel();
   return {
     // Literal no bundle: o Rollup descarta o código do outro alvo (app nativo × site).
     define: { __APP_NATIVO__: JSON.stringify(app) },
@@ -60,6 +91,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       mock ? apiSimulada() : null,
+      app ? null : painel.plugin,
       app
         ? null
         : VitePWA({
@@ -95,6 +127,13 @@ export default defineConfig(({ mode }) => {
               globPatterns: ['**/*.{js,css,html,woff2,webp,png,svg}'],
               // A landing (public/lp, servida pelo nginx em "/") fica fora do app offline.
               globIgnores: ['lp/**'],
+              // S-27: sem o código do painel da equipe (ver arquivosDoPainel).
+              manifestTransforms: [
+                (entradas) => ({
+                  manifest: entradas.filter((e) => !painel.arquivos.has(e.url.replace(/^\//, ''))),
+                  warnings: [],
+                }),
+              ],
               navigateFallback: '/index.html',
               // "/" é a landing: o SW não troca por index.html nem pelo índice do precache.
               navigateFallbackDenylist: [/^\/api\//, /^\/$/, /^\/lp\//],

@@ -53,7 +53,7 @@ describe('Editor de questão: publicar exige dica, explicação e revisão human
   it('bloqueia a publicação e lista o que falta, sem chamar a API', async () => {
     const usuario = userEvent.setup();
     const { chamadas } = simularFetch(rotas());
-    renderizarAdmin(`/admin/questoes/${IDS.q1}`);
+    renderizarAdmin(`/super/conteudo/questoes/${IDS.q1}`);
     await screen.findByRole('heading', { name: 'Editar questão' });
     await waitFor(() => expect(screen.getByLabelText('Assunto')).toHaveValue(IDS.crase));
 
@@ -71,7 +71,7 @@ describe('Editor de questão: publicar exige dica, explicação e revisão human
   it('publica quando tem dica, explicação, dica de bolso e revisão marcada', async () => {
     const usuario = userEvent.setup();
     const { chamadas } = simularFetch(rotas());
-    renderizarAdmin(`/admin/questoes/${IDS.q1}`);
+    renderizarAdmin(`/super/conteudo/questoes/${IDS.q1}`);
     await screen.findByRole('heading', { name: 'Editar questão' });
     await waitFor(() => expect(screen.getByLabelText('Assunto')).toHaveValue(IDS.crase));
 
@@ -98,7 +98,7 @@ describe('Editor de questão: publicar exige dica, explicação e revisão human
   it('valida campos obrigatórios em português ao criar', async () => {
     const usuario = userEvent.setup();
     const { chamadas } = simularFetch({ 'GET /admin/disciplinas': DISCIPLINAS, 'GET /admin/assuntos': ASSUNTOS });
-    renderizarAdmin('/admin/questoes/nova');
+    renderizarAdmin('/super/conteudo/questoes/nova');
     await usuario.click(await screen.findByRole('button', { name: 'Criar questão' }));
     expect(await screen.findByText('Escolha a disciplina.')).toBeInTheDocument();
     expect(screen.getByText('Informe o enunciado.')).toBeInTheDocument();
@@ -111,7 +111,7 @@ describe('Pré-visualização no formato da tela de Pergunta', () => {
   it('mostra chip de origem, balão e alternativas, e a correção ao verificar', async () => {
     const usuario = userEvent.setup();
     simularFetch(rotas(questao({ explicacao: 'Chegar **a** + **a** prefeitura.' })));
-    renderizarAdmin(`/admin/questoes/${IDS.q1}`);
+    renderizarAdmin(`/super/conteudo/questoes/${IDS.q1}`);
     const previa = await screen.findByRole('region', { name: 'Pré-visualização da tela de Pergunta' });
 
     expect(within(previa).getByTestId('chip-origem')).toHaveTextContent('Questão Fuse Aprova · estilo FAU');
@@ -164,7 +164,7 @@ describe('Pré-visualização no formato da tela de Pergunta', () => {
       [`GET /admin/provas/${IDS.concurso}`]: prova,
       'GET /admin/provas': { itens: [prova], total: 1, pagina: 1, porPagina: 30 },
     });
-    renderizarAdmin(`/admin/questoes/${IDS.q1}`);
+    renderizarAdmin(`/super/conteudo/questoes/${IDS.q1}`);
     const previa = await screen.findByRole('region', { name: 'Pré-visualização da tela de Pergunta' });
     await waitFor(() =>
       expect(within(previa).getByTestId('chip-origem')).toHaveTextContent('FAU-Unicentro · Prefeitura de Pitanga · 2023'),

@@ -1,11 +1,13 @@
 /**
- * Utilitários dos testes do admin: fetch simulado por rota e renderização em /admin/*.
+ * Utilitários dos testes da seção Conteúdo: fetch simulado por rota e renderização em
+ * /super/conteudo/* (D24: o painel único, com o papel admin, sem buscar o /me).
  */
 import '@testing-library/jest-dom/vitest';
 import { cleanup, render } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, vi } from 'vitest';
-import AdminRotas, { criarClienteAdmin } from '../rotas';
+import SuperRotas from '../../super/rotas';
+import { criarClienteAdmin } from '../rotas';
 
 afterEach(() => {
   cleanup();
@@ -69,7 +71,7 @@ export function renderizarAdmin(caminho: string) {
   return render(
     <MemoryRouter initialEntries={[caminho]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
-        <Route path="/admin/*" element={<AdminRotas cliente={cliente} />} />
+        <Route path="/super/*" element={<SuperRotas cliente={cliente} papel="admin" />} />
       </Routes>
     </MemoryRouter>,
   );
