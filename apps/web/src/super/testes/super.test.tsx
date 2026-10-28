@@ -32,7 +32,7 @@ describe('Layout do /super', () => {
     expect(screen.getByRole('navigation', { name: 'Você está em' })).toHaveTextContent('Superadmin');
 
     await usuario.click(within(menu).getByRole('button', { name: 'Recolher o menu' }));
-    expect(within(menu).getByRole('link', { name: 'Pagamentos' })).toHaveAttribute('data-dica', 'Pagamentos');
+    expect(within(menu).getByRole('link', { name: 'Pagamentos' })).toHaveAttribute('title', 'Pagamentos');
     expect(within(menu).getByRole('button', { name: 'Expandir o menu' })).toHaveAttribute('aria-pressed', 'true');
   });
 
@@ -41,7 +41,7 @@ describe('Layout do /super', () => {
     const { container } = renderizarSuper('/super/equipe', 900);
     expect(container.querySelector('[data-layout]')).toHaveAttribute('data-layout', 'tablet');
     const menu = screen.getByRole('navigation', { name: 'Menu do superadmin' });
-    expect(within(menu).getByRole('link', { name: 'Usuários' })).toHaveAttribute('data-dica', 'Usuários');
+    expect(within(menu).getByRole('link', { name: 'Usuários' })).toHaveAttribute('title', 'Usuários');
     expect(within(menu).queryByRole('button', { name: /Recolher|Expandir/ })).not.toBeInTheDocument();
   });
 

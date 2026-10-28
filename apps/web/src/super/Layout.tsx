@@ -297,7 +297,7 @@ export function Layout({
                 key={i.para}
                 to={caminho(i.para)}
                 end={i.fim ?? false}
-                data-dica={soIcones ? i.rotulo : undefined}
+                title={soIcones ? i.rotulo : undefined}
                 aria-label={soIcones ? i.rotulo : undefined}
                 className={({ isActive }) => juntarClasses(s.item, isActive && s.ativo)}
               >
@@ -309,7 +309,7 @@ export function Layout({
         ))}
         <div className={s.rodapeLateral}>
           <Rodape recolhida={soIcones} papel={papel} />
-          <button type="button" className={s.item} onClick={sair} data-dica={soIcones ? 'Sair' : undefined} aria-label={soIcones ? 'Sair' : undefined}>
+          <button type="button" className={s.item} onClick={sair} title={soIcones ? 'Sair' : undefined} aria-label={soIcones ? 'Sair' : undefined}>
             <Icone nome="sair" />
             <span className={s.rotulo}>Sair</span>
           </button>
@@ -320,7 +320,7 @@ export function Layout({
               onClick={alternar}
               aria-pressed={recolhida}
               aria-label={recolhida ? 'Expandir o menu' : 'Recolher o menu'}
-              data-dica={recolhida ? 'Expandir o menu' : undefined}
+              title={recolhida ? 'Expandir o menu' : undefined}
             >
               <Icone nome={recolhida ? 'expandir' : 'recolher'} />
               <span className={s.rotulo}>Recolher</span>

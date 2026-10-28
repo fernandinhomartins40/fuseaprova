@@ -80,8 +80,22 @@
   flex-direction: column;
   gap: 2px;
   padding: 16px 12px;
+  overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+}
+
+/* Só ícones (72 px): sem barras de rolagem; a lista continua rolando pela roda e pelo toque.
+   A dica de cada ícone é o `title` nativo (uma dica em CSS sairia da caixa e criava rolagem). */
+.recolhida .lateral,
+.tablet .lateral {
+  padding-inline: 8px;
+  scrollbar-width: none;
+}
+
+.recolhida .lateral::-webkit-scrollbar,
+.tablet .lateral::-webkit-scrollbar {
+  display: none;
 }
 
 .marca {
@@ -199,24 +213,6 @@
   padding: 8px;
 }
 
-.recolhida .item[data-dica]:hover::after,
-.recolhida .item[data-dica]:focus-visible::after,
-.tablet .item[data-dica]:hover::after,
-.tablet .item[data-dica]:focus-visible::after {
-  content: attr(data-dica);
-  position: absolute;
-  left: calc(100% + 10px);
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--adm-texto);
-  color: var(--adm-branco);
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-size: 13px;
-  white-space: nowrap;
-  z-index: 20;
-  pointer-events: none;
-}
 
 .rodapeLateral {
   margin-top: auto;

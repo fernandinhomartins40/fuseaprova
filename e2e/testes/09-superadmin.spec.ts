@@ -72,6 +72,11 @@ for (const [nome, viewport] of [
         // Recolhe a sidebar para só ícones e expande de novo.
         await menu.getByRole('button', { name: 'Recolher o menu' }).click();
         await expect(menu.getByRole('button', { name: 'Expandir o menu' })).toBeVisible();
+        // Recolhida, sem rolagem horizontal nem barra visível ocupando os 72 px (pedido do dono).
+        await page.mouse.move(30, 300);
+        const larguras = await menu.evaluate((n) => ({ rola: n.scrollWidth, caixa: n.clientWidth, total: (n as HTMLElement).offsetWidth }));
+        expect(larguras.rola).toBeLessThanOrEqual(larguras.caixa);
+        expect(larguras.total - larguras.caixa).toBe(0);
         await menu.getByRole('button', { name: 'Expandir o menu' }).click();
         await menu.getByRole('link', { name: 'Pagamentos', exact: true }).click();
         await expect(page).toHaveURL(/\/super\/pagamentos$/);
