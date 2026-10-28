@@ -333,6 +333,10 @@ export const usuarios = pgTable(
     index('usuarios_lembrete_idx')
       .on(t.lembreteHora)
       .where(sql`${t.notificacoes} = true`),
+    // S-22: lista e CSV do /super ordenam por criado_em; a busca usa ilike '%…%' (pg_trgm).
+    index('usuarios_criado_idx').on(t.criadoEm),
+    index('usuarios_nome_trgm_idx').using('gin', t.nome.op('gin_trgm_ops')),
+    index('usuarios_email_trgm_idx').using('gin', t.email.op('gin_trgm_ops')),
     check('usuarios_meta_diaria_ck', sql`${t.metaDiaria} between 1 and 3`),
     check('usuarios_vidas_ck', sql`${t.vidas} between 0 and 5`),
     check('usuarios_protetores_ck', sql`${t.protetores} between 0 and 2`),
@@ -557,25 +561,32 @@ export const pedidos = pgTable(
     index('pedidos_pago_em_idx').on(t.pagoEm),
     index('pedidos_criado_em_idx').on(t.criadoEm),
     index('pedidos_cupom_idx').on(t.cupomId),
+    // S-22: reembolsos por período no financeiro.
+    index('pedidos_estornado_em_idx').on(t.estornadoEm),
   ],
 );
 
-export const webhookEventos = pgTable('webhook_eventos', {
-  /** id do evento no Asaas */
-  id: text('id').primaryKey(),
-  evento: text('evento').notNull(),
-  corpo: jsonb('corpo').notNull(),
-  recebidoEm: ts('recebido_em').notNull().defaultNow(),
-  processadoEm: ts('processado_em'),
-  /** extra */
-  erro: text('erro'),
-  /** extra D13: quantas vezes o evento foi processado (recebido de novo ou reprocessado). */
-  tentativas: integer('tentativas').notNull().default(1),
-  /** extra D13: o que o processamento fez (pago, estornado, vencido, ignorado, sem_pedido). */
-  resultado: text('resultado'),
-  /** extra D13 */
-  ultimaTentativaEm: ts('ultima_tentativa_em'),
-});
+export const webhookEventos = pgTable(
+  'webhook_eventos',
+  {
+    /** id do evento no Asaas */
+    id: text('id').primaryKey(),
+    evento: text('evento').notNull(),
+    corpo: jsonb('corpo').notNull(),
+    recebidoEm: ts('recebido_em').notNull().defaultNow(),
+    processadoEm: ts('processado_em'),
+    /** extra */
+    erro: text('erro'),
+    /** extra D13: quantas vezes o evento foi processado (recebido de novo ou reprocessado). */
+    tentativas: integer('tentativas').notNull().default(1),
+    /** extra D13: o que o processamento fez (pago, estornado, vencido, ignorado, sem_pedido). */
+    resultado: text('resultado'),
+    /** extra D13 */
+    ultimaTentativaEm: ts('ultima_tentativa_em'),
+  },
+  // S-22 (R3-15): linha do tempo e lista de webhooks filtram pelo id da cobrança no corpo.
+  (t) => [index('webhook_eventos_payment_idx').on(sql`(${t.corpo} -> 'payment' ->> 'id')`)],
+);
 
 /* ------------------------------------------------------------------ estudo */
 
@@ -663,6 +674,10 @@ export const tentativas = pgTable(
       t.respondidaEm.desc(),
     ),
     index('tentativas_sessao_idx').on(t.sessaoEstudoId),
+    // S-22 (R3-15): DAU/WAU/MAU (faixa de respondida_em, só o usuario_id: index-only scan) e
+    // "última atividade"/inativos por aluno.
+    index('tentativas_respondida_usuario_idx').on(t.respondidaEm, t.usuarioId),
+    index('tentativas_usuario_respondida_idx').on(t.usuarioId, t.respondidaEm.desc()),
   ],
 );
 
@@ -883,6 +898,8 @@ export const auditoria = pgTable(
     index('auditoria_criado_idx').on(t.criadoEm),
     index('auditoria_acao_idx').on(t.acao),
     index('auditoria_alvo_idx').on(t.alvo),
+    // S-22: busca por alvo com ilike '%…%' (pg_trgm).
+    index('auditoria_alvo_trgm_idx').using('gin', t.alvo.op('gin_trgm_ops')),
   ],
 );
 
@@ -992,6 +1009,11 @@ export const comunicacoes = pgTable(
     criadoEm: criadoEm(),
     iniciadoEm: ts('iniciado_em'),
     concluidoEm: ts('concluido_em'),
+    /** S-17: chave enviada pela tela; o 2º clique devolve a mesma comunicação. */
+    chaveIdempotencia: uuid('chave_idempotencia').unique(),
+    /** S-17: o disjuntor pausou a fila (SMTP fora); os envios continuam pendentes. */
+    pausadaMotivo: text('pausada_motivo'),
+    pausadaEm: ts('pausada_em'),
   },
   (t) => [index('comunicacoes_status_idx').on(t.status, t.criadoEm)],
 );
@@ -1009,10 +1031,55 @@ export const comunicacoesEnvios = pgTable(
     status: statusEnvioComunicacaoEnum('status').notNull().default('pendente'),
     enviadoEm: ts('enviado_em'),
     erro: text('erro'),
+    /** S-17: tentativas com falha temporária do SMTP e quando tentar de novo. */
+    tentativas: integer('tentativas').notNull().default(0),
+    proximaTentativaEm: ts('proxima_tentativa_em'),
   },
   (t) => [
     unique('comunicacoes_envios_unico').on(t.comunicacaoId, t.usuarioId),
     index('comunicacoes_envios_status_idx').on(t.comunicacaoId, t.status),
     index('comunicacoes_envios_usuario_idx').on(t.usuarioId, t.enviadoEm),
   ],
+);
+
+/* ------------------------------------------- Lote 2 da auditoria do painel */
+
+/**
+ * S-09: cada resposta 5xx da API (rota do registro, método, código e hora), sem dados pessoais.
+ * Alimenta o /super/sistema e o alerta de rajada; o job de limpeza apaga as antigas.
+ */
+export const errosApi = pgTable(
+  'erros_api',
+  {
+    id: id(),
+    rota: text('rota').notNull(),
+    metodo: text('metodo').notNull(),
+    status: smallint('status').notNull(),
+    criadoEm: criadoEm(),
+  },
+  (t) => [index('erros_api_criado_idx').on(t.criadoEm)],
+);
+
+/**
+ * S-09: estado pequeno da operação, chave → valor. Guarda o sinal de vida do worker
+ * (`worker:sinal`) e quando cada alerta foi enviado (`alerta:<id>`), para não repetir.
+ */
+export const estadoSistema = pgTable('estado_sistema', {
+  chave: text('chave').primaryKey(),
+  valor: jsonb('valor').$type<Record<string, unknown>>().notNull().default({}),
+  atualizadoEm: ts('atualizado_em').notNull().defaultNow(),
+});
+
+/**
+ * S-16: contador persistente de rate limit (janela fixa), que sobrevive a deploy e reinício.
+ * `chave` = "<balde>:<quem>" (ex.: "2fa:u:<id>"). Linhas vencidas são apagadas pela limpeza.
+ */
+export const limitesContagem = pgTable(
+  'limites_contagem',
+  {
+    chave: text('chave').primaryKey(),
+    n: integer('n').notNull().default(0),
+    janelaFim: ts('janela_fim').notNull(),
+  },
+  (t) => [index('limites_contagem_fim_idx').on(t.janelaFim)],
 );

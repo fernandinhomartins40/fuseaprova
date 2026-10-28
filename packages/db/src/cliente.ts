@@ -10,6 +10,7 @@
  */
 import { fileURLToPath } from 'node:url';
 import { PGlite } from '@electric-sql/pglite';
+import { pg_trgm } from '@electric-sql/pglite/contrib/pg_trgm';
 import type { ExtractTablesWithRelations } from 'drizzle-orm';
 import type { PgDatabase, PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core';
 import { drizzle as drizzlePglite } from 'drizzle-orm/pglite';
@@ -71,7 +72,8 @@ export function conectar(url = process.env.DATABASE_URL, opcoes: OpcoesConexao =
 
 /** PGlite em memória (sem `pasta`) ou persistido numa pasta. */
 export function conectarPglite(pasta?: string, opcoes: OpcoesConexao = {}): Conexao {
-  const pg = new PGlite(pasta);
+  // pg_trgm (migração 0007): os índices trigram da busca do /super existem também no PGlite.
+  const pg = new PGlite({ ...(pasta ? { dataDir: pasta } : {}), extensions: { pg_trgm } });
   const db = drizzlePglite(pg, { schema, logger: opcoes.log ?? false }) as unknown as BancoDados;
   return { tipo: 'pglite', db, pg, fechar: () => pg.close() };
 }

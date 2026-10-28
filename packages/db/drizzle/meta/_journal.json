@@ -50,6 +50,13 @@
       "when": 1793196378035,
       "tag": "0006_precos_cupons",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793209654604,
+      "tag": "0007_operacao_alertas_indices",
+      "breakpoints": true
     }
   ]
 }
