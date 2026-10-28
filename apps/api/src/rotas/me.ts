@@ -1,9 +1,10 @@
 /**
- * /me: perfil, preferências, senha, LGPD (exportar/excluir) e loja de protetores.
+ * /me: perfil, preferências, senha, LGPD (exportar/excluir) e loja de protetores. D24: exportar,
+ * excluir e os concursos são do aluno (guarda `aluno`); a conta da equipe é excluída pelo superadmin.
  */
 import { and, eq } from 'drizzle-orm';
 import { schema } from '@fuse/db';
-import { comprarProtetor } from '@fuse/shared';
+import { comprarProtetor, podeEstudar } from '@fuse/shared';
 import type { Registrador } from '../http/registrar.js';
 import { falha } from '../http/erros.js';
 import { limparCookieSessao } from '../http/cookies.js';
@@ -39,6 +40,8 @@ export function rotasMe(r: Registrador): void {
 
   r.rota('meAtualizar', async ({ usuario, corpo, deps, agora }) => {
     const set: Partial<typeof usuarios.$inferInsert> = {};
+    // D24: a equipe não estuda, então não escolhe concurso nem cargo.
+    if (corpo.cargoId !== undefined && !podeEstudar(usuario.papel)) throw falha('proibido', 'Contas da equipe não escolhem cargo.');
     if (corpo.cargoId !== undefined) {
       const concurso = await concursoDoUsuario(deps.db, usuario);
       const [cargo] = await deps.db

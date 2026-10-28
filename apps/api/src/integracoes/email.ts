@@ -155,6 +155,8 @@ ${botao(d.link, 'DEFINIR MINHA SENHA')}
 <p>O link vale por ${d.validadeHoras} horas. Depois de definir a senha, entre em ${esc(d.entrar)}.</p>
 <p style="font-size:14px;color:#5b6b6c">Se você não esperava este convite, ignore este e-mail.</p>`,
   );
-  const texto = `Olá, ${nome}. Você recebeu acesso como ${d.papel} no painel do Fuse Aprova. Defina sua senha (o link vale por ${d.validadeHoras} horas): ${d.link}`;
+  const texto = `Olá, ${nome}. Você recebeu acesso como ${d.papel} no painel do Fuse Aprova. Defina sua senha (o link vale por ${d.validadeHoras} horas): ${d.link}
+
+Depois, entre em ${d.entrar}`;
   return { para: d.email, assunto: 'Fuse Aprova: convite para a equipe', html, texto };
 }

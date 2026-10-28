@@ -14,13 +14,13 @@ import rateLimit from '@fastify/rate-limit';
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastify';
 import { sql } from 'drizzle-orm';
 import type { BancoDados } from '@fuse/db';
-import { ehAdmin, rngPadrao, type Rng } from '@fuse/shared';
+import { podeEstudar, podeGerirConteudo, rngPadrao, type Rng } from '@fuse/shared';
 import { NOME_COOKIE_SESSAO, erroApi, instalarMensagensPtBr } from '@fuse/shared/api';
 import { lerConfig, type Config } from './config.js';
 import { relogioSistema, type Deps, type Relogio, type UsuarioSessao } from './contexto.js';
 import { definirCookieSessao } from './http/cookies.js';
 import { ErroHttp } from './http/erros.js';
-import { conferirRegistro, criarRegistrador, exigirSuperadmin } from './http/registrar.js';
+import { conferirRegistro, criarRegistrador, exigirConteudo, exigirSuperadmin } from './http/registrar.js';
 import { criarClienteAsaasHttp, type ClienteAsaas } from './integracoes/asaas.js';
 import { criarMailerPadrao, type Mailer, type MensagemEmail } from './integracoes/email.js';
 import { rotasAdminConteudo } from './rotas/admin/conteudo.js';
@@ -170,11 +170,14 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
     }
   });
 
-  // Imagens dos enunciados (upload do admin). Só para quem tem acesso ou é admin.
+  // Imagens dos enunciados (upload do admin). D24: para o aluno com acesso e para a equipe de
+  // conteúdo (admin, ou superadmin com 2FA), que precisa vê-las na curadoria.
   app.get<{ Params: { nome: string } }>('/api/arquivos/uploads/:nome', async (req, reply) => {
     const u = req.usuario;
     if (!u) throw new ErroHttp('nao_autenticado');
-    if (!u.acesso && !ehAdmin(u.papel)) throw new ErroHttp('sem_acesso');
+    if (podeGerirConteudo(u.papel)) exigirConteudo(u);
+    else if (!podeEstudar(u.papel)) throw new ErroHttp('proibido');
+    else if (!u.acesso) throw new ErroHttp('sem_acesso');
     const nome = req.params.nome;
     if (!/^[0-9a-f-]{36}\.(png|jpg|webp|gif)$/.test(nome)) throw new ErroHttp('nao_encontrado');
     try {

@@ -4,7 +4,8 @@
  *   pnpm --filter api cli admin:criar --email dono@x.com --nome "Luiz Oliveira" [--senha …]
  *
  * Sem --senha (e sem ADMIN_SENHA no ambiente), pede a senha no terminal sem eco.
- * O admin é criado com acesso liberado (é o dono). Se o e-mail já existe, vira admin.
+ * O admin entra pelo /admin/entrar e cuida do conteúdo; a equipe não estuda, então a conta não
+ * ganha acesso pago (D24). Se o e-mail já existe, vira admin.
  *
  * D13:
  *   pnpm --filter @fuse/api cli superadmin:criar --email dono@x.com [--nome "Luiz Oliveira"] [--senha …]
@@ -80,13 +81,12 @@ async function adminCriar(args: string[]): Promise<void> {
   const conexao = conectar(process.env.DATABASE_URL, { max: 1 });
   try {
     if (conexao.tipo === 'pglite') await migrar(conexao);
-    const { usuarios, auditoria, concursos } = schema;
+    const { usuarios, auditoria } = schema;
     const senhaHash = await gerarHashSenha(senha);
-    const [concurso] = await conexao.db.select({ id: concursos.id }).from(concursos).where(eq(concursos.ativo, true)).limit(1);
     const [existente] = await conexao.db.select().from(usuarios).where(eq(usuarios.email, email));
     let id: string;
     if (existente) {
-      await conexao.db.update(usuarios).set({ papel: 'admin', acesso: true, senhaHash, nome }).where(eq(usuarios.id, existente.id));
+      await conexao.db.update(usuarios).set({ papel: 'admin', senhaHash, nome }).where(eq(usuarios.id, existente.id));
       id = existente.id;
       console.info(`Usuário ${email} promovido a admin.`);
     } else {
@@ -97,8 +97,6 @@ async function adminCriar(args: string[]): Promise<void> {
           email,
           senhaHash,
           papel: 'admin',
-          acesso: true,
-          concursoId: concurso?.id ?? null,
           onboardingConcluidoEm: new Date(),
           aceiteTermosEm: new Date(),
           versaoTermos: 'admin',

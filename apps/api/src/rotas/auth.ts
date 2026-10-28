@@ -1,10 +1,12 @@
 /**
- * /auth/* (PRD 5.2, 5.4, 5.5, 8.2).
+ * /auth/* (PRD 5.2, 5.4, 5.5, 8.2). D24: três logins (aluno, conteúdo e super), uma só
+ * recuperação de senha; a redefinição devolve a área da conta para a web ir ao login certo.
  */
 import { createHash } from 'node:crypto';
 import { and, eq, gt, isNull, or } from 'drizzle-orm';
 import type { FastifyRequest } from 'fastify';
 import { schema } from '@fuse/db';
+import { AREA_DO_PAPEL, type AreaConta, type Papel } from '@fuse/shared';
 import {
   MENSAGEM_RECUPERAR,
   MENSAGENS_CADASTRO,
@@ -15,7 +17,7 @@ import {
 import type { Deps, Usuario } from '../contexto.js';
 import { definirCookieSessao, limparCookieSessao } from '../http/cookies.js';
 import { ehViolacaoUnica, falha } from '../http/erros.js';
-import type { Registrador } from '../http/registrar.js';
+import type { Contexto, Registrador } from '../http/registrar.js';
 import { emailRecuperacao } from '../integracoes/email.js';
 import { conferirSenha, gerarHashSenha } from '../servicos/senhas.js';
 import { abrirSessao, encerrarSessao, encerrarSessoesDoUsuario, gerarToken } from '../servicos/sessoes.js';
@@ -26,7 +28,7 @@ const { usuarios, redefinicoesSenha, usuariosConcursos } = schema;
 export function proximoPasso(u: Pick<Usuario, 'papel' | 'acesso' | 'onboardingConcluidoEm'>): ProximoPasso {
   // D13: o superadmin sempre passa pelo 2FA (configurar ou digitar o código) ao entrar.
   if (u.papel === 'superadmin') return 'dois_fatores';
-  if (u.papel === 'admin') return 'admin';
+  if (u.papel === 'admin') return 'conteudo';
   if (!u.acesso) return 'pagamento';
   if (!u.onboardingConcluidoEm) return 'onboarding';
   return 'trilha';
@@ -36,8 +38,15 @@ export function respostaSessao(u: Usuario): SessaoResposta {
   return {
     usuario: { id: u.id, nome: u.nome, email: u.email, papel: u.papel, acesso: u.acesso },
     proximo: proximoPasso(u),
+    area: AREA_DO_PAPEL[u.papel],
   };
 }
+
+/** D24: cada portal aceita um papel só. */
+const PAPEL_DO_PORTAL = { aluno: 'aluno', conteudo: 'admin', super: 'superadmin' } as const satisfies Record<AreaConta, Papel>;
+
+/** D24: limite por e-mail, somado ao balde por IP dos três logins (definido no registro). */
+const LIMITE_LOGIN_EMAIL = { max: 10, janelaMs: 15 * 60_000 };
 
 export async function iniciarSessao(
   deps: Deps,
@@ -105,18 +114,30 @@ export function rotasAuth(r: Registrador): void {
     return respostaSessao(novo);
   });
 
-  r.rota('authLogin', async ({ corpo, deps, req, reply, agora }) => {
+  /**
+   * D24: um login por portal. A senha é conferida SEMPRE (mesmo tempo com ou sem conta), e uma
+   * conta de outro papel recebe exatamente a resposta de credenciais inválidas: o portal errado
+   * não revela que o e-mail existe nem o papel dele, e não abre sessão.
+   */
+  const entrar = (area: AreaConta) => async (ctx: Contexto<'authLogin'>) => {
+    const { corpo, deps, req, reply, agora } = ctx;
+    ctx.limitar(`login:email:${corpo.email}`, LIMITE_LOGIN_EMAIL.max, LIMITE_LOGIN_EMAIL.janelaMs);
     const [u] = await deps.db
       .select()
       .from(usuarios)
       .where(and(eq(usuarios.email, corpo.email), isNull(usuarios.excluidoEm)))
       .limit(1);
     const ok = await conferirSenha(u?.senhaHash, corpo.senha);
-    if (!u || !ok) throw falha('credenciais_invalidas');
+    if (!u || !ok || u.papel !== PAPEL_DO_PORTAL[area]) throw falha('credenciais_invalidas');
     if (u.bloqueadoEm) throw falha('conta_bloqueada');
     await iniciarSessao(deps, req, reply, u.id, agora, { superadmin: u.papel === 'superadmin' });
     return respostaSessao(u);
-  });
+  };
+  // Os três têm o mesmo contrato (LoginEntrada → SessaoResposta).
+  type CtxLogin = Contexto<'authLogin'>;
+  r.rota('authLogin', entrar('aluno'));
+  r.rota('authLoginConteudo', (ctx) => entrar('conteudo')(ctx as unknown as CtxLogin));
+  r.rota('authLoginSuper', (ctx) => entrar('super')(ctx as unknown as CtxLogin));
 
   r.rota('authSair', async ({ usuario, deps, reply }) => {
     await encerrarSessao(deps.db, usuario.sessaoId);

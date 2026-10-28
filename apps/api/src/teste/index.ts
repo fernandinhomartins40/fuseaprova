@@ -122,6 +122,7 @@ export async function criarAmbienteTeste(o: OpcoesAmbienteTeste = {}) {
     return a;
   }
 
+  /** Admin de conteúdo (D24): sem acesso de estudo, entra pelo portal da equipe de conteúdo. */
   async function admin(): Promise<Aluno> {
     const email = `admin${++contador}@teste.com`;
     const senha = 'senha-admin-123';
@@ -130,9 +131,9 @@ export async function criarAmbienteTeste(o: OpcoesAmbienteTeste = {}) {
       email,
       senhaHash: await gerarHashSenha(senha),
       papel: 'admin',
-      acesso: true,
     });
-    const r = await chamar('authLogin', { corpo: { email, senha } });
+    const r = await chamar('authLoginConteudo', { corpo: { email, senha } });
+    if (r.statusCode !== 200) throw new Error(`login do admin falhou: ${r.statusCode} ${r.body}`);
     const [u] = await banco.db.select().from(schema.usuarios).where(eq(schema.usuarios.email, email));
     return { id: u!.id, email, senha, cookie: cookieDe(r)! };
   }
@@ -140,15 +141,17 @@ export async function criarAmbienteTeste(o: OpcoesAmbienteTeste = {}) {
   /**
    * D13: superadmin logado. Com `doisFatores` (padrão), configura o TOTP e confirma a sessão.
    * `codigo()` gera o código do instante do relógio de teste (avance 30 s entre dois usos).
+   * D24: sem acesso de estudo; entra pelo portal do superadmin.
    */
   async function superadmin(o: { doisFatores?: boolean; email?: string } = {}) {
     const email = o.email ?? `super${++contador}@teste.com`;
     const senha = 'senha-super-forte-123';
     const [u] = await banco.db
       .insert(schema.usuarios)
-      .values({ nome: 'Dono Superadmin', email, senhaHash: await gerarHashSenha(senha), papel: 'superadmin', acesso: true })
+      .values({ nome: 'Dono Superadmin', email, senhaHash: await gerarHashSenha(senha), papel: 'superadmin' })
       .returning();
-    const r = await chamar('authLogin', { corpo: { email, senha } });
+    const r = await chamar('authLoginSuper', { corpo: { email, senha } });
+    if (r.statusCode !== 200) throw new Error(`login do superadmin falhou: ${r.statusCode} ${r.body}`);
     const cookie = cookieDe(r)!;
     let segredo = '';
     const codigo = () => gerarCodigoTotp(segredo, relogio.agora());
