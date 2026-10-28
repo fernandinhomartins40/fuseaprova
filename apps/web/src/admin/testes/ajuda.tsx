@@ -19,6 +19,8 @@ export interface Chamada {
   caminho: string;
   query: URLSearchParams;
   corpo: unknown;
+  /** Cabeçalhos da requisição, em minúsculas. */
+  cabecalhos: Record<string, string>;
 }
 
 type Resposta = { status?: number; corpo?: unknown } | unknown;
@@ -36,7 +38,8 @@ export function simularFetch(rotas: Record<string, Manipulador | unknown>) {
     const caminho = url.pathname.replace(/^\/api/, '');
     let corpo: unknown = undefined;
     if (typeof init?.body === 'string') corpo = JSON.parse(init.body);
-    const chamada = { metodo, caminho, query: url.searchParams, corpo };
+    const cabecalhos = Object.fromEntries(Object.entries((init?.headers ?? {}) as Record<string, string>).map(([k, v]) => [k.toLowerCase(), v]));
+    const chamada = { metodo, caminho, query: url.searchParams, corpo, cabecalhos };
     chamadas.push(chamada);
     const chave = Object.keys(rotas).find((k) => {
       const [m, p] = k.split(' ');

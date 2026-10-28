@@ -3,17 +3,20 @@
  * configurações do produto (suporte, manutenção, aviso, aviso do edital) e os códigos de
  * recuperação do 2FA da própria conta.
  */
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatarReais } from '@fuse/shared';
-import type { ConfiguracoesProduto } from '@fuse/shared/api';
-import { api, camposDoErro, mensagemDeErro } from '../../admin/api';
+import type { ConfiguracoesProduto, EstadoIndicador, ExecucaoJob, SistemaResposta } from '@fuse/shared/api';
+import { api, camposDoErro, ErroAdminApi, mensagemDeErro } from '../../admin/api';
 import { Alerta, Botao, Cartao, CampoArea, CampoSelecao, CampoTexto, Consulta, Marcar, Selo, Tabela, estilos as a } from '../../admin/componentes/ui';
 import { dataHora, numero } from '../../admin/util';
-import { AcaoConfirmada } from '../acoes';
+import { AcaoConfirmada, textoDoErro } from '../acoes';
 import { BotaoAtualizar, CartaoLinha, Cartoes, Kpi, Pagina, estilosSuper as s, useCelular, useReconfirmacao } from '../componentes';
-import { caminho } from '../util';
+import { useSegundoPlano } from '../segundoPlano';
+import { caminho, nomeJob, porcentagem } from '../util';
+
+const CHAVE_SISTEMA = ['super', 'sistema'] as const;
 
 function duracao(segundos: number): string {
   const d = Math.floor(segundos / 86400);
@@ -27,22 +30,149 @@ function bytes(n: number | null): string {
   return n > 1e9 ? `${(n / 1e9).toFixed(1)} GB` : `${Math.round(n / 1e6)} MB`;
 }
 
-function Saude() {
+const ROTULO_ESTADO: Record<EstadoIndicador, string> = {
+  ok: 'OK',
+  atencao: 'Atenção',
+  falhou: 'Falhou',
+  nao_testado: 'Não testado',
+  nao_configurado: 'Não configurado',
+};
+const TOM_ESTADO: Record<EstadoIndicador, 'sucesso' | 'aviso' | 'erro' | 'neutro'> = {
+  ok: 'sucesso',
+  atencao: 'aviso',
+  falhou: 'erro',
+  nao_testado: 'neutro',
+  nao_configurado: 'neutro',
+};
+const ROTULO_JOB: Record<ExecucaoJob['estado'], string> = { ok: 'OK', atrasado: 'Atrasado', falhou: 'Falhou', nunca_rodou: 'Nunca rodou' };
+const TOM_JOB: Record<ExecucaoJob['estado'], 'sucesso' | 'aviso' | 'erro' | 'neutro'> = { ok: 'sucesso', atrasado: 'aviso', falhou: 'erro', nunca_rodou: 'neutro' };
+
+/** O estado vem sempre da API: "OK" só aparece quando ela diz `ok`. */
+function Estado({ e }: { e: EstadoIndicador }) {
+  return <Selo tom={TOM_ESTADO[e]}>{ROTULO_ESTADO[e]}</Selo>;
+}
+
+function testado(em: string | null | undefined): string {
+  return em ? `testado ${dataHora(em)}` : 'ainda não testado';
+}
+
+function Resumo({ r }: { r: SistemaResposta['resumo'] }) {
+  if (r.estado === 'ok' && !r.problemas.length) return <Alerta tom="sucesso">Tudo certo: nenhum problema encontrado.</Alerta>;
+  return (
+    <Alerta tom={r.estado === 'falhou' ? 'erro' : 'aviso'}>
+      <strong>{r.estado === 'falhou' ? 'Há falhas no sistema' : 'Atenção'}</strong>
+      {r.problemas.length ? (
+        <ul className={a.lista} aria-label="Problemas">
+          {r.problemas.map((p) => (
+            <li key={p}>{p}</li>
+          ))}
+        </ul>
+      ) : null}
+    </Alerta>
+  );
+}
+
+function SituacaoJob({ j }: { j: ExecucaoJob }) {
+  return (
+    <>
+      <Selo tom={TOM_JOB[j.estado]}>{ROTULO_JOB[j.estado]}</Selo>
+      {j.ultima && j.ultima.ok === null ? <div className={a.suave}>Rodando agora</div> : null}
+      {j.ultima?.erro ? <div style={{ color: 'var(--adm-erro)' }}>{j.ultima.erro}</div> : null}
+    </>
+  );
+}
+
+const nomeDoJob = (j: ExecucaoJob) => j.nome || nomeJob(j.job);
+
+/** 503 `banco_indisponivel`: a tela diz qual peça caiu, em vez do erro genérico. */
+function BancoFora({ erro, tentar }: { erro: unknown; tentar: () => void }) {
+  return (
+    <>
+      <Alerta tom="erro">
+        <strong>Há falhas no sistema</strong>
+        <div>{mensagemDeErro(erro)}</div>
+      </Alerta>
+      <section className={s.kpis} aria-label="Saúde do sistema">
+        <Kpi rotulo="Banco" valor={<Estado e="falhou" />} detalhe="O banco de dados não está respondendo." testId="kpi-banco" />
+      </section>
+      <div className={a.acoes}>
+        <Botao onClick={tentar}>Tentar de novo</Botao>
+      </div>
+    </>
+  );
+}
+
+function Saude({ origem }: { origem: ReturnType<typeof useSegundoPlano> }) {
   const celular = useCelular();
-  const consulta = useQuery({ queryKey: ['super', 'sistema'], queryFn: () => api('superSistema'), refetchInterval: 60_000 });
+  const consulta = useQuery({
+    queryKey: CHAVE_SISTEMA,
+    queryFn: () => api('superSistema', { segundoPlano: origem.automatica() }),
+    refetchInterval: 60_000,
+  });
+  const erro = consulta.error;
+  if (erro instanceof ErroAdminApi && erro.codigo === 'banco_indisponivel') {
+    return <BancoFora erro={erro} tentar={() => void origem.atualizar()} />;
+  }
   return (
     <Consulta consulta={consulta}>
       {(d) => (
         <>
+          {consulta.isError ? (
+            <Alerta tom="aviso">
+              Não foi possível atualizar agora ({mensagemDeErro(consulta.error)}). Os dados abaixo são de {dataHora(d.geradoEm)}.
+            </Alerta>
+          ) : null}
+          <Resumo r={d.resumo} />
           <section className={s.kpis} aria-label="Saúde do sistema">
             <Kpi rotulo="API" valor={d.api.versao} detalhe={`${d.api.ambiente} · no ar há ${duracao(d.api.uptimeS)} · ${d.api.memoriaMb} MB`} />
-            <Kpi rotulo="Banco" valor={d.banco.ok ? 'OK' : 'Falhou'} detalhe={`${bytes(d.banco.tamanhoBytes)} · ${numero(d.banco.conexoes)}/${numero(d.banco.maxConexoes)} conexões`} />
-            <Kpi rotulo="Backup" valor={d.backup.ultimoJobOk === false ? 'Falhou' : d.backup.ultimo ? 'OK' : '—'} detalhe={d.backup.ultimo ?? d.backup.aviso ?? d.backup.fonte} />
-            <Kpi rotulo="E-mail (SMTP)" valor={d.smtp.configurado ? 'Configurado' : 'Ausente'} detalhe={d.smtp.host ?? undefined} />
-            <Kpi rotulo="Asaas" valor={d.asaas.chaveConfigurada ? 'Configurado' : 'Sem chave'} detalhe={d.asaas.ambiente} />
-            <Kpi rotulo="Push" valor={d.push.configurado ? 'Configurado' : 'Ausente'} detalhe={`Preço: ${formatarReais(d.precoCentavos)}`} />
+            <Kpi
+              rotulo="Banco"
+              testId="kpi-banco"
+              valor={<Estado e={d.banco.ok ? 'ok' : 'falhou'} />}
+              detalhe={
+                d.banco.ok
+                  ? `${bytes(d.banco.tamanhoBytes)} · ${numero(d.banco.conexoes)}/${numero(d.banco.maxConexoes)} conexões`
+                  : (d.banco.erro ?? 'O banco não respondeu.')
+              }
+            />
+            <Kpi
+              rotulo="Worker"
+              testId="kpi-worker"
+              valor={
+                d.worker.parado ? <Selo tom="erro">Parado</Selo> : d.worker.ultimoSinalEm ? <Selo tom="sucesso">Ativo</Selo> : <Selo tom="neutro">Sem sinal</Selo>
+              }
+              detalhe={`último sinal ${dataHora(d.worker.ultimoSinalEm)}${d.worker.versao ? ` · versão ${d.worker.versao}` : ''}`}
+            />
+            <Kpi
+              rotulo="Backup"
+              testId="kpi-backup"
+              valor={<Estado e={d.backup.estado} />}
+              detalhe={
+                d.backup.idadeHoras !== null
+                  ? `há ${d.backup.idadeHoras.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} h${d.backup.atrasado ? ' · atrasado' : ''} · ${dataHora(d.backup.ultimoEm)}`
+                  : (d.backup.aviso ?? 'Nenhum backup registrado.')
+              }
+            />
+            <Kpi rotulo="E-mail (SMTP)" testId="kpi-smtp" valor={<Estado e={d.smtp.estado} />} detalhe={`${d.smtp.mensagem} · ${testado(d.smtp.testadoEm)}`} />
+            <Kpi
+              rotulo={`Asaas (${d.asaas.ambiente})`}
+              testId="kpi-asaas"
+              valor={<Estado e={d.asaas.estado} />}
+              detalhe={`${d.asaas.mensagem} · ${testado(d.asaas.testadoEm)}`}
+            />
+            <Kpi rotulo="Push" testId="kpi-push" valor={<Estado e={d.push.estado} />} detalhe={d.push.mensagem} />
+            <Kpi
+              rotulo="Disco"
+              testId="kpi-disco"
+              valor={d.disco ? <Estado e={d.disco.estado} /> : <Selo tom="neutro">Sem medida</Selo>}
+              detalhe={
+                d.disco
+                  ? `${bytes(d.disco.livreBytes)} livres de ${bytes(d.disco.totalBytes)} (${porcentagem(d.disco.percentualLivre)})`
+                  : 'Não foi possível medir o espaço livre.'
+              }
+            />
           </section>
-          {d.backup.aviso ? <Alerta tom="aviso">{d.backup.aviso}</Alerta> : null}
+          {d.backup.aviso && d.backup.idadeHoras !== null ? <Alerta tom="aviso">{d.backup.aviso}</Alerta> : null}
           <Cartao>
             <h2 className={a.secaoTitulo}>Jobs do worker</h2>
             {celular ? (
@@ -50,9 +180,13 @@ function Saude() {
                 {d.worker.jobs.map((j) => (
                   <CartaoLinha
                     key={j.job}
-                    titulo={j.job}
-                    sub={`último sucesso ${dataHora(j.ultimoSucessoEm)}${j.falhas24h ? ` · ${j.falhas24h} falha(s) em 24 h` : ''}`}
-                    extra={j.ultima?.erro ? <div style={{ color: 'var(--adm-erro)' }}>{j.ultima.erro}</div> : undefined}
+                    titulo={nomeDoJob(j)}
+                    sub={`último sucesso ${dataHora(j.ultimoSucessoEm)}${j.esperadaAte ? ` · esperado até ${dataHora(j.esperadaAte)}` : ''}${j.falhas24h ? ` · ${j.falhas24h} falha(s) em 24 h` : ''}`}
+                    extra={
+                      <div style={{ marginTop: 4 }}>
+                        <SituacaoJob j={j} />
+                      </div>
+                    }
                   />
                 ))}
               </Cartoes>
@@ -64,6 +198,7 @@ function Saude() {
                     <th>Agenda</th>
                     <th>Última execução</th>
                     <th>Situação</th>
+                    <th>Esperado até</th>
                     <th>Último sucesso</th>
                     <th className={a.direita}>Falhas 24 h</th>
                   </tr>
@@ -71,20 +206,16 @@ function Saude() {
                 <tbody>
                   {d.worker.jobs.map((j) => (
                     <tr key={j.job}>
-                      <td>{j.job}</td>
+                      <td>
+                        {nomeDoJob(j)}
+                        {j.descricao ? <div className={a.suave}>{j.descricao}</div> : null}
+                      </td>
                       <td className={a.mono}>{j.cron ?? '—'}</td>
                       <td>{dataHora(j.ultima?.iniciadoEm)}</td>
                       <td>
-                        {!j.ultima ? (
-                          <Selo tom="neutro">Nunca rodou</Selo>
-                        ) : j.ultima.ok === null ? (
-                          <Selo tom="info">Rodando</Selo>
-                        ) : j.ultima.ok ? (
-                          <Selo tom="sucesso">OK</Selo>
-                        ) : (
-                          <Selo tom="erro">{j.ultima.erro ?? 'Falhou'}</Selo>
-                        )}
+                        <SituacaoJob j={j} />
                       </td>
+                      <td>{dataHora(j.esperadaAte)}</td>
                       <td>{dataHora(j.ultimoSucessoEm)}</td>
                       <td className={a.direita}>{j.falhas24h}</td>
                     </tr>
@@ -92,8 +223,38 @@ function Saude() {
                 </tbody>
               </Tabela>
             )}
-            <p className={a.suave}>Atualizado em {dataHora(d.geradoEm)}. Node {d.api.node}{d.api.imagem ? ` · imagem ${d.api.imagem}` : ''}.</p>
           </Cartao>
+          <Cartao>
+            <h2 className={a.secaoTitulo}>Erros do servidor (5xx)</h2>
+            <p>
+              {numero(d.erros5xx.ultimas24h)} erro(s) nas últimas 24 h
+              {d.erros5xx.ultimaEm ? ` · o último em ${dataHora(d.erros5xx.ultimaEm)}` : ''}.
+            </p>
+            {d.erros5xx.porRota.length ? (
+              <Tabela rotulo="Erros por rota">
+                <thead>
+                  <tr>
+                    <th>Rota</th>
+                    <th>Status</th>
+                    <th className={a.direita}>Quantidade</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {d.erros5xx.porRota.map((e) => (
+                    <tr key={`${e.rota} ${e.status}`}>
+                      <td className={a.mono}>{e.rota}</td>
+                      <td>{e.status}</td>
+                      <td className={a.direita}>{numero(e.quantidade)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Tabela>
+            ) : null}
+          </Cartao>
+          <p className={a.suave}>
+            Atualizado em {dataHora(d.geradoEm)}. Node {d.api.node}
+            {d.api.imagem ? ` · imagem ${d.api.imagem}` : ''}. Preço do 1º concurso: {formatarReais(d.precoCentavos)}.
+          </p>
         </>
       )}
     </Consulta>
@@ -162,7 +323,7 @@ function Configuracoes() {
               <CampoArea rotulo="Aviso do edital" rows={3} maxLength={600} value={v.avisoEdital} onChange={(e) => setV({ ...v, avisoEdital: e.target.value })} />
               <CampoArea rotulo="Motivo da alteração (fica na auditoria)" rows={2} maxLength={500} value={motivo} onChange={(e) => setMotivo(e.target.value)} erro={campos.motivo} />
               {recon.campo}
-              {salvar.isError && !Object.keys(campos).length ? <Alerta tom="erro">{mensagemDeErro(salvar.error)}</Alerta> : null}
+              {salvar.isError && !Object.keys(campos).length ? <Alerta tom="erro">{textoDoErro(salvar.error)}</Alerta> : null}
               {salvar.isSuccess ? <Alerta tom="sucesso">Configurações salvas.</Alerta> : null}
               <div className={a.acoes}>
                 <Botao type="submit" variante="primario" disabled={motivo.trim().length < 5 || !recon.confirmacao} carregando={salvar.isPending}>
@@ -217,14 +378,14 @@ function Seguranca() {
 }
 
 export default function Sistema() {
-  const qc = useQueryClient();
+  const origem = useSegundoPlano(CHAVE_SISTEMA);
   return (
     <Pagina
       titulo="Sistema"
       trilha={[{ rotulo: 'Superadmin', para: caminho() }, { rotulo: 'Sistema' }]}
-      acoes={<BotaoAtualizar aoClicar={() => void qc.invalidateQueries({ queryKey: ['super', 'sistema'] })} />}
+      acoes={<BotaoAtualizar aoClicar={() => void origem.atualizar()} />}
     >
-      <Saude />
+      <Saude origem={origem} />
       <div className={s.par}>
         <Configuracoes />
         <Seguranca />

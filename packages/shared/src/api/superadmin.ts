@@ -1013,6 +1013,7 @@ export const ZEstadoJob = z.enum(ESTADOS_JOB);
 /** S-09: estado de um indicador (banco, backup, SMTP, Asaas, push, disco). */
 export const ESTADOS_INDICADOR = ['ok', 'atencao', 'falhou', 'nao_testado', 'nao_configurado'] as const;
 export const ZEstadoIndicador = z.enum(ESTADOS_INDICADOR);
+export type EstadoIndicador = z.infer<typeof ZEstadoIndicador>;
 
 export const ExecucaoJob = z.object({
   job: z.string(),

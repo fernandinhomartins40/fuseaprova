@@ -5,6 +5,7 @@
  */
 import {
   erroDeValidacao,
+  HEADER_SEGUNDO_PLANO,
   montarCaminho,
   PREFIXO_API,
   ROTAS,
@@ -64,6 +65,11 @@ export function montarQuery(query: Record<string, ValorQuery> | undefined): stri
 
 type Opcoes<N extends NomeRota> = {
   params?: Record<string, string>;
+  /**
+   * S-15: requisição automática (polling ou refetch sem ação do usuário). Manda o cabeçalho
+   * `x-fuse-segundo-plano: 1` para a API não renovar a ociosidade da sessão.
+   */
+  segundoPlano?: boolean;
 } & ([QueryDe<N>] extends [never] ? { query?: never } : { query?: QueryDe<N> }) &
   ([CorpoDe<N>] extends [never] ? { corpo?: never } : { corpo: CorpoDe<N> });
 
@@ -163,11 +169,14 @@ export async function api<N extends NomeRota>(
   ...[opcoes]: [CorpoDe<N>] extends [never] ? [Opcoes<N>?] : [Opcoes<N>]
 ): Promise<RespostaDe<N>> {
   const def = ROTAS[nome];
-  const o = (opcoes ?? {}) as { params?: Record<string, string>; query?: object; corpo?: unknown };
+  const o = (opcoes ?? {}) as { params?: Record<string, string>; query?: object; corpo?: unknown; segundoPlano?: boolean };
   const caminho = montarCaminho(def.caminho, o.params ?? {});
   const url = `${PREFIXO_API}${caminho}${montarQuery(o.query as Record<string, ValorQuery>)}`;
 
-  const init: RequestInit = { method: def.metodo, headers: { accept: 'application/json' } };
+  const init: RequestInit = {
+    method: def.metodo,
+    headers: { accept: 'application/json', ...(o.segundoPlano ? { [HEADER_SEGUNDO_PLANO]: '1' } : {}) },
+  };
   if ('corpo' in def && def.corpo) {
     const r = def.corpo.safeParse(o.corpo ?? {}, {
       errorMap: mapaErrosPtBr,
