@@ -13,7 +13,7 @@ import { Alerta, Botao, Cartao, CampoTexto, Consulta, Selo, Tabela, estilos as a
 import { dataHora, dia, numero } from '../../admin/util';
 import { AcaoConfirmada } from '../acoes';
 import { BotaoAtualizar, CartaoLinha, Cartoes, Kpi, Pagina, estilosSuper as s, useCelular } from '../componentes';
-import { caminho, periodoPadrao } from '../util';
+import { caminho, periodoPadrao, situacaoContaAsaas, statusAsaas, tipoLancamentoAsaas } from '../util';
 
 const NOMES_AMBIENTE = { sandbox: 'Sandbox', producao: 'Produção', outro: 'Outro' } as const;
 const POR_PAGINA = 20;
@@ -51,7 +51,7 @@ function Status() {
                   <dt>CPF/CNPJ</dt>
                   <dd className={a.mono}>{st.conta.cpfCnpjOculto ?? '—'}</dd>
                   <dt>Situação</dt>
-                  <dd>{st.conta.status ?? '—'}</dd>
+                  <dd>{situacaoContaAsaas(st.conta.status)}</dd>
                   <dt>Cidade</dt>
                   <dd>{st.conta.cidade ?? '—'}</dd>
                 </dl>
@@ -193,7 +193,7 @@ function Extrato() {
           {(d) => (
             <div className={s.kpis} style={{ marginBottom: 0 }}>
               {d.porStatus.map((x) => (
-                <Kpi key={x.status} rotulo={x.status} valor={numero(x.quantidade)} detalhe={`${formatarReais(x.valorCentavos)} · líquido ${formatarReais(x.liquidoCentavos)}`} />
+                <Kpi key={x.status} rotulo={statusAsaas(x.status)} valor={numero(x.quantidade)} detalhe={`${formatarReais(x.valorCentavos)} · líquido ${formatarReais(x.liquidoCentavos)}`} />
               ))}
             </div>
           )}
@@ -231,7 +231,7 @@ function Extrato() {
               {celular ? (
                 <Cartoes rotulo="Extrato">
                   {d.itens.map((i) => (
-                    <CartaoLinha key={i.id} titulo={i.descricao ?? i.tipo} sub={`${dia(i.data)} · ${i.tipo}`} valor={formatarReais(i.valorCentavos)} />
+                    <CartaoLinha key={i.id} titulo={i.descricao ?? tipoLancamentoAsaas(i.tipo)} sub={`${dia(i.data)} · ${tipoLancamentoAsaas(i.tipo)}`} valor={formatarReais(i.valorCentavos)} />
                   ))}
                 </Cartoes>
               ) : (
@@ -249,7 +249,7 @@ function Extrato() {
                     {d.itens.map((i) => (
                       <tr key={i.id}>
                         <td>{dia(i.data)}</td>
-                        <td>{i.tipo}</td>
+                        <td title={i.tipo}>{tipoLancamentoAsaas(i.tipo)}</td>
                         <td>{i.descricao ?? '—'}</td>
                         <td className={a.direita}>{formatarReais(i.valorCentavos)}</td>
                         <td className={a.mono}>{i.paymentId ?? '—'}</td>

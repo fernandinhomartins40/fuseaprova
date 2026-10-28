@@ -11,6 +11,7 @@ import { api, mensagemDeErro } from '../../admin/api';
 import { Alerta, Botao, Cartao, CampoSelecao, CampoTexto, Consulta, estilos as a } from '../../admin/componentes/ui';
 import { NOMES_STATUS_PEDIDO, numero } from '../../admin/util';
 import { BotaoAtualizar, Folha, Kpi, Pagina, estilosSuper as s, useCelular } from '../componentes';
+import { FiltroConcurso } from '../concursos';
 import { GraficoBarras } from '../Grafico';
 import { Icone } from '../icones';
 import { baixarCsv, periodoPadrao, porcentagem, reaisCurto } from '../util';
@@ -26,7 +27,14 @@ const METODOS = [
   { valor: 'manual', rotulo: 'Só manual' },
 ];
 
-type Filtros = Required<Pick<FinanceiroQuery, 'de' | 'ate'>> & { agrupamento: 'dia' | 'semana' | 'mes'; metodo: 'todos' | 'asaas' | 'manual' };
+type Filtros = Required<Pick<FinanceiroQuery, 'de' | 'ate'>> & {
+  agrupamento: 'dia' | 'semana' | 'mes';
+  metodo: 'todos' | 'asaas' | 'manual';
+  /** D21 (S-14): '' = todos os concursos. */
+  concursoId: string;
+};
+
+const consultaDe = ({ concursoId, ...f }: Filtros): FinanceiroQuery => ({ ...f, ...(concursoId ? { concursoId } : {}) });
 
 function CamposFiltro({ f, mudar }: { f: Filtros; mudar: (p: Partial<Filtros>) => void }) {
   return (
@@ -35,17 +43,19 @@ function CamposFiltro({ f, mudar }: { f: Filtros; mudar: (p: Partial<Filtros>) =
       <CampoTexto rotulo="Até" type="date" value={f.ate} onChange={(e) => e.target.value && mudar({ ate: e.target.value })} />
       <CampoSelecao rotulo="Agrupar" value={f.agrupamento} opcoes={AGRUPAMENTOS} onChange={(e) => mudar({ agrupamento: e.target.value as Filtros['agrupamento'] })} />
       <CampoSelecao rotulo="Método" value={f.metodo} opcoes={METODOS} onChange={(e) => mudar({ metodo: e.target.value as Filtros['metodo'] })} />
+      <FiltroConcurso valor={f.concursoId} aoMudar={(concursoId) => mudar({ concursoId })} />
     </>
   );
 }
 
 export default function VisaoGeral() {
   const celular = useCelular();
-  const [f, setF] = useState<Filtros>({ ...periodoPadrao(30), agrupamento: 'dia', metodo: 'todos' });
+  const [f, setF] = useState<Filtros>({ ...periodoPadrao(30), agrupamento: 'dia', metodo: 'todos', concursoId: '' });
   const [filtrosAbertos, setFiltrosAbertos] = useState(false);
   const mudar = (p: Partial<Filtros>) => setF((x) => ({ ...x, ...p }));
-  const consulta = useQuery({ queryKey: ['super', 'financeiro', f], queryFn: () => api('superFinanceiro', { query: f }), placeholderData: keepPreviousData });
-  const csv = useMutation({ mutationFn: () => api('superFinanceiroCsv', { query: f }), onSuccess: baixarCsv });
+  const q = consultaDe(f);
+  const consulta = useQuery({ queryKey: ['super', 'financeiro', q], queryFn: () => api('superFinanceiro', { query: q }), placeholderData: keepPreviousData });
+  const csv = useMutation({ mutationFn: () => api('superFinanceiroCsv', { query: q }), onSuccess: baixarCsv });
 
   return (
     <Pagina

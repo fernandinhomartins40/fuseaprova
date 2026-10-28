@@ -1,14 +1,15 @@
 /**
- * /super/usuarios/:id (D13): ficha completa do usuário (dados, progresso, pedidos, sessões,
- * auditoria) e as ações: editar dados, forçar troca de senha, bloquear/desbloquear, mudar o
- * papel, liberar ou revogar o acesso, aprovar pagamento manual, exportar e excluir (LGPD).
+ * /super/usuarios/:id (D13 + D21/D24): ficha completa do usuário (dados, progresso, concursos,
+ * pedidos, sessões, auditoria) e as ações: editar dados, forçar troca de senha,
+ * bloquear/desbloquear, mudar o papel, exportar e excluir (LGPD). Por concurso (só aluno e
+ * nunca a própria conta): liberar, revogar e aprovar pagamento manual.
  * No celular é uma tela empilhada; as ações abrem em folha.
  */
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { formatarReais, PAPEIS, type Papel } from '@fuse/shared';
-import type { FichaUsuarioResposta } from '@fuse/shared/api';
+import type { ConcursoDoUsuario, FichaUsuarioResposta, UsuarioConcursoAcaoResposta } from '@fuse/shared/api';
 import { api, mensagemDeErro } from '../../admin/api';
 import { Alerta, Botao, Cartao, CampoSelecao, CampoTexto, Consulta, Marcar, Selo, Tabela, estilos as a } from '../../admin/componentes/ui';
 import { cpfMascarado, dataHora, dia, numero, NOMES_STATUS_PEDIDO, TOM_STATUS_PEDIDO } from '../../admin/util';
@@ -17,6 +18,9 @@ import { AcoesFicha, CartaoLinha, Cartoes, Pagina, estilosSuper as s, useCelular
 import { baixarJson, caminho, NOMES_METODO, NOMES_PAPEL, tomPapel } from '../util';
 
 type Aberta = null | 'editar' | 'senha' | 'bloquear' | 'desbloquear' | 'papel' | 'liberar' | 'revogar' | 'manual' | 'excluir';
+
+const nomeConcurso = (p: { concurso: { nome: string } | null }) => p.concurso?.nome ?? 'Sem concurso';
+const cupom = (p: { cupomCodigo: string | null }) => p.cupomCodigo ?? '—';
 
 function Pedidos({ f }: { f: FichaUsuarioResposta }) {
   const celular = useCelular();
@@ -27,8 +31,8 @@ function Pedidos({ f }: { f: FichaUsuarioResposta }) {
         <CartaoLinha
           key={p.id}
           para={caminho(`pagamentos/${p.id}`)}
-          titulo={NOMES_STATUS_PEDIDO[p.status]}
-          sub={`${NOMES_METODO[p.metodo]} · ${dataHora(p.criadoEm)}`}
+          titulo={`${NOMES_STATUS_PEDIDO[p.status]} · ${nomeConcurso(p)}`}
+          sub={`${NOMES_METODO[p.metodo]} · ${dataHora(p.criadoEm)}${p.cupomCodigo ? ` · cupom ${p.cupomCodigo}` : ''}`}
           valor={formatarReais(p.valorCentavos)}
         />
       ))}
@@ -38,8 +42,10 @@ function Pedidos({ f }: { f: FichaUsuarioResposta }) {
       <thead>
         <tr>
           <th>Status</th>
+          <th>Concurso</th>
           <th>Método</th>
           <th className={a.direita}>Valor</th>
+          <th>Cupom</th>
           <th>Criado</th>
           <th>Pago</th>
         </tr>
@@ -52,14 +58,80 @@ function Pedidos({ f }: { f: FichaUsuarioResposta }) {
                 <Selo tom={TOM_STATUS_PEDIDO[p.status]}>{NOMES_STATUS_PEDIDO[p.status]}</Selo>
               </Link>
             </td>
+            <td>{nomeConcurso(p)}</td>
             <td>{NOMES_METODO[p.metodo]}</td>
             <td className={a.direita}>{formatarReais(p.valorCentavos)}</td>
+            <td className={a.mono}>{cupom(p)}</td>
             <td>{dataHora(p.criadoEm)}</td>
             <td>{dataHora(p.pagoEm)}</td>
           </tr>
         ))}
       </tbody>
     </Tabela>
+  );
+}
+
+/**
+ * D21/D24: os concursos do aluno, cada um com o acesso e o pedido pago que o libera. Liberar,
+ * revogar e aprovar pagamento manual são por concurso e só aparecem para aluno (nunca para a
+ * equipe nem para a própria conta, S-25).
+ */
+function Concursos({
+  f,
+  podeAgir,
+  aoAgir,
+}: {
+  f: FichaUsuarioResposta;
+  podeAgir: boolean;
+  aoAgir: (acao: 'liberar' | 'revogar' | 'manual', c: ConcursoDoUsuario) => void;
+}) {
+  if (!f.concursos.length) {
+    return <p className={a.suave}>{f.usuario.papel === 'aluno' ? 'O aluno ainda não escolheu nenhum concurso.' : 'Conta da equipe: não estuda.'}</p>;
+  }
+  return (
+    <ul className={a.lista} aria-label="Concursos do usuário">
+      {f.concursos.map((c) => (
+        <li key={c.id} style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+          <span>
+            <strong>{c.nome}</strong> {c.ativo ? <Selo tom="info">Ativo</Selo> : null}{' '}
+            {c.acesso ? <Selo tom="sucesso">Liberado</Selo> : <Selo tom="aviso">Não liberado</Selo>}
+            <br />
+            <span className={a.suave}>
+              {c.cargo ?? 'Sem cargo'}
+              {c.acessoEm ? ` · liberado em ${dataHora(c.acessoEm)}` : ''}
+              {c.pedidoPagoId ? (
+                <>
+                  {' · '}
+                  <Link className={a.link} to={caminho(`pagamentos/${c.pedidoPagoId}`)}>
+                    pedido pago
+                  </Link>
+                </>
+              ) : (
+                ' · sem pedido pago'
+              )}
+            </span>
+          </span>
+          {podeAgir ? (
+            <span className={a.acoes}>
+              {!c.pedidoPagoId ? (
+                <Botao pequeno variante="primario" onClick={() => aoAgir('manual', c)} aria-label={`Aprovar pagamento manual de ${c.nome}`}>
+                  Aprovar pagamento manual
+                </Botao>
+              ) : null}
+              {c.acesso ? (
+                <Botao pequeno variante="perigo" onClick={() => aoAgir('revogar', c)} aria-label={`Revogar ${c.nome}`}>
+                  Revogar
+                </Botao>
+              ) : (
+                <Botao pequeno onClick={() => aoAgir('liberar', c)} aria-label={`Liberar ${c.nome}`}>
+                  Liberar
+                </Botao>
+              )}
+            </span>
+          ) : null}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -100,6 +172,8 @@ export default function UsuarioFicha() {
   const [revogarSessoes, setRevogarSessoes] = useState(true);
   const [papel, setPapel] = useState<Papel>('aluno');
   const [emailConfirmado, setEmailConfirmado] = useState('');
+  const [concursoAlvo, setConcursoAlvo] = useState<ConcursoDoUsuario | null>(null);
+  const me = useQuery({ queryKey: ['super', 'me'], queryFn: () => api('meObter'), staleTime: 60_000 });
   const consulta = useQuery({ queryKey: ['super', 'usuario', id], queryFn: () => api('superUsuarioObter', { params: { id } }) });
   const exportar = useMutation({
     mutationFn: () => api('superUsuarioExportar', { params: { id } }),
@@ -123,17 +197,30 @@ export default function UsuarioFicha() {
       <Consulta consulta={consulta}>
         {(f) => {
           const u = f.usuario;
-          const pagoAprovado = f.pedidos.some((p) => p.status === 'pago');
-          const pixPendente = f.pedidos.some((p) => p.status === 'pendente' && p.metodo === 'asaas');
-          // D24 (Lote 1, ajuste mínimo): liberar, revogar e aprovar valem para o concurso ativo do
-          // aluno; a escolha por concurso na tela vem no Lote 3.
-          const concursoAtivo = f.concursos.find((c) => c.ativo) ?? f.concursos[0] ?? null;
           const excluido = !!u.excluidoEm;
+          const ehAluno = u.papel === 'aluno';
+          // RQ4/D24: ações de acesso só para aluno e nunca para a própria conta.
+          const podeAgir = ehAluno && !excluido && !!me.data && me.data.id !== u.id;
+          const comAcesso = f.concursos.some((c) => c.acesso);
+          const pixDoConcurso = (c: ConcursoDoUsuario | null) =>
+            !!c && f.pedidos.some((p) => p.concurso?.id === c.id && p.metodo === 'asaas' && !!p.asaasPaymentId && (p.status === 'pendente' || p.status === 'vencido'));
+          const agir = (acao: 'liberar' | 'revogar' | 'manual', c: ConcursoDoUsuario) => {
+            setConcursoAlvo(c);
+            setAberta(acao);
+          };
           return (
             <>
               <div className={a.acoes}>
                 <Selo tom={tomPapel(u.papel)}>{NOMES_PAPEL[u.papel]}</Selo>
-                {excluido ? <Selo tom="neutro">Excluído (LGPD)</Selo> : u.acesso ? <Selo tom="sucesso">Com acesso</Selo> : <Selo tom="aviso">Sem acesso</Selo>}
+                {excluido ? (
+                  <Selo tom="neutro">Excluído (LGPD)</Selo>
+                ) : ehAluno ? (
+                  comAcesso ? (
+                    <Selo tom="sucesso">Com concurso liberado</Selo>
+                  ) : (
+                    <Selo tom="aviso">Sem concurso liberado</Selo>
+                  )
+                ) : null}
                 {u.bloqueado ? <Selo tom="erro">Bloqueado</Selo> : null}
                 {u.doisFatores ? <Selo tom="info">2FA ativo</Selo> : null}
               </div>
@@ -141,16 +228,14 @@ export default function UsuarioFicha() {
                 <AcoesFicha
                   rotulo="Ações do usuário"
                   itens={[
-                    u.papel === 'aluno' && !pagoAprovado && { rotulo: 'Aprovar pagamento manual', variante: 'primario', principal: true, aoClicar: () => setAberta('manual') },
                     {
                       rotulo: 'Editar dados',
-                      principal: u.papel !== 'aluno' || pagoAprovado,
+                      principal: true,
                       aoClicar: () => {
                         setEdicao({ nome: u.nome, email: u.email, celular: u.celular ?? '' });
                         setAberta('editar');
                       },
                     },
-                    u.acesso ? { rotulo: 'Revogar acesso', aoClicar: () => setAberta('revogar') } : { rotulo: 'Liberar acesso', aoClicar: () => setAberta('liberar') },
                     {
                       rotulo: 'Mudar papel',
                       aoClicar: () => {
@@ -245,6 +330,10 @@ export default function UsuarioFicha() {
                 </Cartao>
               </div>
               <Cartao>
+                <h2 className={a.secaoTitulo}>Concursos</h2>
+                <Concursos f={f} podeAgir={podeAgir} aoAgir={agir} />
+              </Cartao>
+              <Cartao>
                 <h2 className={a.secaoTitulo}>Pedidos</h2>
                 <Pedidos f={f} />
               </Cartao>
@@ -274,9 +363,10 @@ export default function UsuarioFicha() {
               </div>
 
               <AprovarManual
-                aluno={{ id: u.id, nome: u.nome, email: u.email, pixPendente }}
-                alvo={concursoAtivo ? { concursoId: concursoAtivo.id } : null}
-                aberta={aberta === 'manual'}
+                aluno={{ id: u.id, nome: u.nome, email: u.email, pixPendente: pixDoConcurso(concursoAlvo) }}
+                alvo={concursoAlvo ? { concursoId: concursoAlvo.id } : null}
+                concursoNome={concursoAlvo?.nome}
+                aberta={aberta === 'manual' && podeAgir}
                 aoFechar={fechar}
               />
               <AcaoConfirmada
@@ -344,35 +434,47 @@ export default function UsuarioFicha() {
                 {papel === 'superadmin' ? <Alerta tom="aviso">Superadmin vê o financeiro e tudo da conta Asaas. Ele vai precisar configurar o 2FA.</Alerta> : null}
               </AcaoConfirmada>
               <AcaoConfirmada
-                titulo="Liberar acesso"
-                aberta={aberta === 'liberar'}
+                titulo="Liberar o concurso?"
+                aberta={aberta === 'liberar' && podeAgir}
                 aoFechar={fechar}
-                rotuloConfirmar="Liberar acesso"
+                rotuloConfirmar="Liberar"
                 reconfirmar
-                podeConfirmar={!!concursoAtivo}
+                podeConfirmar={!!concursoAlvo}
                 executar={(motivo, confirmacao) =>
-                  api('superUsuarioConcursoLiberar', { params: { id, concursoId: concursoAtivo?.id ?? '' }, corpo: { motivo, confirmacao: confirmacao ?? {} } })
+                  api('superUsuarioConcursoLiberar', { params: { id, concursoId: concursoAlvo?.id ?? '' }, corpo: { motivo, confirmacao: confirmacao ?? {} } })
                 }
-                sucesso="Acesso liberado."
+                sucesso={(r) => (r as UsuarioConcursoAcaoResposta).mensagem}
               >
+                {concursoAlvo ? (
+                  <p>
+                    Libera <strong>{concursoAlvo.nome}</strong> para {u.nome}.
+                  </p>
+                ) : null}
                 <Alerta tom="info">
-                  Para pagamento recebido por fora, use “Aprovar pagamento manual”: ele registra o valor no financeiro. Liberar acesso não gera receita.
+                  Para pagamento recebido por fora, use “Aprovar pagamento manual”: ele registra o valor no financeiro. Liberar não gera receita.
                 </Alerta>
               </AcaoConfirmada>
               <AcaoConfirmada
-                titulo="Revogar acesso?"
-                aberta={aberta === 'revogar'}
+                titulo="Revogar o concurso?"
+                aberta={aberta === 'revogar' && podeAgir}
                 aoFechar={fechar}
-                rotuloConfirmar="Revogar acesso"
+                rotuloConfirmar="Revogar"
                 perigo
                 reconfirmar
-                podeConfirmar={!!concursoAtivo}
+                podeConfirmar={!!concursoAlvo}
                 executar={(motivo, confirmacao) =>
-                  api('superUsuarioConcursoRevogar', { params: { id, concursoId: concursoAtivo?.id ?? '' }, corpo: { motivo, confirmacao: confirmacao ?? {} } })
+                  api('superUsuarioConcursoRevogar', { params: { id, concursoId: concursoAlvo?.id ?? '' }, corpo: { motivo, confirmacao: confirmacao ?? {} } })
                 }
-                sucesso="Acesso ao concurso revogado."
+                sucesso={(r) => (r as UsuarioConcursoAcaoResposta).mensagem}
               >
-                {concursoAtivo ? <p>Revoga só {concursoAtivo.nome}. Os outros concursos do aluno continuam.</p> : null}
+                {concursoAlvo ? (
+                  <p>
+                    Revoga só <strong>{concursoAlvo.nome}</strong>. Os outros concursos de {u.nome} continuam.
+                  </p>
+                ) : null}
+                {concursoAlvo?.pedidoPagoId ? (
+                  <Alerta tom="aviso">Este concurso tem um pedido pago. Se o dinheiro vai ser devolvido, use “Estornar” na tela do pagamento.</Alerta>
+                ) : null}
               </AcaoConfirmada>
               <AcaoConfirmada
                 titulo="Excluir a conta (LGPD)?"

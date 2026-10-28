@@ -13,6 +13,16 @@ import { BotaoAtualizar, CartaoLinha, Cartoes, Pagina, useCelular } from '../com
 import { caminho, NOMES_PAPEL, tomPapel } from '../util';
 import type { MembroEquipe } from '@fuse/shared/api';
 
+const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** S-25 (R2-14): o motivo de o botão do convite estar desabilitado, em vez do silêncio. */
+export function problemaConvite(novo: { nome: string; email: string }): { nome?: string; email?: string } {
+  const r: { nome?: string; email?: string } = {};
+  if (novo.nome.trim() && !novo.nome.trim().includes(' ')) r.nome = 'Informe nome e sobrenome.';
+  if (novo.email.trim() && !EMAIL_VALIDO.test(novo.email.trim())) r.email = 'Informe um e-mail válido.';
+  return r;
+}
+
 function SelosMembro({ m }: { m: MembroEquipe }) {
   return (
     <span className={a.acoes} style={{ gap: 4 }}>
@@ -110,12 +120,24 @@ export default function Equipe() {
         }}
         rotuloConfirmar="Enviar convite"
         reconfirmar
-        podeConfirmar={novo.nome.trim().includes(' ') && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(novo.email)}
+        podeConfirmar={novo.nome.trim().includes(' ') && EMAIL_VALIDO.test(novo.email.trim())}
         executar={(motivo, confirmacao) => api('superEquipeConvidar', { corpo: { ...novo, motivo, confirmacao: confirmacao ?? {} } })}
         sucesso={(r) => `Convite enviado para ${(r as { email: string }).email}. O link vale 72 horas.`}
       >
-        <CampoTexto rotulo="Nome completo" value={novo.nome} onChange={(e) => setNovo((x) => ({ ...x, nome: e.target.value }))} />
-        <CampoTexto rotulo="E-mail" type="email" value={novo.email} onChange={(e) => setNovo((x) => ({ ...x, email: e.target.value }))} />
+        <CampoTexto
+          rotulo="Nome completo"
+          value={novo.nome}
+          ajuda="Nome e sobrenome."
+          erro={problemaConvite(novo).nome}
+          onChange={(e) => setNovo((x) => ({ ...x, nome: e.target.value }))}
+        />
+        <CampoTexto
+          rotulo="E-mail"
+          type="email"
+          value={novo.email}
+          erro={problemaConvite(novo).email}
+          onChange={(e) => setNovo((x) => ({ ...x, email: e.target.value }))}
+        />
         <CampoSelecao
           rotulo="Papel"
           value={novo.papel}

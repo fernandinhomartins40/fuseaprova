@@ -1,6 +1,7 @@
 /**
- * /super/pagamentos (D13): lista com busca (nome, e-mail, CPF ou id do Asaas), filtros de
- * status, método e período, exportação CSV e conciliação em lote com o Asaas.
+ * /super/pagamentos (D13 + D21): lista com busca (nome, e-mail, CPF ou id do Asaas), filtros de
+ * status, método, concurso e período, concurso e cupom de cada pedido (S-14), exportação CSV e
+ * conciliação em lote com o Asaas.
  * No celular a tabela vira cartões e os filtros vão para uma folha.
  */
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
@@ -12,11 +13,12 @@ import { api, mensagemDeErro } from '../../admin/api';
 import { Alerta, Botao, CampoSelecao, CampoTexto, Consulta, Marcar, Paginacao, Selo, Tabela, estilos as a } from '../../admin/componentes/ui';
 import { dataHora, NOMES_STATUS_PEDIDO, TOM_STATUS_PEDIDO } from '../../admin/util';
 import { BotaoAtualizar, CartaoLinha, Cartoes, Folha, Pagina, estilosSuper as s, useCelular } from '../componentes';
+import { FiltroConcurso } from '../concursos';
 import { Icone } from '../icones';
 import { baixarCsv, caminho, NOMES_METODO, periodoPadrao } from '../util';
 
-type Filtros = { q: string; status: StatusPedido | ''; metodo: MetodoPedido | ''; de: string; ate: string };
-const FILTROS_VAZIOS: Filtros = { q: '', status: '', metodo: '', de: '', ate: '' };
+type Filtros = { q: string; status: StatusPedido | ''; metodo: MetodoPedido | ''; concursoId: string; de: string; ate: string };
+const FILTROS_VAZIOS: Filtros = { q: '', status: '', metodo: '', concursoId: '', de: '', ate: '' };
 
 const OPCOES_STATUS = STATUS_PEDIDO.map((v) => ({ valor: v, rotulo: NOMES_STATUS_PEDIDO[v] }));
 const OPCOES_METODO = METODOS_PEDIDO.map((v) => ({ valor: v, rotulo: NOMES_METODO[v] }));
@@ -28,6 +30,7 @@ function consultaDe(f: Filtros, pagina: number): PagamentosQuery {
     ...(f.q.trim() ? { q: f.q.trim() } : {}),
     ...(f.status ? { status: f.status } : {}),
     ...(f.metodo ? { metodo: f.metodo } : {}),
+    ...(f.concursoId ? { concursoId: f.concursoId } : {}),
     ...(f.de ? { de: f.de } : {}),
     ...(f.ate ? { ate: f.ate } : {}),
   };
@@ -38,6 +41,7 @@ function CamposFiltro({ f, mudar }: { f: Filtros; mudar: (p: Partial<Filtros>) =
     <>
       <CampoSelecao rotulo="Status" value={f.status} vazio="Todos" opcoes={OPCOES_STATUS} onChange={(e) => mudar({ status: e.target.value as Filtros['status'] })} />
       <CampoSelecao rotulo="Método" value={f.metodo} vazio="Todos" opcoes={OPCOES_METODO} onChange={(e) => mudar({ metodo: e.target.value as Filtros['metodo'] })} />
+      <FiltroConcurso valor={f.concursoId} aoMudar={(concursoId) => mudar({ concursoId })} />
       <CampoTexto rotulo="De" type="date" value={f.de} onChange={(e) => mudar({ de: e.target.value })} />
       <CampoTexto rotulo="Até" type="date" value={f.ate} onChange={(e) => mudar({ ate: e.target.value })} />
     </>
@@ -116,7 +120,7 @@ export default function Pagamentos() {
   const q = consultaDe(f, pagina);
   const consulta = useQuery({ queryKey: ['super', 'pagamentos', q], queryFn: () => api('superPagamentosListar', { query: q }), placeholderData: keepPreviousData });
   const csv = useMutation({ mutationFn: () => api('superPagamentosCsv', { query: q }), onSuccess: baixarCsv });
-  const ativos = [f.status, f.metodo, f.de, f.ate].filter(Boolean).length;
+  const ativos = [f.status, f.metodo, f.concursoId, f.de, f.ate].filter(Boolean).length;
 
   return (
     <Pagina
@@ -184,7 +188,7 @@ export default function Pagamentos() {
                     key={p.id}
                     para={caminho(`pagamentos/${p.id}`)}
                     titulo={p.usuario.nome}
-                    sub={`${NOMES_METODO[p.metodo]} · ${dataHora(p.pagoEm ?? p.criadoEm)}`}
+                    sub={`${p.concurso?.nome ?? 'Sem concurso'} · ${NOMES_METODO[p.metodo]} · ${dataHora(p.pagoEm ?? p.criadoEm)}${p.cupomCodigo ? ` · cupom ${p.cupomCodigo}` : ''}`}
                     valor={formatarReais(p.valorCentavos)}
                     extra={
                       <div style={{ marginTop: 4 }}>
@@ -200,8 +204,10 @@ export default function Pagamentos() {
                   <tr>
                     <th>Aluno</th>
                     <th>Status</th>
+                    <th>Concurso</th>
                     <th>Método</th>
                     <th className={a.direita}>Valor</th>
+                    <th>Cupom</th>
                     <th>Criado</th>
                     <th>Pago</th>
                     <th>Id no Asaas</th>
@@ -219,8 +225,13 @@ export default function Pagamentos() {
                       <td>
                         <Selo tom={TOM_STATUS_PEDIDO[p.status]}>{NOMES_STATUS_PEDIDO[p.status]}</Selo>
                       </td>
+                      <td>{p.concurso?.nome ?? '—'}</td>
                       <td>{NOMES_METODO[p.metodo]}</td>
                       <td className={a.direita}>{formatarReais(p.valorCentavos)}</td>
+                      <td className={a.mono}>
+                        {p.cupomCodigo ?? '—'}
+                        {p.descontoCentavos ? <div className={a.suave}>−{formatarReais(p.descontoCentavos)}</div> : null}
+                      </td>
                       <td>{dataHora(p.criadoEm)}</td>
                       <td>{dataHora(p.pagoEm)}</td>
                       <td className={a.mono}>{p.asaasPaymentId ?? '—'}</td>

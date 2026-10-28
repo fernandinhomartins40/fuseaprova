@@ -2,13 +2,14 @@
  * Ações sensíveis do /super (D13), reaproveitadas por várias telas:
  * - `AcaoConfirmada`: folha (celular) ou modal (desktop) com motivo obrigatório e, quando a
  *   rota pede, a reconfirmação com senha ou código do app;
- * - `AprovarManual`: registro de pagamento recebido por fora (preço vigente do 1º concurso, D23),
- *   com forma, data, observação, referência, comprovante e a confirmação da senha.
+ * - `AprovarManual`: registro de pagamento recebido por fora (RQ4/D24): de UM pedido (o valor, o
+ *   cupom e o concurso dele) ou, pela ficha, de um concurso explícito; com forma, data,
+ *   observação, referência, comprovante, o que fazer com a cobrança no Asaas e a reconfirmação.
  */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, type ReactNode } from 'react';
-import { diaSP, formatarReais, FORMAS_PAGAMENTO_MANUAL, type FormaPagamentoManual } from '@fuse/shared';
-import { PREFIXO_API, ROTAS, type AprovarManualResposta, type Reconfirmacao, type RespostaDe } from '@fuse/shared/api';
+import { diaSP, FORMAS_PAGAMENTO_MANUAL, type FormaPagamentoManual } from '@fuse/shared';
+import { PREFIXO_API, ROTAS, type AcaoAsaasManual, type AprovarManualResposta, type Reconfirmacao, type RespostaDe } from '@fuse/shared/api';
 import { api, camposDoErro, ErroAdminApi, mensagemDeErro, MENSAGEM_SEM_CONEXAO } from '../admin/api';
 import { Alerta, Botao, CampoArea, CampoSelecao, CampoTexto, estilos as a } from '../admin/componentes/ui';
 import { Folha, useReconfirmacao } from './componentes';
@@ -145,7 +146,7 @@ export async function enviarComprovante(arquivo: File): Promise<RespostaDe<'supe
 /* ------------------------------------------------------ aprovação manual */
 
 const OPCOES_FORMA = FORMAS_PAGAMENTO_MANUAL.map((f) => ({ valor: f, rotulo: NOMES_FORMA_PAGAMENTO_MANUAL[f] }));
-const OPCOES_ASAAS = [
+const OPCOES_ASAAS: { valor: AcaoAsaasManual; rotulo: string }[] = [
   { valor: 'receber_em_dinheiro', rotulo: 'Marcar como recebida em dinheiro no Asaas' },
   { valor: 'cancelar', rotulo: 'Cancelar a cobrança no Asaas' },
 ];
@@ -154,26 +155,29 @@ export interface AlunoParaAprovar {
   id: string;
   nome: string;
   email: string;
-  /** Tem um Pix pendente no Asaas (mostra a escolha do que fazer com ele). */
+  /** Tem uma cobrança Pix no Asaas (mostra a escolha do que fazer com ela). */
   pixPendente?: boolean;
 }
 
 /**
  * D24: a aprovação é de UM pedido (o valor e o concurso dele) ou, pela ficha, de um concurso
- * explícito. (Lote 1: ajuste mínimo; a tela nova do RQ4 vem no Lote 3.)
+ * explícito (o valor é o preço daquele concurso para o aluno, calculado pela API).
  */
 export type AlvoAprovacao = { pedidoId: string } | { concursoId: string };
 
 export function AprovarManual({
   aluno,
   alvo,
-  precoCentavos,
+  valorTexto,
+  concursoNome,
   aberta,
   aoFechar,
 }: {
   aluno: AlunoParaAprovar;
   alvo: AlvoAprovacao | null;
-  precoCentavos?: number | undefined;
+  /** O valor que será registrado (pedido: o valor dele, com o cupom). */
+  valorTexto?: string | undefined;
+  concursoNome?: string | undefined;
   aberta: boolean;
   aoFechar: () => void;
 }) {
@@ -183,7 +187,7 @@ export function AprovarManual({
   const [recebidoEm, setRecebidoEm] = useState(() => diaSP(new Date()));
   const [observacao, setObservacao] = useState('');
   const [referencia, setReferencia] = useState('');
-  const [acaoAsaas, setAcaoAsaas] = useState<'receber_em_dinheiro' | 'cancelar'>('receber_em_dinheiro');
+  const [acaoAsaas, setAcaoAsaas] = useState<AcaoAsaasManual>('receber_em_dinheiro');
   const [comprovante, setComprovante] = useState<{ arquivo: string; nome: string } | null>(null);
   const upload = useMutation({
     mutationFn: (f: File) => enviarComprovante(f),
@@ -215,6 +219,7 @@ export function AprovarManual({
     setObservacao('');
     setReferencia('');
     setComprovante(null);
+    setAcaoAsaas('receber_em_dinheiro');
     aoFechar();
   };
   const campos = camposDoErro(aprovar.error);
@@ -247,22 +252,27 @@ export function AprovarManual({
     >
       {r ? (
         <div className={a.formulario}>
-          <Alerta tom="sucesso">
-            {r.mensagem}
-          </Alerta>
+          <Alerta tom={r.jaAprovado ? 'info' : 'sucesso'}>{r.mensagem}</Alerta>
+          {r.pagoNoAsaas ? (
+            <Alerta tom="info">A cobrança já estava paga no Asaas: o pedido foi confirmado pelo Pix, não como pagamento manual.</Alerta>
+          ) : null}
           {r.asaas.acao !== 'nenhuma' ? <Alerta tom={r.asaas.ok ? 'info' : 'aviso'}>Asaas: {r.asaas.mensagem}</Alerta> : null}
         </div>
       ) : (
         <div className={a.formulario}>
           <Alerta tom="info">
-            Use só para pagamento recebido por fora (transferência, dinheiro, Pix direto). O valor é sempre{' '}
-            {precoCentavos ? formatarReais(precoCentavos) : 'o preço vigente do 1º concurso'} e não existe acesso gratuito.
+            Use só para pagamento recebido por fora (transferência, dinheiro, Pix direto). Antes de registrar, o Asaas é consultado: se a cobrança
+            já foi paga lá, ela é confirmada pelo Pix. Não existe acesso gratuito.
           </Alerta>
           <dl className={a.dl}>
             <dt>Aluno</dt>
             <dd>
               {aluno.nome} · {aluno.email}
             </dd>
+            <dt>Concurso</dt>
+            <dd>{concursoNome ?? '—'}</dd>
+            <dt>Valor registrado</dt>
+            <dd>{valorTexto ?? 'o preço deste concurso para o aluno'}</dd>
           </dl>
           <CampoSelecao rotulo="Forma do pagamento" value={forma} opcoes={OPCOES_FORMA} onChange={(e) => setForma(e.target.value as FormaPagamentoManual)} />
           <CampoTexto
@@ -317,10 +327,10 @@ export function AprovarManual({
           </div>
           {aluno.pixPendente ? (
             <CampoSelecao
-              rotulo="Cobrança Pix pendente no Asaas"
+              rotulo="Cobrança Pix no Asaas"
               value={acaoAsaas}
               opcoes={OPCOES_ASAAS}
-              onChange={(e) => setAcaoAsaas(e.target.value as typeof acaoAsaas)}
+              onChange={(e) => setAcaoAsaas(e.target.value as AcaoAsaasManual)}
             />
           ) : null}
           {recon.campo}

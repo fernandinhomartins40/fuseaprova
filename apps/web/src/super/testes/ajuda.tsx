@@ -3,7 +3,8 @@
  * em /super/* com fetch simulado por rota (o mesmo simulador do admin).
  */
 import { render } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import type { Papel } from '@fuse/shared';
 import { afterEach } from 'vitest';
 import { criarClienteAdmin } from '../../admin/rotas';
 import SuperRotas from '../rotas';
@@ -37,16 +38,29 @@ export function definirLargura(largura: number): void {
   }) as typeof window.matchMedia;
 }
 
-export function renderizarSuper(caminho: string, largura = 1280) {
+/** Mostra o caminho atual (para conferir redirecionamentos). */
+function Local() {
+  const { pathname, search } = useLocation();
+  return <output data-testid="local">{pathname + search}</output>;
+}
+
+/**
+ * `papel`: passado direto ao módulo (padrão superadmin). `null` = o módulo descobre pelo
+ * GET /me, como no app.
+ */
+export function renderizarSuper(caminho: string, largura = 1280, papel: Papel | null = 'superadmin') {
   definirLargura(largura);
   const cliente = criarClienteAdmin();
   cliente.setDefaultOptions({ queries: { retry: false, staleTime: 0 }, mutations: { retry: false } });
   return render(
     <MemoryRouter initialEntries={[caminho]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
-        <Route path="/super/*" element={<SuperRotas cliente={cliente} />} />
+        <Route path="/super/*" element={<SuperRotas cliente={cliente} {...(papel ? { papel } : {})} />} />
         <Route path="/entrar" element={<p>Tela de entrar</p>} />
+        <Route path="/super/entrar" element={<p>Tela de entrar do superadmin</p>} />
+        <Route path="/admin/entrar" element={<p>Tela de entrar da equipe de conteúdo</p>} />
       </Routes>
+      <Local />
     </MemoryRouter>,
   );
 }
@@ -60,7 +74,8 @@ export const IDS = {
 };
 
 export const BASE = {
-  'GET /me': { nome: 'Dono Superadmin', papel: 'superadmin' },
+  'GET /me': { id: '77777777-7777-4777-8777-777777777777', nome: 'Dono Superadmin', papel: 'superadmin' },
+  'GET /admin/concursos': { itens: [{ id: '88888888-8888-4888-8888-888888888888', nome: 'Concurso de Palmital 2026' }] },
   'GET /super/2fa': { configurado: true, verificadoNestaSessao: true, ativadoEm: '2026-10-01T10:00:00.000Z', codigosRecuperacaoRestantes: 10 },
 };
 
