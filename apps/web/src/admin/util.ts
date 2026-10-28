@@ -13,7 +13,8 @@ import {
   type TipoLicao,
 } from '@fuse/shared';
 
-export const BASE_ADMIN = '/admin';
+/** D24: a gestão de conteúdo é a seção /super/conteudo do painel único. */
+export const BASE_ADMIN = '/super/conteudo';
 
 export const NOMES_STATUS_QUESTAO: Record<StatusQuestao, string> = {
   rascunho: 'Rascunho',

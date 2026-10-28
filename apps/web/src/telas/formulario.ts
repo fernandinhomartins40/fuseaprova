@@ -23,7 +23,7 @@ export function rotaDoProximo(p: ProximoPasso): string {
     case 'onboarding':
       return '/onboarding';
     case 'conteudo':
-      return '/admin';
+      return '/super/conteudo';
     case 'dois_fatores':
       return '/super/2fa';
     default:

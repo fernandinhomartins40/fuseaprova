@@ -3,6 +3,7 @@ import { METAS_PAINEL, type PainelResposta } from '@fuse/shared/api';
 import { Link } from 'react-router-dom';
 import { api } from '../api';
 import { Cabecalho, Consulta, estilos as s, TituloSecao } from '../componentes/ui';
+import { TITULO_RAIZ_CONTEUDO } from '../componentes/topo';
 import { BASE_ADMIN, dataHora, juntarClasses, NOMES_STATUS_QUESTAO, numero } from '../util';
 
 type ChaveMetrica = keyof PainelResposta['metricas'];
@@ -22,13 +23,13 @@ export default function Painel() {
 
   return (
     <>
-      <Cabecalho titulo="Painel" subtitulo="Conteúdo pendente e aprendizagem." />
+      <Cabecalho titulo={TITULO_RAIZ_CONTEUDO} subtitulo="Conteúdo pendente e aprendizagem." />
       <Consulta consulta={consulta}>
         {(p) => (
           <>
             <div className={s.grade}>
               <Link to={`${BASE_ADMIN}/reports`} className={juntarClasses(s.estat, p.reportsAbertos > 0 && s.estatRuim)}>
-                <div className={s.estatRotulo}>Reports abertos</div>
+                <div className={s.estatRotulo}>Erros relatados abertos</div>
                 <div className={s.estatValor}>{numero(p.reportsAbertos)}</div>
                 <div className={s.estatDetalhe}>abrir a fila</div>
               </Link>

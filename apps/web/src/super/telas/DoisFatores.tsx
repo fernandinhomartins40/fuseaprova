@@ -4,9 +4,10 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { api, camposDoErro, mensagemDeErro } from '../../admin/api';
 import { Alerta, Botao, Cartao, CampoTexto, Consulta, estilos as a } from '../../admin/componentes/ui';
+import { voltarSeguro } from '../../app/areaPainel';
 import { Pagina, estilosSuper as s, useLayout } from '../componentes';
 import { caminho } from '../util';
 
@@ -38,6 +39,9 @@ export default function DoisFatores() {
   const qc = useQueryClient();
   const { atualizarSessao, sair } = useLayout();
   const navegar = useNavigate();
+  // S-19: depois do 2FA, volta para onde a pessoa estava quando a verificação venceu.
+  const [params] = useSearchParams();
+  const destino = voltarSeguro(params.get('voltar')) ?? caminho();
   const status = useQuery({ queryKey: ['super', '2fa'], queryFn: () => api('super2faStatus') });
   const [codigo, setCodigo] = useState('');
   const [recuperacao, setRecuperacao] = useState(false);
@@ -47,7 +51,7 @@ export default function DoisFatores() {
     void (async () => {
       await atualizarSessao();
       void qc.invalidateQueries({ queryKey: ['super'] });
-      navegar(caminho(), { replace: true });
+      navegar(destino, { replace: true });
     })();
   };
   const iniciar = useMutation({ mutationFn: () => api('super2faIniciar') });
@@ -76,6 +80,9 @@ export default function DoisFatores() {
                   {!iniciar.data ? (
                     <>
                       <p>Este é o seu primeiro acesso como superadmin. Gere o QR code e leia-o no app do celular.</p>
+                      <p className={a.suave}>
+                        Não tem app autenticador? Instale o Google Authenticator, o Authy ou o 1Password no celular antes de continuar.
+                      </p>
                       {iniciar.isError ? <Alerta tom="erro">{mensagemDeErro(iniciar.error)}</Alerta> : null}
                       <Botao variante="primario" carregando={iniciar.isPending} onClick={() => iniciar.mutate()}>
                         Gerar QR code

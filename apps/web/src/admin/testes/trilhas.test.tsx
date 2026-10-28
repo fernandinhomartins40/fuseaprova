@@ -71,7 +71,7 @@ describe('Trilhas: reordenação por teclado', () => {
       'GET /admin/trilhas': trilha,
       'PUT /admin/trilhas/ordem': { ok: true },
     });
-    renderizarAdmin('/admin/trilhas');
+    renderizarAdmin('/super/conteudo/trilhas');
     const lista = await screen.findByRole('list', { name: 'Lições de Crase' });
     expect(within(lista).getAllByRole('listitem')[0]).toHaveTextContent('Primeira');
 
@@ -98,7 +98,7 @@ describe('Trilhas: reordenação por teclado', () => {
       'GET /admin/assuntos': ASSUNTOS,
       'GET /admin/trilhas': trilha,
     });
-    renderizarAdmin('/admin/trilhas');
+    renderizarAdmin('/super/conteudo/trilhas');
     const lista = await screen.findByRole('list', { name: 'Lições de Crase' });
     expect(within(lista).getByRole('button', { name: 'Subir lição 1 Primeira' })).toBeDisabled();
     expect(within(lista).getByRole('button', { name: 'Descer lição 3 Baú' })).toBeDisabled();
@@ -113,7 +113,7 @@ describe('Trilhas: reordenação por teclado', () => {
       'GET /admin/trilhas': trilha,
       'PUT /admin/trilhas/ordem': { status: 409, corpo: { erro: 'Essa ação não pode ser feita agora.', codigo: 'conflito' } },
     });
-    renderizarAdmin('/admin/trilhas');
+    renderizarAdmin('/super/conteudo/trilhas');
     const lista = await screen.findByRole('list', { name: 'Lições de Crase' });
     await usuario.click(within(lista).getByRole('button', { name: 'Subir lição 3 Baú' }));
     expect(await screen.findByText('Essa ação não pode ser feita agora.')).toBeInTheDocument();
