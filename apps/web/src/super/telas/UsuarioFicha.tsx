@@ -125,6 +125,9 @@ export default function UsuarioFicha() {
           const u = f.usuario;
           const pagoAprovado = f.pedidos.some((p) => p.status === 'pago');
           const pixPendente = f.pedidos.some((p) => p.status === 'pendente' && p.metodo === 'asaas');
+          // D24 (Lote 1, ajuste mínimo): liberar, revogar e aprovar valem para o concurso ativo do
+          // aluno; a escolha por concurso na tela vem no Lote 3.
+          const concursoAtivo = f.concursos.find((c) => c.ativo) ?? f.concursos[0] ?? null;
           const excluido = !!u.excluidoEm;
           return (
             <>
@@ -270,7 +273,12 @@ export default function UsuarioFicha() {
                 </Cartao>
               </div>
 
-              <AprovarManual aluno={{ id: u.id, nome: u.nome, email: u.email, pixPendente }} aberta={aberta === 'manual'} aoFechar={fechar} />
+              <AprovarManual
+                aluno={{ id: u.id, nome: u.nome, email: u.email, pixPendente }}
+                alvo={concursoAtivo ? { concursoId: concursoAtivo.id } : null}
+                aberta={aberta === 'manual'}
+                aoFechar={fechar}
+              />
               <AcaoConfirmada
                 titulo="Editar dados"
                 aberta={aberta === 'editar'}
@@ -340,8 +348,11 @@ export default function UsuarioFicha() {
                 aberta={aberta === 'liberar'}
                 aoFechar={fechar}
                 rotuloConfirmar="Liberar acesso"
-                minMotivo={10}
-                executar={(motivo) => api('adminUsuarioLiberarAcesso', { params: { id }, corpo: { motivo } })}
+                reconfirmar
+                podeConfirmar={!!concursoAtivo}
+                executar={(motivo, confirmacao) =>
+                  api('superUsuarioConcursoLiberar', { params: { id, concursoId: concursoAtivo?.id ?? '' }, corpo: { motivo, confirmacao: confirmacao ?? {} } })
+                }
                 sucesso="Acesso liberado."
               >
                 <Alerta tom="info">
@@ -354,10 +365,15 @@ export default function UsuarioFicha() {
                 aoFechar={fechar}
                 rotuloConfirmar="Revogar acesso"
                 perigo
-                minMotivo={10}
-                executar={(motivo) => api('adminUsuarioRevogarAcesso', { params: { id }, corpo: { motivo } })}
-                sucesso="Acesso revogado e sessões encerradas."
-              />
+                reconfirmar
+                podeConfirmar={!!concursoAtivo}
+                executar={(motivo, confirmacao) =>
+                  api('superUsuarioConcursoRevogar', { params: { id, concursoId: concursoAtivo?.id ?? '' }, corpo: { motivo, confirmacao: confirmacao ?? {} } })
+                }
+                sucesso="Acesso ao concurso revogado."
+              >
+                {concursoAtivo ? <p>Revoga só {concursoAtivo.nome}. Os outros concursos do aluno continuam.</p> : null}
+              </AcaoConfirmada>
               <AcaoConfirmada
                 titulo="Excluir a conta (LGPD)?"
                 aberta={aberta === 'excluir'}

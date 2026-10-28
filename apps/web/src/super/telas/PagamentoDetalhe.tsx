@@ -238,6 +238,7 @@ export default function PagamentoDetalhe() {
               </AcaoConfirmada>
               <AprovarManual
                 aluno={{ id: p.usuario.id, nome: p.usuario.nome, email: p.usuario.email, pixPendente: p.status === 'pendente' && asaas }}
+                alvo={{ pedidoId: p.id }}
                 precoCentavos={p.valorCentavos}
                 aberta={aberta === 'manual'}
                 aoFechar={fechar}

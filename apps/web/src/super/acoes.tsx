@@ -148,7 +148,6 @@ const OPCOES_FORMA = FORMAS_PAGAMENTO_MANUAL.map((f) => ({ valor: f, rotulo: NOM
 const OPCOES_ASAAS = [
   { valor: 'receber_em_dinheiro', rotulo: 'Marcar como recebida em dinheiro no Asaas' },
   { valor: 'cancelar', rotulo: 'Cancelar a cobrança no Asaas' },
-  { valor: 'nenhuma', rotulo: 'Não mexer no Asaas' },
 ];
 
 export interface AlunoParaAprovar {
@@ -159,13 +158,21 @@ export interface AlunoParaAprovar {
   pixPendente?: boolean;
 }
 
+/**
+ * D24: a aprovação é de UM pedido (o valor e o concurso dele) ou, pela ficha, de um concurso
+ * explícito. (Lote 1: ajuste mínimo; a tela nova do RQ4 vem no Lote 3.)
+ */
+export type AlvoAprovacao = { pedidoId: string } | { concursoId: string };
+
 export function AprovarManual({
   aluno,
+  alvo,
   precoCentavos,
   aberta,
   aoFechar,
 }: {
   aluno: AlunoParaAprovar;
+  alvo: AlvoAprovacao | null;
   precoCentavos?: number | undefined;
   aberta: boolean;
   aoFechar: () => void;
@@ -176,26 +183,26 @@ export function AprovarManual({
   const [recebidoEm, setRecebidoEm] = useState(() => diaSP(new Date()));
   const [observacao, setObservacao] = useState('');
   const [referencia, setReferencia] = useState('');
-  const [acaoAsaas, setAcaoAsaas] = useState<'receber_em_dinheiro' | 'cancelar' | 'nenhuma'>('receber_em_dinheiro');
+  const [acaoAsaas, setAcaoAsaas] = useState<'receber_em_dinheiro' | 'cancelar'>('receber_em_dinheiro');
   const [comprovante, setComprovante] = useState<{ arquivo: string; nome: string } | null>(null);
   const upload = useMutation({
     mutationFn: (f: File) => enviarComprovante(f),
     onSuccess: (r, f) => setComprovante({ arquivo: r.arquivo, nome: f.name }),
   });
   const aprovar = useMutation({
-    mutationFn: () =>
-      api('superAprovarManual', {
-        params: { id: aluno.id },
-        corpo: {
-          forma,
-          recebidoEm,
-          observacao: observacao.trim(),
-          ...(referencia.trim() ? { referencia: referencia.trim() } : {}),
-          ...(comprovante ? { comprovante: comprovante.arquivo } : {}),
-          acaoAsaas: aluno.pixPendente ? acaoAsaas : 'nenhuma',
-          confirmacao: recon.confirmacao ?? {},
-        },
-      }),
+    mutationFn: () => {
+      const corpo = {
+        forma,
+        recebidoEm,
+        observacao: observacao.trim(),
+        ...(referencia.trim() ? { referencia: referencia.trim() } : {}),
+        ...(comprovante ? { comprovante: comprovante.arquivo } : {}),
+        acaoAsaas,
+        confirmacao: recon.confirmacao ?? {},
+      };
+      if (alvo && 'pedidoId' in alvo) return api('superPagamentoAprovarManual', { params: { id: alvo.pedidoId }, corpo });
+      return api('superAprovarManual', { params: { id: aluno.id }, corpo: { ...corpo, concursoId: alvo?.concursoId ?? '' } });
+    },
     onSuccess: () => {
       recon.limpar();
       void qc.invalidateQueries({ queryKey: ['super'] });
@@ -211,7 +218,7 @@ export function AprovarManual({
     aoFechar();
   };
   const campos = camposDoErro(aprovar.error);
-  const pronto = motivoValido(observacao) && !!recon.confirmacao && !!recebidoEm && !upload.isPending;
+  const pronto = !!alvo && motivoValido(observacao) && !!recon.confirmacao && !!recebidoEm && !upload.isPending;
   const r: AprovarManualResposta | undefined = aprovar.data;
 
   return (
@@ -241,9 +248,7 @@ export function AprovarManual({
       {r ? (
         <div className={a.formulario}>
           <Alerta tom="sucesso">
-            {r.jaAprovado
-              ? 'Este aluno já tinha um pagamento aprovado. Nada foi duplicado.'
-              : 'Pagamento manual registrado e acesso liberado.'}
+            {r.mensagem}
           </Alerta>
           {r.asaas.acao !== 'nenhuma' ? <Alerta tom={r.asaas.ok ? 'info' : 'aviso'}>Asaas: {r.asaas.mensagem}</Alerta> : null}
         </div>

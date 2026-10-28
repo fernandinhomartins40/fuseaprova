@@ -26,9 +26,6 @@ const MENU: { grupo: string; itens: ItemMenu[] }[] = [
     grupo: 'Operação',
     itens: [
       { para: 'reports', rotulo: 'Reports' },
-      { para: 'pedidos', rotulo: 'Pedidos' },
-      { para: 'usuarios', rotulo: 'Usuários' },
-      { para: 'auditoria', rotulo: 'Auditoria' },
     ],
   },
 ];
