@@ -83,7 +83,7 @@
   const ioP = new IntersectionObserver((es) => es.forEach((e) => {
     if (!e.isIntersecting) return;
     passos.forEach((p) => p.classList.toggle('ativo', p === e.target));
-    fundo.style.setProperty('--cor-ativa', e.target.style.getPropertyValue('--cor'));
+    fundo.style.setProperty('--cor-ativa', getComputedStyle(e.target).getPropertyValue('--cor').trim());
     const nova = e.target.dataset.tela;
     if (!tela.src.endsWith(nova)) { tela.classList.add('troca'); setTimeout(() => { tela.src = nova; tela.classList.remove('troca'); }, 200); }
   }), { rootMargin: '-45% 0px -45% 0px' });
