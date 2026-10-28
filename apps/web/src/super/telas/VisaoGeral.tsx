@@ -86,6 +86,7 @@ export default function VisaoGeral() {
         </div>
       </Folha>
       {csv.isError ? <Alerta tom="erro">{mensagemDeErro(csv.error)}</Alerta> : null}
+      {csv.data?.aviso ? <Alerta tom="aviso">{csv.data.aviso}</Alerta> : null}
       <Consulta consulta={consulta}>
         {(d) => {
           const pontos = d.serie.map((p) => ({

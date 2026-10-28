@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CANAIS_COMUNICACAO, SEGMENTOS_COMUNICACAO, type CanalComunicacao, type SegmentoComunicacao } from '@fuse/shared';
 import { LIMITE_COMUNICACAO, type ComunicacaoSuper } from '@fuse/shared/api';
-import { api, camposDoErro, mensagemDeErro } from '../../admin/api';
+import { api, camposDoErro, ErroAdminApi, mensagemDeErro } from '../../admin/api';
 import { Alerta, Botao, Cartao, CampoArea, CampoSelecao, CampoTexto, Consulta, Paginacao, Selo, Tabela, estilos as a } from '../../admin/componentes/ui';
 import { dataHora, numero } from '../../admin/util';
 import { AcaoConfirmada } from '../acoes';
@@ -32,6 +32,14 @@ interface Rascunho {
 }
 
 const TOM_STATUS = { na_fila: 'aviso', enviando: 'info', concluida: 'sucesso', cancelada: 'neutro', pausada: 'erro' } as const;
+
+/** S-17: 409 (comunicação igual criada há pouco) e 429 (limite diário) com o que fazer. */
+function erroCriar(e: unknown): string | undefined {
+  if (!(e instanceof ErroAdminApi)) return undefined;
+  if (e.status === 409) return `Comunicação duplicada: ${e.message} Confira o histórico antes de enviar de novo.`;
+  if (e.status === 429) return `Limite atingido: ${e.message}`;
+  return undefined;
+}
 
 /** S-17: chave de idempotência da criação (UUID v4). */
 function novaChave(): string {
@@ -93,7 +101,17 @@ function Nova({ aoCriar }: { aoCriar: () => void }) {
         ) : null}
         <CampoTexto rotulo={c.canal === 'push' ? 'Título do push' : 'Assunto'} maxLength={120} value={c.assunto} onChange={(e) => mudar({ assunto: e.target.value })} erro={campos.assunto} />
         <CampoArea rotulo="Mensagem" rows={6} maxLength={4000} value={c.mensagem} onChange={(e) => mudar({ mensagem: e.target.value })} erro={campos.mensagem} />
-        <CampoTexto rotulo="Link do botão (opcional)" placeholder="/aprender" value={link} onChange={(e) => setLink(e.target.value)} erro={campos.link} />
+        <CampoTexto
+          rotulo="Link do botão (opcional)"
+          placeholder="/aprender"
+          value={link}
+          onChange={(e) => {
+            // R2-13: o envio sai com o que a prévia mostrou; mudou o link, a prévia é refeita.
+            setLink(e.target.value);
+            previa.reset();
+          }}
+          erro={campos.link}
+        />
         <p className={a.suave}>
           Só recebe quem aceitou comunicações. No máximo {LIMITE_COMUNICACAO.porDia} comunicações por dia, uma por aluno a cada 24 h,{' '}
           {LIMITE_COMUNICACAO.emailPorMinuto} e-mails e {LIMITE_COMUNICACAO.pushPorMinuto} pushes por minuto.
@@ -138,6 +156,7 @@ function Nova({ aoCriar }: { aoCriar: () => void }) {
           api('superComunicacaoCriar', { corpo: { ...corpo, motivo, confirmacao: confirmacao ?? {}, chaveIdempotencia: chave } })
         }
         sucesso="Comunicação na fila. O worker envia aos poucos, respeitando os limites."
+        mensagemErro={erroCriar}
       >
         <p>
           {NOMES_CANAL[c.canal]} para {numero(previa.data?.destinatarios ?? 0)} aluno(s): “{c.assunto}”.
@@ -159,7 +178,30 @@ function Historico({ versao }: { versao: number }) {
     mutationFn: (id: string) => api('superComunicacaoCancelar', { params: { id } }),
     onSuccess: () => void consulta.refetch(),
   });
-  const podeCancelar = (c: ComunicacaoSuper) => c.status === 'na_fila' || c.status === 'enviando';
+  const [retomar, setRetomar] = useState<ComunicacaoSuper | null>(null);
+  const podeCancelar = (c: ComunicacaoSuper) => c.status === 'na_fila' || c.status === 'enviando' || c.status === 'pausada';
+  const acoes = (c: ComunicacaoSuper) => (
+    <>
+      {c.status === 'pausada' ? (
+        <Botao pequeno variante="primario" onClick={() => setRetomar(c)}>
+          Retomar
+        </Botao>
+      ) : null}
+      {podeCancelar(c) ? (
+        <Botao pequeno onClick={() => cancelar.mutate(c.id)} carregando={cancelar.isPending && cancelar.variables === c.id}>
+          Cancelar
+        </Botao>
+      ) : null}
+    </>
+  );
+  /** S-17: por que e quando o worker pausou. */
+  const pausa = (c: ComunicacaoSuper) =>
+    c.status === 'pausada' ? (
+      <div className={a.suave}>
+        {c.pausadaMotivo ?? 'Pausada pelo worker.'}
+        {c.pausadaEm ? ` (${dataHora(c.pausadaEm)})` : ''}
+      </div>
+    ) : null;
   return (
     <Cartao>
       <h2 className={a.secaoTitulo}>Histórico</h2>
@@ -175,14 +217,13 @@ function Historico({ versao }: { versao: number }) {
                     titulo={c.assunto}
                     sub={`${NOMES_CANAL[c.canal]} · ${dataHora(c.criadoEm)} · ${c.enviados}/${c.total}`}
                     extra={
-                      <div style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center' }}>
-                        <Selo tom={TOM_STATUS[c.status]}>{NOMES_STATUS[c.status]}</Selo>
-                        {podeCancelar(c) ? (
-                          <Botao pequeno onClick={() => cancelar.mutate(c.id)}>
-                            Cancelar
-                          </Botao>
-                        ) : null}
-                      </div>
+                      <>
+                        <div style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                          <Selo tom={TOM_STATUS[c.status]}>{NOMES_STATUS[c.status]}</Selo>
+                          {acoes(c)}
+                        </div>
+                        {pausa(c)}
+                      </>
                     }
                   />
                 ))}
@@ -211,6 +252,7 @@ function Historico({ versao }: { versao: number }) {
                       <td>{NOMES_SEGMENTO_COMUNICACAO[c.segmento]}</td>
                       <td>
                         <Selo tom={TOM_STATUS[c.status]}>{NOMES_STATUS[c.status]}</Selo>
+                        {pausa(c)}
                       </td>
                       <td className={a.direita}>
                         {numero(c.enviados)}/{numero(c.total)}
@@ -221,11 +263,9 @@ function Historico({ versao }: { versao: number }) {
                         <div className={a.suave}>{c.criadoPor?.nome ?? ''}</div>
                       </td>
                       <td>
-                        {podeCancelar(c) ? (
-                          <Botao pequeno onClick={() => cancelar.mutate(c.id)} carregando={cancelar.isPending && cancelar.variables === c.id}>
-                            Cancelar
-                          </Botao>
-                        ) : null}
+                        <span className={a.acoes} style={{ gap: 4 }}>
+                          {acoes(c)}
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -236,6 +276,21 @@ function Historico({ versao }: { versao: number }) {
           </>
         )}
       </Consulta>
+      <AcaoConfirmada
+        titulo="Retomar a comunicação?"
+        aberta={!!retomar}
+        aoFechar={() => {
+          setRetomar(null);
+          void consulta.refetch();
+        }}
+        rotuloConfirmar="Retomar envio"
+        executar={(motivo) => api('superComunicacaoRetomar', { params: { id: retomar?.id ?? '' }, corpo: { motivo } })}
+        sucesso="Comunicação de volta à fila. Os envios pendentes seguem respeitando os limites."
+      >
+        <p>“{retomar?.assunto}”: {numero(retomar?.pendentes ?? 0)} envio(s) pendente(s).</p>
+        {retomar?.pausadaMotivo ? <Alerta tom="aviso">Pausada porque: {retomar.pausadaMotivo}</Alerta> : null}
+        <p className={a.suave}>Confira se o SMTP voltou (tela Sistema) antes de retomar.</p>
+      </AcaoConfirmada>
     </Cartao>
   );
 }

@@ -75,14 +75,14 @@ export const IDS = {
 
 export const BASE = {
   'GET /me': { id: '77777777-7777-4777-8777-777777777777', nome: 'Dono Superadmin', papel: 'superadmin' },
-  'GET /admin/concursos': { itens: [{ id: '88888888-8888-4888-8888-888888888888', nome: 'Concurso de Palmital 2026' }] },
+  'GET /super/concursos': { itens: [{ id: '88888888-8888-4888-8888-888888888888', nome: 'Concurso de Palmital 2026' }] },
   'GET /super/2fa': { configurado: true, verificadoNestaSessao: true, ativadoEm: '2026-10-01T10:00:00.000Z', codigosRecuperacaoRestantes: 10 },
 };
 
 export function pagamento(extra: Record<string, unknown> = {}) {
   return {
     id: IDS.pedido,
-    usuario: { id: IDS.usuario, nome: 'Joana Pereira Dias', email: 'joana@teste.com', cpfOculto: '***.456.789-**', acesso: false },
+    usuario: { id: IDS.usuario, nome: 'Joana Pereira Dias', email: 'joana@teste.com', cpfOculto: '***.456.789-**', acesso: false, papel: 'aluno' },
     metodo: 'asaas',
     status: 'pendente',
     valorCentavos: 39700,

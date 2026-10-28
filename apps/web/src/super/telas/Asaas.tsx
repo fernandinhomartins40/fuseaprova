@@ -7,7 +7,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { formatarReais } from '@fuse/shared';
-import type { ExtratoQuery } from '@fuse/shared/api';
+import type { ConciliarLoteResposta, ExtratoQuery } from '@fuse/shared/api';
 import { api, mensagemDeErro } from '../../admin/api';
 import { Alerta, Botao, Cartao, CampoTexto, Consulta, Selo, Tabela, estilos as a } from '../../admin/componentes/ui';
 import { dataHora, dia, numero } from '../../admin/util';
@@ -211,8 +211,10 @@ function Extrato() {
         pedirMotivo={false}
         executar={() => api('superConciliarLote', { corpo: { de: p.de, ate: p.ate, corrigir: true } })}
         sucesso={(r) => {
-          const x = r as { verificados: number; divergentes: number; corrigidos: number; erros: number };
-          return `${x.verificados} verificado(s), ${x.divergentes} divergente(s), ${x.corrigidos} corrigido(s), ${x.erros} erro(s).`;
+          const x = r as ConciliarLoteResposta;
+          const base = `${x.verificados} verificado(s), ${x.divergentes} divergente(s), ${x.corrigidos} corrigido(s), ${x.erros} erro(s).`;
+          const resto = x.mensagem ?? (x.naoConferidos ? `${x.naoConferidos} pedido(s) ficaram sem conferir; rode de novo para o resto.` : '');
+          return `${base}${resto ? ` ${resto}` : ''}${x.mensagem && x.naoConferidos ? ` (${x.naoConferidos} sem conferir.)` : ''}`;
         }}
       >
         <p>

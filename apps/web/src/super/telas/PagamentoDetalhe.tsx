@@ -127,17 +127,11 @@ export default function PagamentoDetalhe() {
   const [aberta, setAberta] = useState<Aberta>(null);
   const [foraDoPrazo, setForaDoPrazo] = useState(false);
   const consulta = useQuery({ queryKey: ['super', 'pagamento', id], queryFn: () => api('superPagamentoObter', { params: { id } }) });
-  // O pedido não traz o papel: as ações do RQ4 só aparecem quando a ficha confirma que é aluno
-  // (e não a própria conta). A API recusa de qualquer jeito.
-  const idAluno = consulta.data?.pagamento.usuario.id;
-  const dono = useQuery({
-    queryKey: ['super', 'usuario', idAluno],
-    queryFn: () => api('superUsuarioObter', { params: { id: idAluno ?? '' } }),
-    enabled: !!idAluno,
-    staleTime: 30_000,
-  });
+  // As ações do RQ4 só aparecem quando o dono do pedido é aluno (o papel vem no próprio pedido)
+  // e não é a própria conta. A API recusa de qualquer jeito.
+  const dono = consulta.data?.pagamento.usuario;
   const me = useQuery({ queryKey: ['super', 'me'], queryFn: () => api('meObter'), staleTime: 60_000 });
-  const ehAluno = dono.data?.usuario.papel === 'aluno' && !!me.data && me.data.id !== idAluno;
+  const ehAluno = dono?.papel === 'aluno' && !!me.data && me.data.id !== dono.id;
   const abrir = (qual: Aberta) => {
     // S-25: a marcação "fora do prazo" volta ao padrão a cada abertura.
     setForaDoPrazo(false);

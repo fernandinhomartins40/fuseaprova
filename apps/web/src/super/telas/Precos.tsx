@@ -7,7 +7,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { DESCONTO_MAXIMO_PERCENTUAL, formatarReais, reaisParaCentavos, type TipoCupom } from '@fuse/shared';
 import type { CupomItem, CupomSalvarEntrada } from '@fuse/shared/api';
-import { api, camposDoErro, mensagemDeErro } from '../../admin/api';
+import { api, camposDoErro } from '../../admin/api';
+import { textoDoErro } from '../acoes';
 import { Alerta, Botao, Cartao, CampoArea, CampoSelecao, CampoTexto, Consulta, Marcar, Modal, Selo, Tabela, Vazio, estilos as a } from '../../admin/componentes/ui';
 import { dataHora } from '../../admin/util';
 import { BotaoAtualizar, CartaoLinha, Cartoes, Kpi, Pagina, estilosSuper as s, useCelular, useReconfirmacao } from '../componentes';
@@ -92,7 +93,7 @@ function Precos() {
                 />
                 <CampoArea rotulo="Motivo da alteração (fica na auditoria)" rows={2} maxLength={500} value={motivo} onChange={(e) => setMotivo(e.target.value)} erro={erros.motivo} />
                 {recon.campo}
-                {salvar.isError && !Object.keys(erros).length ? <Alerta tom="erro">{mensagemDeErro(salvar.error)}</Alerta> : null}
+                {salvar.isError && !Object.keys(erros).length ? <Alerta tom="erro">{textoDoErro(salvar.error)}</Alerta> : null}
                 {salvar.isSuccess ? (
                   <Alerta tom="sucesso">
                     Preços salvos.{' '}
@@ -169,7 +170,8 @@ export function descontoCupom(c: Pick<CupomItem, 'tipo' | 'valor'>): string {
 function situacao(c: CupomItem): { tom: 'sucesso' | 'neutro' | 'aviso'; texto: string } {
   if (!c.ativo) return { tom: 'neutro', texto: 'Desativado' };
   if (c.validoAte && new Date(c.validoAte).getTime() <= Date.now()) return { tom: 'aviso', texto: 'Expirado' };
-  if (c.limiteUsos !== null && c.usos >= c.limiteUsos) return { tom: 'aviso', texto: 'Esgotado' };
+  // S-12: o limite conta os reservados (pagos + Pix pendentes ainda válidos), não só os pagos.
+  if (c.limiteUsos !== null && c.reservados >= c.limiteUsos) return { tom: 'aviso', texto: 'Esgotado' };
   return { tom: 'sucesso', texto: 'Ativo' };
 }
 
@@ -253,7 +255,7 @@ function EditorCupom({ cupom, aoFechar }: { cupom: CupomItem | null; aoFechar: (
             ajuda={f.tipo === 'percentual' ? `De 1% a ${DESCONTO_MAXIMO_PERCENTUAL}%. O Pix nunca fica abaixo de R$ 5,00.` : 'O Pix nunca fica abaixo de R$ 5,00.'}
           />
           <CampoTexto rotulo="Válido até (opcional)" type="date" value={f.validoAte} onChange={(e) => setF({ ...f, validoAte: e.target.value })} erro={erros.validoAte} ajuda="Vale até 23:59 deste dia (horário de Brasília)." />
-          <CampoTexto rotulo="Limite de usos (opcional)" inputMode="numeric" value={f.limiteUsos} onChange={(e) => setF({ ...f, limiteUsos: e.target.value.replace(/\D/g, '') })} erro={erros.limiteUsos} ajuda="Pagamentos confirmados com o cupom." />
+          <CampoTexto rotulo="Limite de usos (opcional)" inputMode="numeric" value={f.limiteUsos} onChange={(e) => setF({ ...f, limiteUsos: e.target.value.replace(/\D/g, '') })} erro={erros.limiteUsos} ajuda="Pagos mais Pix pendentes (reservados)." />
           <CampoSelecao
             rotulo="Concurso"
             value={f.concursoId}
@@ -265,7 +267,7 @@ function EditorCupom({ cupom, aoFechar }: { cupom: CupomItem | null; aoFechar: (
           <Marcar rotulo="Cupom ativo" checked={f.ativo} onChange={(e) => setF({ ...f, ativo: e.target.checked })} />
           <CampoArea rotulo="Motivo (fica na auditoria)" rows={2} maxLength={500} value={f.motivo} onChange={(e) => setF({ ...f, motivo: e.target.value })} erro={erros.motivo} />
           {recon.campo}
-          {salvar.isError && !Object.keys(erros).length ? <Alerta tom="erro">{mensagemDeErro(salvar.error)}</Alerta> : null}
+          {salvar.isError && !Object.keys(erros).length ? <Alerta tom="erro">{textoDoErro(salvar.error)}</Alerta> : null}
         </form>
       )}
     </Modal>
@@ -276,7 +278,7 @@ function Cupons() {
   const celular = useCelular();
   const consulta = useQuery({ queryKey: ['super', 'cupons'], queryFn: () => api('superCupons') });
   const [editando, setEditando] = useState<CupomItem | 'novo' | null>(null);
-  const usos = (c: CupomItem) => `${c.usos}${c.limiteUsos !== null ? ` de ${c.limiteUsos}` : ''}`;
+  const usos = (c: CupomItem) => `${c.usos} pago(s) · ${c.reservados}${c.limiteUsos !== null ? ` de ${c.limiteUsos}` : ''} reservado(s)`;
   return (
     <Cartao>
       <div className={a.acoes}>
@@ -285,6 +287,7 @@ function Cupons() {
           Novo cupom
         </Botao>
       </div>
+      <p className={a.suave}>Um Pix gerado com o cupom e ainda não pago reserva um uso até vencer: o limite conta pagos e reservados.</p>
       <Consulta consulta={consulta}>
         {(d) =>
           !d.itens.length ? (
@@ -295,7 +298,7 @@ function Cupons() {
                 <CartaoLinha
                   key={c.id}
                   titulo={c.codigo}
-                  sub={`${descontoCupom(c)} · ${usos(c)} uso(s) · ${c.validoAte ? `até ${dataHora(c.validoAte)}` : 'sem prazo'}`}
+                  sub={`${descontoCupom(c)} · ${usos(c)} · ${c.validoAte ? `até ${dataHora(c.validoAte)}` : 'sem prazo'}`}
                   extra={
                     <div className={a.acoes}>
                       <Selo tom={situacao(c).tom}>{situacao(c).texto}</Selo>
@@ -313,7 +316,7 @@ function Cupons() {
                   <th>Desconto</th>
                   <th>Concurso</th>
                   <th>Validade</th>
-                  <th className={a.direita}>Usos</th>
+                  <th className={a.direita}>Usos (pagos · reservados)</th>
                   <th className={a.direita}>Pix pendentes</th>
                   <th>Situação</th>
                   <th aria-label="Ações" />

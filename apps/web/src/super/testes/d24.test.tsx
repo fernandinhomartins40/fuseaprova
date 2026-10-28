@@ -179,8 +179,8 @@ describe('RQ4: as ações da tela do pagamento', () => {
   it('conta da equipe: nenhuma das três ações aparece', async () => {
     simularFetch({
       ...BASE,
-      [`GET /super/pagamentos/${IDS.pedido}`]: detalhe({ status: 'pago', concursoLiberado: false }),
-      [`GET /super/usuarios/${IDS.usuario}`]: ficha({ papel: 'admin' }),
+      // Lote 3: o papel vem no próprio pedido (sem consultar a ficha).
+      [`GET /super/pagamentos/${IDS.pedido}`]: detalhe({ status: 'pago', concursoLiberado: false, usuario: { ...pagamento().usuario, papel: 'admin' } }),
     });
     renderizarSuper(`/super/pagamentos/${IDS.pedido}`, 1280);
     expect(await botoesVisiveis()).toEqual([]);

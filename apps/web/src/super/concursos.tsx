@@ -1,7 +1,6 @@
 /**
- * D21 (S-14): lista de concursos para os filtros do /super (pagamentos e financeiro).
- * Usa a rota de conteúdo (o superadmin com 2FA passa na guarda `conteudo`); a API ainda não
- * tem um resumo próprio em /super. Se a lista falhar, o filtro avisa em vez de sumir calado.
+ * D21 (S-14): lista de concursos para os filtros do /super (pagamentos e financeiro), pela rota
+ * leve `GET /super/concursos` (id e nome). Se a lista falhar, o filtro avisa em vez de sumir calado.
  */
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../admin/api';
@@ -10,7 +9,7 @@ import { CampoSelecao } from '../admin/componentes/ui';
 export function useConcursosResumo() {
   return useQuery({
     queryKey: ['super', 'concursos'],
-    queryFn: () => api('adminConcursosListar'),
+    queryFn: () => api('superConcursos'),
     staleTime: 5 * 60_000,
   });
 }

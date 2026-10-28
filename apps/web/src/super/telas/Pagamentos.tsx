@@ -8,7 +8,7 @@ import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatarReais, METODOS_PEDIDO, STATUS_PEDIDO, type MetodoPedido, type StatusPedido } from '@fuse/shared';
-import type { ConciliarLoteResposta, PagamentosQuery } from '@fuse/shared/api';
+import { LIMITE_CONCILIACAO_LOTE, type ConciliarLoteResposta, type PagamentosQuery } from '@fuse/shared/api';
 import { api, mensagemDeErro } from '../../admin/api';
 import { Alerta, Botao, CampoSelecao, CampoTexto, Consulta, Marcar, Paginacao, Selo, Tabela, estilos as a } from '../../admin/componentes/ui';
 import { dataHora, NOMES_STATUS_PEDIDO, TOM_STATUS_PEDIDO } from '../../admin/util';
@@ -76,7 +76,7 @@ function ConciliarLote({ aberta, aoFechar }: { aberta: boolean; aoFechar: () => 
     >
       <div className={a.formulario}>
         <p className={a.suave}>
-          Consulta no Asaas as cobranças Pix do Fuse Aprova (até 200) criadas no período. Os pagamentos manuais ficam de fora.
+          Consulta no Asaas as cobranças Pix do Fuse Aprova criadas no período (até {LIMITE_CONCILIACAO_LOTE.pedidos} por vez). Os pagamentos manuais ficam de fora.
         </p>
         <CampoTexto rotulo="De" type="date" value={p.de} onChange={(e) => e.target.value && setP((x) => ({ ...x, de: e.target.value }))} />
         <CampoTexto rotulo="Até" type="date" value={p.ate} onChange={(e) => e.target.value && setP((x) => ({ ...x, ate: e.target.value }))} />
@@ -87,8 +87,14 @@ function ConciliarLote({ aberta, aoFechar }: { aberta: boolean; aoFechar: () => 
             <Alerta tom={r.divergentes ? 'aviso' : 'sucesso'}>
               {r.verificados} verificado(s), {r.divergentes} divergente(s), {r.corrigidos} corrigido(s), {r.erros} erro(s).
               {r.ignoradosManuais ? ` ${r.ignoradosManuais} manual(is) ignorado(s).` : ''}
-              {r.limiteAtingido ? ' Limite de 200 atingido: rode de novo com um período menor.' : ''}
+              {r.limiteAtingido ? ' Limite atingido: rode de novo com um período menor.' : ''}
             </Alerta>
+            {r.mensagem || r.naoConferidos ? (
+              <Alerta tom="aviso">
+                {r.mensagem ?? `${r.naoConferidos} pedido(s) ficaram sem conferir porque o Asaas demorou. Rode de novo para conferir o resto.`}
+                {r.mensagem && r.naoConferidos ? ` (${r.naoConferidos} sem conferir.)` : ''}
+              </Alerta>
+            ) : null}
             {r.itens.filter((i) => i.divergente || !i.statusAsaas).length ? (
               <ul className={a.lista}>
                 {r.itens
@@ -178,6 +184,7 @@ export default function Pagamentos() {
       </Folha>
       <ConciliarLote aberta={conciliar} aoFechar={() => setConciliar(false)} />
       {csv.isError ? <Alerta tom="erro">{mensagemDeErro(csv.error)}</Alerta> : null}
+      {csv.data?.aviso ? <Alerta tom="aviso">{csv.data.aviso}</Alerta> : null}
       <Consulta consulta={consulta} vazio={(d) => d.itens.length === 0} textoVazio="Nenhum pagamento com esses filtros.">
         {(d) => (
           <>

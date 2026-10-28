@@ -9,6 +9,7 @@ import { api, camposDoErro, mensagemDeErro } from '../../admin/api';
 import { Alerta, Botao, Cartao, CampoTexto, Consulta, estilos as a } from '../../admin/componentes/ui';
 import { voltarSeguro } from '../../app/areaPainel';
 import { Pagina, estilosSuper as s, useLayout } from '../componentes';
+import { textoDoErro } from '../acoes';
 import { caminho } from '../util';
 
 function Codigos({ codigos, aoContinuar }: { codigos: string[]; aoContinuar: () => void }) {
@@ -115,7 +116,7 @@ export default function DoisFatores() {
                         autoComplete="one-time-code"
                         value={codigo}
                         onChange={(e) => setCodigo(e.target.value)}
-                        erro={camposDoErro(ativar.error).codigo ?? (ativar.isError ? mensagemDeErro(ativar.error) : undefined)}
+                        erro={camposDoErro(ativar.error).codigo ?? (ativar.isError ? textoDoErro(ativar.error) : undefined)}
                       />
                       <Botao type="submit" variante="primario" carregando={ativar.isPending}>
                         Ativar
@@ -151,7 +152,7 @@ export default function DoisFatores() {
                     autoComplete="one-time-code"
                     value={codigo}
                     onChange={(e) => setCodigo(e.target.value)}
-                    erro={verificar.isError ? mensagemDeErro(verificar.error) : undefined}
+                    erro={verificar.isError ? textoDoErro(verificar.error) : undefined}
                   />
                   <div className={a.acoes}>
                     <Botao type="submit" variante="primario" carregando={verificar.isPending}>
