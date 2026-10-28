@@ -210,17 +210,18 @@ p { margin: 0; text-wrap: pretty; }
 /* como funciona: celular fixo, telas trocam */
 .metodo { padding: clamp(90px, 10vw, 140px) 0; background: #fff; }
 .metodo .grade { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 30px; }
-.passo { min-height: 62vh; display: flex; flex-direction: column; justify-content: center; opacity: .28; transition: opacity .5s; }
+.passos { padding-bottom: 60px; }
+.passo { min-height: max(460px, 100vh - 108px); display: flex; flex-direction: column; justify-content: center; opacity: .28; transition: opacity .5s; }
 .passo.ativo { opacity: 1; }
 .passo .n { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; background: var(--cor); color: #fff; font: 800 26px var(--display); margin-bottom: 20px; box-shadow: 0 10px 24px -10px var(--cor); }
 .passo h3 { font-size: clamp(32px, 3.6vw, 46px); margin-bottom: 14px; }
 .passo p { color: var(--tinta-2); max-width: 44ch; }
 .passo .mini { display: none; }
-.palco-cel { position: sticky; top: 14vh; height: 72vh; display: grid; place-items: center; }
-.palco-cel .fundo { position: absolute; inset: 6% 8%; border-radius: 48px; background: var(--cor-ativa, var(--turquesa)); transition: background .6s var(--suave); }
+.palco-cel { position: sticky; top: 92px; height: calc(100vh - 108px); min-height: 460px; display: grid; place-items: center; }
+.palco-cel .fundo { position: absolute; inset: 14% 6%; border-radius: 48px; background: var(--cor-ativa, var(--turquesa)); transition: background .6s var(--suave); }
 .palco-cel .fundo::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(60% 50% at 70% 10%, rgba(255,255,255,.35), transparent 70%); }
-.palco-cel .tela { position: relative; width: min(300px, 70%); border-radius: 44px; padding: 10px; background: linear-gradient(145deg, #2A2F33, #0B0E10); box-shadow: 0 40px 80px -30px rgba(0,0,0,.5); }
-.palco-cel .tela img { border-radius: 34px; transition: opacity .25s; }
+.palco-cel .tela { position: relative; height: min(100vh - 132px, 700px); aspect-ratio: 620 / 1319; width: auto; max-width: 80%; border-radius: 44px; padding: 10px; background: linear-gradient(145deg, #2A2F33, #0B0E10); box-shadow: 0 40px 80px -30px rgba(0,0,0,.5); }
+.palco-cel .tela img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 34px; transition: opacity .25s; }
 .palco-cel .tela img.troca { opacity: 0; }
 @media (max-width: 900px) {
   .metodo .grade { grid-template-columns: 1fr; gap: 0; }
