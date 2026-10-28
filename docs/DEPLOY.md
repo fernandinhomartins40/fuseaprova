@@ -191,7 +191,7 @@ cd /root/fuseaprova/deploy
 docker compose exec api pnpm --filter @fuse/api cli admin:criar --email voce@fuseaprova.com.br --nome "Luiz Fernando Martins Oliveira"
 ```
 
-Sem `--senha`, o comando pede a senha no terminal sem eco (não passe a senha na linha de comando: ela fica no histórico do shell). O admin nasce com acesso liberado. Entre em `https://www.fuseaprova.com.br/entrar` e abra `/admin`.
+Sem `--senha`, o comando pede a senha no terminal sem eco (não passe a senha na linha de comando: ela fica no histórico do shell). O admin (equipe de conteúdo) entra por `https://www.fuseaprova.com.br/admin/entrar` e vê só a seção Conteúdo do painel (`/super/conteudo`). Ele não estuda nem vê o negócio (D24).
 
 ### 1.8 Criar ou promover o superadmin (D13)
 
@@ -200,7 +200,7 @@ cd /root/fuseaprova/deploy
 docker compose exec api pnpm --filter @fuse/api cli superadmin:criar --email voce@fuseaprova.com.br
 ```
 
-Se a conta já existe (por exemplo, o admin do passo 1.7), o comando **só promove o papel**: a senha não muda e as sessões abertas caem. Se a conta não existe, passe também `--nome "Nome Sobrenome"`. Sem `--senha`, o comando gera uma senha forte e a mostra **uma única vez**; guarde-a num gerenciador de senhas. No primeiro login, a PWA leva para `/super/2fa`, onde você lê o QR code com um app autenticador e guarda os códigos de recuperação. Se perder o celular e os códigos, use `cli superadmin:resetar-2fa --email …`.
+Se a conta já existe (por exemplo, o admin do passo 1.7), o comando **só promove o papel**: a senha não muda e as sessões abertas caem. Se a conta não existe, passe também `--nome "Nome Sobrenome"`. Sem `--senha`, o comando gera uma senha forte e a mostra **uma única vez**; guarde-a num gerenciador de senhas. O superadmin entra por `https://www.fuseaprova.com.br/super/entrar` (a página `/entrar` é só do aluno, D24). No primeiro login, a PWA leva para `/super/2fa`, onde você lê o QR code com um app autenticador e guarda os códigos de recuperação. Se perder o celular e os códigos, use `cli superadmin:resetar-2fa --email …`.
 
 ---
 
