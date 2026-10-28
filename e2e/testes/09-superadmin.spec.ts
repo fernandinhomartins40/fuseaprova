@@ -144,7 +144,7 @@ for (const [nome, viewport] of [
       const linha =
         nome === 'desktop'
           ? page.getByRole('table', { name: 'Pagamentos' }).getByRole('cell', { name: 'Manual', exact: true })
-          : page.getByRole('list', { name: 'Pagamentos' }).getByText(/^Manual ·/);
+          : page.getByRole('list', { name: 'Pagamentos' }).getByText(/(^|· )Manual ·/);
       await expect(linha).toBeVisible();
     });
   });

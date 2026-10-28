@@ -18,7 +18,7 @@ test.describe('Conteúdo no painel único (D24)', () => {
     await entrarPelaUI(page, email, senha, '/admin/entrar');
     await expect(page).toHaveURL(/\/super\/conteudo$/);
     await expect(page.getByRole('heading', { name: 'Resumo do conteúdo', exact: true })).toBeVisible();
-    await expect(page.getByText('Aprendizagem')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Aprendizagem' })).toBeVisible();
     const menu = page.getByRole('navigation', { name: 'Menu do painel de conteúdo' });
     await expect(menu.getByRole('link', { name: 'Pagamentos' })).toHaveCount(0);
     await expect(menu.getByRole('button', { name: 'Sair' })).toBeVisible();
