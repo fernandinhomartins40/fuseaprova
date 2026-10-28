@@ -253,3 +253,27 @@ O PRD só prevê o papel `admin` (conteúdo e operação). O dono do produto pre
 - **CSV:** até 100 mil linhas; acima disso, o aviso explícito vai na última linha e no campo `aviso`. Números negativos continuam números; fórmulas depois de espaço e com sinais de largura total são neutralizadas.
 - **LGPD:** a anonimização tira nome, e-mail, celular, CPF e destinatário da auditoria da conta e dos pedidos dela e apaga o Pix (copia-e-cola e QR) dos pedidos; a busca por CPF só aceita os 11 dígitos.
 
+
+## D26. Parte legal: identificação da empresa, LGPD e Marco Civil (28/10/2026, pedido do dono)
+- **Pedido:** completar a parte legal para começar a vender, com os dados da empresa enviados pelo dono (contrato social e cartão CNPJ).
+- **Empresa:** os dados públicos ficam em `EMPRESA`, no `@fuse/shared`: FUSE AGENCIA LTDA, CNPJ 42.761.086/0001-15, sede em Guarapuava/PR, encarregado Luiz Fernando Martins Oliveira. Eles aparecem:
+  - nos termos e na política;
+  - no rodapé da landing;
+  - no rodapé dos e-mails (Decreto 7.962/2013, art. 2º; LGPD, arts. 9º e 41).
+- **Documentos pessoais:** CPF, RG e os PDFs **não** entram no repositório nem no site.
+- **Termos e política reescritos (versão `2026-10-28`):**
+  - **Termos:** CDC, Decreto 7.962/2013 e Lei 9.610/1998. Cobrem capacidade (18 anos, ou de 16 a 18 com o responsável), licença, condutas proibidas, cupons, arrependimento de 7 dias, mudanças com aviso de 15 dias e foro do consumidor.
+  - **Política:** controlador, encarregado, dados por categoria, base legal de cada finalidade, operadores, transferência internacional, prazos, segurança, direitos do art. 18 com prazo de 15 dias, cookies, adolescentes e incidentes.
+- **E-mail de privacidade:** `VITE_PRIVACIDADE_EMAIL`. Sem ela, vale o e-mail do suporte.
+- **Registro de acesso (Marco Civil, art. 15):**
+  - tabela nova `registros_acesso` (migração `0008`), gravada em todo login, cadastro e redefinição de senha, com data, IP, **porta de origem** (cabeçalho `X-Real-Port`, que os dois nginx repassam) e navegador;
+  - guardada por 6 meses, mesmo depois da exclusão da conta (obrigação legal);
+  - entra na exportação LGPD do titular.
+  
+  Antes, o IP só existia na sessão, que é apagada ao expirar.
+- **Prazos de guarda (P-10, decidido aqui):** o worker apaga no job das 03:00 (`limpezaLegal`):
+  - registros de acesso com mais de 6 meses;
+  - auditoria e eventos do webhook com mais de 5 anos.
+  
+  Os pedidos não são apagados (registro fiscal, sem dados pessoais depois da exclusão).
+- **Documentos internos:** `docs/lgpd/REGISTRO_DAS_OPERACOES.md` (art. 37) e `docs/lgpd/PLANO_RESPOSTA_INCIDENTES.md` (art. 48; Resolução CD/ANPD nº 15/2024).
