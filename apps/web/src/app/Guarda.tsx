@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { ehAdmin } from '@fuse/shared';
+import { podeGerirConteudo } from '@fuse/shared';
 import { ErroApi } from '../api/cliente';
 import { useMe } from '../api/consultas';
 import { Carregando, ErroTela } from '../ui';
@@ -36,7 +36,7 @@ export function Guarda({
   }
   const u = me.data!;
   if (nivel === 'admin' || nivel === 'super') {
-    const pode = nivel === 'admin' ? ehAdmin(u.papel) : u.papel === 'superadmin';
+    const pode = nivel === 'admin' ? podeGerirConteudo(u.papel) : u.papel === 'superadmin';
     if (!pode) return <Navigate to={rotaInicial(u)} replace />;
     if (u.papel === 'superadmin' && u.doisFatoresPendente && pathname !== '/super/2fa') {
       return <Navigate to="/super/2fa" replace />;

@@ -4,15 +4,25 @@
  * CSV e convites da equipe.
  */
 import { createHash } from 'node:crypto';
-import { and, count, desc, eq, gte, inArray, isNotNull, isNull, lt, max, or, sql, type SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, inArray, isNotNull, isNull, lt, max, or, sql, type SQL } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { NOMES_PAPEL, ocultarCpf, somenteDigitos, MS_DIA } from '@fuse/shared';
-import { gerarCsv, VALIDADE_CONVITE_MS, VALIDADE_LINK_SENHA_MS, type FichaUsuarioResposta, type Reconfirmacao, type UsuarioSuperResumo } from '@fuse/shared/api';
+import {
+  gerarCsv,
+  VALIDADE_CONVITE_MS,
+  VALIDADE_LINK_SENHA_MS,
+  type ConcursoDoUsuario,
+  type FichaUsuarioResposta,
+  type Reconfirmacao,
+  type UsuarioSuperResumo,
+} from '@fuse/shared/api';
 import type { Deps, Usuario, UsuarioSessao } from '../../contexto.js';
-import type { Registrador } from '../../http/registrar.js';
+import type { Contexto, Registrador } from '../../http/registrar.js';
 import { ehViolacaoUnica, existe, falha } from '../../http/erros.js';
 import { emailAvisoTrocaEmail, emailConvite, emailRecuperacao } from '../../integracoes/email.js';
+import { liberarConcurso, recalcularAcessoPorPedidos, revogarConcurso } from '../../servicos/concursos.js';
 import { reconfirmar } from '../../servicos/doisfatores.js';
+import { alunoAlvo, concursoEstaLiberado } from '../../servicos/pagamentoManual.js';
 import { dominioPorDisciplina } from '../../servicos/dominio.js';
 import { anonimizarUsuario, exportarDadosUsuario } from '../../servicos/lgpd.js';
 import { encerrarSessoesDoUsuario, gerarToken } from '../../servicos/sessoes.js';
@@ -32,6 +42,10 @@ const {
   pushInscricoes,
   auditoria,
   redefinicoesSenha,
+  usuariosConcursos,
+  concursos,
+  cargos,
+  cupons,
 } = schema;
 
 const hashSimples = (t: string) => createHash('sha256').update(t).digest('hex');
@@ -158,6 +172,17 @@ async function ficha(db: Db, id: string, agora: Date): Promise<FichaUsuarioRespo
   if (idsAprov.length) {
     for (const a of await db.select({ id: usuarios.id, nome: usuarios.nome }).from(usuarios).where(inArray(usuarios.id, idsAprov))) aprovadores.set(a.id, a.nome);
   }
+  const concursosDoAluno = await concursosDaFicha(db, u, ped);
+  const nomesConcurso = new Map(concursosDoAluno.map((c) => [c.id, c.nome]));
+  const idsSemNome = [...new Set(ped.map((p) => p.concursoId).filter((c): c is string => !!c && !nomesConcurso.has(c)))];
+  if (idsSemNome.length) {
+    for (const c of await db.select({ id: concursos.id, nome: concursos.nome }).from(concursos).where(inArray(concursos.id, idsSemNome))) nomesConcurso.set(c.id, c.nome);
+  }
+  const idsCupom = [...new Set(ped.map((p) => p.cupomId).filter((c): c is string => !!c))];
+  const codigosCupom = new Map(
+    idsCupom.length ? (await db.select({ id: cupons.id, codigo: cupons.codigo }).from(cupons).where(inArray(cupons.id, idsCupom))).map((c) => [c.id, c.codigo]) : [],
+  );
+  const acessoPorConcurso = new Map(concursosDoAluno.map((c) => [c.id, c.acesso]));
   const alvos = [`usuario:${id}`, ...ped.map((p) => `pedido:${p.id}`)];
   const auds = await db
     .select({ a: auditoria, nome: usuarios.nome })
@@ -198,9 +223,14 @@ async function ficha(db: Db, id: string, agora: Date): Promise<FichaUsuarioRespo
       dominio: (await dominioPorDisciplina(db, id)).map((d) => ({ slug: d.slug, nome: d.nome, valor: d.valor })),
     },
     pedidos: ped.map((p) => {
-      const { usuario: _u, ...resto } = mapPagamento(p, u, p.aprovadoPor ? { id: p.aprovadoPor, nome: aprovadores.get(p.aprovadoPor) ?? '—' } : null, agora);
+      const { usuario: _u, ...resto } = mapPagamento(p, u, p.aprovadoPor ? { id: p.aprovadoPor, nome: aprovadores.get(p.aprovadoPor) ?? '—' } : null, agora, {
+        concurso: p.concursoId ? { id: p.concursoId, nome: nomesConcurso.get(p.concursoId) ?? '' } : null,
+        cupomCodigo: p.cupomId ? (codigosCupom.get(p.cupomId) ?? null) : null,
+        acessoConcurso: p.concursoId ? (acessoPorConcurso.get(p.concursoId) ?? null) : null,
+      });
       return resto;
     }),
+    concursos: concursosDoAluno,
     sessoes: ses.map((s) => ({
       id: s.id,
       userAgent: s.userAgent,
@@ -228,12 +258,50 @@ async function ficha(db: Db, id: string, agora: Date): Promise<FichaUsuarioRespo
   };
 }
 
-/** Link de redefinição (a mesma tabela da recuperação de senha). */
-async function criarLinkSenha(deps: Deps, usuarioId: string, agora: Date, validadeMs: number): Promise<{ link: string; expiraEm: Date }> {
+/**
+ * Link de senha (a mesma tabela da recuperação). D24: o convite da equipe tem página própria
+ * (`/convite/:token`); `/recuperar/:token` continua aceitando o token de convite já enviado.
+ */
+async function criarLinkSenha(
+  deps: Deps,
+  usuarioId: string,
+  agora: Date,
+  validadeMs: number,
+  pagina: 'recuperar' | 'convite' = 'recuperar',
+): Promise<{ link: string; expiraEm: Date }> {
   const token = gerarToken();
   const expiraEm = new Date(agora.getTime() + validadeMs);
   await deps.db.insert(redefinicoesSenha).values({ usuarioId, tokenHash: hashSimples(token), expiraEm, criadoEm: agora });
-  return { link: `${deps.config.appUrl}/recuperar/${token}`, expiraEm };
+  return { link: `${deps.config.appUrl}/${pagina}/${token}`, expiraEm };
+}
+
+/** D24: a página de login de cada área. */
+const PAGINA_LOGIN: Record<Usuario['papel'], string> = { aluno: '/entrar', admin: '/admin/entrar', superadmin: '/super/entrar' };
+
+/** D21: os concursos do aluno na ficha, com o acesso de cada um e o pedido pago que o libera. */
+async function concursosDaFicha(db: Db, u: Usuario, ped: (typeof pedidos.$inferSelect)[]): Promise<ConcursoDoUsuario[]> {
+  const linhas = await db
+    .select({ l: usuariosConcursos, nome: concursos.nome, cargo: cargos.nome })
+    .from(usuariosConcursos)
+    .innerJoin(concursos, eq(concursos.id, usuariosConcursos.concursoId))
+    .leftJoin(cargos, eq(cargos.id, usuariosConcursos.cargoId))
+    .where(eq(usuariosConcursos.usuarioId, u.id))
+    .orderBy(asc(usuariosConcursos.criadoEm));
+  return linhas.map((x) => ({
+    id: x.l.concursoId,
+    nome: x.nome,
+    acesso: x.l.acesso,
+    acessoEm: isoOuNull(x.l.acessoEm),
+    ativo: u.concursoId === x.l.concursoId,
+    cargo: x.cargo ?? null,
+    pedidoPagoId: ped.find((p) => p.status === 'pago' && p.concursoId === x.l.concursoId)?.id ?? null,
+  }));
+}
+
+async function concursosDoId(db: Db, id: string): Promise<ConcursoDoUsuario[]> {
+  const u = await usuarioPorId(db, id);
+  const ped = await db.select().from(pedidos).where(eq(pedidos.usuarioId, id)).orderBy(desc(pedidos.criadoEm));
+  return concursosDaFicha(db, u, ped);
 }
 
 /** S-11: reconfirmação obrigatória quando o alvo é da equipe (400 sem ela, 403 se errada). */
@@ -369,9 +437,11 @@ export function rotasSuperUsuarios(r: Registrador): void {
     if (u.bloqueadoEm) throw falha('conflito', 'A conta já está bloqueada.');
     // S-11: bloquear outro superadmin derruba a sessão dele: pede reconfirmação.
     if (u.papel === 'superadmin') await exigirReconfirmacao(ctx, corpo.confirmacao, 'bloquear um superadmin');
-    await garantirOutroSuperadmin(deps.db, u);
-    await deps.db.update(usuarios).set({ bloqueadoEm: agora, bloqueioMotivo: corpo.motivo }).where(eq(usuarios.id, u.id));
-    const revogadas = await encerrarSessoesDoUsuario(deps.db, u.id);
+    const revogadas = await deps.db.transaction(async (tx) => {
+      await garantirOutroSuperadmin(tx, u);
+      await tx.update(usuarios).set({ bloqueadoEm: agora, bloqueioMotivo: corpo.motivo }).where(eq(usuarios.id, u.id));
+      return encerrarSessoesDoUsuario(tx, u.id);
+    });
     await auditarSuper(ctx, 'usuario.bloquear', `usuario:${u.id}`, { motivo: corpo.motivo, antes: { bloqueado: false }, depois: { bloqueado: true }, detalhes: { revogadas } });
     return { ok: true as const };
   });
@@ -391,11 +461,23 @@ export function rotasSuperUsuarios(r: Registrador): void {
     const u = await usuarioPorId(deps.db, params.id);
     if (u.excluidoEm) throw falha('conflito', 'Esta conta foi excluída.');
     if (u.papel === corpo.papel) throw falha('conflito', `O usuário já é ${NOMES_PAPEL[u.papel].toLowerCase()}.`);
-    if (corpo.papel !== 'superadmin') await garantirOutroSuperadmin(deps.db, u);
-    await deps.db.update(usuarios).set({ papel: corpo.papel }).where(eq(usuarios.id, u.id));
-    // As sessões abertas caem: o novo papel vale com as regras dele (2FA e validade curta).
-    const revogadas = await encerrarSessoesDoUsuario(deps.db, u.id);
-    await auditarSuper(ctx, 'usuario.papel', `usuario:${u.id}`, { motivo: corpo.motivo, antes: { papel: u.papel }, depois: { papel: corpo.papel }, detalhes: { revogadas } });
+    await deps.db.transaction(async (tx) => {
+      // S-24: trava as linhas dos superadmins até o fim da transação (sem TOCTOU).
+      if (corpo.papel !== 'superadmin') await garantirOutroSuperadmin(tx, u);
+      await tx.update(usuarios).set({ papel: corpo.papel }).where(eq(usuarios.id, u.id));
+      // S-05: quem volta a ser aluno fica só com o acesso que os pedidos pagos dão (nada de
+      // acesso gratuito herdado da equipe).
+      const acesso = corpo.papel === 'aluno' ? await recalcularAcessoPorPedidos(tx, u.id, agora) : u.acesso;
+      // As sessões abertas caem: o novo papel vale com as regras dele (portal, 2FA e validade).
+      const revogadas = await encerrarSessoesDoUsuario(tx, u.id);
+      await auditarSuper(
+        ctx,
+        'usuario.papel',
+        `usuario:${u.id}`,
+        { motivo: corpo.motivo, antes: { papel: u.papel, acesso: u.acesso }, depois: { papel: corpo.papel, acesso }, detalhes: { revogadas } },
+        tx,
+      );
+    });
     return { ok: true as const };
   });
 
@@ -416,12 +498,56 @@ export function rotasSuperUsuarios(r: Registrador): void {
     if (corpo.emailConfirmado.trim().toLowerCase() !== u.email.toLowerCase()) {
       throw falha('validacao', 'O e-mail digitado não é o deste usuário.', { emailConfirmado: 'O e-mail digitado não é o deste usuário.' });
     }
-    await garantirOutroSuperadmin(deps.db, u);
-    await deps.db.transaction((tx) => anonimizarUsuario(tx, u.id, agora));
+    await deps.db.transaction(async (tx) => {
+      await garantirOutroSuperadmin(tx, u);
+      await anonimizarUsuario(tx, u.id, agora);
+    });
     // Sem dados pessoais no "antes": só o que identifica o registro.
     await auditarSuper(ctx, 'usuario.anonimizar', `usuario:${u.id}`, { motivo: corpo.motivo, antes: { papel: u.papel, acesso: u.acesso }, depois: { excluido: true } });
     return { ok: true as const };
   });
+
+  /* --------------------------------------------- acesso por concurso (D21, D24) */
+  const acaoConcurso = (liberar: boolean) => async (ctx: Contexto<'superUsuarioConcursoLiberar'>) => {
+    const { deps, params, corpo, usuario, agora } = ctx;
+    await reconfirmar(deps, usuario, corpo.confirmacao, agora);
+    const [c] = await deps.db.select({ id: concursos.id, nome: concursos.nome }).from(concursos).where(eq(concursos.id, params.concursoId));
+    const concurso = existe(c, 'Concurso não encontrado.');
+    const r = await deps.db.transaction(async (tx) => {
+      const aluno = await alunoAlvo(tx, params.id, usuario.id, { travar: true });
+      const antes = await concursoEstaLiberado(tx, aluno, concurso.id);
+      if (liberar && !antes) await liberarConcurso(tx, aluno.id, concurso.id, agora);
+      if (!liberar && antes) {
+        // Sem nenhum concurso liberado, as sessões caem (como no estorno).
+        if (!(await revogarConcurso(tx, aluno.id, concurso.id))) await encerrarSessoesDoUsuario(tx, aluno.id);
+      }
+      const alterado = liberar ? !antes : antes;
+      const [depois] = await tx.select({ acesso: usuarios.acesso }).from(usuarios).where(eq(usuarios.id, aluno.id));
+      await auditarSuper(
+        ctx,
+        liberar ? 'acesso.liberar' : 'acesso.revogar',
+        `usuario:${aluno.id}`,
+        {
+          motivo: corpo.motivo,
+          antes: { concursoId: concurso.id, concursoLiberado: antes, acesso: aluno.acesso },
+          depois: { concursoId: concurso.id, concursoLiberado: liberar, acesso: depois!.acesso },
+          detalhes: { concurso: concurso.nome, alterado, semPedido: liberar },
+        },
+        tx,
+      );
+      return { alterado, acesso: depois!.acesso };
+    });
+    const mensagem = r.alterado
+      ? liberar
+        ? `${concurso.nome}: acesso liberado (cortesia, sem pagamento).`
+        : `${concurso.nome}: acesso revogado.`
+      : liberar
+        ? `${concurso.nome} já estava liberado: nada mudou.`
+        : `${concurso.nome} já estava sem acesso: nada mudou.`;
+    return { alterado: r.alterado, acesso: r.acesso, mensagem, concursos: await concursosDoId(deps.db, params.id) };
+  };
+  r.rota('superUsuarioConcursoLiberar', acaoConcurso(true));
+  r.rota('superUsuarioConcursoRevogar', (ctx) => acaoConcurso(false)(ctx as unknown as Contexto<'superUsuarioConcursoLiberar'>));
 
   r.rota('superUsuarioRevogarSessao', async (ctx) => {
     const { deps, params } = ctx;
@@ -475,9 +601,16 @@ export function rotasSuperUsuarios(r: Registrador): void {
       .insert(usuarios)
       .values({ nome: corpo.nome, email: corpo.email, papel: corpo.papel, acesso: false, aceiteTermosEm: agora, versaoTermos: 'equipe', criadoEm: agora, onboardingConcluidoEm: agora })
       .returning();
-    const { link, expiraEm } = await criarLinkSenha(deps, novo!.id, agora, VALIDADE_CONVITE_MS);
+    const { link, expiraEm } = await criarLinkSenha(deps, novo!.id, agora, VALIDADE_CONVITE_MS, 'convite');
     deps.enviarEmail(
-      emailConvite({ nome: corpo.nome, email: corpo.email, papel: NOMES_PAPEL[corpo.papel], link, entrar: `${deps.config.appUrl}/entrar`, validadeHoras: VALIDADE_CONVITE_MS / 3_600_000 }),
+      emailConvite({
+        nome: corpo.nome,
+        email: corpo.email,
+        papel: NOMES_PAPEL[corpo.papel],
+        link,
+        entrar: `${deps.config.appUrl}${PAGINA_LOGIN[corpo.papel]}`,
+        validadeHoras: VALIDADE_CONVITE_MS / 3_600_000,
+      }),
     );
     await auditarSuper(ctx, 'equipe.convidar', `usuario:${novo!.id}`, { motivo: corpo.motivo, depois: { email: corpo.email, papel: corpo.papel } });
     return { id: novo!.id, email: corpo.email, expiraEm: iso(expiraEm) };

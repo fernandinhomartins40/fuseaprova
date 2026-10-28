@@ -62,10 +62,36 @@ export const NOMES_PAPEL: Record<Papel, string> = {
   superadmin: 'Superadmin',
 };
 
-/** D13: o superadmin tem tudo o que o admin tem (e a área /super). */
-export function ehAdmin(papel: string | null | undefined): boolean {
+/**
+ * D24: autorização por capacidade, num lugar só. O aluno estuda; o admin cuida do conteúdo;
+ * o superadmin cuida do conteúdo e do negócio. A equipe (admin e superadmin) não estuda.
+ */
+export function podeEstudar(papel: string | null | undefined): boolean {
+  return papel === 'aluno';
+}
+
+/** D24: gestão de conteúdo (questões, trilhas, edital, importação, reports). */
+export function podeGerirConteudo(papel: string | null | undefined): boolean {
   return papel === 'admin' || papel === 'superadmin';
 }
+
+/** D24: negócio (pagamentos, usuários, equipe, financeiro, Asaas, auditoria). */
+export function podeGerirNegocio(papel: string | null | undefined): boolean {
+  return papel === 'superadmin';
+}
+
+/**
+ * D24: área (portal) de cada papel. Cada área tem a sua página de login: `aluno` = /entrar,
+ * `conteudo` = /admin/entrar, `super` = /super/entrar.
+ */
+export const AREAS_CONTA = ['aluno', 'conteudo', 'super'] as const;
+export type AreaConta = (typeof AREAS_CONTA)[number];
+
+export const AREA_DO_PAPEL: Record<Papel, AreaConta> = {
+  aluno: 'aluno',
+  admin: 'conteudo',
+  superadmin: 'super',
+};
 
 export const STATUS_PEDIDO = ['pendente', 'pago', 'vencido', 'estornado'] as const;
 export type StatusPedido = (typeof STATUS_PEDIDO)[number];

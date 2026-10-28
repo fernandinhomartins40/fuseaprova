@@ -4,6 +4,7 @@
  * - conta nova: cria com a senha informada ou, sem ela, com uma senha forte gerada aqui,
  *   devolvida uma única vez para a CLI mostrar.
  * O 2FA é configurado no primeiro login, em /super/2fa.
+ * D24: a CLI não mexe em `acesso` (a equipe não estuda; conta promovida mantém o valor, inerte).
  */
 import { randomInt } from 'node:crypto';
 import { eq } from 'drizzle-orm';
@@ -43,13 +44,13 @@ export async function criarOuPromoverSuperadmin(
 ): Promise<ResultadoSuperadmin> {
   const email = normalizarEmail(entrada.email);
   if (!validarEmail(email)) throw new Error('Informe um e-mail válido com --email.');
-  const { usuarios, auditoria, concursos, sessoes } = schema;
+  const { usuarios, auditoria, sessoes } = schema;
   const [existente] = await db.select().from(usuarios).where(eq(usuarios.email, email));
 
   if (existente) {
     await db
       .update(usuarios)
-      .set({ papel: 'superadmin', acesso: true, bloqueadoEm: null, bloqueioMotivo: null })
+      .set({ papel: 'superadmin', bloqueadoEm: null, bloqueioMotivo: null })
       .where(eq(usuarios.id, existente.id));
     // As sessões abertas caem: a próxima já entra com as regras do superadmin (2FA e 12 h).
     await db.delete(sessoes).where(eq(sessoes.usuarioId, existente.id));
@@ -68,7 +69,6 @@ export async function criarOuPromoverSuperadmin(
   const senhaGerada = entrada.senha ? null : gerarSenhaForte();
   const senha = entrada.senha ?? senhaGerada!;
   if (senha.length < SENHA_MINIMA) throw new Error(`A senha precisa ter pelo menos ${SENHA_MINIMA} caracteres.`);
-  const [concurso] = await db.select({ id: concursos.id }).from(concursos).where(eq(concursos.ativo, true)).limit(1);
   const agora = new Date();
   const [u] = await db
     .insert(usuarios)
@@ -77,8 +77,6 @@ export async function criarOuPromoverSuperadmin(
       email,
       senhaHash: await gerarHashSenha(senha),
       papel: 'superadmin',
-      acesso: true,
-      concursoId: concurso?.id ?? null,
       onboardingConcluidoEm: agora,
       aceiteTermosEm: agora,
       versaoTermos: 'admin',

@@ -110,13 +110,24 @@ export async function gerarPix(
       return respostaPix(pendente, concurso, cupom?.codigo ?? null);
     }
     if (pendente) {
-      // O Pix antigo sai do Asaas para não ser pago pelo valor velho.
+      // S-23: só um pedido AINDA pendente vira vencido. Se o webhook pagou no meio, o pedido
+      // continua pago (nunca é rebaixado) e não nasce uma 2ª cobrança.
+      const substituido = await db
+        .update(pedidos)
+        .set({ status: 'vencido' })
+        .where(and(eq(pedidos.id, pendente.id), eq(pedidos.status, 'pendente')))
+        .returning({ id: pedidos.id });
+      if (substituido.length !== 1) throw falha('conflito', 'Este Pix acabou de ser pago. Atualize a tela.');
+      // O Pix antigo sai do Asaas para não ser pago pelo valor velho (se já tiver sido pago lá, o
+      // webhook encontra o pedido vencido e confirma o pagamento).
       if (pendente.asaasPaymentId) {
         await asaas.removerCobranca(pendente.asaasPaymentId).catch((e: Error) => {
           deps.log.warn({ pedidoId: pendente.id, erro: e.message }, 'pix substituído não foi removido no asaas');
         });
+        // Pago enquanto saía do Asaas (o webhook chegou no meio): não gera outra cobrança.
+        const [agoraPedido] = await db.select({ status: pedidos.status }).from(pedidos).where(eq(pedidos.id, pendente.id));
+        if (agoraPedido?.status === 'pago') throw falha('conflito', 'Seu acesso a este concurso já está liberado.');
       }
-      await db.update(pedidos).set({ status: 'vencido' }).where(eq(pedidos.id, pendente.id));
     }
     if (!u.cpf || !u.celular) throw falha('pix_indisponivel');
 

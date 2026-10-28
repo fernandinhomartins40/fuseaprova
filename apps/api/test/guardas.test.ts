@@ -36,7 +36,7 @@ describe('guardas (PRD 8.2, critério 12: 402 em toda rota de conteúdo)', () =>
     expect(r.statusCode).toBe(401);
   });
 
-  it.each(rotasComGuarda('admin'))('%s responde 403 para aluno', async (nome) => {
+  it.each(rotasComGuarda('conteudo'))('%s responde 403 para aluno', async (nome) => {
     const r = await t.chamar(nome, { cookie: pago.cookie, params: params(ROTAS[nome].caminho), corpo: {} });
     expect(r.statusCode).toBe(403);
     expect(r.json().codigo).toBe('proibido');

@@ -114,46 +114,69 @@ describe('admin (PRD 5.17)', () => {
     expect(perfil.edital.texto).toBe('prova em 14/03');
   });
 
-  it('painel com as métricas, usuários e liberação manual com auditoria', async () => {
+  it('D24: painel de conteúdo sem receita; métricas de negócio, ficha, liberação e auditoria ficam no /super', async () => {
     const a = await t.alunoPago();
     await fazerLicao(t, a.cookie);
     const sem = await t.cadastrar();
     const p = await t.chamar('adminPainel', { cookie: adm.cookie });
     expect(p.statusCode, p.body).toBe(200);
     const j = p.json();
-    expect(j.vendasHoje.centavos).toBeGreaterThanOrEqual(39700);
-    expect(j.usuariosAtivos7d).toBeGreaterThanOrEqual(1);
-    expect(j.metricas.conversaoCadastroPago).toBeGreaterThan(0);
+    expect(j).not.toHaveProperty('vendasHoje');
+    expect(j).not.toHaveProperty('vendasMes');
+    expect(j).not.toHaveProperty('usuariosAtivos7d');
+    expect(Object.keys(j.metricas).sort()).toEqual(['licoesPorAlunoSemana', 'melhoraAcertoPp']);
     expect(j.questoesPorStatus.publicada).toBeGreaterThan(0);
-    const lib = await t.chamar('adminUsuarioLiberarAcesso', { cookie: adm.cookie, params: { id: sem.id }, corpo: { motivo: 'Pagamento confirmado por comprovante' } });
-    expect(lib.statusCode).toBe(200);
+
+    const sup = await t.superadmin();
+    expect((await t.chamar('superMetricas', { cookie: adm.cookie })).statusCode).toBe(403);
+    const m = await t.chamar('superMetricas', { cookie: sup.cookie });
+    expect(m.statusCode, m.body).toBe(200);
+    expect(m.json().metricas.conversaoCadastroPago).toBeGreaterThan(0);
+
+    const [u] = await t.db.select().from(schema.usuarios).where(eq(schema.usuarios.id, sem.id));
+    const concursoId = u!.concursoId!;
+    const lib = await t.chamar('superUsuarioConcursoLiberar', {
+      cookie: sup.cookie,
+      params: { id: sem.id, concursoId },
+      corpo: { motivo: 'Cortesia combinada com o dono', confirmacao: { senha: sup.senha } },
+    });
+    expect(lib.statusCode, lib.body).toBe(200);
+    expect(lib.json()).toMatchObject({ alterado: true, acesso: true });
+    expect(lib.json().concursos).toEqual([expect.objectContaining({ id: concursoId, acesso: true, pedidoPagoId: null })]);
     expect((await t.chamar('trilha', { cookie: sem.cookie })).statusCode).toBe(200);
-    const det = (await t.chamar('adminUsuarioObter', { cookie: adm.cookie, params: { id: a.id } })).json();
+    const det = (await t.chamar('superUsuarioObter', { cookie: sup.cookie, params: { id: a.id } })).json();
     expect(det.progresso.licoesConcluidas).toBe(1);
     expect(det.usuario.cpfOculto).toMatch(/^\*\*\*\./);
-    const rev = (await t.chamar('adminUsuarioRevogarSessoes', { cookie: adm.cookie, params: { id: a.id } })).json();
-    expect(rev.revogadas).toBe(1);
-    expect((await t.chamar('meObter', { cookie: a.cookie })).statusCode).toBe(401);
-    const busca = (await t.chamar('adminUsuariosListar', { cookie: adm.cookie, query: { q: sem.email } })).json();
+    expect(det.concursos[0]).toMatchObject({ id: concursoId, acesso: true, ativo: true, pedidoPagoId: det.pedidos[0].id });
+    const busca = (await t.chamar('superUsuariosListar', { cookie: sup.cookie, query: { q: sem.email } })).json();
     expect(busca.total).toBe(1);
-    const aud = (await t.chamar('adminAuditoria', { cookie: adm.cookie, query: { acao: 'acesso.liberar' } })).json();
-    expect(aud.itens[0].detalhes.motivo).toMatch(/comprovante/);
+    const aud = (await t.chamar('superAuditoria', { cookie: sup.cookie, query: { acao: 'acesso.liberar' } })).json();
+    expect(aud.itens[0].motivo).toMatch(/Cortesia/);
+    expect(aud.itens[0].depois).toMatchObject({ concursoId, concursoLiberado: true });
   });
 
-  it('admin só age sobre alunos; revogar acesso derruba as sessões (auditoria PIE R1-05)', async () => {
-    const outroAdmin = await t.admin();
+  it('D24: liberar e revogar por concurso só para aluno (nunca a própria conta); revogar o último concurso derruba as sessões', async () => {
     const sup = await t.superadmin();
+    const outroAdmin = await t.admin();
+    const a = await t.alunoPago();
+    const [u] = await t.db.select().from(schema.usuarios).where(eq(schema.usuarios.id, a.id));
+    const concursoId = u!.concursoId!;
+    const corpo = { motivo: 'Teste de permissão', confirmacao: { senha: sup.senha } };
     for (const alvo of [outroAdmin, sup]) {
-      for (const nome of ['adminUsuarioRevogarSessoes', 'adminUsuarioLiberarAcesso', 'adminUsuarioRevogarAcesso'] as const) {
-        const r = await t.chamar(nome, { cookie: adm.cookie, params: { id: alvo.id }, corpo: { motivo: 'Teste de permissão' } });
-        expect(r.statusCode, `${nome} em ${alvo.email}`).toBe(403);
+      for (const nome of ['superUsuarioConcursoLiberar', 'superUsuarioConcursoRevogar'] as const) {
+        const r = await t.chamar(nome, { cookie: sup.cookie, params: { id: alvo.id, concursoId }, corpo });
+        expect(r.statusCode, `${nome} em ${alvo.email}`).toBe(alvo === sup ? 409 : 403);
       }
     }
-    expect((await t.chamar('meObter', { cookie: sup.cookie })).statusCode).toBe(200);
-    const a = await t.alunoPago();
-    const r = await t.chamar('adminUsuarioRevogarAcesso', { cookie: adm.cookie, params: { id: a.id }, corpo: { motivo: 'Chargeback por fora' } });
-    expect(r.statusCode).toBe(200);
+    // O admin de conteúdo não alcança o negócio.
+    expect((await t.chamar('superUsuarioConcursoRevogar', { cookie: adm.cookie, params: { id: a.id, concursoId }, corpo })).statusCode).toBe(403);
+    expect((await t.chamar('superUsuarioConcursoRevogar', { cookie: sup.cookie, params: { id: a.id, concursoId }, corpo: { ...corpo, confirmacao: { senha: 'errada' } } })).statusCode).toBe(403);
+    const r = await t.chamar('superUsuarioConcursoRevogar', { cookie: sup.cookie, params: { id: a.id, concursoId }, corpo: { motivo: 'Chargeback por fora', confirmacao: { senha: sup.senha } } });
+    expect(r.statusCode, r.body).toBe(200);
+    expect(r.json()).toMatchObject({ alterado: true, acesso: false });
     expect((await t.chamar('trilha', { cookie: a.cookie })).statusCode).toBe(401);
+    const de = await t.chamar('superUsuarioConcursoRevogar', { cookie: sup.cookie, params: { id: a.id, concursoId }, corpo });
+    expect(de.json()).toMatchObject({ alterado: false, acesso: false });
   });
 
   it('trilhas: criar unidade/seção/lição, reordenar e excluir', async () => {

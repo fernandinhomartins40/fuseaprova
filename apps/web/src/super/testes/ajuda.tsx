@@ -83,6 +83,11 @@ export function pagamento(extra: Record<string, unknown> = {}) {
     conciliadoEm: null,
     dentroDoArrependimento: false,
     manual: null,
+    concurso: { id: '88888888-8888-4888-8888-888888888888', nome: 'Concurso de Palmital 2026' },
+    concursoLiberado: false,
+    cupomCodigo: null,
+    valorOriginalCentavos: null,
+    descontoCentavos: 0,
     ...extra,
   };
 }
@@ -135,6 +140,9 @@ export function ficha(extra: Record<string, unknown> = {}) {
       dominio: [],
     },
     pedidos: [],
+    concursos: [
+      { id: '88888888-8888-4888-8888-888888888888', nome: 'Concurso de Palmital 2026', acesso: false, acessoEm: null, ativo: true, cargo: 'Agente Administrativo', pedidoPagoId: null },
+    ],
     sessoes: [],
     push: [],
     auditoria: [],

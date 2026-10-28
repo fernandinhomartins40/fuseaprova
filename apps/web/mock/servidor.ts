@@ -395,6 +395,7 @@ function sessaoResposta() {
   const u = estado.usuario;
   return {
     usuario: { id: ID_USUARIO, nome: u.nome, email: u.email, papel: u.papel, acesso: u.acesso },
+    area: u.papel === 'admin' ? ('conteudo' as const) : ('aluno' as const),
     proximo: !u.acesso
       ? ('pagamento' as const)
       : !u.onboardingConcluido
@@ -1608,10 +1609,13 @@ export async function tratar(req: Req, res: Res): Promise<void> {
 
   try {
     const logado = estado.logado && cookies(req)[COOKIE] === TOKEN;
-    if (def.guarda === 'login' || def.guarda === 'acesso' || def.guarda === 'admin') {
+    if (def.guarda === 'login' || def.guarda === 'aluno' || def.guarda === 'acesso' || def.guarda === 'conteudo') {
       if (!logado) throw new Falha(401, 'nao_autenticado');
+      // D24: estudo e pagamento só para o aluno; conteúdo para a equipe.
+      if ((def.guarda === 'aluno' || def.guarda === 'acesso') && estado.usuario.papel !== 'aluno')
+        throw new Falha(403, 'proibido');
       if (def.guarda === 'acesso' && !estado.usuario.acesso) throw new Falha(402, 'sem_acesso');
-      if (def.guarda === 'admin' && estado.usuario.papel !== 'admin')
+      if (def.guarda === 'conteudo' && estado.usuario.papel !== 'admin')
         throw new Falha(403, 'proibido');
     }
     let corpo: unknown = undefined;

@@ -22,9 +22,6 @@ const Importacoes = lazy(() => import('./telas/Importacoes'));
 const Trilhas = lazy(() => import('./telas/Trilhas'));
 const Edital = lazy(() => import('./telas/Edital'));
 const Reports = lazy(() => import('./telas/Reports'));
-const Pedidos = lazy(() => import('./telas/Pedidos'));
-const Usuarios = lazy(() => import('./telas/Usuarios'));
-const Auditoria = lazy(() => import('./telas/Auditoria'));
 
 export function criarClienteAdmin(): QueryClient {
   return new QueryClient({
@@ -67,10 +64,6 @@ export function RotasAdmin() {
           <Route path="trilhas" element={<Trilhas />} />
           <Route path="edital" element={<Edital />} />
           <Route path="reports" element={<Reports />} />
-          <Route path="pedidos" element={<Pedidos />} />
-          <Route path="usuarios" element={<Usuarios />} />
-          <Route path="usuarios/:id" element={<Usuarios />} />
-          <Route path="auditoria" element={<Auditoria />} />
           <Route path="*" element={<NaoEncontrada />} />
         </Routes>
       </Suspense>

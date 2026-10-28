@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { formatarReais } from '@fuse/shared';
 import { METAS_PAINEL, type PainelResposta } from '@fuse/shared/api';
 import { Link } from 'react-router-dom';
 import { api } from '../api';
@@ -9,11 +8,7 @@ import { BASE_ADMIN, dataHora, juntarClasses, NOMES_STATUS_QUESTAO, numero } fro
 type ChaveMetrica = keyof PainelResposta['metricas'];
 
 const METRICAS: { chave: ChaveMetrica; rotulo: string; formato: (v: number) => string; meta: string }[] = [
-  { chave: 'conversaoCadastroPago', rotulo: 'Conversão do cadastro para pago', formato: (v) => `${numero(v, 1)}%`, meta: '≥ 40%' },
-  { chave: 'retencaoD7', rotulo: 'Retenção D7 dos pagantes', formato: (v) => `${numero(v, 1)}%`, meta: '≥ 30%' },
   { chave: 'licoesPorAlunoSemana', rotulo: 'Lições por aluno por semana', formato: (v) => numero(v, 1), meta: '≥ 5' },
-  { chave: 'pagantesOfensiva7', rotulo: 'Pagantes com ofensiva de 7+ dias', formato: (v) => `${numero(v, 1)}%`, meta: '≥ 25%' },
-  { chave: 'pedidosReembolso', rotulo: 'Pedidos de reembolso', formato: (v) => `${numero(v, 1)}%`, meta: '≤ 5%' },
   { chave: 'melhoraAcertoPp', rotulo: 'Melhora de acerto (1ª → 5ª tentativa)', formato: (v) => `${v >= 0 ? '+' : ''}${numero(v, 1)} pp`, meta: '≥ +20 pp' },
 ];
 
@@ -27,26 +22,11 @@ export default function Painel() {
 
   return (
     <>
-      <Cabecalho titulo="Painel" subtitulo="Vendas, uso e conteúdo pendente." />
+      <Cabecalho titulo="Painel" subtitulo="Conteúdo pendente e aprendizagem." />
       <Consulta consulta={consulta}>
         {(p) => (
           <>
             <div className={s.grade}>
-              <div className={s.estat}>
-                <div className={s.estatRotulo}>Vendas hoje</div>
-                <div className={s.estatValor}>{formatarReais(p.vendasHoje.centavos)}</div>
-                <div className={s.estatDetalhe}>{p.vendasHoje.quantidade} pedidos pagos</div>
-              </div>
-              <div className={s.estat}>
-                <div className={s.estatRotulo}>Vendas no mês</div>
-                <div className={s.estatValor}>{formatarReais(p.vendasMes.centavos)}</div>
-                <div className={s.estatDetalhe}>{p.vendasMes.quantidade} pedidos pagos</div>
-              </div>
-              <div className={s.estat}>
-                <div className={s.estatRotulo}>Ativos em 7 dias</div>
-                <div className={s.estatValor}>{numero(p.usuariosAtivos7d)}</div>
-                <div className={s.estatDetalhe}>alunos que estudaram</div>
-              </div>
               <Link to={`${BASE_ADMIN}/reports`} className={juntarClasses(s.estat, p.reportsAbertos > 0 && s.estatRuim)}>
                 <div className={s.estatRotulo}>Reports abertos</div>
                 <div className={s.estatValor}>{numero(p.reportsAbertos)}</div>
@@ -59,7 +39,7 @@ export default function Painel() {
               </Link>
             </div>
 
-            <TituloSecao>Métricas do produto</TituloSecao>
+            <TituloSecao>Aprendizagem</TituloSecao>
             <div className={s.grade}>
               {METRICAS.map((m) => {
                 const v = p.metricas[m.chave];

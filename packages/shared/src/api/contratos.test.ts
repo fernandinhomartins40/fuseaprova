@@ -313,10 +313,39 @@ describe('registro de rotas (PRD 10)', () => {
     }
   });
 
-  it('conteúdo usa a guarda de acesso e admin usa a de admin', () => {
+  it('conteúdo usa a guarda de acesso e o /admin usa a de conteúdo (D24)', () => {
     expect(ROTAS.trilha.guarda).toBe('acesso');
-    expect(rotasComGuarda('admin').every((n) => ROTAS[n].caminho.startsWith('/admin'))).toBe(true);
+    expect(rotasComGuarda('conteudo').every((n) => ROTAS[n].caminho.startsWith('/admin'))).toBe(true);
     expect(rotasComGuarda('webhook')).toEqual(['webhookAsaas']);
+  });
+
+  it('D24: só /me, senha e sair aceitam qualquer papel; pagamento, concursos e LGPD são do aluno', () => {
+    expect(rotasComGuarda('login').sort()).toEqual(['authSair', 'meAtualizar', 'meObter', 'meSenha']);
+    for (const n of ['meExportar', 'meExcluir', 'meusConcursos', 'meuConcursoSeguir', 'meuConcursoAtivar', 'meuConcursoDeixar', 'pagamentoPix', 'pagamentoCupom', 'pagamentoStatus', 'concursoPorId'] as const) {
+      expect(ROTAS[n].guarda, n).toBe('aluno');
+    }
+  });
+
+  it('D24: as rotas de negócio não existem no /admin; os três logins dividem o mesmo balde', () => {
+    const nomes = Object.keys(ROTAS);
+    for (const n of ['adminPedidosListar', 'adminPedidoReembolso', 'adminUsuariosListar', 'adminUsuarioObter', 'adminUsuarioRevogarSessoes', 'adminUsuarioLiberarAcesso', 'adminUsuarioRevogarAcesso', 'adminAuditoria']) {
+      expect(nomes).not.toContain(n);
+    }
+    const caminhos = Object.values(ROTAS).map((r) => r.caminho);
+    for (const c of ['/admin/pedidos', '/admin/usuarios', '/admin/auditoria']) {
+      expect(caminhos.some((x) => x.startsWith(c)), c).toBe(false);
+    }
+    const baldes = (['authLogin', 'authLoginConteudo', 'authLoginSuper'] as const).map((n) => ROTAS[n].limite.balde);
+    expect(baldes).toEqual(['login', 'login', 'login']);
+  });
+
+  it('PATCH de conteúdo sem nenhum campo é 400, não 500 (D24, varredura de guardas)', () => {
+    for (const n of ['adminCargoAtualizar', 'adminProvaAtualizar', 'adminAssuntoAtualizar', 'adminUnidadeAtualizar', 'adminSecaoAtualizar'] as const) {
+      const corpo = ROTAS[n].corpo;
+      expect(corpo.safeParse({}).success, n).toBe(false);
+      expect(corpo.safeParse({ ordem: undefined }).success, n).toBe(false);
+    }
+    expect(ROTAS.adminSecaoAtualizar.corpo.safeParse({ titulo: 'Nova' }).success).toBe(true);
   });
 
   it('monta caminhos', () => {

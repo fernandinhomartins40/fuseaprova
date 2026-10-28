@@ -102,10 +102,13 @@ describe('Aprovação manual de pagamento', () => {
     const { chamadas } = simularFetch({
       ...BASE,
       [`GET /super/pagamentos/${IDS.pedido}`]: { pagamento: pagamento(), linhaDoTempo: [], webhooks: [] },
-      [`POST /super/usuarios/${IDS.usuario}/aprovar-pagamento`]: {
+      // D24/RQ4: pela tela do pagamento, a aprovação é DESTE pedido.
+      [`POST /super/pagamentos/${IDS.pedido}/aprovar-manual`]: {
         pedidoId: IDS.pedido,
         jaAprovado: false,
+        pagoNoAsaas: false,
         asaas: { acao: 'receber_em_dinheiro', ok: true, mensagem: 'Cobrança marcada como recebida.' },
+        mensagem: 'Pagamento aprovado manualmente com o valor do pedido, e o concurso do pedido foi liberado.',
       },
     });
     renderizarSuper(`/super/pagamentos/${IDS.pedido}`, 1280);
@@ -121,9 +124,10 @@ describe('Aprovação manual de pagamento', () => {
     expect(aprovar).toBeEnabled();
     await usuario.click(aprovar);
 
-    expect(await within(dialogo).findByText('Pagamento manual registrado e acesso liberado.')).toBeInTheDocument();
+    expect(await within(dialogo).findByText(/Pagamento aprovado manualmente com o valor do pedido/)).toBeInTheDocument();
     expect(within(dialogo).getByText(/Cobrança marcada como recebida/)).toBeInTheDocument();
     const post = chamadas.find((c) => c.metodo === 'POST');
+    expect(post?.caminho).toBe(`/super/pagamentos/${IDS.pedido}/aprovar-manual`);
     expect(post?.corpo).toMatchObject({
       forma: 'dinheiro',
       observacao: 'Recebido em dinheiro na secretaria.',

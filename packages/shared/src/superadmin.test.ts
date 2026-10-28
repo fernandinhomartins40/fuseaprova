@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { ehAdmin, NOMES_PAPEL, PAPEIS } from './dominio.js';
+import { AREA_DO_PAPEL, NOMES_PAPEL, PAPEIS, podeEstudar, podeGerirConteudo, podeGerirNegocio } from './dominio.js';
 import { emailComunicacao, escHtml, layoutEmail, paragrafosHtml } from './email.js';
 import {
   AprovarManualEntrada,
+  AprovarManualPedidoEntrada,
   celulaCsv,
   CodigoRecuperacao,
   CodigoTotp,
@@ -20,12 +21,17 @@ import {
 } from './api/index.js';
 
 describe('papéis (D13)', () => {
-  it('superadmin é admin; aluno não', () => {
+  it('capacidades por papel (D24): só o aluno estuda; conteúdo para a equipe; negócio só do superadmin', () => {
     expect(PAPEIS).toEqual(['aluno', 'admin', 'superadmin']);
-    expect(ehAdmin('admin')).toBe(true);
-    expect(ehAdmin('superadmin')).toBe(true);
-    expect(ehAdmin('aluno')).toBe(false);
-    expect(ehAdmin(null)).toBe(false);
+    expect(PAPEIS.map((p) => podeEstudar(p))).toEqual([true, false, false]);
+    expect(PAPEIS.map((p) => podeGerirConteudo(p))).toEqual([false, true, true]);
+    expect(PAPEIS.map((p) => podeGerirNegocio(p))).toEqual([false, false, true]);
+    for (const f of [podeEstudar, podeGerirConteudo, podeGerirNegocio]) {
+      expect(f(null)).toBe(false);
+      expect(f(undefined)).toBe(false);
+      expect(f('outro')).toBe(false);
+    }
+    expect(AREA_DO_PAPEL).toEqual({ aluno: 'aluno', admin: 'conteudo', superadmin: 'super' });
     expect(NOMES_PAPEL.superadmin).toBe('Superadmin');
   });
 
@@ -86,13 +92,17 @@ describe('contratos do superadmin', () => {
     expect(DoisFatoresVerificarEntrada.safeParse({ codigoRecuperacao: 'ABCDE-FGHJK' }).success).toBe(true);
   });
 
-  it('aprovação manual: valor não é campo; forma, data e observação obrigatórias', () => {
+  it('aprovação manual: valor não é campo; concurso explícito na ficha; "não mexer" no Asaas saiu (D24)', () => {
     const base = { recebidoEm: '2026-10-20', forma: 'pix_direto', observacao: 'Pix na conta PJ', confirmacao: { senha: 'x' } };
-    const ok = AprovarManualEntrada.parse(base);
+    const concursoId = '00000000-0000-4000-8000-000000000001';
+    const ok = AprovarManualEntrada.parse({ ...base, concursoId });
     expect(ok.acaoAsaas).toBe('receber_em_dinheiro');
     expect('valorCentavos' in ok).toBe(false);
-    expect(AprovarManualEntrada.safeParse({ ...base, observacao: '' }).success).toBe(false);
-    expect(AprovarManualEntrada.safeParse({ ...base, comprovante: '../etc/passwd' }).success).toBe(false);
+    expect(AprovarManualEntrada.safeParse(base).success).toBe(false);
+    expect(AprovarManualEntrada.safeParse({ ...base, concursoId, observacao: '' }).success).toBe(false);
+    expect(AprovarManualEntrada.safeParse({ ...base, concursoId, comprovante: '../etc/passwd' }).success).toBe(false);
+    expect(AprovarManualPedidoEntrada.safeParse({ ...base, acaoAsaas: 'nenhuma' }).success).toBe(false);
+    expect(AprovarManualPedidoEntrada.parse({ ...base, acaoAsaas: 'cancelar' }).acaoAsaas).toBe('cancelar');
   });
 
   it('editar usuário precisa de algum campo; comunicação de inativos precisa dos dias', () => {

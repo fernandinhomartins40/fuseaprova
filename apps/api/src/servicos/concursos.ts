@@ -7,7 +7,7 @@
  *  - se tem concurso liberado, o concurso ATIVO (`usuarios.concurso_id`) é um liberado, e
  *    `cargo_id`/`area` do usuário espelham a linha dele em `usuarios_concursos`.
  */
-import { and, asc, eq, sql } from 'drizzle-orm';
+import { and, asc, eq, notInArray, sql } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import {
   AREAS_CARGO,
@@ -131,6 +131,31 @@ export async function revogarConcurso(tx: Db, usuarioId: string, concursoId: str
 export async function revogarTudo(tx: Db, usuarioId: string): Promise<void> {
   await tx.update(usuariosConcursos).set({ acesso: false }).where(eq(usuariosConcursos.usuarioId, usuarioId));
   await tx.update(usuarios).set({ acesso: false }).where(eq(usuarios.id, usuarioId));
+}
+
+/**
+ * D24 (S-05): recalcula o acesso SÓ a partir dos pedidos pagos e não estornados. Usado quando uma
+ * conta da equipe volta a ser aluno: o que a equipe tinha de acesso (CLI antiga, cortesia) não vira
+ * acesso gratuito. Libera os concursos com pedido pago, revoga os outros e sincroniza o acesso geral.
+ */
+export async function recalcularAcessoPorPedidos(tx: Db, usuarioId: string, agora: Date): Promise<boolean> {
+  const pagos = await tx
+    .select({ concursoId: pedidos.concursoId })
+    .from(pedidos)
+    .where(and(eq(pedidos.usuarioId, usuarioId), eq(pedidos.status, 'pago')));
+  const ids = [...new Set(pagos.map((p) => p.concursoId).filter((x): x is string => x !== null))];
+  // Pedido pago antigo, sem concurso: valia o acesso geral (D21, legado).
+  const legado = pagos.some((p) => p.concursoId === null);
+  await tx
+    .update(usuariosConcursos)
+    .set({ acesso: false })
+    .where(and(eq(usuariosConcursos.usuarioId, usuarioId), ids.length ? notInArray(usuariosConcursos.concursoId, ids) : undefined));
+  for (const id of ids) await liberarConcurso(tx, usuarioId, id, agora);
+  if (ids.length === 0) {
+    await tx.update(usuarios).set({ acesso: legado }).where(eq(usuarios.id, usuarioId));
+    return legado;
+  }
+  return sincronizarAcesso(tx, usuarioId);
 }
 
 /** O cargo do aluno num concurso (PATCH /me): a linha acompanha o que o aluno escolheu. */

@@ -56,8 +56,8 @@ describe('guardas do superadmin (D13)', () => {
 
   it('superadmin sem 2FA fica bloqueado (no /super e no /admin) até configurar', async () => {
     const novo = await t.superadmin({ doisFatores: false });
-    const login = await t.chamar('authLogin', { corpo: { email: novo.email, senha: novo.senha } });
-    expect(login.json().proximo).toBe('dois_fatores');
+    const login = await t.chamar('authLoginSuper', { corpo: { email: novo.email, senha: novo.senha } });
+    expect(login.json()).toMatchObject({ proximo: 'dois_fatores', area: 'super' });
     const me = (await t.chamar('meObter', { cookie: novo.cookie })).json();
     expect(me.doisFatoresPendente).toBe(true);
     for (const nome of ['superFinanceiro', 'superUsuariosListar', 'adminPainel'] as const) {
@@ -86,7 +86,7 @@ describe('guardas do superadmin (D13)', () => {
     expect((await t.chamar('superFinanceiro', { cookie: novo.cookie })).statusCode).toBe(200);
 
     // Nova sessão: pede o código; o mesmo código não vale duas vezes; código de recuperação vale uma vez.
-    const l2 = await t.chamar('authLogin', { corpo: { email: novo.email, senha: novo.senha } });
+    const l2 = await t.chamar('authLoginSuper', { corpo: { email: novo.email, senha: novo.senha } });
     const c2 = cookieDe(l2)!;
     const pend = await t.chamar('superFinanceiro', { cookie: c2 });
     expect(pend.json().codigo).toBe('dois_fatores_pendente');
@@ -95,7 +95,7 @@ describe('guardas do superadmin (D13)', () => {
     const rec = await t.chamar('super2faVerificar', { cookie: c2, corpo: { codigoRecuperacao: codigos[0] } });
     expect(rec.statusCode, rec.body).toBe(200);
     expect(rec.json()).toMatchObject({ verificadoNestaSessao: true, codigosRecuperacaoRestantes: 9 });
-    const l3 = cookieDe(await t.chamar('authLogin', { corpo: { email: novo.email, senha: novo.senha } }))!;
+    const l3 = cookieDe(await t.chamar('authLoginSuper', { corpo: { email: novo.email, senha: novo.senha } }))!;
     expect((await t.chamar('super2faVerificar', { cookie: l3, corpo: { codigoRecuperacao: codigos[0] } })).statusCode).toBe(400);
     t.relogio.avancar(30_000);
     const ok = await t.chamar('super2faVerificar', { cookie: l3, corpo: { codigo: gerarCodigoTotp(segredo, t.relogio.agora()) } });
@@ -171,7 +171,7 @@ describe('reconfirmação e auditoria', () => {
     expect(pub).toMatchObject({ suporte: { whatsapp: '5542999990000' }, aviso: { texto: 'Edital previsto para dezembro.' }, precoCentavos: 39700 });
   });
 
-  it('modo manutenção: 503 para alunos nas rotas de conteúdo; admin continua', async () => {
+  it('modo manutenção: 503 para alunos nas rotas de conteúdo; a equipe continua fora do estudo (403)', async () => {
     const atual = (await t.chamar('superConfiguracoes', { cookie: sup.cookie })).json().valores;
     const salvar = (ativa: boolean) =>
       t.chamar('superConfiguracoesSalvar', {
@@ -183,7 +183,11 @@ describe('reconfirmação e auditoria', () => {
     expect(r.statusCode).toBe(503);
     expect(r.json()).toEqual({ erro: 'Voltamos às 14h.', codigo: 'manutencao' });
     expect((await t.chamar('meObter', { cookie: aluno.cookie })).statusCode).toBe(200);
-    expect((await t.chamar('trilha', { cookie: sup.cookie })).statusCode).not.toBe(503);
+    // D24 (A1.8): a equipe não estuda; com ou sem manutenção, a resposta é 403, não 503.
+    const daEquipe = await t.chamar('trilha', { cookie: sup.cookie });
+    expect(daEquipe.statusCode).toBe(403);
+    expect(daEquipe.json().codigo).toBe('proibido');
+    expect((await t.chamar('adminPainel', { cookie: sup.cookie })).statusCode).toBe(200);
     expect((await t.chamar('configPublica')).json().manutencao).toEqual({ ativa: true, mensagem: 'Voltamos às 14h.' });
     expect((await salvar(false)).statusCode).toBe(200);
     expect((await t.chamar('trilha', { cookie: aluno.cookie })).statusCode).toBe(200);
@@ -231,12 +235,13 @@ describe('pagamentos, conciliação e webhooks', () => {
     const { pedido: p2 } = await alunoComPix();
     t.asaas.definirStatus(p1.asaasPaymentId!, 'CONFIRMED');
     t.asaas.definirStatus(p2.asaasPaymentId!, 'OVERDUE');
-    const { aluno: m } = await alunoComPix();
-    await t.chamar('superAprovarManual', {
+    const { aluno: m, pedido: pm0 } = await alunoComPix();
+    const ap = await t.chamar('superPagamentoAprovarManual', {
       cookie: sup.cookie,
-      params: { id: m.id },
-      corpo: { recebidoEm: '2026-10-20', forma: 'dinheiro', observacao: 'Pagou no balcão', acaoAsaas: 'nenhuma', confirmacao: conf() },
+      params: { id: pm0.id },
+      corpo: { recebidoEm: '2026-10-20', forma: 'dinheiro', observacao: 'Pagou no balcão', acaoAsaas: 'cancelar', confirmacao: conf() },
     });
+    expect(ap.statusCode, ap.body).toBe(200);
     const corpo = { de: '2026-10-01', ate: '2026-10-31' };
     const rel = (await t.chamar('superConciliarLote', { cookie: sup.cookie, corpo: { ...corpo, corrigir: false } })).json();
     expect(rel.corrigidos).toBe(0);
@@ -313,19 +318,21 @@ describe('aprovação manual de pagamento (D13)', () => {
   });
 
   it('aluno e admin recebem 403', async () => {
-    const { aluno: a } = await alunoComPix();
+    const { aluno: a, pedido } = await alunoComPix();
     for (const c of [aluno.cookie, adm.cookie]) {
-      const r = await t.chamar('superAprovarManual', { cookie: c, params: { id: a.id }, corpo: corpoManual() });
+      const r = await t.chamar('superAprovarManual', { cookie: c, params: { id: a.id }, corpo: corpoManual({ concursoId: pedido.concursoId }) });
       expect(r.statusCode).toBe(403);
+      const r2 = await t.chamar('superPagamentoAprovarManual', { cookie: c, params: { id: pedido.id }, corpo: corpoManual() });
+      expect(r2.statusCode).toBe(403);
     }
   });
 
   it('aprova (aproveitando o Pix pendente), confirma no Asaas, é idempotente e o webhook atrasado não duplica', async () => {
     const { aluno: a, pedido } = await alunoComPix();
     const emails = t.mailer.enviados.length;
-    const r = await t.chamar('superAprovarManual', { cookie: sup.cookie, params: { id: a.id }, corpo: corpoManual() });
+    const r = await t.chamar('superPagamentoAprovarManual', { cookie: sup.cookie, params: { id: pedido.id }, corpo: corpoManual() });
     expect(r.statusCode, r.body).toBe(200);
-    expect(r.json()).toMatchObject({ pedidoId: pedido.id, jaAprovado: false, asaas: { acao: 'receber_em_dinheiro', ok: true } });
+    expect(r.json()).toMatchObject({ pedidoId: pedido.id, jaAprovado: false, pagoNoAsaas: false, asaas: { acao: 'receber_em_dinheiro', ok: true } });
     expect(t.asaas.recebidasEmDinheiro).toContainEqual({ id: pedido.asaasPaymentId, paymentDate: '2026-10-19', value: 397 });
     const [p] = await pedidoDe(a.id);
     expect(p).toMatchObject({ status: 'pago', metodo: 'manual', valorCentavos: 39700, manualForma: 'transferencia', manualRecebidoEm: '2026-10-19', aprovadoPor: sup.id });
@@ -333,8 +340,11 @@ describe('aprovação manual de pagamento (D13)', () => {
     await t.app.deps.aguardarTarefas();
     expect(t.mailer.enviados.slice(emails).map((m) => m.assunto)).toEqual(['Pagamento confirmado: seu acesso ao Fuse Aprova']);
 
-    const de2 = (await t.chamar('superAprovarManual', { cookie: sup.cookie, params: { id: a.id }, corpo: corpoManual() })).json();
+    const de2 = (await t.chamar('superPagamentoAprovarManual', { cookie: sup.cookie, params: { id: pedido.id }, corpo: corpoManual() })).json();
     expect(de2).toMatchObject({ pedidoId: pedido.id, jaAprovado: true });
+    // Pela ficha (concurso explícito) também não duplica.
+    const de3 = (await t.chamar('superAprovarManual', { cookie: sup.cookie, params: { id: a.id }, corpo: corpoManual({ concursoId: pedido.concursoId }) })).json();
+    expect(de3).toMatchObject({ pedidoId: pedido.id, jaAprovado: true });
     // O receiveInCash gera um PAYMENT_RECEIVED no Asaas: chega depois e não muda nada.
     expect((await t.webhook('PAYMENT_RECEIVED', pedido.asaasPaymentId!)).statusCode).toBe(200);
     await t.app.deps.aguardarTarefas();
@@ -365,14 +375,18 @@ describe('aprovação manual de pagamento (D13)', () => {
 
   it('sem Pix pendente cria um pedido manual; data futura é recusada; "cancelar" remove a cobrança', async () => {
     const a = await t.cadastrar();
-    const fut = await t.chamar('superAprovarManual', { cookie: sup.cookie, params: { id: a.id }, corpo: corpoManual({ recebidoEm: '2027-01-01' }) });
+    const concursoId = (await usuario(t, a.id)).concursoId!;
+    const fut = await t.chamar('superAprovarManual', { cookie: sup.cookie, params: { id: a.id }, corpo: corpoManual({ concursoId, recebidoEm: '2027-01-01' }) });
     expect(fut.statusCode).toBe(400);
-    const r = (await t.chamar('superAprovarManual', { cookie: sup.cookie, params: { id: a.id }, corpo: corpoManual({ forma: 'dinheiro' }) })).json();
+    // D24: sem o concurso explícito, 400.
+    expect((await t.chamar('superAprovarManual', { cookie: sup.cookie, params: { id: a.id }, corpo: corpoManual({ forma: 'dinheiro' }) })).statusCode).toBe(400);
+    const r = (await t.chamar('superAprovarManual', { cookie: sup.cookie, params: { id: a.id }, corpo: corpoManual({ concursoId, forma: 'dinheiro' }) })).json();
     expect(r.asaas.mensagem).toMatch(/Não havia cobrança/);
     expect((await pedidoDe(a.id))[0]).toMatchObject({ metodo: 'manual', asaasPaymentId: null, status: 'pago' });
 
     const { aluno: b, pedido } = await alunoComPix();
-    const rc = (await t.chamar('superAprovarManual', { cookie: sup.cookie, params: { id: b.id }, corpo: corpoManual({ acaoAsaas: 'cancelar' }) })).json();
+    const rc = (await t.chamar('superAprovarManual', { cookie: sup.cookie, params: { id: b.id }, corpo: corpoManual({ concursoId: pedido.concursoId, acaoAsaas: 'cancelar' }) })).json();
+    expect(rc.pedidoId).toBe(pedido.id);
     expect(rc.asaas).toMatchObject({ acao: 'cancelar', ok: true });
     expect(t.asaas.removidas).toContain(pedido.asaasPaymentId);
     // Reembolso pelo Asaas não vale para o manual.
@@ -452,8 +466,8 @@ describe('usuários, equipe e LGPD', () => {
     expect(pr.statusCode, pr.body).toBe(200);
     // A sessão do promovido cai: o novo papel exige login com 2FA.
     expect((await t.chamar('meObter', { cookie: outro.cookie })).statusCode).toBe(401);
-    const login = await t.chamar('authLogin', { corpo: { email: outro.email, senha: outro.senha } });
-    expect(login.json()).toMatchObject({ proximo: 'dois_fatores', usuario: { papel: 'superadmin' } });
+    const login = await t.chamar('authLoginSuper', { corpo: { email: outro.email, senha: outro.senha } });
+    expect(login.json()).toMatchObject({ proximo: 'dois_fatores', area: 'super', usuario: { papel: 'superadmin' } });
     const eq2 = (await t.chamar('superEquipe', { cookie: sup.cookie })).json();
     expect(eq2.itens.find((m: { id: string }) => m.id === outro.id)).toMatchObject({ papel: 'superadmin', doisFatores: false });
     const reb = await t.chamar('superUsuarioPapel', { cookie: sup.cookie, params: { id: outro.id }, corpo: { papel: 'aluno', motivo: 'Saiu da sociedade', confirmacao: conf() } });
@@ -466,14 +480,16 @@ describe('usuários, equipe e LGPD', () => {
     await t.app.deps.aguardarTarefas();
     const email = t.mailer.enviados.at(-1)!;
     expect(email).toMatchObject({ para: 'ana.revisora@teste.com', assunto: 'Fuse Aprova: convite para a equipe' });
-    const token = /\/recuperar\/([\w-]+)/.exec(email.texto)![1]!;
+    // D24: o convite tem página própria e leva ao login da equipe de conteúdo.
+    expect(email.texto).toContain('/admin/entrar');
+    const token = /\/convite\/([\w-]+)/.exec(email.texto)![1]!;
     const eq1 = (await t.chamar('superEquipe', { cookie: sup.cookie })).json();
     expect(eq1.itens.find((m: { email: string }) => m.email === 'ana.revisora@teste.com')).toMatchObject({ convitePendente: true });
     t.relogio.avancar(48 * 3_600_000);
     sup = await t.superadmin();
     const def = await t.chamar('authRedefinir', { corpo: { token, senha: 'senha-nova-ana-123' } });
     expect(def.statusCode, def.body).toBe(200);
-    expect(def.json().proximo).toBe('admin');
+    expect(def.json()).toMatchObject({ proximo: 'conteudo', area: 'conteudo' });
     const dup = await t.chamar('superEquipeConvidar', { cookie: sup.cookie, corpo: { nome: 'Ana Revisora Lima', email: 'ana.revisora@teste.com', papel: 'admin', motivo: 'De novo', confirmacao: conf() } });
     expect(dup.statusCode).toBe(409);
   });

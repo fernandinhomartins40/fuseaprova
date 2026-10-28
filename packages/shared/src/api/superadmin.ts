@@ -139,6 +139,8 @@ export const FiltroMetodo = z.enum(['todos', 'asaas', 'manual']);
 export const FinanceiroQuery = PeriodoQuery.extend({
   agrupamento: ZAgrupamento.default('dia'),
   metodo: FiltroMetodo.default('todos'),
+  /** D21: só os pedidos deste concurso. */
+  concursoId: Uuid.optional(),
 });
 export type FinanceiroQuery = z.input<typeof FinanceiroQuery>;
 
@@ -163,6 +165,8 @@ export const FinanceiroResposta = z.object({
   ate: Dia,
   agrupamento: ZAgrupamento,
   metodo: FiltroMetodo,
+  /** D21: o filtro de concurso aplicado (null = todos). */
+  concursoId: Uuid.nullable(),
   precoCentavos: z.number().int(),
   serie: z.array(PontoFinanceiro),
   totais: z.object({
@@ -218,6 +222,9 @@ export const DadosManual = z.object({
   aprovadoPor: z.object({ id: Uuid, nome: z.string() }).nullable(),
 });
 
+export const ConcursoMini = z.object({ id: Uuid, nome: z.string() });
+export type ConcursoMini = z.infer<typeof ConcursoMini>;
+
 export const PagamentoSuper = z.object({
   id: Uuid,
   usuario: UsuarioPagamento,
@@ -236,6 +243,17 @@ export const PagamentoSuper = z.object({
   conciliadoEm: DataHora.nullable(),
   dentroDoArrependimento: z.boolean(),
   manual: DadosManual.nullable(),
+  /** D21: o concurso que este pedido libera (pedidos antigos podem não ter). */
+  concurso: ConcursoMini.nullable(),
+  /**
+   * D21/RQ4: o concurso DO PEDIDO está liberado para o aluno agora (não o acesso geral).
+   * Pedido sem concurso: o acesso geral do aluno.
+   */
+  concursoLiberado: z.boolean(),
+  /** D23: cupom usado no pedido, o preço antes dele e o desconto. */
+  cupomCodigo: z.string().nullable(),
+  valorOriginalCentavos: z.number().int().nullable(),
+  descontoCentavos: z.number().int(),
 });
 export type PagamentoSuper = z.infer<typeof PagamentoSuper>;
 
@@ -244,6 +262,8 @@ export const PagamentosQuery = PaginacaoQuery.merge(PeriodoQuery).extend({
   q: z.string().trim().max(120).optional(),
   status: ZStatusPedido.optional(),
   metodo: ZMetodoPedido.optional(),
+  /** D21: só os pedidos deste concurso. */
+  concursoId: Uuid.optional(),
 });
 export type PagamentosQuery = z.input<typeof PagamentosQuery>;
 export const PagamentosListaResposta = paginada(PagamentoSuper);
@@ -367,11 +387,14 @@ export type CancelarPixEntrada = z.input<typeof CancelarPixEntrada>;
 export const ReenviarEmailResposta = z.object({ ok: z.literal(true), para: z.string() });
 
 /**
- * POST /super/usuarios/:id/aprovar-pagamento — pagamento recebido por fora (transferência,
- * dinheiro, Pix direto). Valor sempre PRICE_CENTS. Não é acesso gratuito.
+ * O que fazer com a cobrança Pix ainda aberta no Asaas ao aprovar manualmente (D24): receber em
+ * dinheiro (com o valor do pedido) ou cancelar. "Não mexer" saiu: deixava o Pix pagável e o aluno
+ * podia pagar duas vezes (R1-09).
  */
-export const AcaoAsaasManual = z.enum(['receber_em_dinheiro', 'cancelar', 'nenhuma']);
-export const AprovarManualEntrada = z.object({
+export const AcaoAsaasManual = z.enum(['receber_em_dinheiro', 'cancelar']);
+export type AcaoAsaasManual = z.infer<typeof AcaoAsaasManual>;
+
+const CamposAprovacaoManual = {
   recebidoEm: Dia,
   forma: ZFormaPagamentoManual,
   observacao: MotivoObrigatorio,
@@ -381,29 +404,89 @@ export const AprovarManualEntrada = z.object({
     .string()
     .regex(/^[0-9a-f-]{36}\.(png|jpg|webp|pdf)$/, 'Comprovante inválido.')
     .optional(),
-  /** O que fazer com a cobrança Pix pendente no Asaas, se houver. */
+  /** O que fazer com a cobrança Pix aberta no Asaas, se houver. */
   acaoAsaas: AcaoAsaasManual.default('receber_em_dinheiro'),
   confirmacao: Reconfirmacao,
+};
+
+/**
+ * POST /super/usuarios/:id/aprovar-pagamento — pagamento recebido por fora sem pedido na tela
+ * (D24): o concurso é explícito e o valor é o preço daquele concurso para o aluno (com o desconto
+ * D21, se couber). Se o aluno tem um Pix pendente ou vencido desse concurso, ele é usado (sem
+ * cobrança dupla). Só para aluno; nunca a própria conta. Não é acesso gratuito.
+ */
+export const AprovarManualEntrada = z.object({
+  concursoId: Uuid,
+  ...CamposAprovacaoManual,
 });
 export type AprovarManualEntrada = z.input<typeof AprovarManualEntrada>;
+
+/**
+ * POST /super/pagamentos/:id/aprovar-manual — RQ4: o Pix pendente ou vencido DESTE pedido foi
+ * pago por fora. Antes, o Asaas é consultado: se a cobrança está paga lá, o pedido é confirmado
+ * pelo caminho normal. Senão, este pedido vira pago (manual) com o valor e o concurso dele.
+ */
+export const AprovarManualPedidoEntrada = z.object(CamposAprovacaoManual);
+export type AprovarManualPedidoEntrada = z.input<typeof AprovarManualPedidoEntrada>;
+
 export const AprovarManualResposta = z.object({
   pedidoId: Uuid,
-  /** O aluno já tinha pagamento aprovado: nada foi duplicado. */
+  /** Já havia pagamento aprovado deste concurso: nada foi duplicado. */
   jaAprovado: z.boolean(),
+  /** A cobrança estava paga no Asaas: o pedido foi confirmado como Asaas, não como manual. */
+  pagoNoAsaas: z.boolean(),
   asaas: z.object({
-    acao: AcaoAsaasManual,
+    acao: z.enum(['receber_em_dinheiro', 'cancelar', 'nenhuma']),
     ok: z.boolean(),
     mensagem: z.string(),
   }),
+  mensagem: z.string(),
 });
 export type AprovarManualResposta = z.infer<typeof AprovarManualResposta>;
 
-/** POST /super/pagamentos/:id/desfazer-manual — estorno manual: revoga o acesso. */
+/** POST /super/pagamentos/:id/desfazer-manual — estorno manual: revoga o concurso do pedido. */
 export const DesfazerManualEntrada = z.object({
   motivo: MotivoObrigatorio,
   confirmacao: Reconfirmacao,
 });
 export type DesfazerManualEntrada = z.input<typeof DesfazerManualEntrada>;
+
+/**
+ * POST /super/pagamentos/:id/liberar — RQ4: o pedido está pago, mas o concurso dele não ficou
+ * liberado. Libera só o concurso do pedido. Idempotente (2ª vez: `alterado: false`).
+ */
+export const LiberarPedidoEntrada = z.object({
+  motivo: MotivoObrigatorio,
+  confirmacao: Reconfirmacao,
+});
+export type LiberarPedidoEntrada = z.input<typeof LiberarPedidoEntrada>;
+export const LiberarPedidoResposta = z.object({
+  alterado: z.boolean(),
+  mensagem: z.string(),
+  pagamento: PagamentoSuper,
+});
+export type LiberarPedidoResposta = z.infer<typeof LiberarPedidoResposta>;
+
+/**
+ * POST /super/pagamentos/:id/estornar — RQ4: um botão só. Pedido do Asaas = reembolso no Asaas
+ * (uma vez só; o acesso cai quando o webhook PAYMENT_REFUNDED chegar). Pedido manual = desfaz a
+ * aprovação e revoga já. Nos dois casos, só o concurso do pedido (D21).
+ */
+export const EstornarEntrada = z.object({
+  motivo: MotivoObrigatorio,
+  /** Pedido do Asaas pago há mais de 7 dias. */
+  foraDoPrazo: z.boolean().default(false),
+  confirmacao: Reconfirmacao,
+});
+export type EstornarEntrada = z.input<typeof EstornarEntrada>;
+export const EstornarResposta = z.object({
+  modo: z.enum(['asaas', 'manual']),
+  /** asaas: aguardando o webhook do estorno; manual: estornado aqui. */
+  status: z.enum(['aguardando_webhook', 'estornado']),
+  mensagem: z.string(),
+  pagamento: PagamentoSuper,
+});
+export type EstornarResposta = z.infer<typeof EstornarResposta>;
 
 /** POST /super/comprovantes (multipart, campo "arquivo"): imagem ou PDF até 5 MB. */
 export const ComprovanteResposta = z.object({ arquivo: z.string(), url: z.string() });
@@ -627,6 +710,21 @@ export const AuditoriaSuperItem = z.object({
 });
 export type AuditoriaSuperItem = z.infer<typeof AuditoriaSuperItem>;
 
+/** D21: um concurso do aluno na ficha. */
+export const ConcursoDoUsuario = z.object({
+  id: Uuid,
+  nome: z.string(),
+  /** Este concurso está liberado para o aluno. */
+  acesso: z.boolean(),
+  acessoEm: DataHora.nullable(),
+  /** É o concurso ativo (o da trilha). */
+  ativo: z.boolean(),
+  cargo: z.string().nullable(),
+  /** O pedido pago (não estornado) mais recente deste concurso; null = sem pedido pago. */
+  pedidoPagoId: Uuid.nullable(),
+});
+export type ConcursoDoUsuario = z.infer<typeof ConcursoDoUsuario>;
+
 /** GET /super/usuarios/:id — ficha completa. */
 export const FichaUsuarioResposta = z.object({
   usuario: UsuarioSuperResumo.extend({
@@ -659,6 +757,8 @@ export const FichaUsuarioResposta = z.object({
     dominio: z.array(z.object({ slug: ZSlugDisciplina, nome: z.string(), valor: z.number().nullable() })),
   }),
   pedidos: z.array(PagamentoSuper.omit({ usuario: true })),
+  /** D21: concursos que o aluno acompanha, cada um com o seu acesso e o pedido pago que o libera. */
+  concursos: z.array(ConcursoDoUsuario),
   sessoes: z.array(
     z.object({
       id: Uuid,
@@ -713,6 +813,24 @@ export const MudarPapelEntrada = z.object({
   confirmacao: Reconfirmacao,
 });
 export type MudarPapelEntrada = z.input<typeof MudarPapelEntrada>;
+
+/** POST /super/usuarios/:id/concursos/:concursoId/liberar e /revogar (D24, só aluno). */
+export const UsuarioConcursoParams = z.object({ id: Uuid, concursoId: Uuid });
+export type UsuarioConcursoParams = z.infer<typeof UsuarioConcursoParams>;
+export const UsuarioConcursoAcaoEntrada = z.object({
+  motivo: MotivoObrigatorio,
+  confirmacao: Reconfirmacao,
+});
+export type UsuarioConcursoAcaoEntrada = z.input<typeof UsuarioConcursoAcaoEntrada>;
+export const UsuarioConcursoAcaoResposta = z.object({
+  /** false = o concurso já estava assim (nada mudou). */
+  alterado: z.boolean(),
+  /** O aluno ainda tem algum concurso liberado. */
+  acesso: z.boolean(),
+  mensagem: z.string(),
+  concursos: z.array(ConcursoDoUsuario),
+});
+export type UsuarioConcursoAcaoResposta = z.infer<typeof UsuarioConcursoAcaoResposta>;
 
 /** POST /super/usuarios/:id/anonimizar — LGPD: excluir = anonimizar (mantém os pedidos). */
 export const AnonimizarEntrada = z.object({

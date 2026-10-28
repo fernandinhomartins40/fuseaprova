@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { limparCelular, validarCelular } from '../celular.js';
 import { limparCpf, validarCpf } from '../cpf.js';
 import { normalizarEmail, SENHA_MINIMA, validarEmail, validarNomeCompleto } from '../validacao.js';
+import { AREAS_CONTA } from '../dominio.js';
 import { Uuid, ZPapel } from './comum.js';
 
 export const VERSAO_TERMOS_ATUAL = '2026-10-27';
@@ -67,7 +68,7 @@ export const CadastroEntrada = z.object({
 export type CadastroEntrada = z.input<typeof CadastroEntrada>;
 export type CadastroDados = z.output<typeof CadastroEntrada>;
 
-/** POST /auth/login */
+/** POST /auth/login, /auth/login/conteudo e /auth/login/super (D24: um por portal). */
 export const LoginEntrada = z.object({
   email: CampoEmail,
   senha: z.string().min(1, 'Informe sua senha.'),
@@ -91,9 +92,15 @@ export const RedefinirEntrada = z.object({
 });
 export type RedefinirEntrada = z.input<typeof RedefinirEntrada>;
 
-/** Para onde a PWA deve ir depois de entrar. */
-export const ProximoPasso = z.enum(['pagamento', 'onboarding', 'trilha', 'admin', 'dois_fatores']);
+/**
+ * Para onde a PWA deve ir depois de entrar (D24: reflete a área). Aluno: `pagamento`,
+ * `onboarding` ou `trilha`; admin: `conteudo`; superadmin: `dois_fatores`.
+ */
+export const ProximoPasso = z.enum(['pagamento', 'onboarding', 'trilha', 'conteudo', 'dois_fatores']);
 export type ProximoPasso = z.infer<typeof ProximoPasso>;
+
+/** D24: a área (portal) da conta. A web leva cada uma à sua página de login. */
+export const ZAreaConta = z.enum(AREAS_CONTA);
 
 /** Resposta de cadastro, login e redefinição (a sessão vai no cookie httpOnly). */
 export const SessaoResposta = z.object({
@@ -105,6 +112,8 @@ export const SessaoResposta = z.object({
     acesso: z.boolean(),
   }),
   proximo: ProximoPasso,
+  /** D24: `aluno` (/entrar), `conteudo` (/admin/entrar) ou `super` (/super/entrar). */
+  area: ZAreaConta,
 });
 export type SessaoResposta = z.infer<typeof SessaoResposta>;
 

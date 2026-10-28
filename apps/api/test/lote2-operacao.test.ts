@@ -138,7 +138,7 @@ describe('S-15: requisição em segundo plano não renova a sessão', () => {
 describe('S-16: 2FA com falhas persistidas e auditadas', () => {
   it('10 códigos errados → bloqueio (429), que vale numa nova instância da API', async () => {
     const s = await t.superadmin();
-    const l = await t.chamar('authLogin', { corpo: { email: s.email, senha: s.senha } });
+    const l = await t.chamar('authLoginSuper', { corpo: { email: s.email, senha: s.senha } });
     const cookie = l.cookies.map((c) => `${c.name}=${c.value}`).join('; ');
     for (let i = 0; i < 10; i++) {
       const r = await t.chamar('super2faVerificar', { cookie, corpo: { codigo: '000000' } });

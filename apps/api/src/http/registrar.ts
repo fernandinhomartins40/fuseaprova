@@ -14,9 +14,10 @@ import {
   type DefinicaoRota,
   type NomeRota,
 } from '@fuse/shared/api';
-import { ehAdmin } from '@fuse/shared';
+import { podeEstudar, podeGerirConteudo } from '@fuse/shared';
 import type { Deps, UsuarioSessao } from '../contexto.js';
 import { lerConfiguracoes } from '../servicos/configuracoes.js';
+import { exigirLimite } from '../servicos/limitador.js';
 import { falha } from './erros.js';
 
 type Def<N extends NomeRota> = (typeof ROTAS)[N];
@@ -41,6 +42,12 @@ export interface Contexto<N extends NomeRota> {
   corpo: Saida<Def<N>, 'corpo'>;
   deps: Deps;
   agora: Date;
+  /**
+   * Conta uma tentativa no balde `chave` (em memória, por instância) e responde 429 acima de
+   * `max` na janela. Não faz nada quando o rate limit está desligado (testes).
+   */
+  /** S-16: balde persistente (`limites_contagem`), compartilhável entre rotas (os três logins, D24). */
+  limitar: (chave: string, max: number, janelaMs: number) => Promise<void>;
 }
 
 export type Handler<N extends NomeRota> = (ctx: Contexto<N>) => Promise<SaidaHandler<N>>;
@@ -82,6 +89,13 @@ export function exigirSuperadmin(u: UsuarioSessao | null): asserts u is UsuarioS
   exigirDoisFatores(u);
 }
 
+/** D24: gestão de conteúdo — admin, ou superadmin com o 2FA verificado nesta sessão (403). */
+export function exigirConteudo(u: UsuarioSessao | null): asserts u is UsuarioSessao {
+  if (!u) throw falha('nao_autenticado');
+  if (!podeGerirConteudo(u.papel)) throw falha('proibido');
+  if (u.papel === 'superadmin') exigirDoisFatores(u);
+}
+
 export function exigirGuarda(def: DefinicaoRota, req: FastifyRequest, deps: Deps): void {
   const u = req.usuario;
   switch (def.guarda) {
@@ -98,14 +112,17 @@ export function exigirGuarda(def: DefinicaoRota, req: FastifyRequest, deps: Deps
     case 'login':
       if (!u) throw falha('nao_autenticado');
       return;
-    case 'acesso': // exigirAcesso: 402 sem pagamento confirmado
+    case 'aluno': // D24: só o papel aluno (pagamento, concursos, LGPD), sem exigir pagamento
       if (!u) throw falha('nao_autenticado');
+      if (!podeEstudar(u.papel)) throw falha('proibido');
+      return;
+    case 'acesso': // exigirAcesso: só o aluno (a equipe recebe 403) e 402 sem pagamento confirmado
+      if (!u) throw falha('nao_autenticado');
+      if (!podeEstudar(u.papel)) throw falha('proibido');
       if (!u.acesso) throw falha('sem_acesso');
       return;
-    case 'admin': // exigirAdmin: admin, ou superadmin com 2FA
-      if (!u) throw falha('nao_autenticado');
-      if (!ehAdmin(u.papel)) throw falha('proibido');
-      if (u.papel === 'superadmin') exigirDoisFatores(u);
+    case 'conteudo': // D24: admin, ou superadmin com 2FA
+      exigirConteudo(u);
       return;
     case 'superadmin':
       exigirSuperadmin(u);
@@ -117,9 +134,12 @@ export function exigirGuarda(def: DefinicaoRota, req: FastifyRequest, deps: Deps
   }
 }
 
-/** D13: modo manutenção — as rotas de conteúdo respondem 503 para quem não é admin. */
-async function exigirForaDeManutencao(def: DefinicaoRota, req: FastifyRequest, deps: Deps): Promise<void> {
-  if (def.guarda !== 'acesso' || ehAdmin(req.usuario?.papel)) return;
+/**
+ * D13: modo manutenção — as rotas de estudo respondem 503. Elas só servem ao aluno (D24): a
+ * equipe já recebeu 403 da guarda, então não há exceção por papel aqui.
+ */
+async function exigirForaDeManutencao(def: DefinicaoRota, deps: Deps): Promise<void> {
+  if (def.guarda !== 'acesso') return;
   const { valores } = await lerConfiguracoes(deps.db, deps.config);
   if (valores.manutencao.ativa) {
     throw falha('manutencao', valores.manutencao.mensagem || undefined);
@@ -132,6 +152,10 @@ export function criarRegistrador(
   opcoes: { rateLimit: boolean },
 ): Registrador & { registradas: Set<NomeRota> } {
   const registradas = new Set<NomeRota>();
+  // S-16: o balde comum fica no banco: sobrevive a deploy e reinício (antes era memória).
+  const limitar = async (chave: string, max: number, janelaMs: number) => {
+    if (opcoes.rateLimit) await exigirLimite(deps.db, chave, max, janelaMs, deps.relogio.agora());
+  };
   return {
     registradas,
     rota(nome, handler) {
@@ -142,7 +166,7 @@ export function criarRegistrador(
         method: def.metodo,
         url: PREFIXO_API + def.caminho,
         config:
-          opcoes.rateLimit && limite
+          opcoes.rateLimit && limite && !limite.balde
             ? {
                 rateLimit: {
                   max: limite.max,
@@ -155,8 +179,13 @@ export function criarRegistrador(
               }
             : {},
         handler: async (req, reply) => {
+          // Balde compartilhado (D24): conta antes de qualquer coisa, como o rate limit da rota.
+          if (limite?.balde) {
+            const quem = limite.por === 'usuario' && req.usuario ? `u:${req.usuario.id}` : `ip:${req.ip}`;
+            await limitar(`${limite.balde}:${quem}`, limite.max, limite.janelaMs);
+          }
           exigirGuarda(def, req, deps);
-          await exigirForaDeManutencao(def, req, deps);
+          await exigirForaDeManutencao(def, deps);
           const ctx = {
             req,
             reply,
@@ -166,6 +195,7 @@ export function criarRegistrador(
             corpo: validar(def.corpo, req.body ?? (def.corpo ? {} : undefined)),
             deps,
             agora: deps.relogio.agora(),
+            limitar,
           } as unknown as Contexto<typeof nome>;
           const resultado = await handler(ctx);
           if (def.resposta === null) {

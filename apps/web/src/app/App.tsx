@@ -98,6 +98,8 @@ export function Rotas() {
         <Route path="/entrar" element={<Entrar />} />
         <Route path="/recuperar" element={<Recuperar />} />
         <Route path="/recuperar/:token" element={<Recuperar />} />
+        {/* D24: o e-mail de convite da equipe aponta para /convite/:token (a tela própria vem no Lote 3). */}
+        <Route path="/convite/:token" element={<Recuperar />} />
         <Route path="/termos" element={<Termos />} />
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/excluir-conta" element={<ExclusaoDeConta />} />
