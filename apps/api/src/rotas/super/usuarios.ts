@@ -7,19 +7,19 @@ import { createHash } from 'node:crypto';
 import { and, count, desc, eq, gte, inArray, isNotNull, isNull, lt, max, or, sql, type SQL } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { NOMES_PAPEL, ocultarCpf, somenteDigitos, MS_DIA } from '@fuse/shared';
-import { gerarCsv, VALIDADE_CONVITE_MS, VALIDADE_LINK_SENHA_MS, type FichaUsuarioResposta, type UsuarioSuperResumo } from '@fuse/shared/api';
-import type { Deps, Usuario } from '../../contexto.js';
+import { gerarCsv, VALIDADE_CONVITE_MS, VALIDADE_LINK_SENHA_MS, type FichaUsuarioResposta, type Reconfirmacao, type UsuarioSuperResumo } from '@fuse/shared/api';
+import type { Deps, Usuario, UsuarioSessao } from '../../contexto.js';
 import type { Registrador } from '../../http/registrar.js';
 import { ehViolacaoUnica, existe, falha } from '../../http/erros.js';
-import { emailConvite, emailRecuperacao } from '../../integracoes/email.js';
+import { emailAvisoTrocaEmail, emailConvite, emailRecuperacao } from '../../integracoes/email.js';
 import { reconfirmar } from '../../servicos/doisfatores.js';
 import { dominioPorDisciplina } from '../../servicos/dominio.js';
 import { anonimizarUsuario, exportarDadosUsuario } from '../../servicos/lgpd.js';
 import { encerrarSessoesDoUsuario, gerarToken } from '../../servicos/sessoes.js';
 import { cargoDoUsuario, revisoesPendentes } from '../../servicos/usuario.js';
-import { contar, dataSql, iso, isoOuNull, type Db } from '../../util.js';
+import { contar, contem, dataSql, iso, isoOuNull, type Db } from '../../util.js';
 import { paginacao } from '../admin/comum.js';
-import { auditarSuper, celularOculto, garantirOutroSuperadmin, mapPagamento, nomeArquivoCsv, periodo } from './comum.js';
+import { auditarSuper, avisoCorte, celularOculto, garantirOutroSuperadmin, limiteCsv, mapPagamento, nomeArquivoCsv, periodo, semDadosPessoais } from './comum.js';
 
 const {
   usuarios,
@@ -61,9 +61,11 @@ function ondeUsuarios(q: FiltrosUsuarios, agora: Date): SQL | undefined {
   return and(
     termo
       ? or(
-          sql`${usuarios.nome} ilike ${`%${termo}%`}`,
-          sql`${usuarios.email} ilike ${`%${termo}%`}`,
-          dig.length >= 3 ? sql`${usuarios.cpf} like ${`%${dig}%`}` : undefined,
+          // S-22: curingas escapados; S-21: CPF só pelo número completo (o trecho do meio
+          // reconstruía o CPF que a tela mostra mascarado).
+          contem(usuarios.nome, termo),
+          contem(usuarios.email, termo),
+          dig.length === 11 ? eq(usuarios.cpf, dig) : undefined,
           dig.length >= 4 ? sql`${usuarios.celular} like ${`%${dig}%`}` : undefined,
         )
       : undefined,
@@ -79,10 +81,32 @@ function ondeUsuarios(q: FiltrosUsuarios, agora: Date): SQL | undefined {
   );
 }
 
-const selUsuarios = (db: Db) =>
-  db.select({ u: usuarios, ultima: subUltimaAtividade, pago: subPago }).from(usuarios);
+/**
+ * S-18: as colunas que o painel mostra. Nunca `senha_hash`, `totp_segredo` nem
+ * `totp_ultimo_passo` (antes a lista e o CSV liam a linha inteira).
+ */
+const colunasResumo = {
+  id: usuarios.id,
+  nome: usuarios.nome,
+  email: usuarios.email,
+  cpf: usuarios.cpf,
+  celular: usuarios.celular,
+  papel: usuarios.papel,
+  acesso: usuarios.acesso,
+  bloqueadoEm: usuarios.bloqueadoEm,
+  totpAtivadoEm: usuarios.totpAtivadoEm,
+  marketing: usuarios.marketing,
+  xpTotal: usuarios.xpTotal,
+  ofensiva: usuarios.ofensiva,
+  criadoEm: usuarios.criadoEm,
+  excluidoEm: usuarios.excluidoEm,
+};
+type UsuarioResumoDb = Pick<Usuario, keyof typeof colunasResumo>;
 
-function mapResumo(u: Usuario, ultima: Date | string | null, pago: boolean): UsuarioSuperResumo {
+const selUsuarios = (db: Db) =>
+  db.select({ u: colunasResumo, ultima: subUltimaAtividade, pago: subPago }).from(usuarios);
+
+function mapResumo(u: UsuarioResumoDb, ultima: Date | string | null, pago: boolean): UsuarioSuperResumo {
   return {
     id: u.id,
     nome: u.nome,
@@ -187,6 +211,8 @@ async function ficha(db: Db, id: string, agora: Date): Promise<FichaUsuarioRespo
       doisFatores: !!s.doisFatoresEm,
     })),
     push: push.map((p) => ({ id: p.id, navegador: navegadorDe(p.endpoint), criadoEm: iso(p.criadoEm) })),
+    // S-21: na ficha de uma conta excluída, os dados pessoais antigos não aparecem (nem os de
+    // registros anteriores à limpeza feita na anonimização).
     auditoria: auds.map((x) => ({
       id: x.a.id,
       admin: x.a.adminId ? { id: x.a.adminId, nome: x.nome ?? '—' } : null,
@@ -194,9 +220,9 @@ async function ficha(db: Db, id: string, agora: Date): Promise<FichaUsuarioRespo
       alvo: x.a.alvo,
       motivo: x.a.motivo,
       ip: x.a.ip,
-      antes: x.a.antes ?? null,
-      depois: x.a.depois ?? null,
-      detalhes: x.a.detalhes ?? null,
+      antes: u.excluidoEm ? semDadosPessoais(x.a.antes) : (x.a.antes ?? null),
+      depois: u.excluidoEm ? semDadosPessoais(x.a.depois) : (x.a.depois ?? null),
+      detalhes: u.excluidoEm ? semDadosPessoais(x.a.detalhes) : (x.a.detalhes ?? null),
       criadoEm: iso(x.a.criadoEm),
     })),
   };
@@ -208,6 +234,19 @@ async function criarLinkSenha(deps: Deps, usuarioId: string, agora: Date, valida
   const expiraEm = new Date(agora.getTime() + validadeMs);
   await deps.db.insert(redefinicoesSenha).values({ usuarioId, tokenHash: hashSimples(token), expiraEm, criadoEm: agora });
   return { link: `${deps.config.appUrl}/recuperar/${token}`, expiraEm };
+}
+
+/** S-11: reconfirmação obrigatória quando o alvo é da equipe (400 sem ela, 403 se errada). */
+async function exigirReconfirmacao(
+  ctx: { deps: Deps; usuario: UsuarioSessao; agora: Date },
+  confirmacao: Reconfirmacao | undefined,
+  acao: string,
+): Promise<void> {
+  if (!confirmacao) {
+    const msg = `Para ${acao}, confirme com sua senha ou com o código do app.`;
+    throw falha('validacao', msg, { confirmacao: msg });
+  }
+  await reconfirmar(ctx.deps, ctx.usuario, confirmacao, ctx.agora);
 }
 
 const dadosAuditaveis = (u: Usuario) => ({
@@ -232,24 +271,56 @@ export function rotasSuperUsuarios(r: Registrador): void {
   });
 
   r.rota('superUsuariosCsv', async (ctx) => {
-    const lista = await selUsuarios(ctx.deps.db).where(ondeUsuarios(ctx.query, ctx.agora)).orderBy(desc(usuarios.criadoEm)).limit(20_000);
-    await auditarSuper(ctx, 'exportar.csv', 'usuarios', { detalhes: { linhas: lista.length } });
+    // S-18: só as colunas exportadas; "última atividade" e "pago" por junção agregada (antes era
+    // uma subconsulta por linha); sem corte silencioso: acima do teto, o aviso vai no arquivo e
+    // na resposta.
+    const onde = ondeUsuarios(ctx.query, ctx.agora);
+    const ult = ctx.deps.db
+      .select({ usuarioId: tentativas.usuarioId, em: max(tentativas.respondidaEm).as('ult_em') })
+      .from(tentativas)
+      .groupBy(tentativas.usuarioId)
+      .as('ult');
+    const pg = ctx.deps.db
+      .selectDistinct({ usuarioId: pedidos.usuarioId })
+      .from(pedidos)
+      .where(eq(pedidos.status, 'pago'))
+      .as('pg');
+    const lista = await ctx.deps.db
+      .select({ u: colunasResumo, ultima: ult.em, pago: sql<boolean>`${pg.usuarioId} is not null` })
+      .from(usuarios)
+      .leftJoin(ult, eq(ult.usuarioId, usuarios.id))
+      .leftJoin(pg, eq(pg.usuarioId, usuarios.id))
+      .where(onde)
+      .orderBy(desc(usuarios.criadoEm))
+      .limit(limiteCsv.linhas + 1);
+    const cortado = lista.length > limiteCsv.linhas;
+    const linhas = cortado ? lista.slice(0, limiteCsv.linhas) : lista;
+    const total = cortado ? contar((await ctx.deps.db.select({ n: count() }).from(usuarios).where(onde))[0]?.n) : linhas.length;
+    const aviso = cortado ? avisoCorte(limiteCsv.linhas, total) : null;
+    await auditarSuper(ctx, 'exportar.csv', 'usuarios', { detalhes: { linhas: linhas.length, total } });
     const conteudo = gerarCsv(
       ['id', 'nome', 'email', 'cpf', 'celular', 'papel', 'acesso', 'pago', 'bloqueado', '2fa', 'marketing', 'xp', 'ofensiva', 'ultima_atividade', 'criado_em', 'excluido_em'],
-      lista.map((x) => {
-        const u = mapResumo(x.u, x.ultima, x.pago);
-        return [u.id, u.nome, u.email, u.cpfOculto, u.celularOculto, NOMES_PAPEL[u.papel], u.acesso ? 'sim' : 'não', u.pago ? 'sim' : 'não', u.bloqueado ? 'sim' : 'não', u.doisFatores ? 'sim' : 'não', u.marketing ? 'sim' : 'não', u.xpTotal, u.ofensiva, u.ultimaAtividadeEm, u.criadoEm, u.excluidoEm];
-      }),
+      [
+        ...linhas.map((x) => {
+          const u = mapResumo(x.u, x.ultima, x.pago);
+          return [u.id, u.nome, u.email, u.cpfOculto, u.celularOculto, NOMES_PAPEL[u.papel], u.acesso ? 'sim' : 'não', u.pago ? 'sim' : 'não', u.bloqueado ? 'sim' : 'não', u.doisFatores ? 'sim' : 'não', u.marketing ? 'sim' : 'não', u.xpTotal, u.ofensiva, u.ultimaAtividadeEm, u.criadoEm, u.excluidoEm];
+        }),
+        ...(aviso ? [[aviso]] : []),
+      ],
     );
-    return { nomeArquivo: nomeArquivoCsv('usuarios', ctx.agora), conteudo };
+    return { nomeArquivo: nomeArquivoCsv('usuarios', ctx.agora), conteudo, linhas: linhas.length, aviso };
   });
 
   r.rota('superUsuarioObter', async ({ params, deps, agora }) => ficha(deps.db, params.id, agora));
 
   r.rota('superUsuarioEditar', async (ctx) => {
-    const { deps, params, corpo, agora } = ctx;
+    const { deps, params, corpo, usuario, agora } = ctx;
     const antes = await usuarioPorId(deps.db, params.id);
     if (antes.excluidoEm) throw falha('conflito', 'Esta conta foi excluída.');
+    const trocaEmail = corpo.email !== undefined && corpo.email.toLowerCase() !== antes.email.toLowerCase();
+    // S-11: trocar o e-mail de uma conta da equipe é tomar a conta (o link de senha passa a ir
+    // para o endereço novo): pede reconfirmação.
+    if (trocaEmail && antes.papel !== 'aluno') await exigirReconfirmacao(ctx, corpo.confirmacao, 'trocar o e-mail de uma conta da equipe');
     const set: Partial<typeof usuarios.$inferInsert> = {};
     if (corpo.nome !== undefined) set.nome = corpo.nome;
     if (corpo.email !== undefined) set.email = corpo.email;
@@ -261,7 +332,21 @@ export function rotasSuperUsuarios(r: Registrador): void {
       if (ehViolacaoUnica(e)) throw falha('conta_existente', 'Já existe outra conta com este e-mail.', { email: 'Já existe outra conta com este e-mail.' });
       throw e;
     }
-    await auditarSuper(ctx, 'usuario.editar', `usuario:${antes.id}`, { motivo: corpo.motivo, antes: dadosAuditaveis(antes), depois: dadosAuditaveis(depois) });
+    let revogadas = 0;
+    if (trocaEmail) {
+      // O endereço antigo fica sabendo; na equipe, os links de senha pendentes e as sessões caem.
+      deps.enviarEmail(emailAvisoTrocaEmail({ nome: antes.nome, emailAntigo: antes.email, emailNovo: depois.email, quando: agora }));
+      if (antes.papel !== 'aluno' && antes.id !== usuario.id) {
+        await deps.db.delete(redefinicoesSenha).where(eq(redefinicoesSenha.usuarioId, antes.id));
+        revogadas = await encerrarSessoesDoUsuario(deps.db, antes.id);
+      }
+    }
+    await auditarSuper(ctx, 'usuario.editar', `usuario:${antes.id}`, {
+      motivo: corpo.motivo,
+      antes: dadosAuditaveis(antes),
+      depois: dadosAuditaveis(depois),
+      detalhes: trocaEmail ? { avisoAoEmailAntigo: true, revogadas } : null,
+    });
     return ficha(deps.db, antes.id, agora);
   });
 
@@ -269,6 +354,7 @@ export function rotasSuperUsuarios(r: Registrador): void {
     const { deps, params, corpo, agora } = ctx;
     const u = await usuarioPorId(deps.db, params.id);
     if (u.excluidoEm) throw falha('conflito', 'Esta conta foi excluída.');
+    if (u.papel !== 'aluno') await exigirReconfirmacao(ctx, corpo.confirmacao, 'forçar a troca de senha de uma conta da equipe');
     const { link } = await criarLinkSenha(deps, u.id, agora, VALIDADE_LINK_SENHA_MS);
     deps.enviarEmail(emailRecuperacao({ nome: u.nome, email: u.email, link }));
     const revogadas = corpo.revogarSessoes ? await encerrarSessoesDoUsuario(deps.db, u.id) : 0;
@@ -281,6 +367,8 @@ export function rotasSuperUsuarios(r: Registrador): void {
     if (params.id === usuario.id) throw falha('conflito', 'Você não pode bloquear a própria conta.');
     const u = await usuarioPorId(deps.db, params.id);
     if (u.bloqueadoEm) throw falha('conflito', 'A conta já está bloqueada.');
+    // S-11: bloquear outro superadmin derruba a sessão dele: pede reconfirmação.
+    if (u.papel === 'superadmin') await exigirReconfirmacao(ctx, corpo.confirmacao, 'bloquear um superadmin');
     await garantirOutroSuperadmin(deps.db, u);
     await deps.db.update(usuarios).set({ bloqueadoEm: agora, bloqueioMotivo: corpo.motivo }).where(eq(usuarios.id, u.id));
     const revogadas = await encerrarSessoesDoUsuario(deps.db, u.id);
@@ -312,8 +400,10 @@ export function rotasSuperUsuarios(r: Registrador): void {
   });
 
   r.rota('superUsuarioExportar', async (ctx) => {
+    // S-21: sai com o CPF completo; pede motivo e reconfirmação e fica na auditoria.
+    await reconfirmar(ctx.deps, ctx.usuario, ctx.corpo.confirmacao, ctx.agora);
     const u = await usuarioPorId(ctx.deps.db, ctx.params.id);
-    await auditarSuper(ctx, 'usuario.exportar', `usuario:${u.id}`);
+    await auditarSuper(ctx, 'usuario.exportar', `usuario:${u.id}`, { motivo: ctx.corpo.motivo });
     return exportarDadosUsuario(ctx.deps.db, u, ctx.agora);
   });
 

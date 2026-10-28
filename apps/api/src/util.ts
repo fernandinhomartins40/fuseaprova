@@ -31,6 +31,31 @@ export function emUuids(coluna: SQL | unknown, ids: readonly string[]): SQL {
   return sql`${coluna} = any(${sql.raw(`'{${ids.join(',')}}'`)}::uuid[])`;
 }
 
+/**
+ * S-22: escapa os curingas do LIKE (`\`, `%` e `_`) para o termo digitado valer literalmente.
+ * O Postgres usa `\` como escape padrão do LIKE/ILIKE.
+ */
+export function escaparLike(termo: string): string {
+  return termo.replace(/[\\%_]/g, (c) => `\\${c}`);
+}
+
+/** S-22: `coluna ilike '%termo%'` com o termo escapado. Use em toda busca por trecho. */
+export function contem(coluna: SQL | unknown, termo: string): SQL {
+  return sql`${coluna} ilike ${`%${escaparLike(termo)}%`}`;
+}
+
+/**
+ * Espera a promessa por no máximo `ms`; depois rejeita com `mensagem` (a operação original segue
+ * no fundo, mas a resposta não fica presa — S-20).
+ */
+export function comPrazo<T>(p: Promise<T>, ms: number, mensagem: string): Promise<T> {
+  let timer: NodeJS.Timeout | undefined;
+  const prazo = new Promise<never>((_, rej) => {
+    timer = setTimeout(() => rej(new Error(mensagem)), ms);
+  });
+  return Promise.race([p, prazo]).finally(() => clearTimeout(timer));
+}
+
 export function contar(n: unknown): number {
   return Number(n ?? 0);
 }

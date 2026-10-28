@@ -6,12 +6,14 @@
 import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { and, asc, count, desc, eq, gte, ilike, inArray, isNotNull, isNull, lt, or, sql, type SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, inArray, isNotNull, isNull, lt, or, sql, type SQL } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { schema } from '@fuse/db';
 import { dentroDoArrependimento, NOMES_FORMA_PAGAMENTO_MANUAL, somenteDigitos } from '@fuse/shared';
 import {
   gerarCsv,
+  LIMITE_CONCILIACAO_LOTE,
+  type ConciliacaoItem,
   type EventoLinhaTempo,
   type WebhookEventoSuper,
 } from '@fuse/shared/api';
@@ -24,9 +26,10 @@ import { reconfirmar } from '../../servicos/doisfatores.js';
 import { enviarEmailConfirmacao, type Pedido } from '../../servicos/pagamento.js';
 import { aprovarPagamentoManual, desfazerAprovacaoManual } from '../../servicos/pagamentoManual.js';
 import { reprocessarEvento } from '../../servicos/webhook.js';
-import { contar, iso, type Db } from '../../util.js';
+import { comPrazo, contar, contem, iso, type Db } from '../../util.js';
 import { paginacao } from '../admin/comum.js';
-import { auditarSuper, mapPagamento, nomeArquivoCsv, periodo, reais } from './comum.js';
+import { TEMPOS_ASAAS } from './asaas.js';
+import { auditarSuper, avisoCorte, colunasPedido, limiteCsv, mapPagamento, nomeArquivoCsv, periodo, reais } from './comum.js';
 
 const { pedidos, usuarios, webhookEventos, auditoria } = schema;
 const aprovador = alias(usuarios, 'aprovador');
@@ -48,10 +51,11 @@ function ondePagamentos(q: FiltrosPagamento, agora: Date): SQL | undefined {
   return and(
     termo
       ? or(
-          ilike(usuarios.nome, `%${termo}%`),
-          ilike(usuarios.email, `%${termo}%`),
-          ilike(pedidos.asaasPaymentId, `%${termo}%`),
-          dig.length >= 3 ? sql`${usuarios.cpf} like ${`%${dig}%`}` : undefined,
+          // S-22: curingas escapados; S-21: CPF só pelo número completo.
+          contem(usuarios.nome, termo),
+          contem(usuarios.email, termo),
+          contem(pedidos.asaasPaymentId, termo),
+          dig.length === 11 ? eq(usuarios.cpf, dig) : undefined,
           RE_UUID.test(termo) ? eq(pedidos.id, termo) : undefined,
         )
       : undefined,
@@ -64,7 +68,8 @@ function ondePagamentos(q: FiltrosPagamento, agora: Date): SQL | undefined {
 
 const selPagamentos = (db: Db) =>
   db
-    .select({ p: pedidos, u: usuarios, a: { id: aprovador.id, nome: aprovador.nome } })
+    // S-08/S-18: sem o Pix (QR em base64) e só as colunas do aluno que a tela usa.
+    .select({ p: colunasPedido, u: { id: usuarios.id, nome: usuarios.nome, email: usuarios.email, cpf: usuarios.cpf, acesso: usuarios.acesso }, a: { id: aprovador.id, nome: aprovador.nome } })
     .from(pedidos)
     .innerJoin(usuarios, eq(usuarios.id, pedidos.usuarioId))
     .leftJoin(aprovador, eq(aprovador.id, pedidos.aprovadoPor));
@@ -207,8 +212,17 @@ export function rotasSuperPagamentos(r: Registrador): void {
 
   r.rota('superPagamentosCsv', async (ctx) => {
     const q = ctx.query;
-    const lista = await selPagamentos(ctx.deps.db).where(ondePagamentos(q, ctx.agora)).orderBy(desc(pedidos.criadoEm)).limit(10_000);
-    await auditarSuper(ctx, 'exportar.csv', 'pagamentos', { detalhes: { linhas: lista.length, q: q.q ?? null, status: q.status ?? null, metodo: q.metodo ?? null, de: q.de ?? null, ate: q.ate ?? null } });
+    // S-18: sem corte silencioso (antes parava em 10 mil linhas sem avisar). Acima do teto, o
+    // aviso vai na última linha do arquivo e na resposta, com o total do filtro.
+    const onde = ondePagamentos(q, ctx.agora);
+    const todas = await selPagamentos(ctx.deps.db).where(onde).orderBy(desc(pedidos.criadoEm)).limit(limiteCsv.linhas + 1);
+    const cortado = todas.length > limiteCsv.linhas;
+    const lista = cortado ? todas.slice(0, limiteCsv.linhas) : todas;
+    const total = cortado
+      ? contar((await ctx.deps.db.select({ n: count() }).from(pedidos).innerJoin(usuarios, eq(usuarios.id, pedidos.usuarioId)).where(onde))[0]?.n)
+      : lista.length;
+    const aviso = cortado ? avisoCorte(limiteCsv.linhas, total) : null;
+    await auditarSuper(ctx, 'exportar.csv', 'pagamentos', { detalhes: { linhas: lista.length, total, q: q.q ?? null, status: q.status ?? null, metodo: q.metodo ?? null, de: q.de ?? null, ate: q.ate ?? null } });
     const conteudo = gerarCsv(
       ['pedido_id', 'criado_em', 'pago_em', 'status', 'metodo', 'valor_reais', 'liquido_reais', 'aluno', 'email', 'cpf', 'cobranca_asaas', 'forma_manual', 'recebido_em', 'referencia', 'aprovado_por', 'estornado_em', 'cancelado_em'],
       lista.map((x) => {
@@ -232,9 +246,9 @@ export function rotasSuperPagamentos(r: Registrador): void {
           p.estornadoEm,
           p.canceladoEm,
         ];
-      }),
+      }).concat(aviso ? [[aviso]] : []),
     );
-    return { nomeArquivo: nomeArquivoCsv('pagamentos', ctx.agora), conteudo };
+    return { nomeArquivo: nomeArquivoCsv('pagamentos', ctx.agora), conteudo, linhas: lista.length, aviso };
   });
 
   r.rota('superPagamentoObter', async ({ params, deps, agora }) => {
@@ -267,7 +281,9 @@ export function rotasSuperPagamentos(r: Registrador): void {
   r.rota('superConciliarLote', async (ctx) => {
     const { deps, corpo, agora } = ctx;
     const per = periodo(corpo, agora);
-    const LIMITE = 200;
+    // S-20: lote menor, consultas em paralelo (4) com prazo por chamada e orçamento total bem
+    // abaixo dos 60 s do proxy. O que não couber no tempo volta como "não conferido".
+    const LIMITE = LIMITE_CONCILIACAO_LOTE.pedidos;
     const lista = await deps.db
       .select({ p: pedidos, nome: usuarios.nome })
       .from(pedidos)
@@ -279,36 +295,57 @@ export function rotasSuperPagamentos(r: Registrador): void {
       .select({ n: count() })
       .from(pedidos)
       .where(and(gte(pedidos.criadoEm, per.inicio), lt(pedidos.criadoEm, per.fim), eq(pedidos.metodo, 'manual')));
-    const itens = [];
+    const fila = lista.slice(0, LIMITE);
+    const porPosicao: (ConciliacaoItem | undefined)[] = new Array(fila.length);
     let erros = 0;
-    for (const x of lista.slice(0, LIMITE)) {
-      try {
-        const item = await conciliarPedido(deps, x.p, x.nome, agora, { corrigir: corpo.corrigir });
-        if (item.corrigido) {
-          await auditarSuper(ctx, 'pedido.conciliar', `pedido:${x.p.id}`, {
-            motivo: corpo.motivo ?? 'conciliação em lote',
-            antes: { status: item.statusLocalAntes },
-            depois: { status: item.statusLocalDepois },
-            detalhes: { statusAsaas: item.statusAsaas, lote: true },
-          });
+    let proximo = 0;
+    const inicio = Date.now();
+    const trabalhador = async () => {
+      for (;;) {
+        const i = proximo++;
+        if (i >= fila.length || Date.now() - inicio > TEMPOS_ASAAS.orcamentoMs) return;
+        const x = fila[i]!;
+        try {
+          const item = await comPrazo(
+            conciliarPedido(deps, x.p, x.nome, agora, { corrigir: corpo.corrigir }),
+            TEMPOS_ASAAS.prazoChamadaMs,
+            `o Asaas não respondeu em ${TEMPOS_ASAAS.prazoChamadaMs / 1000} s`,
+          );
+          if (item.corrigido) {
+            await auditarSuper(ctx, 'pedido.conciliar', `pedido:${x.p.id}`, {
+              motivo: corpo.motivo ?? 'conciliação em lote',
+              antes: { status: item.statusLocalAntes },
+              depois: { status: item.statusLocalDepois },
+              detalhes: { statusAsaas: item.statusAsaas, lote: true },
+            });
+          }
+          porPosicao[i] = item;
+        } catch (e) {
+          erros++;
+          porPosicao[i] = {
+            pedidoId: x.p.id,
+            asaasPaymentId: x.p.asaasPaymentId,
+            usuario: x.nome,
+            statusLocalAntes: x.p.status,
+            statusLocalDepois: x.p.status,
+            statusAsaas: null,
+            divergente: false,
+            corrigido: false,
+            mensagem: `Não foi possível consultar o Asaas: ${(e as Error).message.slice(0, 160)}`,
+          };
         }
-        itens.push(item);
-      } catch (e) {
-        erros++;
-        itens.push({
-          pedidoId: x.p.id,
-          asaasPaymentId: x.p.asaasPaymentId,
-          usuario: x.nome,
-          statusLocalAntes: x.p.status,
-          statusLocalDepois: x.p.status,
-          statusAsaas: null,
-          divergente: false,
-          corrigido: false,
-          mensagem: `Não foi possível consultar o Asaas: ${(e as Error).message.slice(0, 160)}`,
-        });
       }
-    }
+    };
+    await Promise.all(Array.from({ length: LIMITE_CONCILIACAO_LOTE.paralelas }, trabalhador));
+    const itens = porPosicao.filter((i): i is ConciliacaoItem => !!i);
+    const naoConferidos = fila.length - itens.length;
     const resposta = {
+      naoConferidos,
+      mensagem: naoConferidos
+        ? `Conferidos ${itens.length} de ${fila.length}: o Asaas estava lento e o tempo acabou. Rode de novo para conferir o resto.`
+        : lista.length > LIMITE
+          ? `Conferidos ${itens.length} pedidos (o máximo por vez). Há mais no período: rode de novo com um período menor.`
+          : null,
       verificados: itens.length,
       divergentes: itens.filter((i) => i.divergente).length,
       corrigidos: itens.filter((i) => i.corrigido).length,
@@ -442,7 +479,7 @@ export function rotasSuperPagamentos(r: Registrador): void {
       query.situacao === 'pendente' ? isNull(webhookEventos.processadoEm) : undefined,
       query.situacao === 'processado' ? and(isNotNull(webhookEventos.processadoEm), isNull(webhookEventos.erro)) : undefined,
       query.evento ? eq(webhookEventos.evento, query.evento) : undefined,
-      termo ? or(ilike(webhookEventos.id, `%${termo}%`), sql`${paymentIdDe} = ${termo}`) : undefined,
+      termo ? or(contem(webhookEventos.id, termo), sql`${paymentIdDe} = ${termo}`) : undefined,
     );
     const [t] = await deps.db.select({ n: count() }).from(webhookEventos).where(onde);
     const lista = await deps.db

@@ -3,17 +3,26 @@
  * período padrão e CSV.
  */
 import type { FastifyRequest } from 'fastify';
-import { and, count, eq, isNull, ne } from 'drizzle-orm';
+import { and, count, eq, getTableColumns, isNull, ne } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { dentroDoArrependimento, diaSP, diferencaDias, inicioDoDiaSP, ocultarCpf, somarDias } from '@fuse/shared';
-import type { AcaoAuditoria, PagamentoSuper } from '@fuse/shared/api';
+import { LIMITE_LINHAS_CSV, type AcaoAuditoria, type PagamentoSuper } from '@fuse/shared/api';
 import type { Deps, Usuario } from '../../contexto.js';
 import { falha } from '../../http/erros.js';
+import { CAMPOS_PESSOAIS } from '../../servicos/lgpd.js';
 import { iso, isoOuNull, type Db } from '../../util.js';
 import { auditar, type ExtraAuditoria } from '../admin/comum.js';
 
 const { usuarios } = schema;
 type Pedido = typeof schema.pedidos.$inferSelect;
+/** S-08/S-18: o pedido sem o Pix (copia-e-cola e QR em base64), que o painel nunca lê. */
+export type PedidoSemPix = Omit<Pedido, 'pixPayload' | 'pixImagem'>;
+
+/** Colunas de pedidos para listas, detalhe e CSV do painel: tudo menos o Pix. */
+export const colunasPedido = (() => {
+  const { pixPayload: _p, pixImagem: _i, ...resto } = getTableColumns(schema.pedidos);
+  return resto;
+})();
 
 export interface CtxAuditoria {
   deps: Deps;
@@ -48,7 +57,7 @@ export function celularOculto(c: string | null | undefined): string {
 }
 
 export function mapPagamento(
-  p: Pedido,
+  p: PedidoSemPix,
   u: Pick<Usuario, 'id' | 'nome' | 'email' | 'cpf' | 'acesso'>,
   aprovador: { id: string; nome: string } | null,
   agora: Date,
@@ -108,6 +117,27 @@ export async function garantirOutroSuperadmin(db: Db, alvo: Pick<Usuario, 'id' |
 
 export function nomeArquivoCsv(prefixo: string, agora: Date): string {
   return `${prefixo}-${diaSP(agora)}.csv`;
+}
+
+/**
+ * S-18: teto de linhas dos CSVs do painel (`LIMITE_LINHAS_CSV`). Mutável só para os testes
+ * exercitarem o aviso de corte sem 100 mil linhas.
+ */
+export const limiteCsv = { linhas: LIMITE_LINHAS_CSV };
+
+/** S-18: o aviso explícito quando um CSV passa do teto (vai no arquivo e na resposta). */
+export function avisoCorte(exportadas: number, total: number): string {
+  return `Atenção: exportadas ${exportadas.toLocaleString('pt-BR')} de ${total.toLocaleString('pt-BR')} linhas (o máximo por arquivo). Filtre por período para baixar o resto.`;
+}
+
+/** S-21: campos pessoais que saem da auditoria de uma conta excluída. */
+export const CAMPOS_PESSOAIS_AUDITORIA = CAMPOS_PESSOAIS;
+
+export function semDadosPessoais(o: Record<string, unknown> | null | undefined): Record<string, unknown> | null {
+  if (!o) return null;
+  const r: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(o)) if (!(CAMPOS_PESSOAIS_AUDITORIA as readonly string[]).includes(k)) r[k] = v;
+  return r;
 }
 
 export const reais = (centavos: number | null | undefined) =>
