@@ -15,11 +15,11 @@ import {
   type StatusPagamentoResposta,
 } from '@fuse/shared/api';
 import type { Deps, Usuario } from '../contexto.js';
-import { falha } from '../http/erros.js';
+import { ErroHttp, falha } from '../http/erros.js';
 import { emailBoasVindas, emailReembolso } from '../integracoes/email.js';
 import { lerDataAsaas } from '../integracoes/asaas.js';
 import { concursoAbertoPorId, liberarConcurso, precoDoConcurso, revogarConcurso } from './concursos.js';
-import { cupomValido, descricaoCupom, precoComCupom } from './precos.js';
+import { cupomValido, descricaoCupom, garantirReservaCupom, precoComCupom } from './precos.js';
 import { encerrarSessoesDoUsuario } from './sessoes.js';
 import { concursoDoUsuario } from './usuario.js';
 import { iso, isoOuNull, type Db } from '../util.js';
@@ -89,7 +89,7 @@ export async function gerarPix(
       throw falha('conflito', 'Seu acesso a este concurso já está liberado.');
     }
     // D23: cupom conferido aqui (inválido = 400 com campos.cupom); o valor sai só do servidor.
-    const cupom = cupomCodigo ? await cupomValido(db, cupomCodigo, concurso.id, agora) : null;
+    const cupom = cupomCodigo ? await cupomValido(db, cupomCodigo, concurso.id, agora, u.id) : null;
     const preco = precoComCupom(await precoDoConcurso(deps, db, u.id, concurso.id), cupom);
     const [pendente] = await db
       .select()
@@ -162,8 +162,11 @@ export async function gerarPix(
         })
         .returning();
       deps.log.info({ pedidoId: p!.id, usuarioId: u.id, cpf: ocultarCpf(u.cpf) }, 'pix gerado');
+      // S-12 (C8): o Pix com cupom é uma reserva; além do limite (corrida), sai e o aluno é avisado.
+      if (cupom?.limiteUsos != null) await garantirReservaCupom(deps, p!, agora);
       return respostaPix(p!, concurso, cupom?.codigo ?? null);
     } catch (e) {
+      if (e instanceof ErroHttp) throw e;
       // Sem payload Pix nem dados pessoais no log. O cliente já criado no Asaas fica gravado.
       deps.log.error({ usuarioId: u.id, erro: (e as Error).message }, 'falha ao gerar pix');
       return null;
@@ -184,7 +187,7 @@ export async function consultarCupom(
   const { db } = deps;
   const concurso = concursoIdPedido ? await concursoAbertoPorId(db, concursoIdPedido) : await concursoDoUsuario(db, usuario);
   if (!concurso) throw falha('nao_encontrado', 'Concurso não encontrado.');
-  const cupom = await cupomValido(db, codigo, concurso.id, agora);
+  const cupom = await cupomValido(db, codigo, concurso.id, agora, usuario.id);
   const preco = precoComCupom(await precoDoConcurso(deps, db, usuario.id, concurso.id), cupom);
   const original = preco.originalCentavos ?? preco.centavos;
   return {

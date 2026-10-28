@@ -3,13 +3,14 @@
  * respeitando o limite por minuto) e histórico. Só alunos com opt-in (`usuarios.marketing`)
  * recebem; os e-mails transacionais (pagamento, senha) seguem como antes.
  */
-import { and, count, desc, eq, gte, sql, type SQL } from 'drizzle-orm';
+import { and, count, desc, eq, gte, ne, sql, type SQL } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { emailComunicacao, inicioDoDiaSP, diaSP, MS_DIA } from '@fuse/shared';
 import { LIMITE_COMUNICACAO, type ComunicacaoSuper } from '@fuse/shared/api';
 import type { Deps } from '../../contexto.js';
 import type { Registrador } from '../../http/registrar.js';
 import { existe, falha } from '../../http/erros.js';
+import { reconfirmar } from '../../servicos/doisfatores.js';
 import { consultar, contar, dataSql, iso, isoOuNull, type Db } from '../../util.js';
 import { paginacao } from '../admin/comum.js';
 import { auditarSuper } from './comum.js';
@@ -74,6 +75,8 @@ async function mapComunicacao(db: Db, c: typeof comunicacoes.$inferSelect): Prom
     criadoEm: iso(c.criadoEm),
     iniciadoEm: isoOuNull(c.iniciadoEm),
     concluidoEm: isoOuNull(c.concluidoEm),
+    pausadaMotivo: c.pausadaMotivo,
+    pausadaEm: isoOuNull(c.pausadaEm),
   };
 }
 
@@ -101,27 +104,66 @@ export function rotasSuperComunicacao(r: Registrador): void {
   r.rota('superComunicacaoCriar', async (ctx) => {
     const { deps, corpo, usuario, agora } = ctx;
     exigirCanalConfigurado(deps, corpo.canal);
-    const [hoje] = await deps.db
-      .select({ n: count() })
-      .from(comunicacoes)
-      .where(gte(comunicacoes.criadoEm, inicioDoDiaSP(diaSP(agora))));
-    if (contar(hoje?.n) >= LIMITE_COMUNICACAO.porDia) {
-      throw falha('limite_requisicoes', `O limite é de ${LIMITE_COMUNICACAO.porDia} comunicações por dia. Tente amanhã.`);
-    }
+    // S-17: vai para todos os alunos pelo domínio oficial: reconfirmação e motivo.
+    await reconfirmar(deps, usuario, corpo.confirmacao, agora);
+    const porChave = async (db: Db) =>
+      corpo.chaveIdempotencia
+        ? (await db.select().from(comunicacoes).where(eq(comunicacoes.chaveIdempotencia, corpo.chaveIdempotencia)))[0]
+        : undefined;
+    // O 2º clique (mesma chave) devolve a mesma comunicação, sem criar outra nem auditar de novo.
+    const ja = await porChave(deps.db);
+    if (ja) return mapComunicacao(deps.db, ja);
     const cond = condicaoSegmento(corpo.canal, corpo.segmento, corpo.diasInativo, agora);
-    const c = await deps.db.transaction(async (tx) => {
+    const link = corpo.link ?? null;
+    const diasInativo = corpo.segmento === 'inativos' ? (corpo.diasInativo ?? null) : null;
+    const r = await deps.db.transaction(async (tx) => {
+      // S-17 (R1-14/R3-14): limite diário, duplicata e chave conferidos e gravados sob a mesma
+      // trava: duas criações em paralelo não passam do limite nem criam duas iguais.
+      await tx.execute(sql`select pg_advisory_xact_lock(hashtext('fuse:comunicacao-criar'))`);
+      const existente = await porChave(tx);
+      if (existente) return { existente };
+      const [hoje] = await tx
+        .select({ n: count() })
+        .from(comunicacoes)
+        .where(gte(comunicacoes.criadoEm, inicioDoDiaSP(diaSP(agora))));
+      if (contar(hoje?.n) >= LIMITE_COMUNICACAO.porDia) {
+        throw falha('limite_requisicoes', `O limite é de ${LIMITE_COMUNICACAO.porDia} comunicações por dia. Tente amanhã.`);
+      }
+      const [igual] = await tx
+        .select({ id: comunicacoes.id })
+        .from(comunicacoes)
+        .where(
+          and(
+            eq(comunicacoes.canal, corpo.canal),
+            eq(comunicacoes.segmento, corpo.segmento),
+            sql`${comunicacoes.diasInativo} is not distinct from ${diasInativo}`,
+            eq(comunicacoes.assunto, corpo.assunto),
+            eq(comunicacoes.mensagem, corpo.mensagem),
+            sql`${comunicacoes.link} is not distinct from ${link}`,
+            ne(comunicacoes.status, 'cancelada'),
+            gte(comunicacoes.criadoEm, new Date(agora.getTime() - LIMITE_COMUNICACAO.duplicadaMs)),
+          ),
+        )
+        .limit(1);
+      if (igual) {
+        throw falha(
+          'conflito',
+          `Uma comunicação igual a esta foi criada há menos de ${LIMITE_COMUNICACAO.duplicadaMs / 60_000} minutos. Confira o histórico antes de enviar de novo.`,
+        );
+      }
       const [nova] = await tx
         .insert(comunicacoes)
         .values({
           canal: corpo.canal,
           segmento: corpo.segmento,
-          diasInativo: corpo.segmento === 'inativos' ? (corpo.diasInativo ?? null) : null,
+          diasInativo,
           assunto: corpo.assunto,
           mensagem: corpo.mensagem,
-          link: corpo.link ?? null,
+          link,
           status: 'na_fila',
           criadoPor: usuario.id,
           criadoEm: agora,
+          chaveIdempotencia: corpo.chaveIdempotencia ?? null,
         })
         .returning();
       // Os destinatários ficam congelados na criação (quem der opt-in depois não entra).
@@ -134,10 +176,12 @@ export function rotasSuperComunicacao(r: Registrador): void {
         .set({ total: contar(t?.n), ...(contar(t?.n) === 0 ? { status: 'concluida' as const, concluidoEm: agora } : {}) })
         .where(eq(comunicacoes.id, nova!.id))
         .returning();
-      return final!;
+      return { nova: final! };
     });
+    if ('existente' in r && r.existente) return mapComunicacao(deps.db, r.existente);
+    const c = (r as { nova: typeof comunicacoes.$inferSelect }).nova;
     await auditarSuper(ctx, 'comunicacao.criar', `comunicacao:${c.id}`, {
-      motivo: corpo.motivo ?? null,
+      motivo: corpo.motivo,
       depois: { canal: c.canal, segmento: c.segmento, diasInativo: c.diasInativo, assunto: c.assunto, total: c.total },
     });
     return mapComunicacao(deps.db, c);
@@ -168,5 +212,30 @@ export function rotasSuperComunicacao(r: Registrador): void {
       .where(and(eq(comunicacoesEnvios.comunicacaoId, com.id), eq(comunicacoesEnvios.status, 'pendente')));
     await auditarSuper(ctx, 'comunicacao.cancelar', `comunicacao:${com.id}`, { antes: { status: com.status }, depois: { status: 'cancelada' } });
     return mapComunicacao(deps.db, depois!);
+  });
+
+  // S-17: a comunicação pausada pelo disjuntor (SMTP fora) volta para a fila; os envios pendentes
+  // seguem de onde pararam (ninguém recebe duas vezes).
+  r.rota('superComunicacaoRetomar', async (ctx) => {
+    const { deps, params, corpo } = ctx;
+    const [c] = await deps.db.select().from(comunicacoes).where(eq(comunicacoes.id, params.id));
+    const com = existe(c, 'Comunicação não encontrada.');
+    if (com.status !== 'pausada') throw falha('conflito', 'Só uma comunicação pausada pode ser retomada.');
+    exigirCanalConfigurado(deps, com.canal);
+    const [depois] = await deps.db
+      .update(comunicacoes)
+      .set({ status: 'enviando', pausadaMotivo: null, pausadaEm: null })
+      .where(and(eq(comunicacoes.id, com.id), eq(comunicacoes.status, 'pausada')))
+      .returning();
+    await deps.db
+      .update(comunicacoesEnvios)
+      .set({ tentativas: 0, proximaTentativaEm: null })
+      .where(and(eq(comunicacoesEnvios.comunicacaoId, com.id), eq(comunicacoesEnvios.status, 'pendente')));
+    await auditarSuper(ctx, 'comunicacao.retomar', `comunicacao:${com.id}`, {
+      motivo: corpo.motivo,
+      antes: { status: com.status, pausadaMotivo: com.pausadaMotivo },
+      depois: { status: 'enviando' },
+    });
+    return mapComunicacao(deps.db, depois ?? com);
   });
 }

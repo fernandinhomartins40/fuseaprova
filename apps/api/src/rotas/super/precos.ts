@@ -30,14 +30,14 @@ async function respostaPrecos(db: Db, config: Config): Promise<PrecosResposta> {
   };
 }
 
-async function itensCupons(db: Db, onde?: ReturnType<typeof eq>): Promise<CupomItem[]> {
+async function itensCupons(db: Db, agora: Date, onde?: ReturnType<typeof eq>): Promise<CupomItem[]> {
   const linhas = await db
     .select({ c: cupons, concursoNome: concursos.nome })
     .from(cupons)
     .leftJoin(concursos, eq(concursos.id, cupons.concursoId))
     .where(onde)
     .orderBy(asc(cupons.criadoEm));
-  const usos = await usosDosCupons(db, linhas.map((l) => l.c.id));
+  const usos = await usosDosCupons(db, linhas.map((l) => l.c.id), agora);
   return linhas.map(({ c, concursoNome }) => ({
     id: c.id,
     codigo: c.codigo,
@@ -51,19 +51,20 @@ async function itensCupons(db: Db, onde?: ReturnType<typeof eq>): Promise<CupomI
     ativo: c.ativo,
     usos: usos.get(c.id)?.usos ?? 0,
     pendentes: usos.get(c.id)?.pendentes ?? 0,
+    reservados: usos.get(c.id)?.reservados ?? 0,
     criadoEm: iso(c.criadoEm),
     atualizadoEm: iso(c.atualizadoEm),
   }));
 }
 
-async function cupomItem(db: Db, id: string): Promise<CupomItem> {
-  const [item] = await itensCupons(db, eq(cupons.id, id));
+async function cupomItem(db: Db, id: string, agora: Date): Promise<CupomItem> {
+  const [item] = await itensCupons(db, agora, eq(cupons.id, id));
   if (!item) throw falha('nao_encontrado', 'Cupom não encontrado.');
   return item;
 }
 
 /** Campos do cupom como vão para o banco (o código já vem normalizado pelo Zod). */
-function dadosCupom(c: Omit<CupomSalvarEntrada, 'motivo'> & { codigo: string }) {
+function dadosCupom(c: Omit<CupomSalvarEntrada, 'motivo' | 'confirmacao'> & { codigo: string }) {
   return {
     codigo: c.codigo,
     descricao: c.descricao ?? '',
@@ -113,11 +114,13 @@ export function rotasSuperPrecos(r: Registrador): void {
     return { ...(await respostaPrecos(deps.db, deps.config)), cobrancasCanceladas };
   });
 
-  r.rota('superCupons', async ({ deps }) => ({ itens: await itensCupons(deps.db) }));
+  r.rota('superCupons', async ({ deps, agora }) => ({ itens: await itensCupons(deps.db, agora) }));
 
   r.rota('superCupomCriar', async (ctx) => {
     const { deps, corpo, usuario, agora } = ctx;
-    const { motivo, ...dados } = corpo;
+    // S-12: um cupom muda o preço na prática; pede a mesma reconfirmação do preço (D23).
+    await reconfirmar(deps, usuario, corpo.confirmacao, agora);
+    const { motivo, confirmacao: _c, ...dados } = corpo;
     await codigoLivre(deps.db, dados.codigo);
     await concursoExiste(deps.db, dados.concursoId);
     const [novo] = await deps.db
@@ -125,14 +128,15 @@ export function rotasSuperPrecos(r: Registrador): void {
       .values({ ...dadosCupom(dados), criadoPor: usuario.id, criadoEm: agora, atualizadoEm: agora })
       .returning();
     await auditarSuper(ctx, 'cupom.criar', `cupom:${novo!.id}`, { motivo, depois: resumoCupom(novo!) });
-    return { cupom: await cupomItem(deps.db, novo!.id), cobrancasCanceladas: 0 };
+    return { cupom: await cupomItem(deps.db, novo!.id, agora), cobrancasCanceladas: 0 };
   });
 
   r.rota('superCupomAtualizar', async (ctx) => {
-    const { deps, corpo, params, agora } = ctx;
+    const { deps, corpo, params, usuario, agora } = ctx;
+    await reconfirmar(deps, usuario, corpo.confirmacao, agora);
     const [antes] = await deps.db.select().from(cupons).where(eq(cupons.id, params.id));
     if (!antes) throw falha('nao_encontrado', 'Cupom não encontrado.');
-    const { motivo, ...dados } = corpo;
+    const { motivo, confirmacao: _c, ...dados } = corpo;
     await codigoLivre(deps.db, dados.codigo, antes.id);
     await concursoExiste(deps.db, dados.concursoId);
     const [depois] = await deps.db
@@ -148,6 +152,6 @@ export function rotasSuperPrecos(r: Registrador): void {
       depois: resumoCupom(depois!),
       detalhes: { cobrancasCanceladas },
     });
-    return { cupom: await cupomItem(deps.db, antes.id), cobrancasCanceladas };
+    return { cupom: await cupomItem(deps.db, antes.id, agora), cobrancasCanceladas };
   });
 }

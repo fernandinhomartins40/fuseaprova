@@ -17,13 +17,14 @@ import type { Config } from '../config.js';
 import type { Deps } from '../contexto.js';
 import { falha } from '../http/erros.js';
 import { ErroAsaas } from '../integracoes/asaas.js';
-import type { Db } from '../util.js';
+import { dataSql, type Db } from '../util.js';
 
 const { configuracoes, cupons, pedidos } = schema;
 export const CHAVE_PRECOS = 'precos';
 const CACHE_MS = 10_000;
 
 export type Cupom = typeof cupons.$inferSelect;
+type Pedido = typeof pedidos.$inferSelect;
 
 interface LinhaPrecos {
   valores: PrecosProduto;
@@ -67,43 +68,117 @@ export async function salvarPrecos(db: Db, valores: PrecosProduto, porId: string
 
 /* ------------------------------------------------------------------ cupons */
 
-/** Pagamentos confirmados de cada cupom (o que conta para o limite) e Pix pendentes. */
-export async function usosDosCupons(db: Db, ids: string[]): Promise<Map<string, { usos: number; pendentes: number }>> {
-  const mapa = new Map(ids.map((id) => [id, { usos: 0, pendentes: 0 }]));
+/**
+ * Pagos (`usos`), Pix pendentes e reservas de cada cupom. S-12 (C8): a reserva = pagos + Pix
+ * pendentes que ainda não expiraram; é ela que conta para o limite de usos.
+ */
+export async function usosDosCupons(
+  db: Db,
+  ids: string[],
+  agora: Date = new Date(),
+): Promise<Map<string, { usos: number; pendentes: number; reservados: number }>> {
+  const mapa = new Map(ids.map((id) => [id, { usos: 0, pendentes: 0, reservados: 0 }]));
   if (!ids.length) return mapa;
   const linhas = await db
-    .select({ id: pedidos.cupomId, status: pedidos.status, n: count() })
+    .select({
+      id: pedidos.cupomId,
+      usos: sql<number>`(count(*) filter (where ${pedidos.status} = 'pago'))::int`,
+      pendentes: sql<number>`(count(*) filter (where ${pedidos.status} = 'pendente'))::int`,
+      vivos: sql<number>`(count(*) filter (where ${pedidos.status} = 'pendente' and ${pedidos.pixExpiraEm} > ${dataSql(agora)}))::int`,
+    })
     .from(pedidos)
     .where(and(inArray(pedidos.cupomId, ids), inArray(pedidos.status, ['pago', 'pendente'])))
-    .groupBy(pedidos.cupomId, pedidos.status);
+    .groupBy(pedidos.cupomId);
   for (const l of linhas) {
     const m = l.id ? mapa.get(l.id) : undefined;
     if (!m) continue;
-    if (l.status === 'pago') m.usos = Number(l.n);
-    else m.pendentes = Number(l.n);
+    m.usos = Number(l.usos);
+    m.pendentes = Number(l.pendentes);
+    m.reservados = m.usos + Number(l.vivos);
   }
   return mapa;
 }
 
-/** Motivo pelo qual o cupom não vale para este concurso agora (null = vale). */
-export async function motivoCupomInvalido(db: Db, cupom: Cupom | undefined, concursoId: string, agora: Date): Promise<string | null> {
+/**
+ * Reservas do cupom que vêm ANTES de um pedido (ou de um Pix novo, sem `pedido`): todos os pagos
+ * e os pendentes não expirados criados antes dele. Sem `pedido`, os pendentes do próprio aluno
+ * não contam (ele está trocando o Pix, não pegando outro uso).
+ */
+async function reservasAntes(
+  db: Db,
+  cupomId: string,
+  agora: Date,
+  o: { usuarioId?: string | undefined; pedido?: Pick<Pedido, 'id' | 'criadoEm'> | undefined },
+): Promise<number> {
+  const antesDoPedido = o.pedido
+    ? sql`and (${pedidos.criadoEm}, ${pedidos.id}) < (${dataSql(o.pedido.criadoEm)}, ${o.pedido.id}::uuid)`
+    : sql``;
+  const doAluno = o.usuarioId && !o.pedido ? sql`and ${pedidos.usuarioId} <> ${o.usuarioId}::uuid` : sql``;
+  const semEle = o.pedido ? sql`${pedidos.id} <> ${o.pedido.id}::uuid` : sql`true`;
+  const [r] = await db
+    .select({ n: count() })
+    .from(pedidos)
+    .where(
+      sql`${pedidos.cupomId} = ${cupomId}::uuid and ${semEle} and (
+            ${pedidos.status} = 'pago'
+            or (${pedidos.status} = 'pendente' and ${pedidos.pixExpiraEm} > ${dataSql(agora)} ${antesDoPedido} ${doAluno})
+          )`,
+    );
+  return Number(r?.n ?? 0);
+}
+
+/**
+ * Motivo pelo qual o cupom não vale para este concurso agora (null = vale). Com `pedido`, confere se
+ * aquele Pix pendente ainda cabe no limite (os anteriores e os pagos vêm na frente).
+ */
+export async function motivoCupomInvalido(
+  db: Db,
+  cupom: Cupom | undefined,
+  concursoId: string,
+  agora: Date,
+  o: { usuarioId?: string | undefined; pedido?: Pick<Pedido, 'id' | 'criadoEm'> | undefined } = {},
+): Promise<string | null> {
   if (!cupom || !cupom.ativo) return 'Cupom não encontrado ou desativado.';
   if (cupom.validoAte && cupom.validoAte <= agora) return 'Este cupom já expirou.';
   if (cupom.concursoId && cupom.concursoId !== concursoId) return 'Este cupom não vale para este concurso.';
-  if (cupom.limiteUsos !== null) {
-    const usos = (await usosDosCupons(db, [cupom.id])).get(cupom.id)!.usos;
-    if (usos >= cupom.limiteUsos) return 'Este cupom já atingiu o limite de usos.';
+  if (cupom.limiteUsos !== null && (await reservasAntes(db, cupom.id, agora, o)) >= cupom.limiteUsos) {
+    return MENSAGEM_LIMITE_CUPOM;
   }
   return null;
 }
 
+export const MENSAGEM_LIMITE_CUPOM =
+  'Este cupom já atingiu o limite de usos (contando os Pix gerados com ele que ainda podem ser pagos).';
+
 /** Cupom digitado pelo aluno, já conferido. Inválido = 400 com `campos.cupom`. */
-export async function cupomValido(db: Db, codigoBruto: string, concursoId: string, agora: Date): Promise<Cupom> {
+export async function cupomValido(db: Db, codigoBruto: string, concursoId: string, agora: Date, usuarioId?: string): Promise<Cupom> {
   const codigo = normalizarCodigoCupom(codigoBruto);
   const [cupom] = codigo ? await db.select().from(cupons).where(eq(cupons.codigo, codigo)) : [];
-  const motivo = await motivoCupomInvalido(db, cupom, concursoId, agora);
+  const motivo = await motivoCupomInvalido(db, cupom, concursoId, agora, { usuarioId });
   if (motivo) throw falha('validacao', motivo, { cupom: motivo });
   return cupom!;
+}
+
+/**
+ * S-12: depois de criar o Pix com cupom, confere a reserva de novo (dois alunos podem ter passado
+ * pela conferência ao mesmo tempo). Se este Pix ficou além do limite — vale quem gerou primeiro —
+ * ele sai do Asaas, fica vencido e o aluno recebe a mensagem do limite (400). Nunca mexe em Pix pago.
+ */
+export async function garantirReservaCupom(deps: Deps, pedido: Pedido, agora: Date): Promise<void> {
+  if (!pedido.cupomId || !pedido.concursoId) return;
+  const [cupom] = await deps.db.select().from(cupons).where(eq(cupons.id, pedido.cupomId));
+  if (!cupom || cupom.limiteUsos === null) return;
+  if ((await reservasAntes(deps.db, cupom.id, agora, { pedido })) < cupom.limiteUsos) return;
+  if (pedido.asaasPaymentId) {
+    await deps.asaas.removerCobranca(pedido.asaasPaymentId).catch((e: Error) => {
+      deps.log.warn({ pedidoId: pedido.id, erro: e.message }, 'pix além do limite do cupom não foi removido no asaas');
+    });
+  }
+  await deps.db
+    .update(pedidos)
+    .set({ status: 'vencido', canceladoEm: agora })
+    .where(and(eq(pedidos.id, pedido.id), eq(pedidos.status, 'pendente')));
+  throw falha('validacao', MENSAGEM_LIMITE_CUPOM, { cupom: MENSAGEM_LIMITE_CUPOM });
 }
 
 /* ------------------------------------------------------------- preço final */
@@ -180,7 +255,7 @@ export async function sincronizarPixPendentes(deps: Deps, agora: Date, filtro: {
     let cupomOk = true;
     if (p.cupomId) {
       const [c] = await db.select().from(cupons).where(eq(cupons.id, p.cupomId));
-      cupomOk = (await motivoCupomInvalido(db, c, p.concursoId!, agora)) === null;
+      cupomOk = (await motivoCupomInvalido(db, c, p.concursoId!, agora, { pedido: p })) === null;
       cupom = c ?? null;
     }
     const certo = precoComCupom(base, cupom).centavos;
