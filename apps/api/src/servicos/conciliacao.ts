@@ -3,14 +3,33 @@
  * Só os pedidos do Fuse Aprova (os que têm `asaas_payment_id` em `pedidos`; a conta é
  * compartilhada, D14). Pedidos manuais não são conciliados (nunca contam como divergência).
  */
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { statusLocalDoAsaas, type ConciliacaoItem } from '@fuse/shared/api';
 import type { Deps } from '../contexto.js';
 import { ErroAsaas } from '../integracoes/asaas.js';
+import { liberarConcurso } from './concursos.js';
+import { concursoDoUsuario } from './usuario.js';
 import { confirmarPagamento, estornarPagamento, valorMenorQueOPedido, vencerPagamento, type Pedido } from './pagamento.js';
 
-const { pedidos } = schema;
+const { pedidos, usuarios, usuariosConcursos } = schema;
+
+/**
+ * Pedido pago cujo concurso não está liberado para o aluno (ex.: a liberação falhou). Só vale para
+ * conta de aluno ativa, com reembolso não pedido; devolve o concurso a liberar.
+ */
+async function pagoSemLiberacao(deps: Deps, p: Pedido): Promise<{ concursoId: string } | null> {
+  if (p.reembolsoSolicitadoEm) return null;
+  const [u] = await deps.db.select().from(usuarios).where(eq(usuarios.id, p.usuarioId));
+  if (!u || u.papel !== 'aluno' || u.excluidoEm) return null;
+  const concursoId = p.concursoId ?? (await concursoDoUsuario(deps.db, u))?.id ?? null;
+  if (!concursoId) return null;
+  const [l] = await deps.db
+    .select({ acesso: usuariosConcursos.acesso })
+    .from(usuariosConcursos)
+    .where(and(eq(usuariosConcursos.usuarioId, u.id), eq(usuariosConcursos.concursoId, concursoId)));
+  return l?.acesso ? null : { concursoId };
+}
 
 export async function conciliarPedido(
   deps: Deps,
@@ -60,6 +79,19 @@ export async function conciliarPedido(
   if (esperado === null) {
     await marcar();
     return { ...item, mensagem: `O status ${statusAsaas} do Asaas não muda o pedido.` };
+  }
+  if (esperado === 'pago' && p.status === 'pago') {
+    // RQ4 (S-07): pago aqui e no Asaas — o concurso do pedido está mesmo liberado para o aluno?
+    const semLiberacao = await pagoSemLiberacao(deps, p);
+    if (semLiberacao) {
+      if (opcoes.corrigir) {
+        await deps.db.transaction((tx) => liberarConcurso(tx, p.usuarioId, semLiberacao.concursoId, agora));
+        await marcar();
+        return { ...item, divergente: true, corrigido: true, mensagem: 'Pago sem liberação: o pedido está pago aqui e no Asaas, e o concurso dele foi liberado agora.' };
+      }
+      await marcar();
+      return { ...item, divergente: true, mensagem: 'Pago sem liberação: o pedido está pago aqui e no Asaas, mas o concurso dele não está liberado para o aluno. Corrija para liberar.' };
+    }
   }
   if (esperado === p.status || (esperado === 'pendente' && p.status === 'vencido')) {
     await marcar();

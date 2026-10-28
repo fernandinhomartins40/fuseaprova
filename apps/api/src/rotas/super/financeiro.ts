@@ -14,6 +14,7 @@ import type { Registrador } from '../../http/registrar.js';
 import { consultar, contar, dataSql, iso } from '../../util.js';
 import { auditarSuper, nomeArquivoCsv, periodo, reais } from './comum.js';
 import { lerPrecos } from '../../servicos/precos.js';
+import { metricasProduto } from '../../servicos/metricas.js';
 
 const { pedidos, usuarios } = schema;
 
@@ -36,12 +37,22 @@ function chavesDoPeriodo(de: string, ate: string, a: Agrupamento): string[] {
 
 export async function calcularFinanceiro(
   deps: Deps,
-  q: { de?: string | undefined; ate?: string | undefined; agrupamento: Agrupamento; metodo: 'todos' | 'asaas' | 'manual' },
+  q: {
+    de?: string | undefined;
+    ate?: string | undefined;
+    agrupamento: Agrupamento;
+    metodo: 'todos' | 'asaas' | 'manual';
+    concursoId?: string | undefined;
+  },
   agora: Date,
 ): Promise<FinanceiroResposta> {
   const { db } = deps;
   const { de, ate, inicio, fim } = periodo(q, agora);
-  const filtroMetodo = q.metodo === 'todos' ? undefined : eq(pedidos.metodo, q.metodo);
+  // D21: com concurso, só os pedidos dele (os cadastros e os ativos continuam gerais).
+  const filtroMetodo = and(
+    q.metodo === 'todos' ? undefined : eq(pedidos.metodo, q.metodo),
+    q.concursoId ? eq(pedidos.concursoId, q.concursoId) : undefined,
+  );
 
   // Pagos no período (inclui os estornados depois: a receita bruta é do dia do pagamento).
   const pagos = await db
@@ -150,6 +161,7 @@ export async function calcularFinanceiro(
     ate,
     agrupamento: q.agrupamento,
     metodo: q.metodo,
+    concursoId: q.concursoId ?? null,
     precoCentavos: (await lerPrecos(deps.db, deps.config)).valores.precoCentavos,
     serie: [...serie.values()],
     totais,
@@ -176,9 +188,12 @@ export async function calcularFinanceiro(
 export function rotasSuperFinanceiro(r: Registrador): void {
   r.rota('superFinanceiro', async ({ query, deps, agora }) => calcularFinanceiro(deps, query, agora));
 
+  // D24: as métricas da seção 13 que saíram do painel do /admin (conversão, retenção, reembolso…).
+  r.rota('superMetricas', async ({ deps, agora }) => ({ metricas: await metricasProduto(deps.db, agora), geradoEm: iso(agora) }));
+
   r.rota('superFinanceiroCsv', async (ctx) => {
     const f = await calcularFinanceiro(ctx.deps, ctx.query, ctx.agora);
-    await auditarSuper(ctx, 'exportar.csv', 'financeiro', { detalhes: { de: f.de, ate: f.ate, metodo: f.metodo } });
+    await auditarSuper(ctx, 'exportar.csv', 'financeiro', { detalhes: { de: f.de, ate: f.ate, metodo: f.metodo, concursoId: f.concursoId } });
     const conteudo = gerarCsv(
       ['periodo', 'metodo', 'pagos', 'bruto_reais', 'asaas_reais', 'manual_reais', 'taxas_reais', 'reembolsos_reais', 'liquido_reais', 'novos_alunos'],
       f.serie.map((p) => [

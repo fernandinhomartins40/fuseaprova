@@ -47,11 +47,39 @@ export function celularOculto(c: string | null | undefined): string {
   return c ? `(${c.slice(0, 2)}) *****-${c.slice(-4)}` : '';
 }
 
+/** D21/D23: o concurso do pedido, o cupom e se o concurso do pedido está liberado agora. */
+export interface ExtrasPagamento {
+  concurso: { id: string; nome: string } | null;
+  cupomCodigo: string | null;
+  /** `usuarios_concursos.acesso` do concurso do pedido (null = sem linha). */
+  acessoConcurso: boolean | null;
+}
+
+/**
+ * Colunas para montar `ExtrasPagamento` num select com `pedidos` e `usuarios` (left joins em
+ * concursos, cupons e usuarios_concursos, ver `comExtrasPagamento`).
+ */
+export const colunasExtrasPagamento = {
+  concursoId: schema.concursos.id,
+  concursoNome: schema.concursos.nome,
+  cupomCodigo: schema.cupons.codigo,
+  acessoConcurso: schema.usuariosConcursos.acesso,
+};
+
+export function extrasDaLinha(x: { concursoId: string | null; concursoNome: string | null; cupomCodigo: string | null; acessoConcurso: boolean | null }): ExtrasPagamento {
+  return {
+    concurso: x.concursoId ? { id: x.concursoId, nome: x.concursoNome ?? '' } : null,
+    cupomCodigo: x.cupomCodigo,
+    acessoConcurso: x.acessoConcurso,
+  };
+}
+
 export function mapPagamento(
   p: Pedido,
   u: Pick<Usuario, 'id' | 'nome' | 'email' | 'cpf' | 'acesso'>,
   aprovador: { id: string; nome: string } | null,
   agora: Date,
+  extras: ExtrasPagamento,
 ): PagamentoSuper {
   return {
     id: p.id,
@@ -81,6 +109,12 @@ export function mapPagamento(
             aprovadoPor: aprovador,
           }
         : null,
+    concurso: extras.concurso,
+    // Pedido sem concurso (antigo): vale o acesso geral do aluno.
+    concursoLiberado: p.concursoId ? extras.acessoConcurso === true : u.acesso,
+    cupomCodigo: extras.cupomCodigo,
+    valorOriginalCentavos: p.valorOriginalCentavos,
+    descontoCentavos: p.valorOriginalCentavos !== null ? Math.max(0, p.valorOriginalCentavos - p.valorCentavos) : 0,
   };
 }
 
@@ -100,10 +134,20 @@ export async function superadminsAtivos(db: Db, exceto?: string): Promise<number
   return Number(r?.n ?? 0);
 }
 
-/** Impede remover (rebaixar, bloquear, excluir) o último superadmin ativo. */
-export async function garantirOutroSuperadmin(db: Db, alvo: Pick<Usuario, 'id' | 'papel'>): Promise<void> {
+/**
+ * Impede remover (rebaixar, bloquear, excluir) o último superadmin ativo. Chame DENTRO da
+ * transação que faz a mudança: as linhas dos superadmins ficam travadas (`for update`) até o fim
+ * dela, então dois superadmins não rebaixam um ao outro ao mesmo tempo (S-24, sem TOCTOU).
+ */
+export async function garantirOutroSuperadmin(tx: Db, alvo: Pick<Usuario, 'id' | 'papel'>): Promise<void> {
   if (alvo.papel !== 'superadmin') return;
-  if ((await superadminsAtivos(db, alvo.id)) === 0) throw falha('ultimo_superadmin');
+  const ativos = await tx
+    .select({ id: usuarios.id })
+    .from(usuarios)
+    .where(and(eq(usuarios.papel, 'superadmin'), isNull(usuarios.excluidoEm), isNull(usuarios.bloqueadoEm)))
+    .orderBy(usuarios.id)
+    .for('update');
+  if (ativos.filter((a) => a.id !== alvo.id).length === 0) throw falha('ultimo_superadmin');
 }
 
 export function nomeArquivoCsv(prefixo: string, agora: Date): string {

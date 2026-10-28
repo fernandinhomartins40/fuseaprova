@@ -9,9 +9,10 @@ import { join } from 'node:path';
 import { and, asc, count, desc, eq, gte, ilike, inArray, isNotNull, isNull, lt, or, sql, type SQL } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { schema } from '@fuse/db';
-import { dentroDoArrependimento, NOMES_FORMA_PAGAMENTO_MANUAL, somenteDigitos } from '@fuse/shared';
+import { NOMES_FORMA_PAGAMENTO_MANUAL, somenteDigitos } from '@fuse/shared';
 import {
   gerarCsv,
+  type AcaoAuditoria,
   type EventoLinhaTempo,
   type WebhookEventoSuper,
 } from '@fuse/shared/api';
@@ -22,13 +23,29 @@ import { ErroAsaas } from '../../integracoes/asaas.js';
 import { conciliarPedido } from '../../servicos/conciliacao.js';
 import { reconfirmar } from '../../servicos/doisfatores.js';
 import { enviarEmailConfirmacao, type Pedido } from '../../servicos/pagamento.js';
-import { aprovarPagamentoManual, desfazerAprovacaoManual } from '../../servicos/pagamentoManual.js';
+import {
+  aprovarPagamentoManual,
+  aprovarPedidoManual,
+  liberarPedido,
+  resumoPedido,
+  type AuditarNaTransacao,
+} from '../../servicos/pagamentoManual.js';
+import { estornarManual, estornarPedido, estornarPeloAsaas } from '../../servicos/reembolso.js';
 import { reprocessarEvento } from '../../servicos/webhook.js';
 import { contar, iso, type Db } from '../../util.js';
 import { paginacao } from '../admin/comum.js';
-import { auditarSuper, mapPagamento, nomeArquivoCsv, periodo, reais } from './comum.js';
+import {
+  auditarSuper,
+  colunasExtrasPagamento,
+  extrasDaLinha,
+  mapPagamento,
+  nomeArquivoCsv,
+  periodo,
+  reais,
+  type CtxAuditoria,
+} from './comum.js';
 
-const { pedidos, usuarios, webhookEventos, auditoria } = schema;
+const { pedidos, usuarios, webhookEventos, auditoria, concursos, cupons, usuariosConcursos } = schema;
 const aprovador = alias(usuarios, 'aprovador');
 
 const RE_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -39,6 +56,7 @@ interface FiltrosPagamento {
   metodo?: Pedido['metodo'] | undefined;
   de?: string | undefined;
   ate?: string | undefined;
+  concursoId?: string | undefined;
 }
 
 function ondePagamentos(q: FiltrosPagamento, agora: Date): SQL | undefined {
@@ -57,20 +75,26 @@ function ondePagamentos(q: FiltrosPagamento, agora: Date): SQL | undefined {
       : undefined,
     q.status ? eq(pedidos.status, q.status) : undefined,
     q.metodo ? eq(pedidos.metodo, q.metodo) : undefined,
+    q.concursoId ? eq(pedidos.concursoId, q.concursoId) : undefined,
     p ? gte(pedidos.criadoEm, p.inicio) : undefined,
     p ? lt(pedidos.criadoEm, p.fim) : undefined,
   );
 }
 
+// D21/D23: o concurso do pedido, o cupom e se o concurso do pedido está liberado para o aluno.
 const selPagamentos = (db: Db) =>
   db
-    .select({ p: pedidos, u: usuarios, a: { id: aprovador.id, nome: aprovador.nome } })
+    .select({ p: pedidos, u: usuarios, a: { id: aprovador.id, nome: aprovador.nome }, x: colunasExtrasPagamento })
     .from(pedidos)
     .innerJoin(usuarios, eq(usuarios.id, pedidos.usuarioId))
-    .leftJoin(aprovador, eq(aprovador.id, pedidos.aprovadoPor));
+    .leftJoin(aprovador, eq(aprovador.id, pedidos.aprovadoPor))
+    .leftJoin(concursos, eq(concursos.id, pedidos.concursoId))
+    .leftJoin(cupons, eq(cupons.id, pedidos.cupomId))
+    .leftJoin(usuariosConcursos, and(eq(usuariosConcursos.usuarioId, pedidos.usuarioId), eq(usuariosConcursos.concursoId, pedidos.concursoId)));
 
 type LinhaPagamento = Awaited<ReturnType<ReturnType<typeof selPagamentos>['where']>>[number];
-const mapLinha = (x: LinhaPagamento, agora: Date) => mapPagamento(x.p, x.u, x.a?.id ? { id: x.a.id, nome: x.a.nome } : null, agora);
+const mapLinha = (x: LinhaPagamento, agora: Date) =>
+  mapPagamento(x.p, x.u, x.a?.id ? { id: x.a.id, nome: x.a.nome } : null, agora, extrasDaLinha(x.x));
 
 async function pagamentoPorId(db: Db, id: string, agora: Date) {
   const [x] = await selPagamentos(db).where(eq(pedidos.id, id));
@@ -82,17 +106,11 @@ async function pedidoPorId(db: Db, id: string): Promise<Pedido> {
   return existe(p, 'Pagamento não encontrado.');
 }
 
-/** Resumo do pedido para o antes/depois da auditoria (sem payload Pix). */
-function resumo(p: Pedido): Record<string, unknown> {
-  return {
-    status: p.status,
-    metodo: p.metodo,
-    valorCentavos: p.valorCentavos,
-    asaasPaymentId: p.asaasPaymentId,
-    pagoEm: p.pagoEm?.toISOString() ?? null,
-    estornadoEm: p.estornadoEm?.toISOString() ?? null,
-    canceladoEm: p.canceladoEm?.toISOString() ?? null,
-  };
+const resumo = resumoPedido;
+
+/** Auditoria do superadmin gravada na transação do serviço (antes, depois, motivo e IP). */
+function auditarNa(ctx: CtxAuditoria, acao: AcaoAuditoria, motivo: string): AuditarNaTransacao {
+  return (tx, d) => auditarSuper(ctx, acao, d.alvo, { motivo, antes: d.antes, depois: d.depois, detalhes: d.detalhes ?? null }, tx);
 }
 
 /** Corpo do webhook sem dados que não precisamos mostrar. */
@@ -208,9 +226,9 @@ export function rotasSuperPagamentos(r: Registrador): void {
   r.rota('superPagamentosCsv', async (ctx) => {
     const q = ctx.query;
     const lista = await selPagamentos(ctx.deps.db).where(ondePagamentos(q, ctx.agora)).orderBy(desc(pedidos.criadoEm)).limit(10_000);
-    await auditarSuper(ctx, 'exportar.csv', 'pagamentos', { detalhes: { linhas: lista.length, q: q.q ?? null, status: q.status ?? null, metodo: q.metodo ?? null, de: q.de ?? null, ate: q.ate ?? null } });
+    await auditarSuper(ctx, 'exportar.csv', 'pagamentos', { detalhes: { linhas: lista.length, q: q.q ?? null, status: q.status ?? null, metodo: q.metodo ?? null, concursoId: q.concursoId ?? null, de: q.de ?? null, ate: q.ate ?? null } });
     const conteudo = gerarCsv(
-      ['pedido_id', 'criado_em', 'pago_em', 'status', 'metodo', 'valor_reais', 'liquido_reais', 'aluno', 'email', 'cpf', 'cobranca_asaas', 'forma_manual', 'recebido_em', 'referencia', 'aprovado_por', 'estornado_em', 'cancelado_em'],
+      ['pedido_id', 'criado_em', 'pago_em', 'status', 'metodo', 'valor_reais', 'liquido_reais', 'aluno', 'email', 'cpf', 'cobranca_asaas', 'forma_manual', 'recebido_em', 'referencia', 'aprovado_por', 'estornado_em', 'cancelado_em', 'concurso', 'cupom', 'valor_original_reais', 'desconto_reais'],
       lista.map((x) => {
         const p = mapLinha(x, ctx.agora);
         return [
@@ -231,6 +249,10 @@ export function rotasSuperPagamentos(r: Registrador): void {
           p.manual?.aprovadoPor?.nome ?? '',
           p.estornadoEm,
           p.canceladoEm,
+          p.concurso?.nome ?? '',
+          p.cupomCodigo ?? '',
+          reais(p.valorOriginalCentavos),
+          reais(p.descontoCentavos),
         ];
       }),
     );
@@ -325,28 +347,37 @@ export function rotasSuperPagamentos(r: Registrador): void {
     return resposta;
   });
 
+  // S-10: o mesmo serviço do "Estornar" (trava antes do Asaas; 2ª chamada = 409).
   r.rota('superPagamentoReembolso', async (ctx) => {
     const { deps, params, corpo, usuario, agora } = ctx;
     await reconfirmar(deps, usuario, corpo.confirmacao, agora);
-    const pedido = await pedidoPorId(deps.db, params.id);
-    if (pedido.metodo === 'manual') throw falha('conflito', 'Este pagamento foi aprovado manualmente: use "Desfazer aprovação manual".');
-    if (pedido.status !== 'pago' || !pedido.asaasPaymentId) throw falha('conflito', 'Só é possível reembolsar um pedido pago.');
-    if (!corpo.foraDoPrazo && !(pedido.pagoEm && dentroDoArrependimento(pedido.pagoEm, agora))) {
-      throw falha('fora_do_prazo', 'Passaram mais de 7 dias do pagamento. Marque "fora do prazo" para reembolsar mesmo assim.');
-    }
-    try {
-      await deps.asaas.estornar(pedido.asaasPaymentId, { description: 'Reembolso Fuse Aprova' });
-    } catch (e) {
-      erroAsaas(deps, e, { pedidoId: pedido.id });
-    }
-    await deps.db.update(pedidos).set({ reembolsoSolicitadoEm: agora }).where(eq(pedidos.id, pedido.id));
-    await auditarSuper(ctx, 'pedido.reembolso', `pedido:${pedido.id}`, {
-      motivo: corpo.motivo,
-      antes: resumo(pedido),
-      depois: { ...resumo(pedido), reembolsoSolicitadoEm: agora.toISOString() },
-      detalhes: { foraDoPrazo: corpo.foraDoPrazo },
-    });
+    await estornarPeloAsaas(deps, usuario.id, params.id, { foraDoPrazo: corpo.foraDoPrazo }, agora, auditarNa(ctx, 'pedido.reembolso', corpo.motivo));
     return { ok: true as const, status: 'aguardando_webhook' as const };
+  });
+
+  r.rota('superPagamentoEstornar', async (ctx) => {
+    const { deps, params, corpo, usuario, agora } = ctx;
+    await reconfirmar(deps, usuario, corpo.confirmacao, agora);
+    const r = await estornarPedido(deps, usuario.id, params.id, { foraDoPrazo: corpo.foraDoPrazo }, agora, {
+      asaas: auditarNa(ctx, 'pedido.reembolso', corpo.motivo),
+      manual: auditarNa(ctx, 'pedido.desfazer_manual', corpo.motivo),
+    });
+    const pagamento = await pagamentoPorId(deps.db, params.id, agora);
+    return r.modo === 'asaas'
+      ? {
+          modo: 'asaas' as const,
+          status: 'aguardando_webhook' as const,
+          mensagem: 'Reembolso pedido ao Asaas. O acesso a este concurso cai quando o Asaas confirmar o estorno.',
+          pagamento,
+        }
+      : {
+          modo: 'manual' as const,
+          status: 'estornado' as const,
+          mensagem: r.antes.asaasPaymentId
+            ? 'Aprovação manual desfeita e o concurso do pedido revogado. O dinheiro não passou pelo Asaas: devolva o valor ao aluno por fora.'
+            : 'Aprovação manual desfeita e o concurso do pedido revogado. Devolva o valor ao aluno por fora.',
+          pagamento,
+        };
   });
 
   r.rota('superPagamentoCancelarPix', async (ctx) => {
@@ -384,33 +415,34 @@ export function rotasSuperPagamentos(r: Registrador): void {
   r.rota('superAprovarManual', async (ctx) => {
     const { deps, params, corpo, usuario, agora } = ctx;
     await reconfirmar(deps, usuario, corpo.confirmacao, agora);
-    const r = await aprovarPagamentoManual(deps, usuario.id, params.id, corpo, agora);
-    await auditarSuper(ctx, 'pedido.aprovar_manual', `pedido:${r.depois.id}`, {
-      motivo: corpo.observacao,
-      antes: r.antes ? resumo(r.antes) : null,
-      depois: resumo(r.depois),
-      detalhes: {
-        usuarioId: params.id,
-        jaAprovado: r.resposta.jaAprovado,
-        forma: corpo.forma,
-        recebidoEm: corpo.recebidoEm,
-        referencia: corpo.referencia ?? null,
-        comprovante: corpo.comprovante ?? null,
-        asaas: r.resposta.asaas,
-      },
-    });
+    const r = await aprovarPagamentoManual(deps, usuario.id, params.id, corpo, agora, auditarNa(ctx, 'pedido.aprovar_manual', corpo.observacao));
     return r.resposta;
+  });
+
+  // RQ4: aprovação manual a partir do pedido (o valor, o cupom e o concurso são os dele).
+  r.rota('superPagamentoAprovarManual', async (ctx) => {
+    const { deps, params, corpo, usuario, agora } = ctx;
+    await reconfirmar(deps, usuario, corpo.confirmacao, agora);
+    const r = await aprovarPedidoManual(deps, usuario.id, params.id, corpo, agora, auditarNa(ctx, 'pedido.aprovar_manual', corpo.observacao));
+    return r.resposta;
+  });
+
+  // RQ4: pedido pago cujo concurso não ficou liberado.
+  r.rota('superPagamentoLiberar', async (ctx) => {
+    const { deps, params, corpo, usuario, agora } = ctx;
+    await reconfirmar(deps, usuario, corpo.confirmacao, agora);
+    const r = await liberarPedido(deps, usuario.id, params.id, agora, auditarNa(ctx, 'pedido.liberar', corpo.motivo));
+    return {
+      alterado: r.alterado,
+      mensagem: r.alterado ? 'Acesso liberado: o concurso deste pedido está liberado para o aluno.' : 'O concurso deste pedido já estava liberado: nada mudou.',
+      pagamento: await pagamentoPorId(deps.db, params.id, agora),
+    };
   });
 
   r.rota('superPagamentoDesfazerManual', async (ctx) => {
     const { deps, params, corpo, usuario, agora } = ctx;
     await reconfirmar(deps, usuario, corpo.confirmacao, agora);
-    const r = await desfazerAprovacaoManual(deps, params.id, agora);
-    await auditarSuper(ctx, 'pedido.desfazer_manual', `pedido:${params.id}`, {
-      motivo: corpo.motivo,
-      antes: resumo(r.antes),
-      depois: { ...resumo(r.depois), acessoDoAluno: r.usuario.acesso },
-    });
+    await estornarManual(deps, usuario.id, params.id, agora, auditarNa(ctx, 'pedido.desfazer_manual', corpo.motivo));
     return pagamentoPorId(deps.db, params.id, agora);
   });
 
