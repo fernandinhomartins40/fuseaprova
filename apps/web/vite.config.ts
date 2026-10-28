@@ -136,7 +136,9 @@ export default defineConfig(({ mode }) => {
               ],
               navigateFallback: '/index.html',
               // "/" é a landing: o SW não troca por index.html nem pelo índice do precache.
-              navigateFallbackDenylist: [/^\/api\//, /^\/$/, /^\/lp\//],
+              // Painel da equipe (/super, /admin): sempre o index.html da rede, para um SW antigo
+              // não servir um app que ainda não conhece as rotas novas (ex.: /super/entrar, D24).
+              navigateFallbackDenylist: [/^\/api\//, /^\/$/, /^\/lp\//, /^\/super(\/|$)/, /^\/admin(\/|$)/],
               directoryIndex: null,
               cleanupOutdatedCaches: true,
               // Mostra os lembretes e as comunicações enviados pelo worker (auditoria PIE R2-01).
