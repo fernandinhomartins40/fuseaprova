@@ -85,14 +85,14 @@ export function extrasDaLinha(x: { concursoId: string | null; concursoNome: stri
 
 export function mapPagamento(
   p: PedidoSemPix,
-  u: Pick<Usuario, 'id' | 'nome' | 'email' | 'cpf' | 'acesso'>,
+  u: Pick<Usuario, 'id' | 'nome' | 'email' | 'cpf' | 'acesso' | 'papel'>,
   aprovador: { id: string; nome: string } | null,
   agora: Date,
   extras: ExtrasPagamento,
 ): PagamentoSuper {
   return {
     id: p.id,
-    usuario: { id: u.id, nome: u.nome, email: u.email, cpfOculto: ocultarCpf(u.cpf ?? ''), acesso: u.acesso },
+    usuario: { id: u.id, nome: u.nome, email: u.email, cpfOculto: ocultarCpf(u.cpf ?? ''), acesso: u.acesso, papel: u.papel },
     metodo: p.metodo,
     status: p.status,
     valorCentavos: p.valorCentavos,

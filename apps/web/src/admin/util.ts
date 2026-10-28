@@ -118,6 +118,8 @@ export const NOMES_ACAO_AUDITORIA: Record<string, string> = {
   'usuario.revogar_sessao': 'Encerrou sessão',
   'exportar.csv': 'Exportou CSV',
   'equipe.convidar': 'Convidou para a equipe',
+  'equipe.convite_reenviar': 'Reenviou o convite da equipe',
+  'equipe.convite_cancelar': 'Cancelou o convite da equipe',
   'comunicacao.criar': 'Criou comunicação',
   'comunicacao.cancelar': 'Cancelou comunicação',
   'config.salvar': 'Salvou configurações',

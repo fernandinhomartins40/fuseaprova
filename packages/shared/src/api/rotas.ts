@@ -904,6 +904,14 @@ export const ROTAS = {
     limite: LIMITE_SUPER,
   }),
 
+  superConcursos: rota({
+    metodo: 'GET',
+    caminho: '/super/concursos',
+    guarda: 'superadmin',
+    descricao: 'Lista leve de concursos (id e nome) para os filtros do /super (D21).',
+    resposta: sa.SuperConcursosResposta,
+    limite: LIMITE_SUPER,
+  }),
   superPagamentosListar: rota({
     metodo: 'GET',
     caminho: '/super/pagamentos',
@@ -1280,6 +1288,26 @@ export const ROTAS = {
     descricao: 'Convida por e-mail com link para definir a senha (72 h).',
     corpo: sa.ConvidarEntrada,
     resposta: sa.ConvidarResposta,
+    limite: LIMITE_SENSIVEL,
+  }),
+  superEquipeConviteReenviar: rota({
+    metodo: 'POST',
+    caminho: '/super/equipe/convites/:id/reenviar',
+    guarda: 'superadmin',
+    descricao: 'Reenvia o convite com um link novo (72 h) e invalida o anterior (S-19).',
+    params: IdParams,
+    corpo: sa.ConviteAcaoEntrada,
+    resposta: sa.ConviteReenviarResposta,
+    limite: LIMITE_SENSIVEL,
+  }),
+  superEquipeConviteCancelar: rota({
+    metodo: 'POST',
+    caminho: '/super/equipe/convites/:id/cancelar',
+    guarda: 'superadmin',
+    descricao: 'Cancela o convite pendente: invalida o link e remove a conta que nunca entrou (S-19).',
+    params: IdParams,
+    corpo: sa.ConviteAcaoEntrada,
+    resposta: OkResposta,
     limite: LIMITE_SENSIVEL,
   }),
 

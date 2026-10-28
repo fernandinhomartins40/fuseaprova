@@ -211,6 +211,8 @@ export const UsuarioPagamento = z.object({
   email: z.string(),
   cpfOculto: z.string(),
   acesso: z.boolean(),
+  /** Lote 3: o papel do dono do pedido (as ações do RQ4 só valem para aluno). */
+  papel: ZPapel,
 });
 
 export const DadosManual = z.object({
@@ -886,6 +888,20 @@ export type ConvidarEntrada = z.input<typeof ConvidarEntrada>;
 export const ConvidarResposta = z.object({ id: Uuid, email: z.string(), expiraEm: DataHora });
 
 export const VALIDADE_CONVITE_MS = 72 * 60 * 60 * 1000;
+
+/**
+ * S-19: POST /super/equipe/convites/:id/reenviar e /cancelar (`:id` = a conta convidada, ainda sem
+ * senha). Reenviar gera um link novo (72 h) e invalida o anterior; cancelar invalida o link e
+ * remove a conta convidada (que nunca entrou), liberando o e-mail para outro convite.
+ */
+export const ConviteAcaoEntrada = z.object({ motivo: MotivoObrigatorio });
+export type ConviteAcaoEntrada = z.input<typeof ConviteAcaoEntrada>;
+export const ConviteReenviarResposta = ConvidarResposta;
+export type ConviteReenviarResposta = z.infer<typeof ConviteReenviarResposta>;
+
+/** GET /super/concursos — lista leve para os filtros do /super (D21). */
+export const SuperConcursosResposta = z.object({ itens: z.array(ConcursoMini) });
+export type SuperConcursosResposta = z.infer<typeof SuperConcursosResposta>;
 
 /* ------------------------------------------------------------- comunicação */
 

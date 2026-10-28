@@ -154,6 +154,8 @@ export const ACOES_AUDITORIA = [
   'usuario.revogar_sessao',
   'exportar.csv',
   'equipe.convidar',
+  'equipe.convite_reenviar',
+  'equipe.convite_cancelar',
   'comunicacao.criar',
   'comunicacao.cancelar',
   'config.salvar',

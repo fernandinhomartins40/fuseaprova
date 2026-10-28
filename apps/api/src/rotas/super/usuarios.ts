@@ -615,4 +615,46 @@ export function rotasSuperUsuarios(r: Registrador): void {
     await auditarSuper(ctx, 'equipe.convidar', `usuario:${novo!.id}`, { motivo: corpo.motivo, depois: { email: corpo.email, papel: corpo.papel } });
     return { id: novo!.id, email: corpo.email, expiraEm: iso(expiraEm) };
   });
+  /* ------------------------------------------- convite pendente (S-19) */
+
+  /** A conta convidada que ainda não definiu a senha (404 se não existe; 409 se já entrou). */
+  async function convitePendente(db: Db, id: string): Promise<Usuario> {
+    const u = await usuarioPorId(db, id);
+    if (u.papel === 'aluno' || u.excluidoEm) throw falha('nao_encontrado', 'Convite não encontrado.');
+    if (u.senhaHash) throw falha('conflito', 'Este membro já aceitou o convite e definiu a senha.');
+    return u;
+  }
+
+  r.rota('superEquipeConviteReenviar', async (ctx) => {
+    const { deps, params, corpo, agora } = ctx;
+    const u = await convitePendente(deps.db, params.id);
+    // O link anterior deixa de valer: só o novo define a senha.
+    await deps.db.delete(redefinicoesSenha).where(eq(redefinicoesSenha.usuarioId, u.id));
+    const { link, expiraEm } = await criarLinkSenha(deps, u.id, agora, VALIDADE_CONVITE_MS, 'convite');
+    deps.enviarEmail(
+      emailConvite({
+        nome: u.nome,
+        email: u.email,
+        papel: NOMES_PAPEL[u.papel],
+        link,
+        entrar: `${deps.config.appUrl}${PAGINA_LOGIN[u.papel]}`,
+        validadeHoras: VALIDADE_CONVITE_MS / 3_600_000,
+      }),
+    );
+    await auditarSuper(ctx, 'equipe.convite_reenviar', `usuario:${u.id}`, { motivo: corpo.motivo, depois: { expiraEm: iso(expiraEm) } });
+    return { id: u.id, email: u.email, expiraEm: iso(expiraEm) };
+  });
+
+  r.rota('superEquipeConviteCancelar', async (ctx) => {
+    const { deps, params, corpo } = ctx;
+    const u = await convitePendente(deps.db, params.id);
+    // A conta convidada nunca entrou (sem senha, sem pedidos): sai junto com o link (cascata),
+    // e o e-mail fica livre para outro convite. A auditoria guarda só o papel.
+    await deps.db.transaction(async (tx) => {
+      await tx.delete(redefinicoesSenha).where(eq(redefinicoesSenha.usuarioId, u.id));
+      await tx.delete(usuarios).where(and(eq(usuarios.id, u.id), isNull(usuarios.senhaHash)));
+    });
+    await auditarSuper(ctx, 'equipe.convite_cancelar', `usuario:${u.id}`, { motivo: corpo.motivo, antes: { papel: u.papel } });
+    return { ok: true as const };
+  });
 }

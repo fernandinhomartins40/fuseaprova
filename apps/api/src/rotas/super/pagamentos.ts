@@ -94,7 +94,7 @@ const selPagamentos = (db: Db) =>
     // S-08/S-18: sem o Pix (QR em base64) e só as colunas do aluno que a tela usa.
     .select({
       p: colunasPedido,
-      u: { id: usuarios.id, nome: usuarios.nome, email: usuarios.email, cpf: usuarios.cpf, acesso: usuarios.acesso },
+      u: { id: usuarios.id, nome: usuarios.nome, email: usuarios.email, cpf: usuarios.cpf, acesso: usuarios.acesso, papel: usuarios.papel },
       a: { id: aprovador.id, nome: aprovador.nome },
       x: colunasExtrasPagamento,
     })
@@ -225,6 +225,11 @@ function erroAsaas(deps: Deps, e: unknown, contexto: Record<string, unknown>): n
 }
 
 export function rotasSuperPagamentos(r: Registrador): void {
+  // D21: a lista leve dos filtros do /super (sem depender da guarda de conteúdo).
+  r.rota('superConcursos', async ({ deps }) => ({
+    itens: await deps.db.select({ id: concursos.id, nome: concursos.nome }).from(concursos).orderBy(asc(concursos.criadoEm)),
+  }));
+
   r.rota('superPagamentosListar', async ({ query, deps, agora }) => {
     const onde = ondePagamentos(query, agora);
     const [t] = await deps.db.select({ n: count() }).from(pedidos).innerJoin(usuarios, eq(usuarios.id, pedidos.usuarioId)).where(onde);
