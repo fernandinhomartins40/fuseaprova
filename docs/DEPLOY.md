@@ -387,6 +387,10 @@ Cada concurso é uma compra: **R$ 397,00 o primeiro** (`PRICE_CENTS=39700`) e **
 concurso adicional** do mesmo aluno (`PRICE_ADICIONAL_CENTS=19700`). O deploy completa o `.env` da
 VPS com o valor novo; o padrão também está no código.
 
+> **Lançamento (desde 28/10/2026):** produção usa `PRICE_CENTS=19700`, o mesmo valor da landing
+> (R$ 197, "de R$ 397"). Para mudar o preço: editar o `.env` da VPS e rodar
+> `docker compose up -d --no-deps api worker`. O deploy não sobrescreve um valor já definido.
+
 **No painel do Asaas não há nada a mudar:** o valor e a descrição da cobrança saem da API a cada Pix
 (a descrição passa a trazer o nome do concurso: "Fuse Aprova: acesso ao preparatório do <concurso>"),
 e o webhook, o token e os eventos continuam os mesmos. O webhook acha o pedido pelo id da cobrança, e o
