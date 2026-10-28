@@ -42,6 +42,35 @@
   - URL do webhook;
   - link do push.
 
-## Veredito pós-correção
+## Veredito pós-correção: **APROVADO COM RESSALVAS**
 
-Pendente: será emitido depois das correções e da revalidação (`RELATORIO_VALIDACAO_FINAL.md`).
+- **Base:** a branch da correção, com os Lotes 1 a 3 e as correções da revalidação (V-01 a V-07). Detalhe em [RELATORIO_VALIDACAO_FINAL.md](RELATORIO_VALIDACAO_FINAL.md) e [REVALIDACAO_API.md](REVALIDACAO_API.md).
+- **Bloqueadores (S-01 a S-07):** todos corrigidos e revalidados por um agente adversarial independente. A matriz de guardas cruzou 148 rotas com 6 personas e não teve violação. Não houve regressão no aluno, no pagamento nem na D21.
+- **Altos (S-08, S-09):**
+  - S-08: o financeiro passou a ser agregado no SQL. Com 2 anos de dados, caiu de 6,2 s e +428 MB para 0,2 a 0,3 s e +2 a +9 MB.
+  - S-09: `/super/sistema` mostra o estado de verdade, e os alertas vão por e-mail.
+- **RQ1 a RQ4:** atendidos (evidências no relatório final).
+- **Suítes:**
+  - typecheck e lint: 8/8;
+  - API: 428/428 no PGlite e no Postgres 16;
+  - web: 105/105;
+  - shared: 177;
+  - worker: 21;
+  - E2E: 23/23.
+
+### Ressalvas que não impedem o deploy
+
+- Pequenas pendências de UX e de LGPD, listadas no relatório final.
+- O V-06 está aberto, com severidade baixa.
+- As pendências do dono: P-02 (backup externo), P-09 (2FA do admin) e P-10 (retenção).
+
+### O que muda para quem usa
+
+- **Entrada do superadmin:** passa a ser por `/super/entrar`, não mais por `/entrar`.
+- **Entrada da equipe de conteúdo:** passa a ser por `/admin/entrar`.
+- **Conteúdo:** a gestão de conteúdo fica em Superadmin › Conteúdo.
+
+### Limite deste veredito
+
+- Produção, VPS e Asaas real não foram verificados nesta sessão.
+- A migração `0007` é só aditiva e cria a extensão `pg_trgm`, que é confiável no Postgres 16 e não exige superusuário.

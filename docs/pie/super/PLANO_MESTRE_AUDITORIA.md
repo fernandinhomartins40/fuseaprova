@@ -76,10 +76,10 @@ As três ações valem só para aluno e nunca para a própria conta. Todas pedem
 
 | Lote | Achados | Escopo | Estado |
 |---|---|---|---|
-| 1 | S-01, S-02, S-03 (API), S-04 (API), S-05, S-06, S-07, S-10, S-13, S-14 (API), S-23, S-24, S-28 (helpers) | papéis e guardas, logins, rotas de negócio, RQ4, D21 nos contratos do super | a fazer |
-| 2 | S-08, S-09, S-11, S-12, S-15, S-16, S-17 (API/worker), S-18, S-20, S-21, S-22, S-26 | operação, alertas, segurança restante, desempenho | a fazer |
-| 3 | S-03, S-04, S-06, S-07, S-14, S-17, S-19, S-25, S-27 (web) | painel único com Conteúdo, 3 páginas de login, convite, botões do RQ4, telas | a fazer |
-| 4 | S-28 | E2E, documentação (D24, DEPLOY) e revalidação adversarial | a fazer |
+| 1 | S-01, S-02, S-03 (API), S-04 (API), S-05, S-06, S-07, S-10, S-13, S-14 (API), S-23, S-24, S-28 (helpers) | papéis e guardas, logins, rotas de negócio, RQ4, D21 nos contratos do super | feito |
+| 2 | S-08, S-09, S-11, S-12, S-15, S-16, S-17 (API/worker), S-18, S-20, S-21, S-22, S-26 | operação, alertas, segurança restante, desempenho | feito |
+| 3 | S-03, S-04, S-06, S-07, S-14, S-17, S-19, S-25, S-27 (web) | painel único com Conteúdo, 3 páginas de login, convite, botões do RQ4, telas | feito |
+| 4 | S-28 | E2E, documentação (D24, DEPLOY) e revalidação adversarial | feito |
 
 ## Pendências que dependem do dono
 
