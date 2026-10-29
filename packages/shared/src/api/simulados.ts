@@ -134,9 +134,9 @@ export type SalvarRespostaSimuladoResposta = z.infer<typeof SalvarRespostaSimula
 export const EntregarSimuladoResposta = SimuladoResultado;
 export type EntregarSimuladoResposta = SimuladoResultado;
 
-export const TEXTO_HERO_SIMULADO = 'Prova completa no padrão FAU · 40 questões · 4h · mínimo 50%';
+export const TEXTO_HERO_SIMULADO = 'Simulado no formato da prova · 40 questões · 4h · mínimo 50%';
 export const NOTA_SIMULADO_LEGISLACAO =
-  'Conhecimentos Gerais inclui a Lei Orgânica de Palmital e o Estatuto dos Servidores.';
+  'Conhecimentos Gerais inclui a Lei Orgânica do município e o Estatuto dos Servidores.';
 export function seloSimulado(aprovado: boolean): string {
   return aprovado ? 'APROVADO' : 'ABAIXO DO MÍNIMO';
 }

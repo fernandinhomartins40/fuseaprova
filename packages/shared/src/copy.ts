@@ -8,7 +8,7 @@ import type { Letra } from './dominio.js';
 export const NOME_PRODUTO = 'Fuse Aprova';
 
 export const AVISO_EDITAL =
-  'Quando o edital de Palmital sair, as trilhas e os simulados se ajustam ao seu cargo, sem custo extra.';
+  'Quando o edital sair, as trilhas e os simulados se ajustam ao seu cargo, sem custo extra.';
 
 /**
  * D26: quem vende e quem controla os dados (CDC; Decreto 7.962/2013, art. 2º; LGPD, arts. 9º e 41).
@@ -23,7 +23,7 @@ export const EMPRESA = {
 } as const;
 
 export const RODAPE_LEGAL =
-  'Fuse Aprova não tem vínculo com a FAU-Unicentro nem com a Prefeitura de Palmital.';
+  'Fuse Aprova é um produto privado e independente. Não representa nenhuma entidade governamental, órgão público ou banca organizadora.';
 
 export const TITULOS_ACERTO = [
   'Mandou bem!',
@@ -63,8 +63,7 @@ export const TEXTO_PIX_ERRO =
 export const TEXTO_EDITAL_SAIU = 'O edital saiu! Confirme seu cargo';
 export const TEXTO_OFENSIVA_ZEROU = 'Sua ofensiva zerou';
 export const TEXTO_PROTETOR_SALVOU = 'O protetor salvou sua ofensiva!';
-export const TITULO_BOAS_VINDAS =
-  'Treine para o concurso da Prefeitura de Palmital com as provas da FAU';
+export const TITULO_BOAS_VINDAS = 'Estude para concursos com questões de provas anteriores';
 
 export const LEMBRETES_PUSH = [
   'A Capi está te esperando. 5 minutinhos e a ofensiva continua!',
@@ -107,10 +106,10 @@ export interface OrigemExibicao {
   ano?: number | null;
 }
 
-/** Chip de origem: "FAU-Unicentro · {Órgão} · {Ano}" ou "Questão Fuse Aprova · estilo FAU". */
+/** Chip de origem: "Prova anterior · {Ano}" ou "Questão Fuse Aprova". */
 export function textoChipOrigem(o: OrigemExibicao): string {
-  if (o.origem === 'autoral') return 'Questão Fuse Aprova · estilo FAU';
-  return ['FAU-Unicentro', o.orgao, o.ano ? String(o.ano) : null].filter(Boolean).join(' · ');
+  if (o.origem === 'autoral') return 'Questão Fuse Aprova';
+  return ['Prova anterior', o.ano ? String(o.ano) : null].filter(Boolean).join(' · ');
 }
 
 /** Status do edital para o cartão do Perfil. */
@@ -123,7 +122,7 @@ export function textoStatusEdital(
   }
   switch (status) {
     case 'aguardando_edital':
-      return 'em elaboração pela FAU';
+      return 'em elaboração';
     case 'edital_publicado':
       return 'publicado: veja seus cargos';
     case 'prova_realizada':

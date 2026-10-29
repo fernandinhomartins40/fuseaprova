@@ -114,7 +114,7 @@ describe('Pré-visualização no formato da tela de Pergunta', () => {
     renderizarAdmin(`/super/conteudo/questoes/${IDS.q1}`);
     const previa = await screen.findByRole('region', { name: 'Pré-visualização da tela de Pergunta' });
 
-    expect(within(previa).getByTestId('chip-origem')).toHaveTextContent('Questão Fuse Aprova · estilo FAU');
+    expect(within(previa).getByTestId('chip-origem')).toHaveTextContent('Questão Fuse Aprova');
     const balao = within(previa).getByTestId('balao-enunciado');
     expect(within(balao).getByText('crase').tagName).toBe('STRONG');
     const alternativas = within(previa).getAllByRole('radio');
@@ -134,7 +134,7 @@ describe('Pré-visualização no formato da tela de Pergunta', () => {
     expect(within(previa).getByTestId('balao-enunciado')).toHaveTextContent('Novo enunciado da questão');
   });
 
-  it('usa o chip da FAU para questão real', async () => {
+  it('usa o chip de prova anterior para questão real', async () => {
     const usuario = userEvent.setup();
     const prova = {
       id: IDS.concurso,
@@ -167,7 +167,7 @@ describe('Pré-visualização no formato da tela de Pergunta', () => {
     renderizarAdmin(`/super/conteudo/questoes/${IDS.q1}`);
     const previa = await screen.findByRole('region', { name: 'Pré-visualização da tela de Pergunta' });
     await waitFor(() =>
-      expect(within(previa).getByTestId('chip-origem')).toHaveTextContent('FAU-Unicentro · Prefeitura de Pitanga · 2023'),
+      expect(within(previa).getByTestId('chip-origem')).toHaveTextContent('Prova anterior · 2023'),
     );
     void usuario;
   });

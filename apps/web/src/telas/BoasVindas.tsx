@@ -30,21 +30,19 @@ export default function BoasVindas() {
       </div>
       <section className={s.conteudo}>
         <h1 className={s.titulo}>
-          Treine para o concurso da Prefeitura de Palmital com as{' '}
-          <span className={s.destaque}>provas da FAU.</span>
+          Estude para concursos com{' '}
+          <span className={s.destaque}>questões de provas anteriores.</span>
         </h1>
         <p className={s.subtitulo}>Questões reais explicadas. Prática diária, no seu ritmo.</p>
-        <ul className={s.chips} aria-label="Sobre o concurso">
+        <ul className={s.chips} aria-label="O que o app oferece">
           <li>
-            <Chip grande icone={<Imagem nome="icone-localizacao" tamanho={22} />}>
-              Palmital · PR
-            </Chip>
+            <Chip grande>Lições curtas</Chip>
           </li>
           <li>
-            <Chip grande>Provas da FAU</Chip>
+            <Chip grande>Simulados</Chip>
           </li>
           <li>
-            <Chip grande>2026/27</Chip>
+            <Chip grande>Estudo offline</Chip>
           </li>
         </ul>
         <div className={s.acoes}>

@@ -247,7 +247,7 @@ export const Avatar = z.object({ iniciais: z.string(), cor: z.string() });
 export const QuestaoParaAluno = z.object({
   id: Uuid,
   origem: ZOrigemQuestao,
-  /** "FAU-Unicentro · Órgão · Ano" ou "Questão Fuse Aprova · estilo FAU". */
+  /** "Prova anterior · Ano" ou "Questão Fuse Aprova" (D27: sem nome de banca nem de órgão). */
   chipOrigem: z.string(),
   provaOrigem: z
     .object({ orgao: z.string(), ano: z.number().int().nullable(), cargo: z.string().nullable() })

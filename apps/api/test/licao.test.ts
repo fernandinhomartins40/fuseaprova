@@ -23,7 +23,7 @@ describe('lição de trilha (PRD 5.8–5.12, 6)', () => {
     for (const q of s.questoes) {
       expect(q).not.toHaveProperty('gabarito');
       expect(q.alternativas).toHaveLength(5);
-      expect(q.chipOrigem).toBe('Questão Fuse Aprova · estilo FAU');
+      expect(q.chipOrigem).toBe('Questão Fuse Aprova');
     }
   });
 

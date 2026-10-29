@@ -220,7 +220,7 @@ export const NOMES_DISCIPLINA: Record<SlugDisciplina, string> = {
 };
 
 export const NOMES_STATUS_CONCURSO: Record<StatusConcurso, string> = {
-  aguardando_edital: 'Edital em elaboração pela FAU',
+  aguardando_edital: 'Edital em elaboração',
   edital_publicado: 'Edital publicado',
   prova_realizada: 'Prova realizada',
   homologado: 'Concurso homologado',

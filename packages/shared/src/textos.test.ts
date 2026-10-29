@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   AVISO_EDITAL,
+  TITULO_BOAS_VINDAS,
   fraseOfensiva,
   primeiroNome,
   RODAPE_LEGAL,
@@ -33,9 +34,10 @@ import { MS_HORA, MS_MINUTO } from './datas.js';
 describe('copy (PRD 11)', () => {
   it('textos fixos', () => {
     expect(AVISO_EDITAL).toContain('sem custo extra');
-    expect(RODAPE_LEGAL).toBe(
-      'Fuse Aprova não tem vínculo com a FAU-Unicentro nem com a Prefeitura de Palmital.',
-    );
+    expect(RODAPE_LEGAL).toContain('Não representa nenhuma entidade governamental');
+    expect(RODAPE_LEGAL).not.toMatch(/FAU|Palmital/);
+    expect(AVISO_EDITAL).not.toMatch(/FAU|Palmital/);
+    expect(TITULO_BOAS_VINDAS).not.toMatch(/FAU|Palmital/);
   });
 
   it('título de acerto varia e usa o primeiro nome', () => {
@@ -73,16 +75,16 @@ describe('copy (PRD 11)', () => {
 
   it('chip de origem', () => {
     expect(textoChipOrigem({ origem: 'fau_real', orgao: 'Prefeitura de Realeza', ano: 2026 })).toBe(
-      'FAU-Unicentro · Prefeitura de Realeza · 2026',
+      'Prova anterior · 2026',
     );
     expect(textoChipOrigem({ origem: 'fau_real', orgao: 'Câmara de Irati', ano: null })).toBe(
-      'FAU-Unicentro · Câmara de Irati',
+      'Prova anterior',
     );
-    expect(textoChipOrigem({ origem: 'autoral' })).toBe('Questão Fuse Aprova · estilo FAU');
+    expect(textoChipOrigem({ origem: 'autoral' })).toBe('Questão Fuse Aprova');
   });
 
   it('status do edital', () => {
-    expect(textoStatusEdital('aguardando_edital')).toBe('em elaboração pela FAU');
+    expect(textoStatusEdital('aguardando_edital')).toBe('em elaboração');
     expect(textoStatusEdital('edital_publicado')).toBe('publicado: veja seus cargos');
     expect(textoStatusEdital('edital_publicado', '14/03')).toBe('prova em 14/03');
     expect(textoStatusEdital('prova_realizada', '14/03')).toBe('prova realizada');

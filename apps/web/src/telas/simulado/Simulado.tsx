@@ -61,7 +61,7 @@ export default function Simulado() {
       <h1 className={s.titulo}>Simulados</h1>
 
       <section className={s.heroi} aria-labelledby="sim-hero">
-        <p className={s.heroiRotulo}>PROVA COMPLETA NO PADRÃO FAU</p>
+        <p className={s.heroiRotulo}>SIMULADO NO FORMATO DA PROVA</p>
         <h2 id="sim-hero" className={s.heroiTitulo}>
           {totalQ} questões · 4h · mínimo 50%
         </h2>

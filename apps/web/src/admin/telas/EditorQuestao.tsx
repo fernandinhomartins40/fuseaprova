@@ -406,7 +406,7 @@ function FormularioQuestao({ questao }: { questao: QuestaoAdmin | null }) {
               </div>
             ) : (
               <p className={s.suave}>
-                Questão autoral: aparece como “Questão Fuse Aprova · estilo FAU” e nunca é atribuída a
+                Questão autoral: aparece como “Questão Fuse Aprova” e nunca é atribuída a
                 uma prova real.
               </p>
             )}

@@ -226,7 +226,7 @@ describe('um acesso por concurso', () => {
     const a = await t.cadastrar();
     const r = await t.chamar('concursoPorId', { cookie: a.cookie, params: { id: siqueiraId } });
     expect(r.statusCode, r.body).toBe(200);
-    expect(r.json()).toMatchObject({ id: siqueiraId, sigla: 'SIQ · FAU', modoEdital: false });
+    expect(r.json()).toMatchObject({ id: siqueiraId, sigla: 'SIQ · PR', modoEdital: false });
     expect(r.json().cargos.length).toBeGreaterThan(0);
   });
 

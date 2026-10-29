@@ -100,11 +100,11 @@ describe('telas do aluno contra a API simulada', () => {
     await waitFor(() => expect(local).toBe('/pagamento'));
     // Com mais de um concurso aberto, o aluno escolhe antes de ver o Pix (D21).
     expect(await screen.findByText('Para qual concurso você vai estudar?')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: /Prefeitura Municipal de Palmital/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Prefeitura Municipal de Cidade Exemplo/ }));
     expect(await screen.findByAltText(/QR Code do Pix/)).toBeInTheDocument();
     expect(screen.getByText('Pix copia e cola')).toBeInTheDocument();
-    expect(screen.getByText(/Quando o edital de Palmital sair/)).toBeInTheDocument();
-    expect(screen.getByText(/não tem vínculo com a FAU-Unicentro/)).toBeInTheDocument();
+    expect(screen.getByText(/Quando o edital sair/)).toBeInTheDocument();
+    expect(screen.getByText(/Não representa nenhuma entidade governamental/)).toBeInTheDocument();
     await api.fn('/api/__mock/pagar', { method: 'POST' });
     expect(
       await screen.findByText('Pagamento confirmado!', {}, { timeout: 6000 }),
@@ -116,13 +116,13 @@ describe('telas do aluno contra a API simulada', () => {
     await api.cenario('semAcesso');
     abrir('/pagamento');
     const opcao = await screen.findByRole('button', {
-      name: /Prefeitura Municipal de Siqueira Campos/,
+      name: /Prefeitura Municipal de Vila Modelo/,
     });
     expect(opcao).toHaveTextContent('R$ 397,00');
     await userEvent.click(opcao);
     expect(await screen.findByAltText(/QR Code do Pix/)).toBeInTheDocument();
     expect(
-      screen.getByText(/Acesso ao Prefeitura Municipal de Siqueira Campos-PR 2026/),
+      screen.getByText(/Acesso ao Concurso Municipal de Vila Modelo 2026/),
     ).toBeInTheDocument();
     expect(screen.getAllByText('R$ 397').length).toBeGreaterThan(0);
   }, 10000);

@@ -1,4 +1,4 @@
-import { formatarDataBR } from '@fuse/shared';
+import { formatarDataBR, RODAPE_LEGAL } from '@fuse/shared';
 import { mensagemDeErro } from '../api/cliente';
 import { useConcurso } from '../api/consultas';
 import {
@@ -32,7 +32,6 @@ export default function SobreConcurso() {
             <Chip>
               {c.data.municipio} · {c.data.uf}
             </Chip>
-            <Chip>Banca {c.data.banca}</Chip>
           </div>
 
           <Cartao>
@@ -70,6 +69,10 @@ export default function SobreConcurso() {
                 ))}
               </ul>
             )}
+            <p className={s.textoMenor}>
+              {RODAPE_LEGAL} As informações oficiais (edital, inscrições, datas e resultados) são
+              publicadas só pelo órgão responsável, nos links acima e no Diário Oficial.
+            </p>
           </section>
         </div>
       )}

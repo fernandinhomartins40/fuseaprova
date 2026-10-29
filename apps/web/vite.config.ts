@@ -102,7 +102,7 @@ export default defineConfig(({ mode }) => {
             manifest: {
               name: 'Fuse Aprova',
               short_name: 'Fuse Aprova',
-              description: 'Treine para o concurso da Prefeitura de Palmital com as provas da FAU.',
+              description: 'Estude para concursos com lições curtas, questões explicadas e simulados.',
               lang: 'pt-BR',
               start_url: '/aprender',
               scope: '/',

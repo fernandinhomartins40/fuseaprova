@@ -246,7 +246,7 @@ const CONCURSO2_ID = '00000000-0000-4000-8000-0000000c0002';
 const PRECO_CHEIO = 39700;
 const PRECO_ADICIONAL = 19700;
 /** D23: cupons do mock (percentual de desconto). */
-const CUPONS_MOCK: Record<string, number> = { PALMITAL10: 10 };
+const CUPONS_MOCK: Record<string, number> = { APROVA10: 10 };
 
 function cupomMock(codigo: string | undefined): string | null {
   if (!codigo) return null;
@@ -275,7 +275,7 @@ function paraAluno(q: QuestaoMock, revisao = false, id = q.id): QuestaoParaAluno
   return {
     id,
     origem: 'autoral',
-    chipOrigem: 'Questão Fuse Aprova · estilo FAU',
+    chipOrigem: 'Questão Fuse Aprova',
     provaOrigem: null,
     disciplina: d,
     assunto: { id: q.assuntoId, nome: q.assunto },
@@ -366,8 +366,8 @@ function me() {
     avatar: { iniciais: iniciais(u.nome), cor: corDoAvatar(ID_USUARIO) },
     concurso: {
       id: CONCURSO_ID,
-      nome: 'Prefeitura Municipal de Palmital-PR 2026/27',
-      sigla: 'PAL · FAU',
+      nome: 'Concurso Municipal de Cidade Exemplo 2026/27',
+      sigla: 'EXE · PR',
       status: estado.modoEdital ? ('edital_publicado' as const) : ('aguardando_edital' as const),
       dataProva: estado.modoEdital ? DATA_PROVA : null,
     },
@@ -763,23 +763,19 @@ const H: Partial<Record<NomeRota, Handler>> = {
     const c = cargosAtivos();
     return {
       id: CONCURSO_ID,
-      nome: 'Prefeitura Municipal de Palmital-PR 2026/27',
-      sigla: 'PAL · FAU',
-      banca: 'FAU-Unicentro',
-      orgao: 'Prefeitura Municipal de Palmital',
-      municipio: 'Palmital',
+      nome: 'Concurso Municipal de Cidade Exemplo 2026/27',
+      sigla: 'EXE · PR',
+      banca: 'Banca Exemplo',
+      orgao: 'Prefeitura Municipal de Cidade Exemplo',
+      municipio: 'Cidade Exemplo',
       uf: 'PR',
       ano: 2026,
       status: estado.modoEdital ? 'edital_publicado' : 'aguardando_edital',
-      statusTexto: estado.modoEdital ? 'Edital publicado' : 'Edital em elaboração pela FAU',
+      statusTexto: estado.modoEdital ? 'Edital publicado' : 'Edital em elaboração',
       dataProva: estado.modoEdital ? DATA_PROVA : null,
       diasParaProva: estado.modoEdital ? 142 : null,
       links: [
-        {
-          titulo: 'Portal de concursos da Prefeitura de Palmital',
-          url: 'https://palmital.pr.gov.br/portal/portal-concursos.php?pesquisar=1',
-        },
-        { titulo: 'FAU-Unicentro: concursos', url: 'https://www.concursosfau.com.br/novo/' },
+        { titulo: 'Portal oficial do órgão (exemplo)', url: 'https://www.gov.br/pt-br' },
       ],
       modoEdital: estado.modoEdital,
       cargos: c,
@@ -1319,7 +1315,7 @@ const H: Partial<Record<NomeRota, Handler>> = {
         obtidaEm: estado.conquistas.has(c.codigo) ? u.criadoEm.toISOString() : null,
       })),
       cargo: cg ? { nome: cg.nome, area: cg.area } : null,
-      orgao: 'Prefeitura de Palmital',
+      orgao: 'Prefeitura de Cidade Exemplo',
       seloAcesso: 'Acesso completo · pago via Pix',
       edital: {
         status: estado.modoEdital ? 'edital_publicado' : 'aguardando_edital',
@@ -1344,20 +1340,20 @@ const H: Partial<Record<NomeRota, Handler>> = {
 const CONCURSOS_MOCK = [
   {
     id: CONCURSO_ID,
-    nome: 'Prefeitura Municipal de Palmital-PR 2026/27',
-    sigla: 'PAL · FAU',
-    orgao: 'Prefeitura Municipal de Palmital',
-    municipio: 'Palmital',
+    nome: 'Concurso Municipal de Cidade Exemplo 2026/27',
+    sigla: 'EXE · PR',
+    orgao: 'Prefeitura Municipal de Cidade Exemplo',
+    municipio: 'Cidade Exemplo',
     uf: 'PR',
     ano: 2026,
     dataProva: null as string | null,
   },
   {
     id: CONCURSO2_ID,
-    nome: 'Prefeitura Municipal de Siqueira Campos-PR 2026',
-    sigla: 'SIQ · FAU',
-    orgao: 'Prefeitura Municipal de Siqueira Campos',
-    municipio: 'Siqueira Campos',
+    nome: 'Concurso Municipal de Vila Modelo 2026',
+    sigla: 'VIL · PR',
+    orgao: 'Prefeitura Municipal de Vila Modelo',
+    municipio: 'Vila Modelo',
     uf: 'PR',
     ano: 2026,
     dataProva: '2026-11-29',
@@ -1368,9 +1364,9 @@ function meusConcursos() {
   const jaPagou = estado.seguidos.some((x) => x.acesso);
   const resumo = (c: (typeof CONCURSOS_MOCK)[number], preco: number, comDesconto: boolean) => ({
     ...c,
-    banca: 'FAU-Unicentro',
+    banca: 'Banca Exemplo',
     status: 'aguardando_edital' as const,
-    statusTexto: 'Edital em elaboração pela FAU',
+    statusTexto: 'Edital em elaboração',
     diasParaProva: c.dataProva ? 33 : null,
     precoCentavos: preco,
     comDesconto,
@@ -1409,7 +1405,7 @@ function pix() {
       return { valorCentavos: valor, valorOriginalCentavos: desconto ? base : null, cupom: p.cupom ?? null };
     })(),
     imagem: pngQrFalso(),
-    payload: `00020126580014br.gov.bcb.pix0136mock-${p.id}5204000053039865406397.005802BR5911FUSE APROVA6008PALMITAL62070503***6304ABCD`,
+    payload: `00020126580014br.gov.bcb.pix0136mock-${p.id}5204000053039865406397.005802BR5911FUSE APROVA6008EXEMPLO 62070503***6304ABCD`,
     expiraEm: p.expiraEm.toISOString(),
     status: p.status,
   };

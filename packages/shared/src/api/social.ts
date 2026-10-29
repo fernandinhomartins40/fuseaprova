@@ -109,7 +109,7 @@ export const EstatisticasResposta = z.object({
   seloAcesso: z.string(),
   edital: z.object({
     status: ZStatusConcurso,
-    /** "em elaboração pela FAU" | "publicado: veja seus cargos" | "prova em dd/mm" */
+    /** "em elaboração" | "publicado: veja seus cargos" | "prova em dd/mm" */
     texto: z.string(),
     dataProva: Dia.nullable(),
     diasParaProva: z.number().int().nullable(),

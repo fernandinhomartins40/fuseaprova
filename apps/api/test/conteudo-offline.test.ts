@@ -59,7 +59,7 @@ describe('conteúdo visível (PRD 7.4, critério 12)', () => {
       const q = s.questoes.find((x: { id: string }) => x.id === real!.id);
       if (q) {
         achou = true;
-        expect(q.chipOrigem).toBe('FAU-Unicentro · Prefeitura de Teste · 2024');
+        expect(q.chipOrigem).toBe('Prova anterior · 2024');
         expect(q.provaOrigem).toEqual({ orgao: 'Prefeitura de Teste', ano: 2024, cargo: 'Agente Administrativo' });
       }
     }

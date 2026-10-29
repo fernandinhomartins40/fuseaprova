@@ -196,7 +196,7 @@ describe('outros contratos', () => {
     const questao: z.input<typeof QuestaoParaAluno> = {
       id: uuid,
       origem: 'autoral',
-      chipOrigem: 'Questão Fuse Aprova · estilo FAU',
+      chipOrigem: 'Questão Fuse Aprova',
       provaOrigem: null,
       disciplina: { id: uuid, slug: 'portugues', nome: 'Língua Portuguesa', cor: '#000' },
       assunto: { id: uuid, nome: 'Crase' },

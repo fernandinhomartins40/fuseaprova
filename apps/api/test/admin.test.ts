@@ -33,7 +33,7 @@ describe('admin (PRD 5.17)', () => {
     expect(r3.statusCode, r3.body).toBe(200);
     expect(r3.json()).toMatchObject({ status: 'publicada', versao: 2, revisadoPor: adm.id, pendencias: [] });
     const prev = (await t.chamar('adminQuestaoPrevia', { cookie: adm.cookie, params: { id: q.id } })).json();
-    expect(prev).toMatchObject({ gabarito: 'C', questao: { chipOrigem: 'Questão Fuse Aprova · estilo FAU' } });
+    expect(prev).toMatchObject({ gabarito: 'C', questao: { chipOrigem: 'Questão Fuse Aprova' } });
     const lista = (await t.chamar('adminQuestoesListar', { cookie: adm.cookie, query: { q: 'forma correta', status: 'publicada' } })).json();
     expect(lista.itens.map((x: { id: string }) => x.id)).toContain(q.id);
     const autoralComProva = await t.chamar('adminQuestaoCriar', { cookie: adm.cookie, corpo: { ...corpo, status: 'rascunho', provaOrigemId: q.id } });

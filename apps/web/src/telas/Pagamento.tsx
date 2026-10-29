@@ -33,7 +33,7 @@ import {
 import s from './Pagamento.module.css';
 
 const BENEFICIOS = [
-  'Todas as provas FAU',
+  'Questões de provas anteriores',
   'Questões comentadas',
   'Simulados ilimitados',
   'Até o dia da prova',

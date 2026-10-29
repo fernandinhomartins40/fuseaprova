@@ -1,6 +1,6 @@
 /**
  * Conteúdo da API simulada (dev:mock). Todas as questões aqui são AUTORAIS, de exemplo,
- * e aparecem como "Questão Fuse Aprova · estilo FAU". Nenhuma é atribuída a prova real da FAU.
+ * e aparecem como "Questão Fuse Aprova". Nenhuma é atribuída a prova real.
  */
 import type { Letra, SlugDisciplina } from '@fuse/shared';
 
@@ -425,7 +425,7 @@ export const UNIDADES: UnidadeMock[] = [
   {
     id: idFixo(),
     numero: 4,
-    titulo: 'Conhecimentos Gerais: Palmital',
+    titulo: 'Conhecimentos Gerais: o município',
     disciplina: 'gerais',
     area: null,
     secoes: [secao(1, 'Organização do município', ASSUNTOS.lei_organica, true)],

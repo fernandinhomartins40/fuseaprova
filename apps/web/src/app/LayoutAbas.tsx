@@ -51,7 +51,7 @@ export function ModalEdital({ cargoAtual }: { cargoAtual: string | null }) {
       titulo={TEXTO_EDITAL_SAIU}
       onFechar={() => undefined}
       topo={<Capi pose="celebrando" tamanho={130} carregamento="eager" />}
-      descricao="Escolha o cargo do edital de Palmital. A trilha e os simulados passam a seguir o conteúdo dele, sem custo extra."
+      descricao="Escolha o seu cargo no edital. A trilha e os simulados passam a seguir o conteúdo dele, sem custo extra."
       rodape={
         <Botao3D
           disabled={!escolhido}

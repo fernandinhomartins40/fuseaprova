@@ -51,7 +51,7 @@ export function Termos() {
 
         <h2>2. O que é o serviço</h2>
         <p>
-          O Fuse Aprova é um <strong>app de estudo para concursos da banca FAU</strong>, com trilhas
+          O Fuse Aprova é um <strong>app de estudo para concursos</strong>, com trilhas
           de lições, questões comentadas, revisão espaçada, simulados, liga semanal e estudo
           offline. Ele funciona no navegador (site e PWA) e no app para Android e iPhone.{' '}
           <strong>Cada concurso é um acesso separado</strong>, pessoal e intransferível.
@@ -143,10 +143,8 @@ export function Termos() {
           9.609/1998).
         </p>
         <p>
-          O app usa{' '}
-          <strong>questões reais de provas da FAU-Unicentro, sempre com a fonte citada</strong>{' '}
-          (banca, órgão, ano e cargo), e questões autorais marcadas como “Questão Fuse Aprova ·
-          estilo FAU”. O titular de qualquer conteúdo pode pedir a <strong>remoção</strong> pelo
+          O app usa <strong>questões de provas anteriores, que são públicas</strong>, e questões
+          autorais marcadas como “Questão Fuse Aprova”. O titular de qualquer conteúdo pode pedir a <strong>remoção</strong> pelo
           atendimento, e ela é feita rapidamente.
         </p>
 
@@ -168,13 +166,14 @@ export function Termos() {
         <p>
           O Fuse Aprova ajuda você a treinar, mas <strong>não garante aprovação</strong> em concurso
           nenhum. O resultado depende da prova, da concorrência e do seu estudo. As informações
-          sobre editais e datas são de apoio: confira sempre o edital oficial e os avisos da banca.
+          sobre editais e datas são de apoio: confira sempre o edital oficial, publicado pelo órgão
+          responsável no site dele e no Diário Oficial.
         </p>
 
-        <h2>11. Sem vínculo com a banca ou o órgão</h2>
+        <h2>11. Sem vínculo com órgãos públicos ou bancas</h2>
         <p>
-          <strong>{RODAPE_LEGAL}</strong> O produto não é afiliado, patrocinado nem endossado pela
-          banca nem pelos órgãos dos concursos.
+          <strong>{RODAPE_LEGAL}</strong> O produto não é afiliado, patrocinado nem endossado por
+          nenhum órgão público nem pelas bancas organizadoras dos concursos.
         </p>
 
         <h2>12. Funcionamento do serviço</h2>

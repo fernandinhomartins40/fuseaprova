@@ -165,6 +165,29 @@ Não entram no app.
 **As capturas precisam mostrar o app de verdade.** Use as telas de `apps/mobile/loja/telas/` (o app atual, 1170×2532), geradas por `pnpm --filter @fuse/web capturas:loja` com a API simulada (`dev:mock --port 5181` em outro terminal). **Não use `design/png/`**: é o design original, anterior às mudanças do app (vidas, layout da trilha, navegação). Pode emoldurar com fundo da marca e título curto, mas não invente telas nem funções.
 
 **Textos da ficha (sugestão):**
-- **Título (até 30 caracteres):** "Fuse Aprova: Concurso Palmital".
-- **Descrição curta (até 80):** "Treine com as provas da FAU para o concurso da Prefeitura de Palmital."
-- **Descrição completa:** cite trilha, questões explicadas, revisão espaçada, simulado de 4 h, liga semanal e estudo offline. Diga que é preciso ter uma conta Fuse Aprova com acesso ativo. **Não cite preço nem onde comprar.**
+**Não cite banca nem prefeitura pelo nome** ([D27](DECISOES.md)). Em 29/10/2026 a Play recusou o app por "declarações enganosas" porque a descrição citava a FAU e as prefeituras sem link para as fontes oficiais. **Não cite preço nem onde comprar.**
+
+- **Título (até 30 caracteres):** "Fuse Aprova: Estudo Concursos".
+- **Descrição curta (até 80):** "Estude para concursos com lições curtas, questões explicadas e simulados."
+- **Descrição completa:**
+
+```
+O Fuse Aprova é um app de estudos para concursos. Estude um pouco por dia, no seu ritmo, e acompanhe a sua evolução.
+
+O que você encontra no app:
+• Trilha de estudo: lições curtas, passo a passo, organizadas por disciplina.
+• Questões explicadas: cada resposta vem com a explicação do porquê, para você aprender com os erros.
+• Revisão inteligente: as questões que você errou voltam no momento certo para fixar o conteúdo.
+• Simulado cronometrado, com nota por disciplina.
+• Liga semanal: estude junto com outros alunos e suba de nível.
+• Ofensiva e lembrete diário: crie o hábito de estudar todo dia.
+• Estudo offline: baixe as próximas lições e estude sem internet.
+
+Como funciona:
+Para usar o app, é preciso ter uma conta Fuse Aprova com acesso ativo. O app não tem cadastro nem pagamento: ele serve para quem já tem conta.
+
+Aviso importante:
+O Fuse Aprova é um produto privado e independente. O app NÃO representa nenhuma entidade governamental, órgão público ou banca organizadora, e não tem vínculo com eles. As informações oficiais sobre qualquer concurso (edital, inscrições, datas e resultados) são publicadas somente pelo órgão responsável, no site oficial dele e no Diário Oficial. Consulte sempre essas fontes. O app ajuda você a treinar, mas não garante aprovação.
+
+Dúvidas? Fale com o nosso suporte pelo contato informado nesta página.
+```

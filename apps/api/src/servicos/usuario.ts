@@ -23,15 +23,14 @@ const { usuarios, revisoes, questoes, concursos, cargos, ligasMembros } = schema
 export type Concurso = typeof schema.concursos.$inferSelect;
 export type Cargo = typeof schema.cargos.$inferSelect;
 
-/** "PAL · FAU" */
-export function siglaConcurso(c: Pick<Concurso, 'municipio' | 'banca'>): string {
+/** "PAL · PR": sem o nome da banca, que o app não exibe (D27). */
+export function siglaConcurso(c: Pick<Concurso, 'municipio' | 'uf'>): string {
   const mun = c.municipio
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .slice(0, 3)
     .toUpperCase();
-  const banca = (c.banca.split(/[-\s]/)[0] ?? c.banca).toUpperCase();
-  return `${mun} · ${banca}`;
+  return `${mun} · ${c.uf.toUpperCase()}`;
 }
 
 /** Modo edital (PRD 7.3): ligado quando o admin publica o edital. */

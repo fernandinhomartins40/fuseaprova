@@ -16,7 +16,7 @@ Criar uma composição vertical de publicidade com acabamento 3D sofisticado, na
 
 ### Banner da Play Store
 
-Preservar a mesma Capi 3D, com cabeça caramelo, olhos castanhos, sorriso, bandana azul-petróleo e faísca laranja. Criar um cenário de estúdio verde-petróleo profundo, com curvas esculturais acetinadas, luz quente discreta e profundidade. Posicionar uma única Capi à direita e reservar a metade esquerda para a tipografia. Reenquadrar a mascote para que todas as orelhas e pontas da bandana fiquem confortavelmente dentro da área segura: em uma composição de 2048 × 1000, aproximadamente x=1110…1870 e y=140…850. Preservar as proporções e estender o cenário de forma contínua até as bordas. Sem reflexos ou duplicações da mascote, texto gerado, preços, chamadas de compra ou símbolos oficiais. Aplicar depois os textos exatos “Fuse Aprova” e “Treine com as provas da FAU”.
+Preservar a mesma Capi 3D, com cabeça caramelo, olhos castanhos, sorriso, bandana azul-petróleo e faísca laranja. Criar um cenário de estúdio verde-petróleo profundo, com curvas esculturais acetinadas, luz quente discreta e profundidade. Posicionar uma única Capi à direita e reservar a metade esquerda para a tipografia. Reenquadrar a mascote para que todas as orelhas e pontas da bandana fiquem confortavelmente dentro da área segura: em uma composição de 2048 × 1000, aproximadamente x=1110…1870 e y=140…850. Preservar as proporções e estender o cenário de forma contínua até as bordas. Sem reflexos ou duplicações da mascote, texto gerado, preços, chamadas de compra ou símbolos oficiais. Aplicar depois os textos exatos “Fuse Aprova” e “Estude para concursos” (sem nome de banca nem de prefeitura, D27).
 
 ## Capturas e acabamento
 

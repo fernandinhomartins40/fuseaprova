@@ -284,7 +284,7 @@ p { margin: 0; text-wrap: pretty; }
   .b-acervo .tela-cortada { width: 46%; right: 24px; }
 }
 
-/* concursos FAU */
+/* radar de concursos */
 .radar { padding: clamp(90px, 10vw, 140px) 0; color: #fff; background: radial-gradient(60% 60% at 80% 0%, #4B2BC2 0%, transparent 60%), linear-gradient(180deg, #1B1050, #120A38); position: relative; overflow: hidden; }
 .radar .grade { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; position: relative; z-index: 1; }
 .radar .lead { color: rgba(255,255,255,.8); margin-top: 20px; }

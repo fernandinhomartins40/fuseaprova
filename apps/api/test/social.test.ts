@@ -55,11 +55,11 @@ describe('perfil e push', () => {
     expect(p.dominio.find((d: { slug: string }) => d.slug === 'matematica').texto).toBe('—');
     expect(p.conquistas).toHaveLength(9);
     expect(p.conquistas.find((c: { codigo: string }) => c.codigo === 'primeira_licao').obtida).toBe(true);
-    expect(p.edital.texto).toBe('em elaboração pela FAU');
+    expect(p.edital.texto).toBe('em elaboração');
     expect(p.cargo).toMatchObject({ nome: 'Agente Administrativo', area: 'administrativo' });
     const me = (await t.chamar('meObter', { cookie: a.cookie })).json();
     expect(me).toMatchObject({ nomeExibicao: expect.any(String), metaHoje: { feitas: 1, meta: 1, cumprida: true }, ofensivaHojeContou: true });
-    expect(me.concurso.sigla).toBe('PAL · FAU');
+    expect(me.concurso.sigla).toBe('PAL · PR');
   });
 
   it('chave VAPID, inscrição e remoção', async () => {
@@ -90,7 +90,7 @@ describe('perfil e push', () => {
   it('concurso com áreas para o onboarding', async () => {
     const a = await t.alunoPago();
     const c = (await t.chamar('concurso', { cookie: a.cookie })).json();
-    expect(c).toMatchObject({ sigla: 'PAL · FAU', modoEdital: false, status: 'aguardando_edital' });
+    expect(c).toMatchObject({ sigla: 'PAL · PR', modoEdital: false, status: 'aguardando_edital' });
     expect(c.areas.map((x: { area: string }) => x.area)).toContain('operacional');
     expect(c.areas.find((x: { area: string }) => x.area === 'operacional').exemplos).toContain('Motorista');
   });

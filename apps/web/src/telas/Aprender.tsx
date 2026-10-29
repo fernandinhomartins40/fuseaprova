@@ -72,7 +72,7 @@ export default function Aprender() {
     <Pagina comNav rotulo="Início">
       <CabecalhoApp nome={u.nome} id={u.id} />
       <Contadores
-        sigla={u.concurso?.sigla ?? 'PAL · FAU'}
+        sigla={u.concurso?.sigla ?? ''}
         ofensiva={u.ofensiva}
         gemas={u.gemas}
         diasParaProva={concurso.data?.diasParaProva ?? null}

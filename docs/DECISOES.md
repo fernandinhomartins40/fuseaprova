@@ -277,3 +277,13 @@ O PRD só prevê o papel `admin` (conteúdo e operação). O dono do produto pre
   
   Os pedidos não são apagados (registro fiscal, sem dados pessoais depois da exclusão).
 - **Documentos internos:** `docs/lgpd/REGISTRO_DAS_OPERACOES.md` (art. 37) e `docs/lgpd/PLANO_RESPOSTA_INCIDENTES.md` (art. 48; Resolução CD/ANPD nº 15/2024).
+
+## D27. Sem nome de banca nem de prefeitura nas telas, no site e nas lojas (29/10/2026, pedido do dono)
+- **Motivo:** em 29/10/2026 a Play Store recusou o app pela política de declarações enganosas. A descrição citava a banca e as prefeituras, o que conta como "informação governamental", e não trazia link para as fontes oficiais.
+- **Regra:** nenhum texto fixo do app, da landing, dos termos, da política, do manifesto da PWA ou das imagens das lojas cita a FAU-Unicentro, outra banca ou uma prefeitura pelo nome. O posicionamento passa a ser "app de estudos para concursos, com questões de provas anteriores".
+- **Aviso padrão (`RODAPE_LEGAL`):** "Fuse Aprova é um produto privado e independente. Não representa nenhuma entidade governamental, órgão público ou banca organizadora." Aparece nos termos (seção 11), em Sobre o concurso, na landing (rodapé e dúvidas) e na ficha das lojas.
+- **Chip de origem:** "Prova anterior · {ano}" para questão real e "Questão Fuse Aprova" para autoral, sem a banca e sem o órgão. A prova de origem completa continua no banco e no painel.
+- **Sigla do concurso:** "{3 letras do município} · {UF}" (antes, "PAL · FAU"). A tela Sobre o concurso não mostra mais a banca.
+- **O que continua com nome:** os dados do concurso que o aluno escolheu e pagou (nome, órgão, links oficiais e disciplinas como Lei Orgânica do município) vêm do banco. Eles ficam acompanhados dos links oficiais e do aviso, como pede a política do Google. O painel interno e o coletor também continuam citando a FAU.
+- **Termos:** a redação mudou só para tirar os nomes, sem alterar direitos nem preço. Por isso a versão continua `2026-10-28`, sem novo aceite.
+- **Dados de demonstração (`dev:mock`):** usam nomes fictícios ("Cidade Exemplo", "Vila Modelo"). As capturas das lojas e da landing foram geradas de novo a partir deles.
