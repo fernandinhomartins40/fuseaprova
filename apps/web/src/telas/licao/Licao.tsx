@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { GEMAS, LINHA_REVISAO_AMANHA, TEXTO_SAIR_LICAO, type Letra } from '@fuse/shared';
 import { ErroApi, mensagemDeErro } from '../../api/cliente';
@@ -39,8 +39,16 @@ type Fase = 'carregando' | 'erro' | 'dica' | 'questao' | 'fim' | 'ofensiva';
 /**
  * 05–08 Lição (`/licao/:id`), Desafio e Revisão (`/revisar/praticar`).
  * Dica da lição → questões (seleção, DICA, VERIFICAR, folha de acerto/erro) → Fim → Ofensiva.
+ *
+ * A chave pela URL remonta a tela a cada navegação: as rotas de lição e de revisão têm a mesma
+ * árvore, e sem ela o React reaproveitava a instância parada no "fim" (REVISAR ERROS não abria).
  */
 export default function Licao({ revisao = false }: { revisao?: boolean }) {
+  const { pathname, search } = useLocation();
+  return <TelaLicao key={pathname + search} revisao={revisao} />;
+}
+
+function TelaLicao({ revisao }: { revisao: boolean }) {
   const { id = '' } = useParams();
   const [busca] = useSearchParams();
   const navegar = useNavigate();
@@ -69,6 +77,7 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
 
   const disciplina = busca.get('disciplina') ?? undefined;
   const origem = busca.get('origem') ?? undefined;
+  const antecipar = busca.get('antecipar') === '1';
 
   const comecar = useCallback(async () => {
     if (!me.data) return;
@@ -77,7 +86,7 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
     try {
       const sx = await iniciarSessao(
         revisao
-          ? { tipo: 'revisao', disciplina, sessaoOrigemId: origem }
+          ? { tipo: 'revisao', disciplina, sessaoOrigemId: origem, antecipar }
           : { tipo: 'licao', licaoId: id },
         { usuarioId: me.data.id, nome: me.data.nome, vidas: me.data.vidas, gemas: me.data.gemas },
       );
@@ -92,7 +101,7 @@ export default function Licao({ revisao = false }: { revisao?: boolean }) {
       setErro(mensagemDeErro(e));
       setFase('erro');
     }
-  }, [me.data, revisao, disciplina, origem, id]);
+  }, [me.data, revisao, disciplina, origem, antecipar, id]);
 
   useEffect(() => {
     if (iniciado.current || !me.data) return;
