@@ -21,3 +21,17 @@ describe('fumaça', () => {
     expect(ini.json().questoes).toHaveLength(5);
   });
 });
+
+// App nativo (CapacitorHttp no Android): POST sem corpo chega com Content-Type de formulário.
+describe('POST sem corpo vindo do app nativo', () => {
+  it('form-urlencoded vazio vale como sem corpo; com conteúdo continua 415', async () => {
+    const a = await t.alunoPago();
+    const tr = await t.chamar('trilha', { cookie: a.cookie });
+    const url = `/api/licoes/${tr.json().atual.licaoId as string}/iniciar`;
+    const headers = { cookie: a.cookie, 'content-type': 'application/x-www-form-urlencoded' };
+    const ok = await t.app.inject({ method: 'POST', url, headers, payload: '' });
+    expect(ok.statusCode, ok.body).toBe(200);
+    const recusado = await t.app.inject({ method: 'POST', url, headers, payload: 'a=1' });
+    expect(recusado.statusCode).toBe(415);
+  });
+});

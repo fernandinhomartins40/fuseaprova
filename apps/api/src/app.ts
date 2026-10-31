@@ -15,13 +15,23 @@ import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastif
 import { sql } from 'drizzle-orm';
 import type { BancoDados } from '@fuse/db';
 import { podeEstudar, podeGerirConteudo, rngPadrao, type Rng } from '@fuse/shared';
-import { HEADER_SEGUNDO_PLANO, NOME_COOKIE_SESSAO, erroApi, instalarMensagensPtBr } from '@fuse/shared/api';
+import {
+  HEADER_SEGUNDO_PLANO,
+  NOME_COOKIE_SESSAO,
+  erroApi,
+  instalarMensagensPtBr,
+} from '@fuse/shared/api';
 import { lerConfig, type Config } from './config.js';
 import { relogioSistema, type Deps, type Relogio, type UsuarioSessao } from './contexto.js';
 import { definirCookieSessao } from './http/cookies.js';
 import { ErroHttp } from './http/erros.js';
 import { ehErroDeBanco, instalarOperacao } from './http/operacao.js';
-import { conferirRegistro, criarRegistrador, exigirConteudo, exigirSuperadmin } from './http/registrar.js';
+import {
+  conferirRegistro,
+  criarRegistrador,
+  exigirConteudo,
+  exigirSuperadmin,
+} from './http/registrar.js';
 import { criarClienteAsaasHttp, type ClienteAsaas } from './integracoes/asaas.js';
 import { criarMailerPadrao, type Mailer, type MensagemEmail } from './integracoes/email.js';
 import { rotasAdminConteudo } from './rotas/admin/conteudo.js';
@@ -94,7 +104,9 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
   const deps: Deps = {
     db: opcoes.db,
     config,
-    asaas: opcoes.asaas ?? criarClienteAsaasHttp({ baseUrl: config.asaas.baseUrl, apiKey: config.asaas.apiKey }),
+    asaas:
+      opcoes.asaas ??
+      criarClienteAsaasHttp({ baseUrl: config.asaas.baseUrl, apiKey: config.asaas.apiKey }),
     mailer: opcoes.mailer ?? criarMailerPadrao(config),
     relogio: opcoes.relogio ?? relogioSistema,
     rng: opcoes.rng ?? rngPadrao,
@@ -102,7 +114,9 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
     enviarEmail(m: MensagemEmail) {
       const p = deps.mailer
         .enviar(m)
-        .catch((e: Error) => app.log.error({ assunto: m.assunto, erro: e.message }, 'falha ao enviar e-mail'))
+        .catch((e: Error) =>
+          app.log.error({ assunto: m.assunto, erro: e.message }, 'falha ao enviar e-mail'),
+        )
         .finally(() => tarefas.delete(p));
       tarefas.add(p);
     },
@@ -115,7 +129,13 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
 
   await app.register(helmet, {
     // A API só responde JSON (e imagens de upload); a CSP da PWA fica no Caddy.
-    contentSecurityPolicy: { directives: { defaultSrc: ["'none'"], imgSrc: ["'self'", 'data:'], frameAncestors: ["'none'"] } },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'none'"],
+        imgSrc: ["'self'", 'data:'],
+        frameAncestors: ["'none'"],
+      },
+    },
     crossOriginResourcePolicy: { policy: 'same-origin' },
   });
   await app.register(cookie);
@@ -137,6 +157,19 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
       feito(new ErroHttp('validacao', 'O corpo da requisição não é um JSON válido.'), undefined);
     }
   });
+  // O HTTP nativo do app (CapacitorHttp no Android) manda POST sem corpo com
+  // Content-Type: application/x-www-form-urlencoded. Vazio vale como "sem corpo";
+  // com conteúdo continua 415, porque a API só fala JSON.
+  app.addContentTypeParser(
+    'application/x-www-form-urlencoded',
+    { parseAs: 'string' },
+    (_req, corpo, feito) => {
+      if (!String(corpo ?? '').trim()) return feito(null, undefined);
+      const erro = new Error('Content-Type não suportado.') as Error & { statusCode: number };
+      erro.statusCode = 415;
+      feito(erro, undefined);
+    },
+  );
 
   // Sessão: carrega o usuário pelo cookie em toda requisição e renova o prazo.
   // S-15: requisição automática (x-fuse-segundo-plano: 1) não renova a sessão.
@@ -147,7 +180,9 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
     const segundoPlano = req.headers[HEADER_SEGUNDO_PLANO] === '1';
     let s;
     try {
-      s = await carregarSessao(deps.db, config.segredoSessao, token, deps.relogio.agora(), { segundoPlano });
+      s = await carregarSessao(deps.db, config.segredoSessao, token, deps.relogio.agora(), {
+        segundoPlano,
+      });
     } catch (e) {
       if (ehErroDeBanco(e)) throw new ErroHttp('banco_indisponivel');
       throw e;
@@ -161,7 +196,8 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
     if (erro instanceof ErroHttp) return reply.status(erro.status).send(erro.corpo());
     const e = erro as { statusCode?: number; code?: string; message: string };
     if (e.statusCode === 429) return reply.status(429).send(erroApi('limite_requisicoes'));
-    if (e.code === 'FST_REQ_FILE_TOO_LARGE') return reply.status(400).send(erroApi('validacao', 'A imagem pode ter no máximo 2 MB.'));
+    if (e.code === 'FST_REQ_FILE_TOO_LARGE')
+      return reply.status(400).send(erroApi('validacao', 'A imagem pode ter no máximo 2 MB.'));
     if (e.statusCode && e.statusCode >= 400 && e.statusCode < 500) {
       return reply.status(e.statusCode).send(erroApi('validacao', 'Requisição inválida.'));
     }
@@ -196,7 +232,9 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
     if (!/^[0-9a-f-]{36}\.(png|jpg|webp|gif)$/.test(nome)) throw new ErroHttp('nao_encontrado');
     try {
       const dados = await readFile(join(config.arquivosDir, 'uploads', nome));
-      const tipo = { png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif' }[nome.split('.').pop()!]!;
+      const tipo = { png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif' }[
+        nome.split('.').pop()!
+      ]!;
       return reply.header('Cache-Control', 'private, max-age=86400').type(tipo).send(dados);
     } catch {
       throw new ErroHttp('nao_encontrado');
@@ -211,7 +249,12 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
     try {
       const dados = await readFile(join(config.arquivosDir, 'comprovantes', nome));
       const ext = nome.split('.').pop()!;
-      const tipo = { png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp', pdf: 'application/pdf' }[ext]!;
+      const tipo = {
+        png: 'image/png',
+        jpg: 'image/jpeg',
+        webp: 'image/webp',
+        pdf: 'application/pdf',
+      }[ext]!;
       return reply
         .header('Cache-Control', 'private, no-store')
         .header('Content-Disposition', `inline; filename="${nome}"`)
@@ -246,9 +289,26 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
 }
 
 export { lerConfig, configTeste, type Config } from './config.js';
-export { criarRelogioTeste, relogioSistema, type Relogio, type RelogioTeste, type Deps } from './contexto.js';
-export { criarAsaasFalso, criarClienteAsaasHttp, type AsaasFalso, type ClienteAsaas } from './integracoes/asaas.js';
-export { criarMailerMemoria, criarMailerSmtp, type Mailer, type MailerMemoria, type MensagemEmail } from './integracoes/email.js';
+export {
+  criarRelogioTeste,
+  relogioSistema,
+  type Relogio,
+  type RelogioTeste,
+  type Deps,
+} from './contexto.js';
+export {
+  criarAsaasFalso,
+  criarClienteAsaasHttp,
+  type AsaasFalso,
+  type ClienteAsaas,
+} from './integracoes/asaas.js';
+export {
+  criarMailerMemoria,
+  criarMailerSmtp,
+  type Mailer,
+  type MailerMemoria,
+  type MensagemEmail,
+} from './integracoes/email.js';
 export { entregarExpirados } from './servicos/simulado.js';
 export { gerarHashSenha } from './servicos/senhas.js';
 export { gerarCodigoTotp } from './servicos/totp.js';
