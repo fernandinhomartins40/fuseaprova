@@ -35,6 +35,8 @@ const SimuladoProva = lazy(() => import('../telas/simulado/SimuladoProva'));
 const Liga = lazy(() => import('../telas/Liga'));
 const Perfil = lazy(() => import('../telas/Perfil'));
 const Configuracoes = lazy(() => import('../telas/Configuracoes'));
+const Anotacoes = lazy(() => import('../telas/anotacoes/Anotacoes'));
+const AnotacaoDetalhe = lazy(() => import('../telas/anotacoes/AnotacaoDetalhe'));
 const NaoEncontrada = lazy(() => import('../telas/NaoEncontrada'));
 // Cada alvo só leva as suas telas (D20): o app nativo não tem cadastro, pagamento nem
 // painéis da equipe; o site não tem os recursos nativos.
@@ -242,6 +244,22 @@ export function Rotas() {
           element={
             <Guarda nivel="login">
               <Configuracoes />
+            </Guarda>
+          }
+        />
+        <Route
+          path="/anotacoes"
+          element={
+            <Guarda nivel="acesso">
+              <Anotacoes />
+            </Guarda>
+          }
+        />
+        <Route
+          path="/anotacoes/:id"
+          element={
+            <Guarda nivel="acesso">
+              <AnotacaoDetalhe />
             </Guarda>
           }
         />

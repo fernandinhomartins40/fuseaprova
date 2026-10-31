@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { GEMAS, LINHA_REVISAO_AMANHA, TEXTO_SAIR_LICAO, type Letra } from '@fuse/shared';
+import { LINHA_REVISAO_AMANHA, TEXTO_SAIR_LICAO, type Letra } from '@fuse/shared';
 import { ErroApi, mensagemDeErro } from '../../api/cliente';
 import { CHAVES, useMe } from '../../api/consultas';
 import { baixarPacote } from '../../offline/pacote';
@@ -12,6 +12,7 @@ import {
   type Sessao,
 } from '../../offline/motor';
 import {
+  AulaTema,
   BarraProgresso,
   Botao3D,
   Capi,
@@ -20,13 +21,15 @@ import {
   ErroTela,
   FolhaFeedback,
   GrupoAlternativas,
-  IconeCheio,
   IconeTraco,
   Imagem,
   Markdown,
+  Modal,
   Pagina,
   useToast,
 } from '../../ui';
+import { TRAVA_CONTINUAR_MS } from '../../ui/FolhaFeedback';
+import { EditorAnotacao } from '../anotacoes/EditorAnotacao';
 import { ICONE_DISCIPLINA, NOME_CURTO_DISCIPLINA } from '../comum';
 import { FimLicao } from './FimLicao';
 import { TelaOfensiva } from './Ofensiva';
@@ -38,7 +41,8 @@ type Fase = 'carregando' | 'erro' | 'dica' | 'questao' | 'fim' | 'ofensiva';
 
 /**
  * 05–08 Lição (`/licao/:id`), Desafio e Revisão (`/revisar/praticar`).
- * Dica da lição → questões (seleção, DICA, VERIFICAR, folha de acerto/erro) → Fim → Ofensiva.
+ * Dica da lição → questões (seleção, ENTENDA O TEMA, VERIFICAR, folha de acerto/erro) → Fim →
+ * Ofensiva. D28: "Entenda o tema" é grátis (mini-aula sem a resposta) e a correção é local.
  *
  * A chave pela URL remonta a tela a cada navegação: as rotas de lição e de revisão têm a mesma
  * árvore, e sem ela o React reaproveitava a instância parada no "fim" (REVISAR ERROS não abria).
@@ -65,14 +69,12 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
   const [selecionada, setSelecionada] = useState<Letra | null>(null);
   const [resposta, setResposta] = useState<RespostaExibida | null>(null);
   const [verificando, setVerificando] = useState(false);
-  const [gemas, setGemas] = useState(0);
-  const [dicas, setDicas] = useState<Record<string, string>>({});
-  const [confirmarDica, setConfirmarDica] = useState(false);
-  const [pedindoDica, setPedindoDica] = useState(false);
+  const [aulaAberta, setAulaAberta] = useState(false);
   const [sairAberto, setSairAberto] = useState(false);
   const [reportAberto, setReportAberto] = useState(false);
   const [fim, setFim] = useState<FimSessao | null>(null);
   const inicioQuestao = useRef(Date.now());
+  const respondidaEm = useRef(0);
   const iniciado = useRef(false);
 
   const disciplina = busca.get('disciplina') ?? undefined;
@@ -91,7 +93,6 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
         { usuarioId: me.data.id, nome: me.data.nome, vidas: me.data.vidas, gemas: me.data.gemas },
       );
       setSessao(sx);
-      setGemas(sx.gemas);
       setIndice(0);
       setSelecionada(null);
       setResposta(null);
@@ -127,7 +128,6 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
 
   const questao = sessao?.questoes[indice] ?? null;
   const total = sessao?.questoes.length ?? 0;
-  const ehDesafio = sessao?.tipo === 'desafio';
   const sons = me.data?.sons ?? true;
 
   async function verificar() {
@@ -139,9 +139,22 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
         selecionada,
         Math.min(3_600_000, Date.now() - inicioQuestao.current),
       );
+      respondidaEm.current = Date.now();
       setResposta(r);
       if (r.acertou) somAcerto(sons);
       else somErro(sons);
+      // Correção local: a API confirma em seguida e, se discordar, vale o resultado dela.
+      r.confirmacao
+        ?.then((srv) => {
+          setResposta((atual) =>
+            atual !== r
+              ? atual
+              : srv.acertou !== r.acertou || srv.gabarito !== r.gabarito
+                ? srv
+                : { ...r, xpGanho: srv.xpGanho },
+          );
+        })
+        .catch((e) => toast(mensagemDeErro(e), 'erro'));
     } catch (e) {
       toast(mensagemDeErro(e), 'erro');
     } finally {
@@ -184,6 +197,8 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
   }
 
   function continuar() {
+    // Toque duplo no VERIFICAR (mesmo lugar do botão da folha) não pula a correção.
+    if (Date.now() - respondidaEm.current < TRAVA_CONTINUAR_MS) return;
     if (indice + 1 >= total) {
       void concluir();
       return;
@@ -193,22 +208,6 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
     setResposta(null);
     inicioQuestao.current = Date.now();
     window.scrollTo(0, 0);
-  }
-
-  async function usarDica() {
-    if (!sessao || !questao) return;
-    setPedindoDica(true);
-    try {
-      const r = await sessao.pedirDica(questao.id);
-      setDicas((d) => ({ ...d, [questao.id]: r.dica }));
-      setGemas(r.gemas);
-      void qc.invalidateQueries({ queryKey: CHAVES.me });
-    } catch (e) {
-      toast(mensagemDeErro(e), 'erro');
-    } finally {
-      setPedindoDica(false);
-      setConfirmarDica(false);
-    }
   }
 
   function sairDaLicao() {
@@ -340,9 +339,7 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
   }
 
   if (!questao) return <Carregando />;
-  const dicaDaQuestao = dicas[questao.id];
-  const podeDica = !ehDesafio && questao.temDica;
-  const semGemas = gemas < GEMAS.CUSTO_DICA;
+  const aula = questao.aula;
 
   return (
     <Pagina comRodapeFixo className={s.pagina}>
@@ -387,14 +384,15 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
         </div>
       </div>
 
-      {dicaDaQuestao ? (
-        <div className={s.dicaQuestao} role="status">
-          <Imagem nome="icone-dica" tamanho={26} />
-          <p>
-            <strong>Dica: </strong>
-            {dicaDaQuestao}
-          </p>
-        </div>
+      {aula && !resposta ? (
+        <button type="button" className={s.entendaTema} onClick={() => setAulaAberta(true)}>
+          <Imagem nome="icone-dica" tamanho={30} />
+          <span className={s.entendaTextos}>
+            <span className={s.entendaTitulo}>Não lembra do assunto? Entenda o tema</span>
+            <span className={s.entendaSub}>Explicação rápida com exemplos, sem dar a resposta</span>
+          </span>
+          <IconeTraco nome="chevron" tamanho={20} />
+        </button>
       ) : null}
 
       <GrupoAlternativas
@@ -403,26 +401,12 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
         correcao={resposta ? { gabarito: resposta.gabarito, marcada: selecionada! } : null}
         onSelecionar={(l) => !resposta && setSelecionada(l)}
         onConfirmar={resposta ? continuar : verificar}
-        atalhosGlobais={!sairAberto && !reportAberto && !confirmarDica}
+        atalhosGlobais={!sairAberto && !reportAberto && !aulaAberta}
         rotulo="Alternativas da questão"
       />
 
       {!resposta ? (
         <div className={s.rodape}>
-          {podeDica ? (
-            <Botao3D
-              variante="secundario"
-              disabled={!!dicaDaQuestao || semGemas || sx.modo === 'offline'}
-              onClick={() => setConfirmarDica(true)}
-              iconeEsquerda={<Imagem nome="icone-dica" tamanho={24} />}
-            >
-              {semGemas && !dicaDaQuestao
-                ? 'Sem gemas'
-                : dicaDaQuestao
-                  ? 'Dica usada'
-                  : `Ver dica · ${GEMAS.CUSTO_DICA} gemas`}
-            </Botao3D>
-          ) : null}
           <Botao3D
             disabled={!selecionada}
             carregando={verificando}
@@ -440,6 +424,15 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
           combo={resposta.acertou && resposta.comboVisivel ? resposta.combo : null}
           explicacao={resposta.explicacao}
           dicaBolso={resposta.acertou ? null : resposta.dicaBolso}
+          aula={aula}
+          anotacao={
+            <EditorAnotacao
+              key={questao.id}
+              questaoId={questao.id}
+              offline={sx.modo === 'offline'}
+              antesDeSalvar={() => sx.confirmar(questao.id)}
+            />
+          }
           linhaRevisao={!resposta.acertou && resposta.voltaNaRevisao ? LINHA_REVISAO_AMANHA : null}
           textoBotao={resposta.acertou ? 'CONTINUAR' : 'ENTENDI'}
           onContinuar={continuar}
@@ -458,19 +451,27 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
         />
       )}
 
-      <Confirmacao
-        aberto={confirmarDica}
-        titulo="Usar uma dica?"
-        texto={`A dica custa ${GEMAS.CUSTO_DICA} gemas e não elimina alternativas. Você tem ${gemas} gemas.`}
-        textoConfirmar={`USAR DICA (−${GEMAS.CUSTO_DICA})`}
-        textoCancelar="AGORA NÃO"
-        varianteConfirmar="azul"
-        confirmarPrincipal
-        carregando={pedindoDica}
-        onConfirmar={() => void usarDica()}
-        onCancelar={() => setConfirmarDica(false)}
-        topo={<IconeCheio nome="gema" tamanho={48} />}
-      />
+      {aula ? (
+        <Modal
+          aberto={aulaAberta}
+          titulo="Entenda o tema"
+          onFechar={() => setAulaAberta(false)}
+          formato="folha"
+          rodape={
+            <Botao3D data-autofoco onClick={() => setAulaAberta(false)}>
+              VOLTAR PARA A QUESTÃO
+            </Botao3D>
+          }
+        >
+          <div className={s.aulaModal}>
+            <AulaTema aula={aula} />
+            <p className={s.aulaNota}>
+              A dica ensina o assunto e não entrega a resposta. Depois de responder, ela fica na
+              aba "Entenda o tema" da correção.
+            </p>
+          </div>
+        </Modal>
+      ) : null}
       <ReportarProblema
         aberto={reportAberto}
         questaoId={questao.id}

@@ -12,6 +12,19 @@
   animation: subir var(--fa-dur-folha) ease-out both;
   max-height: 78dvh;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+/* Tela cheia: a explicação e a aula ocupam a tela toda, com rolagem. */
+.cheia {
+  top: 0;
+  max-height: none;
+  height: 100dvh;
+  border-radius: 0;
+  padding-top: calc(14px + env(safe-area-inset-top));
+}
+.cheia .cartao {
+  flex: 1;
 }
 @keyframes subir {
   from {
@@ -98,31 +111,98 @@
 .mascote {
   flex: none;
   margin-top: -6px;
-  margin-right: -6px;
 }
-.mascoteRecolhido {
+.controles {
+  display: flex;
+  gap: 4px;
   flex: none;
-  margin-top: -2px;
 }
-.alternar {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
-  padding: 8px 4px;
+.controle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+}
+.acerto .controle {
+  color: var(--fa-green-shade);
+  border-color: var(--fa-green-line);
+}
+.erro .controle {
+  color: var(--fa-red-shade);
+  border-color: var(--fa-red-line);
+}
+.atalhos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 2px;
+}
+.atalho {
+  padding: 8px 2px;
   min-height: 44px;
   border: 0;
   background: none;
   font: inherit;
   font-size: 14.5px;
   font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
   cursor: pointer;
 }
-.acerto .alternar {
+.acerto .atalho {
   color: var(--fa-green-shade);
 }
-.erro .alternar {
+.erro .atalho {
   color: var(--fa-red-shade);
+}
+.abas {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.aba,
+.abaAtiva {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  min-height: 40px;
+  padding: 6px 14px;
+  border-radius: var(--fa-r-pill);
+  border: 1.5px solid var(--fa-line);
+  background: rgba(255, 255, 255, 0.75);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--fa-ink-2);
+  cursor: pointer;
+}
+.abaAtiva {
+  background: var(--fa-surface);
+  color: var(--fa-petroleo);
+  border-color: var(--fa-petroleo);
+}
+.painel {
+  padding-top: 4px;
+}
+.cartaoBranco {
+  margin-top: 6px;
+  padding: 14px;
+  border-radius: var(--fa-r-lg);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+}
+.acoes {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  padding-top: 8px;
 }
 .chevron,
 .chevronAberto {
@@ -131,10 +211,10 @@
   transition: transform 160ms ease;
 }
 .chevron {
-  transform: rotate(90deg);
+  transform: rotate(180deg);
 }
 .chevronAberto {
-  transform: rotate(-90deg);
+  transform: rotate(0deg);
 }
 @media (prefers-reduced-motion: reduce) {
   .chevron,
@@ -175,4 +255,10 @@
   display: flex;
   justify-content: center;
   margin-top: 4px;
+}
+.acerto .acoes {
+  background: var(--fa-green-soft);
+}
+.erro .acoes {
+  background: var(--fa-red-soft);
 }

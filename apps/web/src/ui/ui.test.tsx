@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import type { Letra } from '@fuse/shared';
 import { violacoesSerias } from '../test/axe';
+import { TRAVA_CONTINUAR_MS } from './FolhaFeedback';
 import {
   BannerUnidade,
   BarraProgresso,
@@ -136,8 +137,11 @@ describe('Alternativa / GrupoAlternativas', () => {
   });
 });
 
+const esperarTrava = () => new Promise((ok) => setTimeout(ok, TRAVA_CONTINUAR_MS + 50));
+
 describe('FolhaFeedback', () => {
   it('anuncia o acerto com +XP e COMBO, e o erro com dica de bolso e linha de revisão', async () => {
+    localStorage.removeItem('fa:folha-detalhe-aberto');
     const cont = vi.fn();
     const { rerender, container } = render(
       <FolhaFeedback
@@ -154,6 +158,10 @@ describe('FolhaFeedback', () => {
     expect(screen.getByText('+10 XP')).toBeInTheDocument();
     expect(screen.getByText('COMBO × 3')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'CONTINUAR' })).toHaveFocus();
+    // Toque logo que a folha sobe (toque duplo no VERIFICAR) não avança.
+    await userEvent.click(screen.getByRole('button', { name: 'CONTINUAR' }));
+    expect(cont).not.toHaveBeenCalled();
+    await esperarTrava();
     await userEvent.click(screen.getByRole('button', { name: 'CONTINUAR' }));
     expect(cont).toHaveBeenCalled();
     expect(await violacoesSerias(container)).toEqual([]);
@@ -173,7 +181,7 @@ describe('FolhaFeedback', () => {
     expect(screen.getByText('Essa questão volta na sua revisão amanhã')).toBeInTheDocument();
   });
 
-  it('explicação e dica de bolso ficam recolhidas, o botão continua à vista e a escolha é lembrada', async () => {
+  it('abre com a explicação, recolhe para ver a questão, vai para tela cheia e lembra a escolha', async () => {
     localStorage.removeItem('fa:folha-detalhe-aberto');
     const cont = vi.fn();
     const props = {
@@ -184,25 +192,64 @@ describe('FolhaFeedback', () => {
       textoBotao: 'ENTENDI',
       onContinuar: cont,
     };
-    const { unmount } = render(<FolhaFeedback {...props} />);
-    const alternar = screen.getByRole('button', { name: /Ver explicação e dica de bolso/ });
-    expect(alternar).toHaveAttribute('aria-expanded', 'false');
-    expect(screen.getByText('Explicação longa.')).not.toBeVisible();
-    expect(screen.getByText('Troque por masculino.')).not.toBeVisible();
-    expect(screen.getByRole('button', { name: 'ENTENDI' })).toBeVisible();
-
-    await userEvent.click(alternar);
-    expect(screen.getByRole('button', { name: 'Ocultar explicação' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    );
+    const { unmount, container } = render(<FolhaFeedback {...props} />);
     expect(screen.getByText('Explicação longa.')).toBeVisible();
     expect(screen.getByText('Troque por masculino.')).toBeVisible();
+    expect(await violacoesSerias(container)).toEqual([]);
+
+    const recolher = screen.getByRole('button', { name: 'Recolher explicação' });
+    expect(recolher).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.click(recolher);
+    expect(screen.getByText('Explicação longa.')).not.toBeVisible();
+    expect(screen.getByRole('button', { name: 'ENTENDI' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Abrir explicação' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
 
     unmount();
     render(<FolhaFeedback {...props} />);
+    expect(screen.getByText('Explicação longa.')).not.toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: /Ver explicação e dica de bolso/ }));
     expect(screen.getByText('Explicação longa.')).toBeVisible();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Ver em tela cheia' }));
+    expect(screen.getByRole('region', { name: 'Resultado da resposta' }).className).toMatch(/cheia/);
+    await userEvent.click(screen.getByRole('button', { name: 'Sair da tela cheia' }));
+    expect(screen.getByRole('region', { name: 'Resultado da resposta' }).className).not.toMatch(
+      /cheia/,
+    );
+    expect(cont).not.toHaveBeenCalled();
     localStorage.removeItem('fa:folha-detalhe-aberto');
+  });
+
+  it('abas: explicação, Entenda o tema (a mesma aula de antes) e Anotar', async () => {
+    localStorage.removeItem('fa:folha-detalhe-aberto');
+    render(
+      <FolhaFeedback
+        tipo="acerto"
+        titulo="Mandou bem!"
+        explicacao="Porque sim."
+        aula={{
+          titulo: 'Crase',
+          texto: 'Crase é **a + a**.',
+          exemplos: ['Vou à feira.', 'Fui à escola.'],
+          macete: 'Troque por "ao".',
+          atencao: 'Não há crase antes de verbo.',
+        }}
+        anotacao={<p>Editor da anotação</p>}
+        textoBotao="CONTINUAR"
+        onContinuar={() => undefined}
+      />,
+    );
+    expect(screen.getByRole('tab', { name: 'Resposta' })).toHaveAttribute('aria-selected', 'true');
+    await userEvent.click(screen.getByRole('tab', { name: /Entenda o tema/ }));
+    expect(screen.getByRole('heading', { name: 'Crase' })).toBeInTheDocument();
+    expect(screen.getByText('Vou à feira.')).toBeInTheDocument();
+    expect(screen.getByText('Macete')).toBeInTheDocument();
+    expect(screen.getByText('Cuidado com a pegadinha')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: /Anotar/ }));
+    expect(screen.getByText('Editor da anotação')).toBeInTheDocument();
   });
 });
 

@@ -19,6 +19,8 @@ export const CHAVES = {
   meusConcursos: ['meus-concursos'] as const,
   concursoPorId: (id: string) => ['concurso', id] as const,
   configPublica: ['config', 'publica'] as const,
+  anotacoes: ['anotacoes'] as const,
+  anotacao: (questaoId: string) => ['anotacoes', questaoId] as const,
 };
 
 export function criarQueryClient() {

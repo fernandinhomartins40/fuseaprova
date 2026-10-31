@@ -4,7 +4,9 @@
  */
 import { useState } from 'react';
 import { tituloErro, type Letra, type OrigemQuestao } from '@fuse/shared';
+import type { AulaQuestao } from '@fuse/shared/api';
 import { juntarClasses } from '../util';
+import { AulaTema } from '../../ui/AulaTema';
 import { Markdown } from '../../ui/Markdown';
 import s from './PreviaPergunta.module.css';
 
@@ -20,6 +22,8 @@ export interface DadosPrevia {
   explicacao: string | null;
   dicaBolso: string | null;
   dica: string | null;
+  /** D28: o que o aluno vê em "Entenda o tema" (da questão ou do assunto). */
+  aula?: AulaQuestao | null;
 }
 
 function Capi() {
@@ -100,9 +104,15 @@ export function PreviaPergunta({ dados }: { dados: DadosPrevia }) {
         </div>
 
         {verDica ? (
-          <div className={s.dica} role="note">
-            <strong>Dica:</strong> {dados.dica?.trim() || 'Sem dica cadastrada.'}
-          </div>
+          dados.aula ? (
+            <div className={s.dica} role="note">
+              <AulaTema aula={dados.aula} compacta />
+            </div>
+          ) : (
+            <div className={s.dica} role="note">
+              <strong>Entenda o tema:</strong> sem aula própria nem dica do assunto.
+            </div>
+          )
         ) : null}
 
         <div role="radiogroup" aria-label="Alternativas" className={s.alternativas}>
@@ -160,7 +170,7 @@ export function PreviaPergunta({ dados }: { dados: DadosPrevia }) {
       ) : (
         <div className={s.rodape}>
           <button type="button" className={s.botaoDica} onClick={() => setVerDica((v) => !v)}>
-            DICA
+            ENTENDA O TEMA
           </button>
           <button
             type="button"

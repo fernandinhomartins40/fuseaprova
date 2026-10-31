@@ -139,6 +139,17 @@ export default function Revisar() {
               </li>
             ))}
           </ul>
+          <ul className={s.lista}>
+            <li>
+              <LinhaLista
+                icone={<IconeTraco nome="lapis" tamanho={28} />}
+                titulo="Minhas anotações"
+                subtitulo="Suas notas nas questões, separadas por tema"
+                onClick={() => navegar('/anotacoes')}
+                direita={<IconeTraco nome="chevron" tamanho={20} />}
+              />
+            </li>
+          </ul>
           <section className={s.regra}>
             <Imagem nome="icone-relogio" tamanho={40} />
             <div>

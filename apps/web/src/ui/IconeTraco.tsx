@@ -60,6 +60,10 @@ const CAMINHOS = {
     <path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 10-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 105.7 5.7l1-1" />
   ),
   marcador: <path d="M6 3h12v18l-6-4-6 4z" />,
+  expandir: <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />,
+  recolher: <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" />,
+  lapis: <path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" />,
+  busca: <path d="M11 18a7 7 0 100-14 7 7 0 000 14zM20 20l-4-4" />,
   wifiOff: (
     <path d="M3 3l18 18M8.5 16.4a5 5 0 017 0M5 12.9a10 10 0 015.4-2.8M12 20h.01M16.7 10.6A10 10 0 0119 12.9M2 9.3A15 15 0 018 6.2M12 5a15 15 0 0110 4.3" />
   ),

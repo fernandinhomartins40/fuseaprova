@@ -1,0 +1,130 @@
+.aula {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+.cab {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.capi {
+  flex: none;
+}
+.rotulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fa-gold-ink);
+}
+.titulo {
+  font-family: var(--fa-font-display);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--fa-petroleo);
+}
+.compacta .titulo {
+  font-size: 17px;
+}
+.conceito {
+  padding: 12px 14px;
+  border-radius: var(--fa-r-lg);
+  background: var(--fa-turquesa-soft);
+  border: 1.5px solid var(--fa-turquesa-line);
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--fa-ink);
+}
+.conceito strong {
+  color: var(--fa-petroleo);
+  font-weight: 900;
+}
+.secao {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.secaoTitulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--fa-ink-2);
+}
+.exemplos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.exemplo {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-radius: var(--fa-r-lg);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--fa-ink);
+}
+.numero {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--fa-blue-soft);
+  border: 1.5px solid var(--fa-blue-line);
+  color: var(--fa-blue-shade);
+  font-family: var(--fa-font-display);
+  font-size: 14px;
+  font-weight: 800;
+}
+.macete,
+.atencao {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: var(--fa-r-lg);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--fa-ink);
+}
+.macete strong,
+.atencao strong {
+  display: block;
+  font-weight: 900;
+  margin-bottom: 2px;
+}
+.macete {
+  background: var(--fa-gold-soft);
+  border: 1.5px solid var(--fa-gold);
+}
+.macete strong {
+  color: var(--fa-gold-ink);
+}
+.atencao {
+  background: var(--fa-laranja-soft);
+  border: 1.5px solid var(--fa-laranja-line);
+}
+.atencao strong,
+.atencao svg {
+  color: var(--fa-laranja-texto);
+  flex: none;
+}

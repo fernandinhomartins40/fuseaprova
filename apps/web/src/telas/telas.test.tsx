@@ -10,6 +10,7 @@ import { limparTudo } from '../offline/fila';
 import { ligarApiSimulada } from '../test/apiSimulada';
 import { violacoesSerias } from '../test/axe';
 import { ProvedorToast } from '../ui';
+import { TRAVA_CONTINUAR_MS } from '../ui/FolhaFeedback';
 
 let local = '';
 function Espiao() {
@@ -177,6 +178,8 @@ describe('telas do aluno contra a API simulada', () => {
       await userEvent.keyboard('{Enter}');
       const folha = await screen.findByRole('region', { name: 'Resultado da resposta' });
       expect(folha).toHaveTextContent(/\S/);
+      // A folha ignora o toque logo que sobe (toque duplo no VERIFICAR não pula a correção).
+      await new Promise((ok) => setTimeout(ok, TRAVA_CONTINUAR_MS + 50));
       if (screen.queryByRole('button', { name: 'ENTENDI' })) {
         erros += 1;
         expect(screen.getByText('Dica de bolso')).toBeInTheDocument();
@@ -194,7 +197,39 @@ describe('telas do aluno contra a API simulada', () => {
       expect(screen.getByRole('button', { name: `REVISAR ERROS (${erros})` })).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'CONTINUAR' }));
     expect(await screen.findByText(/de/, { selector: 'h1' })).toHaveTextContent('ofensiva!');
-  }, 20000);
+  }, 40000);
+
+  it('Entenda o tema antes de responder, anotar na correção e achar em Minhas anotações', async () => {
+    const api = ligarApiSimulada();
+    await api.cenario('aluno');
+    const { unmount } = abrir('/aprender');
+    await userEvent.click(
+      await screen.findByRole('button', { name: /Continuar treino|Começar treino/ }),
+    );
+    await userEvent.click(await screen.findByRole('button', { name: 'ENTENDI, VAMOS LÁ' }));
+    await userEvent.click(await screen.findByRole('button', { name: /Entenda o tema/ }));
+    const aula = await screen.findByRole('dialog', { name: 'Entenda o tema' });
+    expect(within(aula).getByText(/não entrega a resposta/)).toBeInTheDocument();
+    await userEvent.click(within(aula).getByRole('button', { name: 'VOLTAR PARA A QUESTÃO' }));
+
+    await userEvent.keyboard('1');
+    await userEvent.click(screen.getByRole('button', { name: 'VERIFICAR' }));
+    await screen.findByRole('region', { name: 'Resultado da resposta' });
+    expect(screen.getByRole('tab', { name: /Entenda o tema/ })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('tab', { name: /Anotar/ }));
+    const campo = await screen.findByLabelText(/Minha anotação/);
+    await waitFor(() => expect(campo).toBeEnabled());
+    await userEvent.type(campo, 'Lembrar da regra');
+    await userEvent.click(screen.getByRole('button', { name: 'SALVAR ANOTAÇÃO' }));
+    expect(await screen.findByText('Anotação salva.')).toBeInTheDocument();
+    unmount();
+
+    abrir('/anotacoes');
+    expect(await screen.findByText('Lembrar da regra')).toBeInTheDocument();
+    await userEvent.click(screen.getByText('Lembrar da regra'));
+    expect(await screen.findByText('Explicação da resposta')).toBeInTheDocument();
+    expect(screen.getByText('Correta')).toBeInTheDocument();
+  }, 30000);
 
   it('sair da lição pede confirmação', async () => {
     const api = ligarApiSimulada();

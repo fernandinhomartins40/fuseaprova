@@ -127,6 +127,17 @@ export default function Perfil() {
             </ul>
           </section>
 
+          <button type="button" className={s.edital} onClick={() => navegar('/anotacoes')}>
+            <span className={s.editalIcone}>
+              <IconeTraco nome="lapis" tamanho={30} />
+            </span>
+            <span className={s.editalTextos}>
+              <span className={s.editalTitulo}>Minhas anotações</span>
+              <span className={s.editalStatus}>Suas notas nas questões, separadas por tema</span>
+            </span>
+            <IconeTraco nome="chevron" tamanho={22} />
+          </button>
+
           <TituloSecao>Conquistas</TituloSecao>
           <ul className={s.conquistas}>
             {est.data.conquistas.map((c) => (

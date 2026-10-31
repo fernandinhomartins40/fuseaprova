@@ -443,6 +443,7 @@ function ModalPrevia({ id, aoFechar }: { id: string | null; aoFechar: () => void
             explicacao: previa.data.explicacao,
             dicaBolso: previa.data.dicaBolso,
             dica: previa.data.dica,
+            aula: previa.data.questao.aula,
           }}
         />
       )}

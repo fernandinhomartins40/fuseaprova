@@ -284,8 +284,22 @@ function paraAluno(q: QuestaoMock, revisao = false, id = q.id): QuestaoParaAluno
     enunciado: q.enunciado,
     alternativas: q.alternativas.map((texto, i) => ({ letra: 'ABCDE'[i] as Letra, texto })),
     temDica: true,
+    aula: {
+      titulo: q.assunto,
+      texto: q.dica,
+      exemplos: [q.dicaBolso],
+      macete: null,
+      atencao: null,
+    },
     revisao,
   };
+}
+
+/** D28: anotações do mock, por id da questão. */
+const anotacoesMock = new Map<string, { texto: string; criadoEm: string; atualizadoEm: string }>();
+function anotacaoMock(questaoId: string) {
+  const a = anotacoesMock.get(questaoId);
+  return a ? { questaoId, ...a } : null;
 }
 
 function todasLicoes() {
@@ -518,7 +532,7 @@ function aplicarCenario(nome: string) {
 type Ctx = { params: Record<string, string>; corpo: unknown; query: URLSearchParams };
 type Handler = (c: Ctx) => unknown | Promise<unknown>;
 
-function iniciarSessaoEstudo(
+async function iniciarSessaoEstudo(
   tipo: SessaoEstudo['tipo'],
   licaoId: string | null,
   questoes: QuestaoMock[],
@@ -537,6 +551,16 @@ function iniciarSessaoEstudo(
   };
   estado.sessoes.set(s.id, s);
   const pend = new Set(pendentesRevisao());
+  // D28: gabarito cifrado para a correção instantânea, como na API.
+  const chave = gerarChaveOffline();
+  const cifrados: Record<string, string> = {};
+  for (const q of questoes) {
+    cifrados[q.id] = await cifrarTexto(
+      chave,
+      q.id,
+      JSON.stringify({ gabarito: q.gabarito, explicacao: q.explicacao, dicaBolso: q.dicaBolso, dica: q.dica }),
+    );
+  }
   return {
     sessaoId: s.id,
     tipo,
@@ -555,6 +579,7 @@ function iniciarSessaoEstudo(
     proximaVidaEm: me().proximaVidaEm,
     gemas: estado.usuario.gemas,
     iniciadaEm: s.iniciadaEm.toISOString(),
+    correcaoLocal: { chave, cifrados },
   };
 }
 
@@ -958,6 +983,42 @@ const H: Partial<Record<NomeRota, Handler>> = {
     if (estado.usuario.gemas < 5) throw new Falha(409, 'gemas_insuficientes');
     estado.usuario.gemas -= 5;
     return { dica: q.dica, gemas: estado.usuario.gemas };
+  },
+  anotacaoObter: ({ params }) => ({ anotacao: anotacaoMock(params.id!) }),
+  anotacaoSalvar: ({ params, corpo }) => {
+    const texto = (corpo as { texto: string }).texto;
+    const antes = anotacoesMock.get(params.id!);
+    const quando = agora().toISOString();
+    anotacoesMock.set(params.id!, { texto, criadoEm: antes?.criadoEm ?? quando, atualizadoEm: quando });
+    return { anotacao: anotacaoMock(params.id!) };
+  },
+  anotacaoExcluir: ({ params }) => {
+    anotacoesMock.delete(params.id!);
+    return null;
+  },
+  anotacoes: () => ({
+    anotacoes: [...anotacoesMock.keys()].flatMap((id) => {
+      const q = questaoPorId(id);
+      if (!q) return [];
+      return [
+        {
+          ...anotacaoMock(id)!,
+          disciplina: DISCIPLINAS[q.disciplina],
+          assunto: { id: q.assuntoId, nome: q.assunto },
+          resumo: q.enunciado.slice(0, 160),
+        },
+      ];
+    }),
+  }),
+  anotacaoDetalhe: ({ params }) => {
+    const q = questaoPorId(params.id!);
+    const a = anotacaoMock(params.id!);
+    if (!q || !a) throw new Falha(404, 'nao_encontrado');
+    return {
+      anotacao: a,
+      questao: paraAluno(q),
+      correcao: { gabarito: q.gabarito, explicacao: q.explicacao, dicaBolso: q.dicaBolso },
+    };
   },
   sessaoConcluir: ({ params }) => {
     const s = estado.sessoes.get(params.id!);

@@ -34,3 +34,4 @@ export {
   LinhaLista,
 } from './Layout';
 export { Markdown } from './Markdown';
+export { AulaTema } from './AulaTema';

@@ -466,3 +466,54 @@
   font-size: 16.5px;
   color: var(--fa-petroleo);
 }
+
+/* ---- D28: Entenda o tema ---- */
+.entendaTema {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: var(--fa-r-lg);
+  border: 1.5px solid var(--fa-gold);
+  border-bottom-width: 4px;
+  background: var(--fa-gold-soft);
+  font: inherit;
+  text-align: left;
+  color: var(--fa-ink);
+  cursor: pointer;
+}
+.entendaTema:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+.entendaTextos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.entendaTitulo {
+  font-size: 15.5px;
+  font-weight: 900;
+  color: var(--fa-gold-ink);
+}
+.entendaSub {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+}
+.aulaModal {
+  max-height: 62dvh;
+  overflow-y: auto;
+  padding: 2px 2px 8px;
+}
+.aulaNota {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fa-muted);
+  text-align: center;
+}

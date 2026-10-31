@@ -12,7 +12,7 @@ import {
   type OrigemQuestao,
   type StatusQuestao,
 } from '@fuse/shared';
-import type { QuestaoAdmin, QuestaoEntrada } from '@fuse/shared/api';
+import type { AulaQuestao, QuestaoAdmin, QuestaoEntrada } from '@fuse/shared/api';
 import { api, camposDoErro, enviarImagem, mensagemDeErro } from '../api';
 import { useAssuntos, useDisciplinas } from '../consultas';
 import { PreviaPergunta } from '../componentes/PreviaPergunta';
@@ -56,6 +56,12 @@ export interface FormQuestao {
   dica: string;
   explicacao: string;
   dicaBolso: string;
+  /** D28: mini-aula; exemplos um por linha. Título e texto vazios = sem aula própria. */
+  aulaTitulo: string;
+  aulaTexto: string;
+  aulaExemplos: string;
+  aulaMacete: string;
+  aulaAtencao: string;
   status: StatusQuestao;
   anuladaMotivo: string;
   revisada: boolean;
@@ -76,6 +82,11 @@ export const FORM_VAZIO: FormQuestao = {
   dica: '',
   explicacao: '',
   dicaBolso: '',
+  aulaTitulo: '',
+  aulaTexto: '',
+  aulaExemplos: '',
+  aulaMacete: '',
+  aulaAtencao: '',
   status: 'rascunho',
   anuladaMotivo: '',
   revisada: false,
@@ -97,6 +108,11 @@ export function formDaQuestao(q: QuestaoAdmin): FormQuestao {
     dica: q.dica ?? '',
     explicacao: q.explicacao ?? '',
     dicaBolso: q.dicaBolso ?? '',
+    aulaTitulo: q.aula?.titulo ?? '',
+    aulaTexto: q.aula?.texto ?? '',
+    aulaExemplos: (q.aula?.exemplos ?? []).join('\n'),
+    aulaMacete: q.aula?.macete ?? '',
+    aulaAtencao: q.aula?.atencao ?? '',
     status: q.status,
     anuladaMotivo: q.anuladaMotivo ?? '',
     revisada: false,
@@ -119,9 +135,27 @@ export function corpoDoForm(f: FormQuestao): QuestaoEntrada {
     dica: f.dica,
     explicacao: f.explicacao,
     dicaBolso: f.dicaBolso,
+    aula: aulaDoForm(f),
     status: f.status,
     anuladaMotivo: f.anuladaMotivo,
     revisada: f.revisada,
+  };
+}
+
+/** D28: a aula do formulário (null se título e texto estão vazios). */
+export function aulaDoForm(f: FormQuestao): AulaQuestao | null {
+  const titulo = f.aulaTitulo.trim();
+  const texto = f.aulaTexto.trim();
+  if (!titulo && !texto) return null;
+  return {
+    titulo,
+    texto,
+    exemplos: f.aulaExemplos
+      .split('\n')
+      .map((x) => x.trim())
+      .filter(Boolean),
+    macete: f.aulaMacete.trim() || null,
+    atencao: f.aulaAtencao.trim() || null,
   };
 }
 
@@ -528,6 +562,39 @@ function FormularioQuestao({ questao }: { questao: QuestaoAdmin | null }) {
               value={f.dicaBolso}
               onChange={(ev) => campo('dicaBolso', ev.target.value)}
             />
+          </Cartao>
+
+          <Cartao>
+            <CampoTexto
+              rotulo="Entenda o tema: título"
+              value={f.aulaTitulo}
+              onChange={(ev) => campo('aulaTitulo', ev.target.value)}
+              ajuda="Mini-aula grátis mostrada antes e depois de responder. Ensina o assunto e NUNCA entrega a resposta. Vazia, usa a dica do assunto."
+            />
+            <CampoArea
+              rotulo="Entenda o tema: explicação"
+              rows={3}
+              value={f.aulaTexto}
+              onChange={(ev) => campo('aulaTexto', ev.target.value)}
+              ajuda="2 a 4 frases simples, para quem nunca estudou o tema. Aceita **negrito**."
+            />
+            <CampoArea
+              rotulo="Entenda o tema: exemplos (um por linha)"
+              rows={4}
+              value={f.aulaExemplos}
+              onChange={(ev) => campo('aulaExemplos', ev.target.value)}
+              ajuda="2 a 4 exemplos concretos, diferentes da questão."
+            />
+            <CampoTexto
+              rotulo="Entenda o tema: macete (opcional)"
+              value={f.aulaMacete}
+              onChange={(ev) => campo('aulaMacete', ev.target.value)}
+            />
+            <CampoTexto
+              rotulo="Entenda o tema: pegadinha (opcional)"
+              value={f.aulaAtencao}
+              onChange={(ev) => campo('aulaAtencao', ev.target.value)}
+            />
             <Marcar
               rotulo={
                 questao?.revisadoPor
@@ -577,6 +644,15 @@ function FormularioQuestao({ questao }: { questao: QuestaoAdmin | null }) {
               explicacao: f.explicacao,
               dicaBolso: f.dicaBolso,
               dica: f.dica.trim() ? f.dica : (assunto?.dicaTexto ?? null),
+              aula:
+                aulaDoForm(f) ??
+                (assunto?.dicaTexto
+                  ? {
+                      titulo: assunto.dicaTitulo || assunto.nome,
+                      texto: assunto.dicaTexto,
+                      exemplos: assunto.dicaExemplo ? [assunto.dicaExemplo] : [],
+                    }
+                  : null),
             }}
           />
         </aside>
