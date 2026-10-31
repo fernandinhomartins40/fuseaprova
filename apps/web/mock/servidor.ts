@@ -1055,6 +1055,8 @@ const H: Partial<Record<NomeRota, Handler>> = {
       })),
       regra:
         'Cada erro volta em 1, 3, 7 e 15 dias. Acertou 4 vezes seguidas, a questão sai da fila.',
+      agendadas: 0,
+      proximaEm: null,
     };
   },
   questaoReport: () => ({ ok: true, id: uuid() }),

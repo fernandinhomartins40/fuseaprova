@@ -1,5 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { formatarDominio, TEXTO_REVISAO_VAZIA, textoQuestoesParaHoje } from '@fuse/shared';
+import {
+  formatarDominio,
+  TEXTO_REVISAO_VAZIA,
+  textoQuestoesParaHoje,
+  textoRevisaoAgendada,
+} from '@fuse/shared';
 import { mensagemDeErro } from '../api/cliente';
 import { useMe, useRevisao } from '../api/consultas';
 import {
@@ -18,7 +23,11 @@ import {
 import { COR_DISCIPLINA, ICONE_DISCIPLINA, NOME_CURTO_DISCIPLINA, plural } from './comum';
 import s from './Revisar.module.css';
 
-/** 10 Revisar (`/revisar`): hero com PRATICAR ERROS, pendentes por disciplina e a regra. */
+/**
+ * 10 Revisar (`/revisar`): hero com PRATICAR ERROS, pendentes por disciplina e a regra.
+ * Sem pendências mas com erros agendados, o hero mostra quando eles voltam e PRATICAR AGORA
+ * (revisão antecipada: acertar antes do prazo não avança a etapa).
+ */
 export default function Revisar() {
   const me = useMe();
   const r = useRevisao();
@@ -32,6 +41,29 @@ export default function Revisar() {
         <Carregando />
       ) : r.isError ? (
         <ErroTela mensagem={mensagemDeErro(r.error)} onTentar={() => r.refetch()} />
+      ) : r.data.pendentes === 0 && r.data.agendadas > 0 && r.data.proximaEm ? (
+        <section className={s.heroi} aria-labelledby="rev-titulo">
+          <div className={s.heroiTexto}>
+            <h2 id="rev-titulo" className={s.heroiTitulo}>
+              {textoRevisaoAgendada(r.data.agendadas, new Date(r.data.proximaEm), new Date())}
+            </h2>
+            <p className={s.heroiSub}>Nada vence hoje, mas você pode treinar seus erros agora.</p>
+            <Botao3D
+              variante="claro"
+              bloco={false}
+              onClick={() => navegar('/revisar/praticar?antecipar=1')}
+              iconeDireita={<IconeTraco nome="seta" tamanho={20} />}
+            >
+              PRATICAR AGORA
+            </Botao3D>
+          </div>
+          <Imagem
+            nome="mascote-explicando"
+            tamanho={170}
+            className={s.heroiCapi}
+            carregamento="eager"
+          />
+        </section>
       ) : r.data.pendentes === 0 ? (
         <section className={s.vazio}>
           <Capi pose="explicando" tamanho={220} descrever />

@@ -62,7 +62,7 @@ export interface Sessao {
 
 export type PedidoSessao =
   | { tipo: 'licao'; licaoId: string }
-  | { tipo: 'revisao'; disciplina?: string; sessaoOrigemId?: string };
+  | { tipo: 'revisao'; disciplina?: string; sessaoOrigemId?: string; antecipar?: boolean };
 
 function sessaoOnline(r: IniciarSessaoResposta): Sessao {
   return {
@@ -224,6 +224,7 @@ export async function iniciarSessao(
             corpo: {
               ...(pedido.disciplina ? { disciplina: pedido.disciplina as 'portugues' } : {}),
               ...(pedido.sessaoOrigemId ? { sessaoOrigemId: pedido.sessaoOrigemId } : {}),
+              ...(pedido.antecipar ? { antecipar: true } : {}),
             },
           });
     return sessaoOnline(r);
@@ -244,7 +245,8 @@ export async function iniciarSessao(
         pacoteId: achado.pacote.pacoteId,
       });
     }
-    if (pedido.sessaoOrigemId) throw new ErroApi(MENSAGEM_SEM_PACOTE, 0, 'sem_conexao');
+    if (pedido.sessaoOrigemId || pedido.antecipar)
+      throw new ErroApi(MENSAGEM_SEM_PACOTE, 0, 'sem_conexao');
     const rev = await revisaoDoPacote(contexto.usuarioId);
     let questoes = rev?.questoes ?? [];
     if (pedido.disciplina)

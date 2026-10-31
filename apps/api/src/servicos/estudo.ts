@@ -1,7 +1,7 @@
 /**
  * Sessões de estudo: lição de trilha, desafio da unidade e revisão (PRD 5.8–5.13, 6).
  */
-import { and, asc, count, eq, lte, max, sql } from 'drizzle-orm';
+import { and, asc, count, eq, gt, lte, max, sql } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import {
   calcularCombo,
@@ -11,6 +11,7 @@ import {
   fraseOfensiva,
   GEMAS,
   gastarDica,
+  LIMITE_LICAO_REVISAO,
   montarDesafio,
   montarLicao,
   montarRevisao,
@@ -302,7 +303,11 @@ export async function abrirBau(deps: Deps, usuario: Usuario, licaoId: string, ag
 export async function iniciarRevisao(
   deps: Deps,
   usuario: Usuario,
-  filtro: { disciplina?: SlugDisciplina | undefined; sessaoOrigemId?: string | undefined },
+  filtro: {
+    disciplina?: SlugDisciplina | undefined;
+    sessaoOrigemId?: string | undefined;
+    antecipar?: boolean | undefined;
+  },
   agora: Date,
 ): Promise<IniciarSessaoResposta> {
   const { db } = deps;
@@ -329,6 +334,25 @@ export async function iniciarRevisao(
       );
     const set = new Set(erradas.map((e) => e.id));
     ids = origem.questoes.filter((q) => set.has(q)).slice(0, 10);
+  } else if (filtro.antecipar) {
+    // PRATICAR AGORA: os próximos a vencer. Acerto antes do prazo não avança a etapa (revisaoAposAcerto).
+    const agendadas = await db
+      .select({ questaoId: revisoes.questaoId })
+      .from(revisoes)
+      .innerJoin(questoes, eq(questoes.id, revisoes.questaoId))
+      .innerJoin(disciplinas, eq(disciplinas.id, questoes.disciplinaId))
+      .where(
+        and(
+          eq(revisoes.usuarioId, usuario.id),
+          eq(revisoes.status, 'ativa'),
+          gt(revisoes.venceEm, agora),
+          questaoVisivel(),
+          filtro.disciplina ? eq(disciplinas.slug, filtro.disciplina) : undefined,
+        ),
+      )
+      .orderBy(asc(revisoes.venceEm), asc(revisoes.questaoId))
+      .limit(LIMITE_LICAO_REVISAO);
+    ids = agendadas.map((a) => a.questaoId);
   } else {
     ids = montarRevisao(await revisoesVencidas(db, usuario.id, agora, filtro.disciplina));
   }

@@ -53,6 +53,8 @@ export const IniciarRevisaoEntrada = z
     disciplina: ZSlugDisciplina.optional(),
     /** "REVISAR ERROS (n)": mini-lição só com os erros desta sessão (vencidos ou não). */
     sessaoOrigemId: Uuid.optional(),
+    /** "PRATICAR AGORA": os erros agendados (ainda não vencidos). Acertar antes do prazo não avança a etapa. */
+    antecipar: z.boolean().optional(),
   })
   .default({});
 export type IniciarRevisaoEntrada = z.input<typeof IniciarRevisaoEntrada>;
@@ -158,6 +160,10 @@ export const RevisaoResposta = z.object({
     }),
   ),
   regra: z.string(),
+  /** Itens ativos que ainda não venceram (voltam nos próximos dias). */
+  agendadas: z.number().int(),
+  /** Quando vence o próximo item agendado (ISO), ou null. */
+  proximaEm: z.string().nullable(),
 });
 export type RevisaoResposta = z.infer<typeof RevisaoResposta>;
 

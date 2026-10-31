@@ -3,6 +3,7 @@
  * Mensagens de erro da API ficam em `api/erros.ts`.
  */
 import { escolher, rngPadrao, type Rng } from './aleatorio.js';
+import { diaSP, formatarDiaMes, somarDias } from './datas.js';
 import type { Letra } from './dominio.js';
 
 export const NOME_PRODUTO = 'Fuse Aprova';
@@ -86,6 +87,18 @@ export function textoRegraLiga(dias: number): string {
 
 export function textoQuestoesParaHoje(n: number): string {
   return n === 1 ? '1 questão para hoje' : `${n} questões para hoje`;
+}
+
+/** Tela Revisar sem pendências: "3 questões voltam amanhã" / "1 questão volta em 05/11". */
+export function textoRevisaoAgendada(n: number, proximaEm: Date, agora: Date): string {
+  const dia = diaSP(proximaEm);
+  const quando =
+    dia <= diaSP(agora)
+      ? 'hoje'
+      : dia === somarDias(diaSP(agora), 1)
+        ? 'amanhã'
+        : `em ${formatarDiaMes(dia)}`;
+  return n === 1 ? `1 questão volta ${quando}` : `${n} questões voltam ${quando}`;
 }
 
 export function textoFaltamParaBau(n: number): string {

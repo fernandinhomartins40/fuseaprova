@@ -1,7 +1,7 @@
 /**
  * Lições, baú, sessões (responder, dica, concluir), revisão e reports (exigirAcesso).
  */
-import { and, asc, count, countDistinct, eq, lte } from 'drizzle-orm';
+import { and, asc, count, countDistinct, eq, gt, lte, min } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { deveAutoRetirar, TEXTO_REGRA_REVISAO } from '@fuse/shared';
 import type { Registrador } from '../http/registrar.js';
@@ -42,10 +42,19 @@ export function rotasEstudo(r: Registrador): void {
       pendentes: porId.get(d.id) ?? 0,
       dominio: dom.get(d.slug) ?? null,
     }));
+    const [ag] = await deps.db
+      .select({ n: count(), proxima: min(revisoes.venceEm) })
+      .from(revisoes)
+      .innerJoin(questoes, eq(questoes.id, revisoes.questaoId))
+      .where(
+        and(eq(revisoes.usuarioId, usuario.id), eq(revisoes.status, 'ativa'), gt(revisoes.venceEm, agora), questaoVisivel()),
+      );
     return {
       pendentes: porDisciplina.reduce((s, d) => s + d.pendentes, 0),
       porDisciplina,
       regra: TEXTO_REGRA_REVISAO,
+      agendadas: contar(ag?.n),
+      proximaEm: ag?.proxima ? new Date(ag.proxima as unknown as string).toISOString() : null,
     };
   });
 

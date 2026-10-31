@@ -9,6 +9,7 @@ import {
   textoFaltamParaBau,
   textoLembrete,
   textoQuestoesParaHoje,
+  textoRevisaoAgendada,
   textoRegraLiga,
   textoStatusEdital,
   textoTerminaEmDias,
@@ -65,6 +66,16 @@ describe('copy (PRD 11)', () => {
     expect(textoRegraLiga(3)).toBe('Os 3 primeiros sobem de liga · termina em 3 dias');
     expect(textoQuestoesParaHoje(1)).toBe('1 questão para hoje');
     expect(textoQuestoesParaHoje(12)).toBe('12 questões para hoje');
+    const agora = new Date('2026-10-31T15:00:00-03:00');
+    expect(textoRevisaoAgendada(3, new Date('2026-11-01T00:00:00-03:00'), agora)).toBe(
+      '3 questões voltam amanhã',
+    );
+    expect(textoRevisaoAgendada(1, new Date('2026-11-05T00:00:00-03:00'), agora)).toBe(
+      '1 questão volta em 05/11',
+    );
+    expect(textoRevisaoAgendada(2, new Date('2026-10-31T23:00:00-03:00'), agora)).toBe(
+      '2 questões voltam hoje',
+    );
     expect(textoFaltamParaBau(1)).toBe('Falta 1 lição para o baú!');
     expect(textoFaltamParaBau(2)).toBe('Faltam 2 lições para o baú!');
   });

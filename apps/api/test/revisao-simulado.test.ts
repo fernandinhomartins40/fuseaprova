@@ -1,4 +1,4 @@
-import { eq, inArray } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { schema } from '@fuse/db';
 import { criarAmbienteTeste, type AmbienteTeste } from '../src/teste/index.js';
@@ -60,6 +60,30 @@ describe('revisão espaçada (PRD 6.5)', () => {
       expect(x.etapa).toBe(0);
       expect(x.venceEm.toISOString()).toBe(new Date('2026-12-03T00:00:00-03:00').toISOString());
     }
+  });
+});
+
+describe('revisão antecipada (PRATICAR AGORA)', () => {
+  it('mostra os erros agendados e deixa praticar antes do prazo sem avançar a etapa', async () => {
+    const a = await t.alunoPago();
+    t.relogio.definir('2026-11-20T20:00:00-03:00');
+    const l = await fazerLicao(t, a.cookie, 1);
+    const errou = l.fim.erros[0] as string;
+    const tela = (await t.chamar('revisao', { cookie: a.cookie })).json();
+    expect(tela.pendentes).toBe(0);
+    expect(tela.agendadas).toBe(1);
+    expect(tela.proximaEm).toBe(new Date('2026-11-21T00:00:00-03:00').toISOString());
+
+    const r = await t.chamar('revisaoIniciar', { cookie: a.cookie, corpo: { antecipar: true } });
+    expect(r.statusCode, r.body).toBe(200);
+    expect(r.json().questoes.map((q: { id: string }) => q.id)).toEqual([errou]);
+    await responderTudo(t, a.cookie, r.json().sessaoId, [errou]);
+    const [rev] = await t.db
+      .select()
+      .from(schema.revisoes)
+      .where(and(eq(schema.revisoes.questaoId, errou), eq(schema.revisoes.usuarioId, a.id)));
+    expect(rev!.etapa).toBe(0);
+    expect(rev!.venceEm.toISOString()).toBe(new Date('2026-11-21T00:00:00-03:00').toISOString());
   });
 });
 
