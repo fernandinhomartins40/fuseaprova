@@ -572,7 +572,7 @@ function FormularioQuestao({ questao }: { questao: QuestaoAdmin | null }) {
               ajuda="Mini-aula grátis mostrada antes e depois de responder. Ensina o assunto e NUNCA entrega a resposta. Vazia, usa a dica do assunto."
             />
             <CampoArea
-              rotulo="Entenda o tema: explicação"
+              rotulo="Entenda o tema: conceito"
               rows={3}
               value={f.aulaTexto}
               onChange={(ev) => campo('aulaTexto', ev.target.value)}
