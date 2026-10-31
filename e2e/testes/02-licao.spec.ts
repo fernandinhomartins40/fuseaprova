@@ -111,6 +111,8 @@ test.describe('Lição da trilha', () => {
       await expect(alternativa(page, gabarito)).toHaveAttribute('aria-checked', 'true');
       await page.keyboard.press('Enter');
       await expect(page.getByRole('button', { name: 'CONTINUAR' })).toBeVisible();
+      // A folha ignora o continuar nos primeiros 700 ms (toque duplo no VERIFICAR).
+      await expect(page.getByRole('button', { name: 'CONTINUAR' })).not.toHaveAttribute('aria-disabled', 'true');
       await page.keyboard.press('Enter');
     }
     // Fim da lição e ofensiva: o CONTINUAR recebe o foco e o Enter avança.

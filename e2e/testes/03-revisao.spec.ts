@@ -47,10 +47,11 @@ test.describe('Revisão espaçada', () => {
     await expect(page.getByText('Lição concluída!')).toBeVisible();
     await sairDoFim(page);
 
-    // No mesmo dia ainda não vence.
+    // No mesmo dia ainda não vence, mas a tela mostra quando volta e deixa praticar antes.
     expect(await pendentes(page)).toBe(0);
     await page.goto('/revisar');
-    await expect(page.getByRole('button', { name: 'IR PARA A TRILHA' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: '1 questão volta amanhã' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'PRATICAR AGORA' })).toBeVisible();
 
     // Etapas: +1, +3, +7 e +15 dias (PRD 6.5).
     for (const [etapa, dias] of [1, 3, 7, 15].entries()) {
