@@ -23,6 +23,7 @@ const {
   codigosRecuperacao,
   usuariosConcursos,
   registrosAcesso,
+  anotacoes,
 } = schema;
 
 /** JSON com perfil, pedidos e progresso. Sem hash de senha, segredo do 2FA nem a imagem do QR. */
@@ -35,7 +36,7 @@ export async function exportarDadosUsuario(db: Db, usuario: Usuario, agora: Date
   } = usuario as Usuario & { sessaoId?: string; sessaoDoisFatoresEm?: Date | null };
   delete (perfil as { sessaoId?: string }).sessaoId;
   delete (perfil as { sessaoDoisFatoresEm?: unknown }).sessaoDoisFatoresEm;
-  const [ped, tent, sess, sims, conq, revs, acessos] = await Promise.all([
+  const [ped, tent, sess, sims, conq, revs, acessos, notas] = await Promise.all([
     db.select().from(pedidos).where(eq(pedidos.usuarioId, usuario.id)).orderBy(desc(pedidos.criadoEm)),
     db.select().from(tentativas).where(eq(tentativas.usuarioId, usuario.id)).orderBy(tentativas.respondidaEm),
     db.select().from(sessoesEstudo).where(eq(sessoesEstudo.usuarioId, usuario.id)).orderBy(sessoesEstudo.iniciadaEm),
@@ -48,6 +49,7 @@ export async function exportarDadosUsuario(db: Db, usuario: Usuario, agora: Date
       .from(registrosAcesso)
       .where(eq(registrosAcesso.usuarioId, usuario.id))
       .orderBy(desc(registrosAcesso.criadoEm)),
+    db.select().from(anotacoes).where(eq(anotacoes.usuarioId, usuario.id)).orderBy(anotacoes.criadoEm),
   ]);
   // Datas viram ISO na serialização JSON. A imagem do QR (base64) é omitida.
   return JSON.parse(
@@ -61,6 +63,7 @@ export async function exportarDadosUsuario(db: Db, usuario: Usuario, agora: Date
       conquistas: conq,
       revisoes: revs,
       registrosAcesso: acessos,
+      anotacoes: notas,
     }),
   ) as ExportarResposta;
 }
@@ -92,6 +95,7 @@ export async function anonimizarUsuario(tx: Db, usuarioId: string, agora: Date):
   await tx.delete(ligasMembros).where(eq(ligasMembros.usuarioId, usuarioId));
   await tx.delete(codigosRecuperacao).where(eq(codigosRecuperacao.usuarioId, usuarioId));
   await tx.delete(usuariosConcursos).where(eq(usuariosConcursos.usuarioId, usuarioId));
+  await tx.delete(anotacoes).where(eq(anotacoes.usuarioId, usuarioId));
   await encerrarSessoesDoUsuario(tx, usuarioId);
   // S-21: a auditoria sobre a conta e os pedidos dela perde nome, e-mail, celular e CPF (o que
   // foi feito, quando e por quem continua). O Pix (copia-e-cola e QR) também sai dos pedidos;

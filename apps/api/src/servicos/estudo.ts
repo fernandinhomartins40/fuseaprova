@@ -11,6 +11,7 @@ import {
   fraseOfensiva,
   GEMAS,
   gastarDica,
+  gerarChaveOffline,
   LIMITE_LICAO_REVISAO,
   montarDesafio,
   montarLicao,
@@ -47,7 +48,7 @@ import {
   travarUsuario,
   verificarConquistas,
 } from './progresso.js';
-import { carregarQuestoes, emOrdem, questaoVisivel } from './questoes.js';
+import { carregarQuestoes, cifrarCorrecao, emOrdem, questaoVisivel } from './questoes.js';
 import { calcularTrilha, tituloDaLicao, type Licao, type Secao, type Unidade } from './trilha.js';
 import { salvarVidas, vidasAtuais } from './usuario.js';
 
@@ -197,17 +198,23 @@ async function respostaInicio(
 ): Promise<IniciarSessaoResposta> {
   const mapa = await carregarQuestoes(db, sessao.questoes, { revisao });
   const vidas = vidasAtuais(u, agora);
+  const lista = emOrdem(sessao.questoes, mapa);
+  // D28: correção instantânea no aparelho (questão anulada fica de fora e vai ao servidor).
+  const chave = gerarChaveOffline();
+  const cifrados: Record<string, string> = {};
+  for (const q of lista) if (q.gabaritoReal !== null) cifrados[q.aluno.id] = await cifrarCorrecao(chave, q);
   return {
     sessaoId: sessao.id,
     tipo: sessao.tipo,
     licao: extra.licao,
     dica: extra.dica,
-    questoes: emOrdem(sessao.questoes, mapa).map((q) => q.aluno),
+    questoes: lista.map((q) => q.aluno),
     gastaVidas: sessao.tipo === 'licao',
     vidas: vidas.vidas,
     proximaVidaEm: isoOuNull(vidas.proximaVidaEm),
     gemas: u.gemas,
     iniciadaEm: iso(sessao.iniciadaEm),
+    correcaoLocal: { chave, cifrados },
   };
 }
 

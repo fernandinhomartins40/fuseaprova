@@ -4,8 +4,8 @@
  */
 import { and, eq, isNull, or, sql, type SQL } from 'drizzle-orm';
 import { schema } from '@fuse/db';
-import { textoChipOrigem, type Letra, type SlugDisciplina } from '@fuse/shared';
-import type { QuestaoParaAluno } from '@fuse/shared/api';
+import { cifrarTexto, textoChipOrigem, type Letra, type SlugDisciplina } from '@fuse/shared';
+import type { AulaQuestao, QuestaoParaAluno } from '@fuse/shared/api';
 import { emUuids, type Db } from '../util.js';
 
 const { questoes, provasOrigem, disciplinas, assuntos } = schema;
@@ -37,6 +37,21 @@ export interface QuestaoCompleta {
   assuntoId: string;
 }
 
+/**
+ * D28: a mini-aula da questão; sem ela, uma montada com a dica do assunto (a mesma do cartão
+ * "Dica da lição"), para nenhuma questão ficar sem "Entenda o tema".
+ */
+export function aulaDaQuestao(
+  q: { aula: AulaQuestao | null },
+  a: { nome: string; dicaTitulo: string | null; dicaTexto: string | null; dicaExemplo: string | null },
+): AulaQuestao | null {
+  if (q.aula?.texto?.trim()) return q.aula;
+  const texto = a.dicaTexto?.trim();
+  if (!texto) return null;
+  const exemplo = a.dicaExemplo?.trim();
+  return { titulo: a.dicaTitulo?.trim() || a.nome, texto, exemplos: exemplo ? [exemplo] : [] };
+}
+
 /** Carrega questões por id (com os dados do chip de origem). `soVisiveis` filtra no SQL. */
 export async function carregarQuestoes(
   db: Db,
@@ -52,7 +67,13 @@ export async function carregarQuestoes(
     .select({
       q: questoes,
       d: disciplinas,
-      a: { id: assuntos.id, nome: assuntos.nome, dicaTexto: assuntos.dicaTexto },
+      a: {
+        id: assuntos.id,
+        nome: assuntos.nome,
+        dicaTitulo: assuntos.dicaTitulo,
+        dicaTexto: assuntos.dicaTexto,
+        dicaExemplo: assuntos.dicaExemplo,
+      },
       p: { orgao: provasOrigem.orgao, ano: provasOrigem.ano, cargo: provasOrigem.cargo, status: provasOrigem.status },
       visivel: sql<boolean>`${questaoVisivel()}`,
     })
@@ -77,6 +98,7 @@ export async function carregarQuestoes(
         enunciado: r.q.enunciado,
         alternativas: r.q.alternativas,
         temDica: Boolean(dica),
+        aula: aulaDaQuestao(r.q, r.a),
         revisao: opcoes.revisao?.has(r.q.id) ?? false,
       },
       gabarito: r.q.gabarito ?? r.q.alternativas[0]?.letra ?? 'A',
@@ -91,6 +113,12 @@ export async function carregarQuestoes(
     });
   }
   return mapa;
+}
+
+/** Gabarito, explicação e dicas cifrados (JSON de `GabaritoOfflineClaro`, AAD = id da questão). */
+export function cifrarCorrecao(chave: string, q: QuestaoCompleta): Promise<string> {
+  const claro = JSON.stringify({ gabarito: q.gabarito, explicacao: q.explicacao, dicaBolso: q.dicaBolso, dica: q.dica });
+  return cifrarTexto(chave, q.aluno.id, claro);
 }
 
 /** Na ordem pedida, só as encontradas. */

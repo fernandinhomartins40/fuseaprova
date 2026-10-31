@@ -92,6 +92,7 @@ async function mapQuestao(db: Db, q: Questao): Promise<z.input<typeof QuestaoAdm
     dica: q.dica,
     explicacao: q.explicacao,
     dicaBolso: q.dicaBolso,
+    aula: q.aula ?? null,
     status: q.status,
     anuladaMotivo: q.anuladaMotivo,
     versao: q.versao,

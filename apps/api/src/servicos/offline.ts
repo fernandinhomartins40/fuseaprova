@@ -5,14 +5,14 @@
 import { randomUUID } from 'node:crypto';
 import { and, count, eq, gte, inArray, sql } from 'drizzle-orm';
 import { schema } from '@fuse/db';
-import { cifrarTexto, gerarChaveOffline, MS_DIA, xpDaResposta } from '@fuse/shared';
+import { gerarChaveOffline, MS_DIA, xpDaResposta } from '@fuse/shared';
 import type { PacoteOfflineResposta, SyncEntrada, SyncResposta } from '@fuse/shared/api';
 import type { z } from 'zod';
 import type { Deps, Usuario } from '../contexto.js';
 import { iso, type Db } from '../util.js';
 import { dicaDaLicao, finalizarSessao, licaoAbrivel, revisoesVencidas, sortearQuestoesDaLicao } from './estudo.js';
 import { aplicarRevisao, creditarXp, ofensivaHoje, travarUsuario } from './progresso.js';
-import { carregarQuestoes, emOrdem, questaoVisivel, type QuestaoCompleta } from './questoes.js';
+import { carregarQuestoes, cifrarCorrecao, emOrdem, questaoVisivel, type QuestaoCompleta } from './questoes.js';
 import { calcularTrilha, tituloDaLicao, type TrilhaCalculada } from './trilha.js';
 import { concursoDoUsuario, revisoesPendentes, vidasAtuais } from './usuario.js';
 
@@ -22,8 +22,7 @@ const LIMITE_REVISAO_PACOTE = 200;
 const VALIDADE_PACOTE_MS = 7 * MS_DIA;
 
 async function cifrarQuestao(chave: string, q: QuestaoCompleta) {
-  const claro = JSON.stringify({ gabarito: q.gabarito, explicacao: q.explicacao, dicaBolso: q.dicaBolso, dica: q.dica });
-  return { ...q.aluno, cifrado: await cifrarTexto(chave, q.aluno.id, claro) };
+  return { ...q.aluno, cifrado: await cifrarCorrecao(chave, q) };
 }
 
 export async function montarPacote(deps: Deps, u: Usuario, agora: Date): Promise<PacoteOfflineResposta> {
