@@ -64,6 +64,13 @@
       "when": 1793227540996,
       "tag": "0008_registros_acesso",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793462483773,
+      "tag": "0009_aula_anotacoes",
+      "breakpoints": true
     }
   ]
 }

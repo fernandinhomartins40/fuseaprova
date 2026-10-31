@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { AREAS_CARGO, SITUACOES_CERTAME, STATUS_IMPORTACAO, STATUS_PROVA_ORIGEM } from '../dominio.js';
 import {
   Alternativas,
+  AulaQuestao,
   BoolQuery,
   CargoResumo,
   DataHora,
@@ -290,6 +291,8 @@ export const QuestaoAdmin = z.object({
   dica: z.string().nullable(),
   explicacao: z.string().nullable(),
   dicaBolso: z.string().nullable(),
+  /** D28: mini-aula "Entenda o tema" própria (null = usa a dica do assunto). */
+  aula: AulaQuestao.nullable().default(null),
   status: ZStatusQuestao,
   anuladaMotivo: z.string().nullable(),
   versao: z.number().int(),
@@ -321,6 +324,8 @@ export const QuestaoEntrada = z
     dica: textoOpcional,
     explicacao: textoOpcional,
     dicaBolso: textoOpcional,
+    /** D28: ausente = não mexe na aula salva; null = apaga. */
+    aula: AulaQuestao.nullable().optional(),
     status: ZStatusQuestao.default('rascunho'),
     anuladaMotivo: textoOpcional,
     /** Marca a revisão humana feita por quem está salvando. */

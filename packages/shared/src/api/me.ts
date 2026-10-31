@@ -131,6 +131,8 @@ export const ExportarResposta = z.object({
   revisoes: z.array(z.record(z.unknown())),
   /** D26: data, hora, IP e porta dos acessos dos últimos 6 meses (Marco Civil, art. 15). */
   registrosAcesso: z.array(z.record(z.unknown())).default([]),
+  /** D28: anotações pessoais nas questões. */
+  anotacoes: z.array(z.record(z.unknown())).default([]),
 });
 export type ExportarResposta = z.infer<typeof ExportarResposta>;
 

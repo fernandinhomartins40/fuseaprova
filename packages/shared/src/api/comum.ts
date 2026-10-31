@@ -242,7 +242,22 @@ export type CargoResumo = z.infer<typeof CargoResumo>;
 export const Avatar = z.object({ iniciais: z.string(), cor: z.string() });
 
 /**
- * Questão como o aluno a vê ANTES de responder. Nunca inclui gabarito, explicação ou dica.
+ * D28: "Entenda o tema", a mini-aula grátis da questão. Ensina o assunto com outros exemplos e
+ * nunca entrega a resposta, por isso pode ir junto com a questão, antes de responder.
+ */
+export const AulaQuestao = z.object({
+  titulo: z.string().trim().min(1, 'Informe o título.').max(160),
+  /** O conceito em poucas frases simples (aceita **negrito**). */
+  texto: z.string().trim().min(1, 'Escreva o texto da aula.').max(1500),
+  exemplos: z.array(z.string().trim().min(1).max(500)).max(6),
+  macete: z.string().trim().max(400).nullable().optional(),
+  atencao: z.string().trim().max(400).nullable().optional(),
+});
+export type AulaQuestao = z.infer<typeof AulaQuestao>;
+
+/**
+ * Questão como o aluno a vê ANTES de responder. Nunca inclui gabarito, explicação ou a pista
+ * paga; a mini-aula (`aula`) não entrega a resposta e vai junto.
  */
 export const QuestaoParaAluno = z.object({
   id: Uuid,
@@ -258,8 +273,10 @@ export const QuestaoParaAluno = z.object({
   textoApoio: z.string().nullable(),
   enunciado: z.string(),
   alternativas: Alternativas,
-  /** Há dica disponível (custa 5 gemas). */
+  /** Há pista paga (5 gemas). Mantido para versões antigas do app (D28). */
   temDica: z.boolean(),
+  /** Mini-aula "Entenda o tema" (da questão ou, sem ela, montada com a dica do assunto). */
+  aula: AulaQuestao.nullable(),
   /** Veio da fila de revisão vencida. */
   revisao: z.boolean(),
 });

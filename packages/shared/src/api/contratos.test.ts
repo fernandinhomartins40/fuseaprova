@@ -9,6 +9,7 @@ import {
   ConcursoEntrada,
   erroApi,
   erroDeValidacao,
+  AnotacaoEntrada,
   IniciarRevisaoEntrada,
   LicaoEntrada,
   MeAtualizarEntrada,
@@ -205,8 +206,17 @@ describe('outros contratos', () => {
       enunciado: 'x',
       alternativas,
       temDica: true,
+      aula: {
+        titulo: 'Crase',
+        texto: 'Crase é a fusão de **a + a**.',
+        exemplos: ['Vou à feira.'],
+      },
       revisao: false,
     };
+    expect(AnotacaoEntrada.safeParse({ texto: '   ' }).success).toBe(false);
+    expect(AnotacaoEntrada.parse({ texto: ' lembrar ' })).toEqual({ texto: 'lembrar' });
+    expect(AnotacaoEntrada.safeParse({ texto: 'x'.repeat(2001) }).success).toBe(false);
+    expect(IniciarRevisaoEntrada.parse({ antecipar: true })).toEqual({ antecipar: true });
     const andamento = SimuladoDetalheResposta.parse({
       estado: 'andamento',
       id: uuid,

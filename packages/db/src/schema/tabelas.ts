@@ -73,6 +73,22 @@ export interface AlternativaJson {
   texto: string;
 }
 
+/**
+ * extra (D28): "Entenda o tema", a mini-aula grátis da questão, mostrada antes e depois de
+ * responder. Ensina o assunto com outros exemplos e nunca entrega a resposta.
+ */
+export interface AulaJson {
+  titulo: string;
+  /** 2 a 4 frases simples; aceita **negrito**. */
+  texto: string;
+  /** 2 a 4 exemplos concretos, fora da questão. */
+  exemplos: string[];
+  /** Truque para lembrar na hora da prova. */
+  macete?: string | null;
+  /** Pegadinha comum do tema. */
+  atencao?: string | null;
+}
+
 export interface RespostaSimuladoJson {
   letra: 'A' | 'B' | 'C' | 'D' | 'E' | null;
   revisarDepois: boolean;
@@ -407,6 +423,8 @@ export const questoes = pgTable(
     dica: text('dica'),
     explicacao: text('explicacao'),
     dicaBolso: text('dica_bolso'),
+    /** extra (D28): mini-aula "Entenda o tema". Sem ela, a API monta uma com a dica do assunto. */
+    aula: jsonb('aula').$type<AulaJson>(),
     status: statusQuestaoEnum('status').notNull().default('rascunho'),
     anuladaMotivo: text('anulada_motivo'),
     versao: integer('versao').notNull().default(1),
@@ -1102,4 +1120,32 @@ export const limitesContagem = pgTable(
     janelaFim: ts('janela_fim').notNull(),
   },
   (t) => [index('limites_contagem_fim_idx').on(t.janelaFim)],
+);
+
+/**
+ * extra (D28): anotação pessoal do aluno numa questão, no concurso ativo em que ele a escreveu.
+ * Só o dono lê e escreve (toda consulta filtra por `usuario_id` e `concurso_id`). Organizada por
+ * disciplina e assunto da questão na tela "Minhas anotações".
+ */
+export const anotacoes = pgTable(
+  'anotacoes',
+  {
+    usuarioId: uuid('usuario_id')
+      .notNull()
+      .references(() => usuarios.id, { onDelete: 'cascade' }),
+    concursoId: uuid('concurso_id')
+      .notNull()
+      .references(() => concursos.id, { onDelete: 'cascade' }),
+    questaoId: uuid('questao_id')
+      .notNull()
+      .references(() => questoes.id, { onDelete: 'cascade' }),
+    texto: text('texto').notNull(),
+    criadoEm: criadoEm(),
+    atualizadoEm: atualizadoEm(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.usuarioId, t.concursoId, t.questaoId] }),
+    index('anotacoes_usuario_concurso_atualizado_idx').on(t.usuarioId, t.concursoId, t.atualizadoEm),
+    check('anotacoes_texto_ck', sql`char_length(${t.texto}) between 1 and 2000`),
+  ],
 );

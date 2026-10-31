@@ -10,6 +10,7 @@ import {
   DataHora,
   Dia,
   DicaLicao,
+  DisciplinaResumo,
   QuestaoParaAluno,
   Uuid,
   ZLetra,
@@ -36,6 +37,15 @@ export const IniciarSessaoResposta = z.object({
   proximaVidaEm: DataHora.nullable(),
   gemas: z.number().int(),
   iniciadaEm: DataHora,
+  /**
+   * D28: correção instantânea. Gabarito de cada questão cifrado com `chave` (como no pacote
+   * offline), para o app mostrar o feedback na hora; a resposta segue para o servidor em seguida,
+   * e ele continua sendo a fonte da verdade de XP, vidas e revisão.
+   */
+  correcaoLocal: z
+    .object({ chave: z.string(), cifrados: z.record(Uuid, z.string()) })
+    .nullable()
+    .optional(),
 });
 export type IniciarSessaoResposta = z.infer<typeof IniciarSessaoResposta>;
 
@@ -166,6 +176,49 @@ export const RevisaoResposta = z.object({
   proximaEm: z.string().nullable(),
 });
 export type RevisaoResposta = z.infer<typeof RevisaoResposta>;
+
+/** PUT /questoes/:id/anotacao — anotação pessoal (D28). */
+export const AnotacaoEntrada = z.object({
+  texto: z
+    .string()
+    .trim()
+    .min(1, 'Escreva a anotação.')
+    .max(2000, 'Escreva no máximo 2000 caracteres.'),
+});
+export type AnotacaoEntrada = z.infer<typeof AnotacaoEntrada>;
+
+export const Anotacao = z.object({
+  questaoId: Uuid,
+  texto: z.string(),
+  criadoEm: DataHora,
+  atualizadoEm: DataHora,
+});
+export type Anotacao = z.infer<typeof Anotacao>;
+
+/** GET /questoes/:id/anotacao */
+export const AnotacaoResposta = z.object({ anotacao: Anotacao.nullable() });
+export type AnotacaoResposta = z.infer<typeof AnotacaoResposta>;
+
+/** GET /anotacoes — do concurso ativo, organizadas pela tela por disciplina e assunto. */
+export const AnotacoesResposta = z.object({
+  anotacoes: z.array(
+    Anotacao.extend({
+      disciplina: DisciplinaResumo,
+      assunto: z.object({ id: Uuid, nome: z.string() }),
+      /** Começo do enunciado, para reconhecer a questão na lista. */
+      resumo: z.string(),
+    }),
+  ),
+});
+export type AnotacoesResposta = z.infer<typeof AnotacoesResposta>;
+
+/** GET /anotacoes/:id — a questão completa (já respondida pelo aluno) com a anotação. */
+export const AnotacaoDetalheResposta = z.object({
+  anotacao: Anotacao,
+  questao: QuestaoParaAluno,
+  correcao: CorrecaoQuestao,
+});
+export type AnotacaoDetalheResposta = z.infer<typeof AnotacaoDetalheResposta>;
 
 /** POST /questoes/:id/report */
 export const ReportEntrada = z.object({
