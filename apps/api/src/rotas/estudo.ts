@@ -7,6 +7,7 @@ import { deveAutoRetirar, TEXTO_REGRA_REVISAO } from '@fuse/shared';
 import type { Registrador } from '../http/registrar.js';
 import { falha } from '../http/erros.js';
 import { dominioPorDisciplina } from '../servicos/dominio.js';
+import { iniciarReforco, montarDesempenho } from '../servicos/desempenho.js';
 import { abrirBau, concluir, iniciarLicao, iniciarRevisao, responder, usarDica } from '../servicos/estudo.js';
 import { questaoVisivel } from '../servicos/questoes.js';
 import { subirVersaoConteudo } from '../servicos/usuario.js';
@@ -59,6 +60,10 @@ export function rotasEstudo(r: Registrador): void {
   });
 
   r.rota('revisaoIniciar', async ({ usuario, corpo, deps, agora }) => iniciarRevisao(deps, usuario, corpo, agora));
+
+  // D29: central de desempenho e treino inteligente.
+  r.rota('desempenho', async ({ usuario, deps, agora }) => montarDesempenho(deps, usuario, agora));
+  r.rota('reforcoIniciar', async ({ usuario, corpo, deps, agora }) => iniciarReforco(deps, usuario, corpo, agora));
 
   r.rota('questaoReport', async ({ usuario, params, corpo, deps, agora }) =>
     deps.db.transaction(async (tx) => {

@@ -1,0 +1,1 @@
+ALTER TYPE "public"."tipo_sessao_estudo" ADD VALUE 'reforco';

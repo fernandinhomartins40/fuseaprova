@@ -35,6 +35,7 @@ const SimuladoProva = lazy(() => import('../telas/simulado/SimuladoProva'));
 const Liga = lazy(() => import('../telas/Liga'));
 const Perfil = lazy(() => import('../telas/Perfil'));
 const Configuracoes = lazy(() => import('../telas/Configuracoes'));
+const Desempenho = lazy(() => import('../telas/desempenho/Desempenho'));
 const Anotacoes = lazy(() => import('../telas/anotacoes/Anotacoes'));
 const AnotacaoDetalhe = lazy(() => import('../telas/anotacoes/AnotacaoDetalhe'));
 const NaoEncontrada = lazy(() => import('../telas/NaoEncontrada'));
@@ -187,6 +188,8 @@ export function Rotas() {
           <Route path="/simulado" element={<Simulado />} />
           <Route path="/liga" element={<Liga />} />
           <Route path="/perfil" element={<Perfil />} />
+          {/* D29: central de desempenho, com a navegação inferior das abas. */}
+          <Route path="/desempenho" element={<Desempenho />} />
         </Route>
 
         <Route
@@ -220,6 +223,15 @@ export function Rotas() {
             <Guarda nivel="acesso">
               <Sincronizador />
               <Licao revisao />
+            </Guarda>
+          }
+        />
+        <Route
+          path="/reforco/praticar"
+          element={
+            <Guarda nivel="acesso">
+              <Sincronizador />
+              <Licao modo="reforco" />
             </Guarda>
           }
         />

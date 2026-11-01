@@ -1,0 +1,210 @@
+.titulo {
+  font-size: var(--fa-t-titulo);
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+.heroi {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 190px;
+  padding: 18px 0 18px 18px;
+  border-radius: var(--fa-r-2xl);
+  background: radial-gradient(circle at 85% 30%, #0b6d74 0%, var(--fa-petroleo) 62%);
+  color: #fff;
+  overflow: hidden;
+}
+.heroiTexto {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 0;
+}
+.heroiRotulo {
+  font-size: 15px;
+  font-weight: 700;
+  color: #d7efed;
+}
+.heroiTitulo {
+  color: #fff;
+  font-size: 26px;
+  font-weight: 800;
+  margin-top: 2px;
+}
+.heroiSub {
+  margin: 6px 0 14px;
+  font-size: 15px;
+  color: #e1f3f1;
+  line-height: 1.4;
+}
+.heroiBotoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.heroiCapi {
+  position: relative;
+  z-index: 0;
+  flex: none;
+  align-self: flex-end;
+  margin: 0 -18px -24px -34px;
+}
+.grade {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 16px;
+}
+.cartao {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  box-shadow: var(--fa-sombra-cartao);
+}
+.cartaoTitulo {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.disciplinas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.discLinha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.discIcone {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--fa-surface-soft);
+}
+.discIcone[data-fundo='portugues'] {
+  background: var(--fa-disc-portugues-soft);
+}
+.discIcone[data-fundo='matematica'] {
+  background: var(--fa-disc-matematica-soft);
+}
+.discIcone[data-fundo='gerais'] {
+  background: var(--fa-disc-gerais-soft);
+}
+.discIcone[data-fundo='especificos'] {
+  background: var(--fa-disc-especificos-soft);
+}
+.discCorpo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.discNome {
+  font-weight: 900;
+  font-size: 15.5px;
+}
+.discValor {
+  flex: none;
+  min-width: 40px;
+  text-align: right;
+  font-weight: 800;
+  color: var(--fa-ink-2);
+}
+.temas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.tema {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  box-shadow: var(--fa-sombra-cartao);
+}
+.temaTopo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+}
+.temaNome {
+  font-size: 16.5px;
+  font-weight: 900;
+  line-height: 1.25;
+  min-width: 0;
+}
+.temaDominio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.temaDominio > div {
+  flex: 1;
+}
+.temaPct {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--fa-ink-2);
+  min-width: 38px;
+  text-align: right;
+}
+.temaRodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.temaQuestoes {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fa-muted);
+}
+.naoVistos {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-turquesa-soft);
+  color: var(--fa-petroleo);
+  font-size: 14.5px;
+  font-weight: 700;
+}
+.naoVistos svg {
+  flex: none;
+}
+.vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  padding: 18px 0 4px;
+}
+.vazioTitulo {
+  font-family: var(--fa-font-display);
+  font-size: 22px;
+  font-weight: 700;
+}
+.vazioTexto {
+  font-size: 15px;
+  color: var(--fa-ink-2);
+  font-weight: 600;
+  line-height: 1.45;
+}

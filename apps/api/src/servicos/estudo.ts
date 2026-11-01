@@ -188,7 +188,7 @@ export function dicaDaLicao(
 
 /* --------------------------------------------------------------- iniciar */
 
-async function respostaInicio(
+export async function respostaInicio(
   db: Db,
   u: Usuario,
   sessao: SessaoEstudo,
@@ -540,14 +540,15 @@ export async function finalizarSessao(
   const feitas = await tentativasDaSessao(tx, s.id);
   const acertos = feitas.filter((t) => t.acertou).length;
   const total = feitas.length;
-  const tipo = s.tipo as 'licao' | 'desafio' | 'revisao';
+  const tipo = s.tipo as 'licao' | 'desafio' | 'revisao' | 'reforco';
   const resumo = xpDaSessao(tipo, acertos, total);
   const bonus = resumo.itens.filter((i) => i.tipo !== 'acerto');
   await creditarXp(tx, u, bonus, agora, { sessaoEstudoId: s.id });
   let gemasGanhas = 0;
   let coroa = false;
   let tituloLicao: string | null = null;
-  if (tipo !== 'revisao') {
+  // Revisão e reforço (D29) não dão gemas nem mexem no progresso da trilha.
+  if (tipo !== 'revisao' && tipo !== 'reforco') {
     gemasGanhas += GEMAS.CONCLUIR_LICAO;
     if (s.licaoId) {
       const precisao = precisaoPercentual(acertos, total);

@@ -136,7 +136,7 @@ export type StatusComunicacao = (typeof STATUS_COMUNICACAO)[number];
 export const STATUS_ENVIO_COMUNICACAO = ['pendente', 'enviado', 'falhou', 'ignorado'] as const;
 export type StatusEnvioComunicacao = (typeof STATUS_ENVIO_COMUNICACAO)[number];
 
-export const TIPOS_SESSAO_ESTUDO = ['licao', 'revisao', 'desafio', 'simulado'] as const;
+export const TIPOS_SESSAO_ESTUDO = ['licao', 'revisao', 'desafio', 'simulado', 'reforco'] as const;
 export type TipoSessaoEstudo = (typeof TIPOS_SESSAO_ESTUDO)[number];
 
 export const STATUS_REVISAO = ['ativa', 'dominada'] as const;

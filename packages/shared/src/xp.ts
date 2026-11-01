@@ -58,7 +58,8 @@ export function xpDaSessao(
 ): ResumoXpSessao {
   const itens: ItemXp[] = [];
   if (acertos > 0) itens.push({ tipo: 'acerto', valor: acertos * XP.ACERTO });
-  if (tipo !== 'revisao') {
+  // Revisão e reforço (D29) valem só pelos acertos: sem bônus de lição concluída.
+  if (tipo !== 'revisao' && tipo !== 'reforco') {
     itens.push({ tipo: 'licao_concluida', valor: XP.CONCLUIR_LICAO });
     if (total > 0 && acertos === total) {
       itens.push({ tipo: 'licao_perfeita', valor: XP.LICAO_PERFEITA });

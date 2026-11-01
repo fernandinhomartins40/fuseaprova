@@ -19,6 +19,7 @@ import {
   ZTipoSessaoEstudo,
 } from './comum.js';
 import { CODIGOS_CONQUISTA } from '../conquistas.js';
+import { CLASSES_TEMA } from '../desempenho.js';
 import { TIPOS_XP_EVENTO } from '../dominio.js';
 
 /** POST /licoes/:id/iniciar — sem corpo. Sorteia as questões e cria a sessão. */
@@ -176,6 +177,48 @@ export const RevisaoResposta = z.object({
   proximaEm: z.string().nullable(),
 });
 export type RevisaoResposta = z.infer<typeof RevisaoResposta>;
+
+/* ------------------------------------------------- D29: desempenho e reforço */
+
+export const ZClasseTema = z.enum(CLASSES_TEMA);
+
+/** GET /desempenho — central do aluno: domínio por tema e o próximo passo. */
+export const DesempenhoResposta = z.object({
+  resumo: z.object({
+    questoes: z.number().int(),
+    acertos: z.number().int(),
+    /** Precisão geral 0–100, ou null sem respostas. */
+    precisao: z.number().int().nullable(),
+    temasNaTrilha: z.number().int(),
+    revisoesPendentes: z.number().int(),
+    trilhaConcluida: z.boolean(),
+  }),
+  proximoPasso: z.enum(['revisao', 'trilha', 'treino']),
+  disciplinas: z.array(
+    z.object({
+      slug: ZSlugDisciplina,
+      nome: z.string(),
+      dominio: z.number().min(0).max(1).nullable(),
+      tentativas: z.number().int(),
+    }),
+  ),
+  temas: z.array(
+    z.object({
+      assuntoId: Uuid,
+      nome: z.string(),
+      disciplina: ZSlugDisciplina,
+      classe: ZClasseTema,
+      dominio: z.number().min(0).max(1).nullable(),
+      tentativas: z.number().int(),
+      ultimaEm: DataHora.nullable(),
+    }),
+  ),
+});
+export type DesempenhoResposta = z.infer<typeof DesempenhoResposta>;
+
+/** POST /reforco/iniciar — sem assunto: treino inteligente; com assunto: reforço do tema. */
+export const IniciarReforcoEntrada = z.object({ assuntoId: Uuid.optional() }).default({});
+export type IniciarReforcoEntrada = z.input<typeof IniciarReforcoEntrada>;
 
 /** PUT /questoes/:id/anotacao — anotação pessoal (D28). */
 export const AnotacaoEntrada = z.object({

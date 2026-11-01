@@ -138,6 +138,19 @@ export default function Perfil() {
             <IconeTraco nome="chevron" tamanho={22} />
           </button>
 
+          <button type="button" className={s.edital} onClick={() => navegar('/desempenho')}>
+            <span className={s.editalIcone}>
+              <Imagem nome="icone-alvo" tamanho={34} />
+            </span>
+            <span className={s.editalTextos}>
+              <span className={s.editalTitulo}>Meu desempenho</span>
+              <span className={s.editalStatus}>
+                Seus temas fortes e fracos e o treino inteligente
+              </span>
+            </span>
+            <IconeTraco nome="chevron" tamanho={22} />
+          </button>
+
           <TituloSecao>Conquistas</TituloSecao>
           <ul className={s.conquistas}>
             {est.data.conquistas.map((c) => (

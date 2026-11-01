@@ -79,7 +79,9 @@ export interface Sessao {
 
 export type PedidoSessao =
   | { tipo: 'licao'; licaoId: string }
-  | { tipo: 'revisao'; disciplina?: string; sessaoOrigemId?: string; antecipar?: boolean };
+  | { tipo: 'revisao'; disciplina?: string; sessaoOrigemId?: string; antecipar?: boolean }
+  /** D29: treino inteligente (sem assunto) ou reforço de um tema. Só online. */
+  | { tipo: 'reforco'; assuntoId?: string };
 
 /** Tentativas de reenviar a resposta quando a conexão cai (1 s, 2 s, 4 s). */
 const REENVIOS = 3;
@@ -317,16 +319,26 @@ export async function iniciarSessao(
     const r =
       pedido.tipo === 'licao'
         ? await chamar('licaoIniciar', { params: { id: pedido.licaoId } })
-        : await chamar('revisaoIniciar', {
-            corpo: {
-              ...(pedido.disciplina ? { disciplina: pedido.disciplina as 'portugues' } : {}),
-              ...(pedido.sessaoOrigemId ? { sessaoOrigemId: pedido.sessaoOrigemId } : {}),
-              ...(pedido.antecipar ? { antecipar: true } : {}),
-            },
-          });
+        : pedido.tipo === 'reforco'
+          ? await chamar('reforcoIniciar', {
+              corpo: pedido.assuntoId ? { assuntoId: pedido.assuntoId } : {},
+            })
+          : await chamar('revisaoIniciar', {
+              corpo: {
+                ...(pedido.disciplina ? { disciplina: pedido.disciplina as 'portugues' } : {}),
+                ...(pedido.sessaoOrigemId ? { sessaoOrigemId: pedido.sessaoOrigemId } : {}),
+                ...(pedido.antecipar ? { antecipar: true } : {}),
+              },
+            });
     return sessaoOnline(r, contexto.nome);
   } catch (e) {
     if (!(e instanceof ErroApi) || !e.semConexao) throw e;
+    if (pedido.tipo === 'reforco')
+      throw new ErroApi(
+        'O treino precisa de conexão. Conecte-se e tente de novo.',
+        0,
+        'sem_conexao',
+      );
     if (pedido.tipo === 'licao') {
       const achado = await licaoDoPacote(contexto.usuarioId, pedido.licaoId);
       if (!achado || achado.pacote.licoesFeitas.includes(pedido.licaoId)) {

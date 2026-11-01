@@ -27,9 +27,11 @@ export function FimLicao({
   const titulo =
     tipo === 'revisao'
       ? 'Revisão concluída!'
-      : tipo === 'desafio'
-        ? 'Desafio concluído!'
-        : 'Lição concluída!';
+      : tipo === 'reforco'
+        ? 'Treino concluído!'
+        : tipo === 'desafio'
+          ? 'Desafio concluído!'
+          : 'Lição concluída!';
   const nome = fim.tituloLicao ?? (tipo === 'revisao' ? 'Seus erros, revisados' : '');
   const xp = fim.offline ? '—' : `${fim.xpGanho} XP`;
   return (

@@ -101,7 +101,9 @@ describe('telas do aluno contra a API simulada', () => {
     await waitFor(() => expect(local).toBe('/pagamento'));
     // Com mais de um concurso aberto, o aluno escolhe antes de ver o Pix (D21).
     expect(await screen.findByText('Para qual concurso você vai estudar?')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: /Prefeitura Municipal de Cidade Exemplo/ }));
+    await userEvent.click(
+      screen.getByRole('button', { name: /Prefeitura Municipal de Cidade Exemplo/ }),
+    );
     expect(await screen.findByAltText(/QR Code do Pix/)).toBeInTheDocument();
     expect(screen.getByText('Pix copia e cola')).toBeInTheDocument();
     expect(screen.getByText(/Quando o edital sair/)).toBeInTheDocument();
@@ -225,9 +227,10 @@ describe('telas do aluno contra a API simulada', () => {
     unmount();
 
     // O atalho "Anotações" do cabeçalho leva à lista organizada por tema.
-    abrir('/aprender');
+    const inicio = abrir('/aprender');
     await userEvent.click(await screen.findByRole('link', { name: /Anotações/ }));
     await waitFor(() => expect(local).toBe('/anotacoes'));
+    inicio.unmount();
     abrir('/anotacoes');
     expect(await screen.findByText('Lembrar da regra')).toBeInTheDocument();
     await userEvent.click(screen.getByText('Lembrar da regra'));
@@ -276,6 +279,38 @@ describe('telas do aluno contra a API simulada', () => {
       unmount();
     }
   });
+
+  it('Meu desempenho: cartão do treino, temas por classe e TREINO INTELIGENTE abre uma questão', async () => {
+    const api = ligarApiSimulada();
+    await api.cenario('aluno');
+    const { container } = abrir('/desempenho');
+    expect(await screen.findByRole('heading', { name: 'Meu desempenho' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Treino inteligente' })).toBeInTheDocument();
+    // Com erros vencidos, o próximo passo é a revisão (e o treino continua oferecido).
+    expect(screen.getByRole('button', { name: /REVISAR ERROS/ })).toBeInTheDocument();
+    expect(screen.getByText('Para aprimorar')).toBeInTheDocument();
+    expect(screen.getByText('Mais ou menos')).toBeInTheDocument();
+    expect(screen.getByText('Você está bem')).toBeInTheDocument();
+    expect(screen.getByText('Pouco praticados')).toBeInTheDocument();
+    expect(screen.getByText(/2 temas ainda não vistos/)).toBeInTheDocument();
+    expect(await violacoesSerias(container)).toEqual([]);
+    await userEvent.click(screen.getByRole('button', { name: /TREINO INTELIGENTE/ }));
+    await waitFor(() => expect(local).toBe('/reforco/praticar'));
+    expect(await screen.findByRole('button', { name: 'VERIFICAR' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Sair da lição' }));
+    await userEvent.click(screen.getByRole('button', { name: 'SAIR' }));
+    await waitFor(() => expect(local).toBe('/desempenho'));
+  }, 20000);
+
+  it('REFORÇAR um tema abre o reforço com a dica do tema', async () => {
+    const api = ligarApiSimulada();
+    await api.cenario('aluno');
+    abrir('/desempenho');
+    await userEvent.click(await screen.findByRole('button', { name: 'Reforçar Crase' }));
+    await waitFor(() => expect(local).toBe('/reforco/praticar'));
+    await userEvent.click(await screen.findByRole('button', { name: 'ENTENDI, VAMOS LÁ' }));
+    expect(await screen.findByRole('button', { name: 'VERIFICAR' })).toBeInTheDocument();
+  }, 20000);
 
   it('modal "O edital saiu! Confirme seu cargo" aparece e some ao confirmar', async () => {
     const api = ligarApiSimulada();

@@ -47,12 +47,28 @@ type Fase = 'carregando' | 'erro' | 'dica' | 'questao' | 'fim' | 'ofensiva';
  * A chave pela URL remonta a tela a cada navegação: as rotas de lição e de revisão têm a mesma
  * árvore, e sem ela o React reaproveitava a instância parada no "fim" (REVISAR ERROS não abria).
  */
-export default function Licao({ revisao = false }: { revisao?: boolean }) {
+export default function Licao({
+  revisao = false,
+  modo,
+}: {
+  revisao?: boolean;
+  /** D29: `reforco` é o treino inteligente (`/reforco/praticar`, com `?assunto=` opcional). */
+  modo?: ModoLicao;
+}) {
   const { pathname, search } = useLocation();
-  return <TelaLicao key={pathname + search} revisao={revisao} />;
+  return <TelaLicao key={pathname + search} modo={modo ?? (revisao ? 'revisao' : 'licao')} />;
 }
 
-function TelaLicao({ revisao }: { revisao: boolean }) {
+type ModoLicao = 'licao' | 'revisao' | 'reforco';
+
+const VOLTAR: Record<ModoLicao, string> = {
+  licao: '/aprender',
+  revisao: '/revisar',
+  reforco: '/desempenho',
+};
+
+function TelaLicao({ modo }: { modo: ModoLicao }) {
+  const voltar = VOLTAR[modo];
   const { id = '' } = useParams();
   const [busca] = useSearchParams();
   const navegar = useNavigate();
@@ -80,6 +96,7 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
   const disciplina = busca.get('disciplina') ?? undefined;
   const origem = busca.get('origem') ?? undefined;
   const antecipar = busca.get('antecipar') === '1';
+  const assunto = busca.get('assunto') ?? undefined;
 
   const comecar = useCallback(async () => {
     if (!me.data) return;
@@ -87,9 +104,11 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
     setErro(null);
     try {
       const sx = await iniciarSessao(
-        revisao
+        modo === 'revisao'
           ? { tipo: 'revisao', disciplina, sessaoOrigemId: origem, antecipar }
-          : { tipo: 'licao', licaoId: id },
+          : modo === 'reforco'
+            ? { tipo: 'reforco', assuntoId: assunto }
+            : { tipo: 'licao', licaoId: id },
         { usuarioId: me.data.id, nome: me.data.nome, vidas: me.data.vidas, gemas: me.data.gemas },
       );
       setSessao(sx);
@@ -102,7 +121,7 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
       setErro(mensagemDeErro(e));
       setFase('erro');
     }
-  }, [me.data, revisao, disciplina, origem, antecipar, id]);
+  }, [me.data, modo, disciplina, origem, antecipar, assunto, id]);
 
   useEffect(() => {
     if (iniciado.current || !me.data) return;
@@ -168,6 +187,7 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
       qc.invalidateQueries({ queryKey: CHAVES.trilha }),
       qc.invalidateQueries({ queryKey: CHAVES.revisao }),
       qc.invalidateQueries({ queryKey: CHAVES.estatisticas }),
+      qc.invalidateQueries({ queryKey: CHAVES.desempenho }),
       qc.invalidateQueries({ queryKey: CHAVES.liga }),
     ]);
   }
@@ -187,7 +207,7 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
       if (e instanceof ErroApi && e.codigo === 'sessao_encerrada') {
         void atualizarDepoisDeConcluir();
         toast('Lição concluída. Seu progresso foi salvo.', 'sucesso');
-        navegar(revisao ? '/revisar' : '/aprender', { replace: true });
+        navegar(voltar, { replace: true });
         return;
       }
       setErro(mensagemDeErro(e));
@@ -212,7 +232,7 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
 
   function sairDaLicao() {
     setSairAberto(false);
-    navegar(revisao ? '/revisar' : '/aprender', { replace: true });
+    navegar(voltar, { replace: true });
   }
 
   /* ------------------------------------------------------------ fases */
@@ -231,7 +251,7 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
           mensagem={erro ?? 'Algo deu errado.'}
           onTentar={() => void (falhouAoConcluir ? concluir() : comecar())}
         />
-        <Botao3D variante="secundario" onClick={() => navegar(revisao ? '/revisar' : '/aprender')}>
+        <Botao3D variante="secundario" onClick={() => navegar(voltar)}>
           Voltar
         </Botao3D>
       </Pagina>
@@ -244,7 +264,7 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
         tipo={sessao!.tipo}
         onContinuar={() => {
           if (!fim.offline && fim.ofensiva.mostrarTela) setFase('ofensiva');
-          else navegar(revisao ? '/revisar' : '/aprender', { replace: true });
+          else navegar(voltar, { replace: true });
         }}
         onRevisarErros={
           !fim.offline && fim.erros.length > 0 && sessao!.modo === 'online'
@@ -259,7 +279,7 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
       <TelaOfensiva
         ofensiva={fim.ofensiva}
         nome={me.data?.nome ?? ''}
-        onContinuar={() => navegar('/aprender', { replace: true })}
+        onContinuar={() => navegar(modo === 'reforco' ? voltar : '/aprender', { replace: true })}
       />
     );
   }
@@ -467,8 +487,8 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
           <div className={s.aulaModal}>
             <AulaTema aula={aula} />
             <p className={s.aulaNota}>
-              A dica ensina o assunto e não entrega a resposta. Depois de responder, ela fica na
-              aba "Entenda o tema" da correção.
+              A dica ensina o assunto e não entrega a resposta. Depois de responder, ela fica na aba
+              "Entenda o tema" da correção.
             </p>
           </div>
         </Modal>

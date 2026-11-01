@@ -12,11 +12,14 @@ import {
   AVISO_EDITAL,
   calcularCombo,
   cifrarTexto,
+  classificarTema,
   comboVisivel,
   CONQUISTAS,
   corDoAvatar,
   diaSP,
   diasParaFimDaSemana,
+  dominioDaDisciplina,
+  dominioDoAssunto,
   fimSemanaSP,
   fraseOfensiva,
   gerarChaveOffline,
@@ -90,7 +93,7 @@ const TOKEN = 'sessao-mock';
 
 interface SessaoEstudo {
   id: string;
-  tipo: 'licao' | 'revisao' | 'desafio';
+  tipo: 'licao' | 'revisao' | 'desafio' | 'reforco';
   licaoId: string | null;
   questoes: QuestaoMock[];
   respostas: { questaoId: string; acertou: boolean; tempoMs: number }[];
@@ -171,6 +174,8 @@ function novoEstado() {
     ofensivaHoje: false,
     licoesHoje: 0,
     questoesFeitas: 0,
+    /** D29: tentativas anteriores por assunto (fora das sessões do mock), para /desempenho. */
+    tentativasAntigas: new Map<string, { acertos: boolean[]; ultimaEm: Date }>(),
     acertosTotal: 0,
     xpSemana: 0,
     conquistas: new Set<string>(),
@@ -464,6 +469,22 @@ function aplicarCenario(nome: string) {
   ]);
   concluirAte(2);
   estado.progresso.set(todasLicoes()[2]!.l.id, 0);
+  // Histórico por tema: um fraco, um regular, um forte e um pouco praticado.
+  const padroes = [
+    [true, false, false, true, false, false, true, false],
+    [true, true, false, true, true, false, true, true, false, true],
+    [true, true, true, true, true, true, false, true, true, true],
+    [true, false],
+  ];
+  const temasVistos = [
+    ...new Set(UNIDADES.flatMap((un) => un.secoes.map((s) => s.assunto.id))),
+  ].slice(0, padroes.length);
+  temasVistos.forEach((id, i) =>
+    estado.tentativasAntigas.set(id, {
+      acertos: padroes[i]!,
+      ultimaEm: new Date(agora().getTime() - (i + 1) * 86400_000),
+    }),
+  );
   if (nome !== 'revisaoVazia') {
     const ontem = new Date(agora().getTime() - 3600_000);
     for (const q of QUESTOES.slice(0, 12)) estado.revisoes.set(q.id, ontem);
@@ -701,6 +722,11 @@ const H: Partial<Record<NomeRota, Handler>> = {
     return { gemas: u.gemas, protetores: u.protetores };
   },
 
+  meLembretes: () => ({
+    ativo: estado.usuario.notificacoes && Boolean(estado.usuario.lembreteHora),
+    itens: [],
+    geradoEm: new Date().toISOString(),
+  }),
   meusConcursos: () => meusConcursos(),
   meuConcursoSeguir: ({ corpo }) => {
     const c = corpo as { concursoId: string };
@@ -937,6 +963,88 @@ const H: Partial<Record<NomeRota, Handler>> = {
     }
     if (qs.length === 0) throw new Falha(409, 'questoes_insuficientes', 'Nada para revisar agora.');
     return iniciarSessaoEstudo('revisao', null, qs, null, null, qs.length);
+  },
+  desempenho: () => {
+    // Tentativas por assunto, em ordem, a partir das respostas das sessões do mock.
+    const porAssunto = new Map<string, { acertos: boolean[]; ultimaEm: Date }>(
+      [...estado.tentativasAntigas].map(([k, v]) => [k, { ...v, acertos: [...v.acertos] }]),
+    );
+    for (const s of estado.sessoes.values()) {
+      for (const r of s.respostas) {
+        const q = questaoPorId(r.questaoId);
+        if (!q) continue;
+        const atual = porAssunto.get(q.assuntoId) ?? { acertos: [], ultimaEm: s.iniciadaEm };
+        atual.acertos.push(r.acertou);
+        if (s.iniciadaEm > atual.ultimaEm) atual.ultimaEm = s.iniciadaEm;
+        porAssunto.set(q.assuntoId, atual);
+      }
+    }
+    const assuntos = [
+      ...new Map(UNIDADES.flatMap((u) => u.secoes.map((s) => [s.assunto.id, s.assunto]))).values(),
+    ];
+    const temas = assuntos.map((a) => {
+      const reg = porAssunto.get(a.id);
+      const d = dominioDoAssunto(reg?.acertos ?? []);
+      return {
+        assuntoId: a.id,
+        nome: a.nome,
+        disciplina: a.disciplina,
+        classe: classificarTema(d),
+        dominio: d.valor,
+        tentativas: d.tentativas,
+        ultimaEm: reg ? reg.ultimaEm.toISOString() : null,
+        bruto: d,
+      };
+    });
+    const pendentes = pendentesRevisao().length;
+    const trilhaConcluida = indiceAtual() === -1;
+    return {
+      resumo: {
+        questoes: estado.questoesFeitas,
+        acertos: estado.acertosTotal,
+        precisao: estado.questoesFeitas
+          ? Math.round((estado.acertosTotal / estado.questoesFeitas) * 100)
+          : null,
+        temasNaTrilha: temas.length,
+        revisoesPendentes: pendentes,
+        trilhaConcluida,
+      },
+      proximoPasso: pendentes > 0 ? 'revisao' : trilhaConcluida ? 'treino' : 'trilha',
+      disciplinas: (Object.keys(DISCIPLINAS) as SlugDisciplina[]).map((slug) => {
+        const doSlug = temas.filter((x) => x.disciplina === slug);
+        return {
+          slug,
+          nome: DISCIPLINAS[slug].nome,
+          dominio: dominioDaDisciplina(doSlug.map((x) => x.bruto)),
+          tentativas: doSlug.reduce((n, x) => n + x.tentativas, 0),
+        };
+      }),
+      temas: temas.map(({ bruto: _bruto, ...x }) => x),
+    };
+  },
+  reforcoIniciar: ({ corpo }) => {
+    const c = (corpo ?? {}) as { assuntoId?: string };
+    if (c.assuntoId) {
+      const sec = UNIDADES.flatMap((u) => u.secoes).find((s) => s.assunto.id === c.assuntoId);
+      if (!sec) throw new Falha(404, 'nao_encontrado');
+      const qs = questoesDoAssunto(c.assuntoId).slice(0, 10);
+      if (qs.length === 0)
+        throw new Falha(409, 'questoes_insuficientes', 'Este tema ainda não tem questões.');
+      return iniciarSessaoEstudo('reforco', null, qs, sec.assunto.dica, null, qs.length);
+    }
+    // Treino inteligente: erros vencidos primeiro e o resto completado com o banco.
+    const vistos = new Set<string>();
+    const qs: QuestaoMock[] = [];
+    for (const q of [
+      ...pendentesRevisao().map((id) => questaoPorId(id)!).filter(Boolean),
+      ...QUESTOES,
+    ]) {
+      if (qs.length >= 10) break;
+      if (vistos.has(q.id)) continue;
+      vistos.add(q.id);
+      qs.push(q);
+    }
+    return iniciarSessaoEstudo('reforco', null, qs, null, null, qs.length);
   },
   sessaoResponder: ({ params, corpo }) => {
     const s = estado.sessoes.get(params.id!);

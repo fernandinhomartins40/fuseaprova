@@ -20,6 +20,7 @@ export const CHAVES = {
   concursoPorId: (id: string) => ['concurso', id] as const,
   configPublica: ['config', 'publica'] as const,
   anotacoes: ['anotacoes'] as const,
+  desempenho: ['desempenho'] as const,
   anotacao: (questaoId: string) => ['anotacoes', questaoId] as const,
 };
 
@@ -122,6 +123,15 @@ export function useSimulado(id: string) {
   return useQuery({
     queryKey: CHAVES.simulado(id),
     queryFn: ({ signal }) => chamar('simuladoObter', { params: { id }, signal }),
+    staleTime: 0,
+  });
+}
+
+/** Central de desempenho e próximo passo (D29). */
+export function useDesempenho() {
+  return useQuery({
+    queryKey: CHAVES.desempenho,
+    queryFn: ({ signal }) => chamar('desempenho', { signal }),
     staleTime: 0,
   });
 }

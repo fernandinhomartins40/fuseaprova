@@ -68,7 +68,10 @@ export default function Revisar() {
         <section className={s.vazio}>
           <Capi pose="explicando" tamanho={220} descrever />
           <p className={s.vazioTexto}>{TEXTO_REVISAO_VAZIA}</p>
-          <Botao3D onClick={() => navegar('/aprender')}>IR PARA A TRILHA</Botao3D>
+          <Botao3D onClick={() => navegar('/reforco/praticar')}>TREINO INTELIGENTE</Botao3D>
+          <Botao3D variante="secundario" onClick={() => navegar('/aprender')}>
+            IR PARA A TRILHA
+          </Botao3D>
         </section>
       ) : (
         <section className={s.heroi} aria-labelledby="rev-titulo">
@@ -76,9 +79,7 @@ export default function Revisar() {
             <h2 id="rev-titulo" className={s.heroiTitulo}>
               {textoQuestoesParaHoje(r.data.pendentes)}
             </h2>
-            <p className={s.heroiSub}>
-              Transforme seus erros em aprendizado.
-            </p>
+            <p className={s.heroiSub}>Transforme seus erros em aprendizado.</p>
             <Botao3D
               variante="claro"
               bloco={false}

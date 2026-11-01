@@ -108,6 +108,57 @@
   font-size: 14.5px;
   color: var(--fa-ink-2);
 }
+.desempenho,
+.desempenhoDestaque {
+  margin-top: 14px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  box-shadow: var(--fa-sombra-cartao);
+  text-align: left;
+  color: var(--fa-ink);
+}
+.desempenhoDestaque {
+  align-items: flex-start;
+  background: var(--fa-laranja-soft);
+  border-color: var(--fa-laranja-forte);
+}
+.desempenhoIcone {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: var(--fa-turquesa-soft);
+}
+.desempenhoCorpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.desempenhoTitulo {
+  font-weight: 900;
+  font-size: 16px;
+}
+.desempenhoTexto {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+}
+.desempenhoBotoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
 .secaoTitulo {
   font-size: var(--fa-t-secao);
   margin: 28px 0 14px;

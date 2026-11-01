@@ -213,7 +213,7 @@ export async function atividadeDoDia(tx: Db, usuarioId: string, dia: Dia): Promi
     .where(
       and(
         eq(tentativas.usuarioId, usuarioId),
-        eq(sessoesEstudo.tipo, 'revisao'),
+        inArray(sessoesEstudo.tipo, ['revisao', 'reforco']),
         gte(tentativas.respondidaEm, ini),
         lt(tentativas.respondidaEm, fim),
       ),
@@ -299,7 +299,7 @@ export async function semanaDaOfensiva(tx: Db, usuarioId: string, agora: Date) {
       .where(
         and(
           eq(tentativas.usuarioId, usuarioId),
-          eq(sessoesEstudo.tipo, 'revisao'),
+          inArray(sessoesEstudo.tipo, ['revisao', 'reforco']),
           gte(tentativas.respondidaEm, ini),
           lt(tentativas.respondidaEm, fim),
         ),

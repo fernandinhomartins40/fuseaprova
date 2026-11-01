@@ -171,6 +171,53 @@ export default function Aprender() {
         </div>
       </section>
 
+      {/* D29: atalho para a central de desempenho; com a trilha concluída, em destaque. */}
+      {trilha.data && !atual ? (
+        <section className={s.desempenhoDestaque} aria-labelledby="treino-titulo">
+          <span className={s.desempenhoIcone}>
+            <Imagem nome="icone-alvo" tamanho={34} />
+          </span>
+          <div className={s.desempenhoCorpo}>
+            <h2 id="treino-titulo" className={s.desempenhoTitulo}>
+              Meu desempenho · Treino inteligente
+            </h2>
+            <p className={s.desempenhoTexto}>
+              Trilha concluída! O treino inteligente reforça seus temas fracos e mantém o que você
+              já sabe até o dia da prova.
+            </p>
+            <div className={s.desempenhoBotoes}>
+              <Botao3D
+                variante="laranja"
+                bloco={false}
+                compacto
+                onClick={() => navegar('/reforco/praticar')}
+              >
+                TREINO INTELIGENTE
+              </Botao3D>
+              <Botao3D
+                variante="secundario"
+                bloco={false}
+                compacto
+                onClick={() => navegar('/desempenho')}
+              >
+                VER DESEMPENHO
+              </Botao3D>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <button type="button" className={s.desempenho} onClick={() => navegar('/desempenho')}>
+          <span className={s.desempenhoIcone}>
+            <Imagem nome="icone-alvo" tamanho={34} />
+          </span>
+          <span className={s.desempenhoCorpo}>
+            <span className={s.desempenhoTitulo}>Meu desempenho · Treino inteligente</span>
+            <span className={s.desempenhoTexto}>Veja seus temas fortes e fracos e reforce</span>
+          </span>
+          <IconeTraco nome="chevron" tamanho={22} />
+        </button>
+      )}
+
       <h2 className={s.secaoTitulo}>Sua trilha</h2>
       {trilha.isPending ? (
         <Carregando />
