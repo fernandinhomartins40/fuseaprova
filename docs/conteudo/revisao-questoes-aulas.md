@@ -1,0 +1,163 @@
+# Revisão de questões apontada na geração das mini-aulas (D28)
+
+Lista gerada em 01/11/2026 enquanto as aulas "Entenda o tema" eram escritas. Os ids são prefixos (8 caracteres) ou completos; busque no painel em Conteúdo > Questões. Nada aqui foi alterado no banco: enunciados, alternativas e gabaritos continuam como estavam.
+
+## Questões SEM aula própria de propósito
+
+A aula contradiria o gabarito (provavelmente errado) ou entregava a resposta. Mostram a dica do assunto até a revisão. Depois de corrigir a questão, dá para escrever a aula no editor do painel (campos "Entenda o tema").
+
+- 7977d67c-bb33-568c-8533-afaeadea5930
+- a8942096-a817-5e27-9566-97f2a7392259
+- 295042cd-1240-5962-a994-3dd3990ab5c9
+- 4f382f8b-b426-5de3-8ee5-301120e4ef80
+- 43b5c944-0675-5aa7-88f8-c2401a5fe4bc
+- 47ab0f95-22c0-5eb4-b5e2-8861da7304fd
+- 6bbf767d-7c69-5f54-9426-5929674cb5eb
+- 75155c7f-f5e8-568d-9cb7-32a621e09f00
+- 920d34dc-3be9-5afa-b377-60159d0e52db
+- a3093549-cd43-529f-b0d4-701f17934d52
+- 4bc717aa-a4f3-505c-b3a3-52b0a8202840
+- e8236584-3adc-50dc-87cf-6653147d98fe
+- 44302cca-64d7-5426-852b-418adab115fe
+- 0b11e020-efa4-5f78-be56-29e63db6c85d
+- ce28f7db-6b47-5428-ab4a-773c0333bee6
+- 1a8e16a2-b0aa-5ad1-bd40-84678f848d29
+- 6c0b09dd-62f8-5cd4-8099-f2fd3690b53c
+- a904a206-6374-59dc-a1b8-90a9da59036b
+- 13f962a0-27af-508b-9ec7-5364129186a9
+- 90d37e7a-5161-55ba-9bb6-9be5da8e7f2a
+- 04f65afc-e77b-57ce-ad2e-b82e6b94c614
+- 34ddb343-976b-5fc8-8761-f84f88f66548
+- 6e72beba-2e77-5999-9a56-fe9438abd4a8
+- 8eb12d2b-a010-596e-9911-7a85ef7a6fa4
+- 9b5496e5-4ed0-5e44-97d0-46e898314ba7
+- edfe8833-46ee-502f-aebc-0383c2a57489
+- 7c799f78-0873-5ca3-92f1-43c1b50f8c27
+- d6d535a0-181b-5c72-a00d-cfe22cf07790
+- e9765254-696a-5585-87fe-76ad7a1b3c31
+
+## Apontamentos por lote
+
+# Questões suspeitas apontadas na geração (não alteradas)
+- 227a09ba = 66f42fb2 (duplicadas); 2f679b1b = 98e3f204 (duplicadas); 731e7529 "NÂO" no enunciado. (lote 0001)
+- 26e88cef, 494ddd80, 8ef38778, 988174e8, d6a43de0: mesma questão do apartamento (lote 0022)
+- 3821c215: "valor arrecadado" vs gabarito líquido (ambígua) (0023)
+- 8b6cc229: "este ano" sem ano; gabarito 1987 supõe 2023 (0024)
+- b658bb92: árvores a cada 4 m em 5 km, 1.250 vs 1.251 (0025)
+- 012b6211: "0,15 centavos" (redação) (0026); 0df00cfc: fonte "Instituto Nacional de Cardiologia" não conferida (0026)
+- eb545ebf: expoentes perdidos na extração ("22" = 2², "82" = 8²) — corrigir enunciado e alternativas (0027-31)
+- 81929e98: "por hora ou fração" contradiz gabarito proporcional R$ 19,50
+- 12dd8dff: alternativa E com lixo "CONHECIMENTOS EM SAÚDE PÚBLICA"; quase duplicada de 9ee5e936
+- 2344baad: "760,000" na alternativa E
+- 0b29c977: Turquia/Síria como "leste europeu" (impreciso)
+- 8759bb25: duplicações 6 ou 7 (ambígua)
+- e30424d5: "sufixo de qualidade acentuada" com gabarito "Selvagem" (0012)
+- ce4765c3, e32a34b8: pedem ponto de vista do autor sem texto de apoio (0013)
+- 05998a3d, 2c2fa3c5: sublinhado/destaque perdido; dependem do gabarito oficial (0015/0016)
+- 131bb55e, 4ea4db53, 49114b9e, 13ced56b: negrito cobre só parte do termo cobrado (0016)
+- Duplicadas: 71e4e15d/d020f10b, 1676bdda/254f325f, 71148696/7bd64121, 5aeac893/e490625e, 3796dc19/971cd07a, c78f65e5/e86d2ffc
+- 571a0eb1: enunciado contaminado com tabela de outra questão (0021); 9c523684: "0,48 centavos" (0021); 761ece02: "reside a 5 anos"
+- ce0eca72: "maior valor" de parábola com concavidade para cima (0019); 2aa1d5e5: moda discutível; 678282ca: pesos confusos (0019)
+- 3727d94c: "18,000" (0018)
+- Duplicadas: 4e392540/cc8daee1, 409586c8/dc393b77, 235d6ffa/9f7989d1
+- 0011: 0ead1073 (enegrecimento/parassíntese discutível), 89aa6576 (impagável não é parassintética; sublinhado ausente), 89ca3942, 9a0852fc (conceito confuso)
+- 0009/5912dc5e: opção A "Em-co-lhi-men-to" grafada errada; dígrafo nasal ignorado em 643c6a70, 8f1a3252, e462dac3, 5e006101
+- "Termo em destaque" sem negrito (vários candidatos): 02ecf9ac, 09b2c3c3, 1c6b5c06, 36989aed, 4e693200, 6baa5830, 7077eb44, 8aac52d0, 9c90b03d, a0d70692, a8f083f9, fcb2410a, f7ce5eae, 00bdf45e, 1338cca1, 98924c9f, fd68c2a3, ffd01760; 10becadd/774b05f0 (2 termos, 1 negrito); 6f3ba2fa (destaque só na imagem)
+- Discutíveis: 4e693200/29c53e4e (modo x intensidade), 00bdf45e ("Segundo" conjunção), 8707b2fa
+- Sem texto de apoio: 245a2bcd, 3d8da47e, 3d960951, 464937d7
+- Erros de enunciado: 98c72ae8 (truncado), 426a9a16, ed88a68e, fe2d414f. Duplicadas: 53b6db9b/8b893334, 11929976/5c51ced7
+- Lixo "CONHECIMENTOS DE INFORMÁTICA" na alternativa E: 5c4ebcd2, b891d4c0, f79939b7
+- Gabarito provavelmente errado: a7cd0b5f (Shopee é de Singapura), af3bc106 (IPI não é substituído pelo IVA dual)
+- Geografia local não conferível: 0bfc1ddb, 0ad1894e, 1ce9d9d6; 55bdd0b5 (obrageros); 8ea11f01 ("Gregor" Cleveland); 5e58d391/b891d4c0 ("Superior Tribunal Federal")
+- Datadas: 14f5143c, f823dbef ("Em 2022 teremos eleições"); duplicadas 97eeb167/d31968e7
+- Contradição: 61b3d5d2 (0050) x 88a3466e (0051), mesma frase errada numa e certa na outra (solo argiloso)
+- Gabarito estranho: 21b36f92 (estoque de segurança), 411a1fa8 (34 x 35), eda8d910 (ponto de pedido), a8e49930 (provável gabarito errado), 261dfc3c (70-90% N)
+- Mais de uma defensável: 449b8b64, 246e130b, 910c2666, 10590bf3, 28c44991
+- Nomes: 1f8723d3 ("Beldoegra" para Bidens pilosa = picão-preto), 5decbf5b (nomes científicos errados), 01d9fcec (cloretos como "alimento")
+- 8da9246c: "população do município" sem dizer qual (0044); c6c92afa: cervejarias de Ponta Grossa (Petrópolis também) (0045)
+- 12f1d88b: ministra da Saúde desatualizada (Nísia saiu em 2025) (0046); f89e6ce3/f8c72763 duplicadas
+- 6cbd1e3d: Quilombo do Sutil (Ponta Grossa?) (0043); 99362ded: Kerbfest só luteranos (discutível)
+- Explicações só "pelo gabarito": e1f34b1e, d698cda0, 4015d60c, fbf4827b
+- 7e32e76a: gabarito provavelmente errado (abdutor curto do polegar é inervado pelo mediano) (0056); 62518d2f e ea5cf6a3: citam imagem/fórmula ausente; 4a0678ee ambígua
+- af7ea8de, c5c6602e (70-90% N), e8fde421, fb1e1c6c: gabaritos estranhos (0052-0053)
+- 9d0500a1 (composição do CAE), b315b856 (faixa de carboidratos PNAE): possivelmente desatualizados; 034c0f86, c3e2b45b, 78d90df0, a031f6a2 discutíveis (0054-0055)
+- a6a17489: escala 125 km em 6 cm = 1:2.083.333; gabarito 1:750.000 errado (0059)
+- 134744f4: descreve arquivo intermediário, gabarito "corrente" (0060); ef271797: duas defensáveis; e0a450a6: clavícula na caixa torácica
+- 5ebf6ca4: figuras ausentes; 76cfa52f e e5f75604: alternativas com texto colado; e196c852/ae9854e1: texto de apoio com palavra solta; d449577d: ano "200%"
+- Só "pelo gabarito": 65f9acb8, 71fd53e9, 4a19d15c, 978774af, f4dc476a
+- 67a0b707: Notificação B vale 30 dias, listas C1/C5 trocadas, gabarito D errado (0063); 5f14ca20, 76a377b0 discutíveis
+- a6e2b073: custo-efetividade incremental (E) x gabarito custo-benefício (C) (0064); c8bc0d7b, ed578c97, 98b24b75 discutíveis
+- 5b997242: PNAB é Política, não Programa (E seria a certa) (0065); 4cb0903a: números da PNAB 2011 desatualizados; 3960814e texto adulterado; f8d659ef discutível
+- e8a29776: atribui a 2022 mudanças da PNAB 2017 (0066); b757bb45: duas incorretas; d81a3088: alternativa certa contraditória; 3bf107c5: depende de edital específico
+- 0072: 90827eed (explicação contradiz gabarito), 431cd82a, 1dd8927e (A e B iguais), 0c6ba7ca, 6076ebfd
+- 0073: 4383d8c2 (pede INCORRETA mas só B é certa; gabarito invertido), 42440562 (ampola = grupo E), b9651e13
+- 0074: 4825c790 (sem explicação, gabarito duvidoso), 70a05d4e, 827c3a8c
+- 0075: ad702cf7 (duas incorretas), d1f68920, cb86317e, d21fec8b, d6814727
+- 0076: 0e4a8d02 (premissa frágil BNCC), 52383fdc, 37ccf4bf
+- 0070: ea2adbcb (gabarito V,V,F,F marca item falso; certa seria V,F,F,F, ausente), dc06790e, db1923f0 (Lei 13.595/2018), 2903221f x 594dbae6 (PACS 1992 x 1994)
+- 0068: 8771f1b9 (alongamento previne lesão, controverso); 0071: 6f519153 (item contraditório), 99919846 (Kohs também); 0067: ddca9665 (crase solta na D); 0069: conferir enunciados longos 084a590f, 0cdf70ae, 249962aa, 65a8f088
+- 0077-0081: 7bec35cf (código BNCC ausente), 9c1213e4 (EF tem 5 áreas, não 4), 0a7919a7, 4457efc5 (caneta de insulina 300 UI), c744ee3e, e6620e3a
+- 02ea5b7e (principal causa de morte pós-transplante é cardiovascular), 9c8f74e2 (tórax instável), 82b4d226 (duas corretas), e54d4375, e6b360d8 (PSA em ng/mL), 451a3260, 4a2d7dde; 6fbc6da1/fafb66cc só pelo gabarito; 50e488ce/5b0cf8a9 dependem de imagem
+## Gabarito provavelmente ERRADO (prioridade de revisão)
+- SEM AULA de propósito (aula contradiria o gabarito): 7977d67c (comunicação, exceção seria B), a8942096 (correção de lançamento, certa seria C), 295042cd (folha, certa seria C 1.850.000)
+- 7c954753 (13º como despesa), 3028209d (40 milhões não fecha), 6e726b72 (duas válidas) — contabilidade (0088-0089)
+- 7389b16d, a273b309 (0087)
+- 0082-0086: 6d320563 (duas incorretas), 6830773b (item cortado), 80f87639, 8397af95 e c4eb6b75 (correção do ânion gap pela albumina soma), 95a9a415, a9bf8c39, cbcc21fa, d751aba0, e24a7dc6, e8e9c53d, d810ba98, f56e084b, fb59eb9f, f8d8e2eb, 0aa1eb0c, 3273e55c (figura); Código de Obras sem município: 1d6f3844, 2ed4061d, 3de18794, 5d87b45c, 60549a52, 81b4b46f, a707d3c6
+- 0097-0101: 5f06321f (alternativa E, gabarito, cortada), 8e254560 (nome do agente grafado errado), c365ecb0, fd6b3cb4 ("escalonada"), e21e943b, 96367a05 (texto solto "Ábaco. REDAÇÃO", "CAVALU"); duplicadas 1620cfe9/55c91670
+- SEM AULA de propósito (orçamento público, 0092-0094): 4f382f8b (serviços de terceiros = custeio, certa A), 43b5c944 (liquidação mensal), 47ab0f95 (receita orçamentária 4,8 mi), 6bbf767d (crédito especial, certa C), 75155c7f (pagamento em duplicidade, certa E), 920d34dc (saldo da dotação, certa C), a3093549 (investimento, certa B)
+- Discutíveis: 419bcc8d, 3f638ecc, 86c5942f, c0cd1076 (duas), e5594e3c, e84a1c54
+- 0102-0106: 4eb181ae (tombamento como limitação geral), 99e5b032 (bem público x Código Civil), 9ac88b93 (4 lacunas, 5 termos), 3cf6407e (LC 64/1990 em empregado privado), e0d5439a (licença-paternidade CLT), 3b7d79d4 (dois comandos), 13d9b856 (CTN art. 206); duplicadas 0281fc8c/1176e342; Código Tributário municipal: 0a1dad14, 1446dbf7, 15456643, 07d31d89
+- Gabarito provavelmente ERRADO: 498c6305 (teto do MEI hoje é R$ 81 mil, gabarito R$ 45 mil), b12d8438 (Simples, certa seria A "I, II e III")
+- Discutíveis (0108-0111): b19abe7d (IOF-ouro), a16c73c9 (prazo decadencial), be430eaf (depósito prévio x SV 21), 47fdae82
+- Gabarito provavelmente ERRADO: a9a21589 (eixo neutro, D parece melhor); 6b30975b (duas incorretas); 8e544f42; fb191b38
+- Dados com falha: 271f1669 (motor x gerador), c5a2021e (Zb = 1 Ω), c3f45e61 ("bf = 40m"), ac76e881 (K = 2); d0462357 (15% não confirmado)
+- Alternativas perdidas (eram imagens): 9c8ada51, db700859 (A-D só "."), 8fceb6e4; figuras sem explicação: 5a415933, 1d6cb8ae, 354ee53f, b3ec5168
+- SEM AULA de propósito (0112-0119): 4bc717aa (varicela, certa D), e8236584 (penalidades, certa C?), 44302cca (metronidazol desatualizado), 0b11e020 (campos de experiência, sequência inexistente), ce28f7db (ISS, ADI 5835), 1a8e16a2, 6c0b09dd (vazavam)
+- Gabarito provavelmente ERRADO: 9d7b1316, 27604192, f69eaf63
+- Enunciado/conteúdo: 276e0fbe, f6530751, 4b662045, 58f52b95 (dose ceftriaxona), d6f43467, 9c92f51f, 914a8aa9 (item cortado), a30e947c ("pantarato"), aff77c7a, 995178ef, 6a23b10c (Togaviridae), 53e3cd87, 787b7ae3, 30d0e8e6, d1e15e82
+- 0117-0121: 20abf533, 51eed77a, 18f7d767 (figura/tabela ausente), 9ba29b97 (REDAÇÃO colada na E), 1cc7b4fa, 6a4e4cdd ("220 watts"), 5afb2498, daf1e329, fc732877, 6c8ffda1, bcd278c9, 5ea2ca7e, da6c9995
+- Conferir vigência: fbd78861, cdae9190, e6ca9d57 (limite do MEI em 2026)
+- Gabarito provavelmente ERRADO: f9049f2a (sanitário 1,40 x 2,00 comporta giro de 180°), b2c7ad98 ("educação através da arte" é Herbert Read, não Dewey), c8dc8944 (atletismo)
+- 0127-0131: e7ed5b11, e48f8907 (resultado irreal), 84a9eedc (Paraná sem citar), 5d12e7b5, 79a9e1c7 (digitação), ab666a89 x 0593c474 (Go Tani 1998 x 1988), d79d3bd8 (quarta parede)
+- Gabarito provavelmente ERRADO: f1b302da (duas falsas), f181073e (três incorretas, prazos atuais 3 e 18 meses), 0baa29c2 (truncado), c82db361, c6b79705, ff052f41
+- 0132-0136 a conferir: e7a88a82, 509da5b2, 4abbb1f9, c9d1a71d, 465d969c, a0e9cd48 (ECA 14 x CF 16), 9ad2a36a, 9769a878, bef9336b, 181502b6 (cortado), 0e94dd2d, 29773ca1 ("123/2005")
+## Lotes sem releitura rigorosa pelo agente (priorizar na auditoria): 0112-0115, 0117-0120, 0132-0134
+- Gabarito provavelmente ERRADO (0142-0146, aula neutra): 9c5fb455 (CYP3A4), bdb3df46 (farmacocinética x farmacodinâmica, certa E), 6bf81bd1, 414e0b83 (conservante), 6d44fdef, 050d2569, e79bcabb
+- Discutíveis: 8e18915e (explicação contradiz gabarito), 748cec8e, c0e00fc1, 193de144, e10856c5, 66f50179, 8e1631b3
+- Enunciado com defeito: 8f26a7e9 (texto de outras questões colado), a5716c2b, defaaf2e, fd386515 (cortados), 9759f927, 95b1a34a ("Tafilaxia", apoio de outra questão)
+- Gabarito provavelmente ERRADO: 2aadaebb (absorção cutânea no RN é aumentada; certa C)
+- Duas respostas/discutíveis (0137-0141): 9beae378, 2b8de739, 2cc3b2a0, 7db8b049, 16066d2a, 1168ee82, 2a9e9b21 (metformina, OCT2), 1e5c4606, b3d9f9f9, 75d90220, c806552b, 035cbeea, 4444ed14, 448c9a88
+- Digitação: b2142a0f e cfe6dd82 ("Resolução 654/2017" -> 564/2017)
+- 0148-0150: 7de8c38b (dismenorreia: calor x crioterapia), 9441ddd1 (atividade vagal), b3eab581 (padrão capsular do quadril), ebfcc327 (crepitações na ICC: certa E), f134329f (ITB 0,45 não é isquemia crítica; certa B)
+- 0162-0166: 7f905edb (substância negra é gânglio basal), 93cef695 (Paget, item IV), 759e612e (artéria vaginal), f6dd7f86 (nº de funcionários em UAN), 10e28c57
+- Defeitos: 15a87898 (código solto na E), 5cc47420 (apoio sem sentido), 0ec89b98 ("RDC 2016/2004" = 216/2004), a88ed1bd ("creatinina")
+- Gabarito provavelmente ERRADO (0159-0161): 2303843c (Bourguignon), 6c2d9095, 9ff1f39f (estudo social: atribuição privativa), 23c3f483 (agulhas em saco plástico; recipiente rígido)
+- Duvidosos: 8542b113 (catalisador), ce8342b4 (C e D idênticas), 050e0aa3 (níquel em bateria automotiva), 42b66522
+- 0152/0156 (fonoaudiologia): 3e8182a3 (Mendelsohn x Masako, gabarito provavelmente errado), d417844e (pede CORRETA mas só a E é errada: enunciado deveria pedir INCORRETA), 46508785, ee072968
+- 0168-0171: e738cb55 (desinfetar louça: padrão é cloro, gabarito álcool), ba7b07ff (ESF 1997 x PSF 1994), fb9e73fd (Aw), 3f507974, 8ad0dd37 (explicação contradiz), c4db1859 ("Guiomar Vaz" = Novaes), b1b26793, dadaed21 (1ª Conf. Saúde 1941), f2259af8, ea80aafd (Pastoral 1983), 240aff21 (BCG e hanseníase), cd06274f (nome do órgão), f8365773 (duas incorretas), 816241e8
+- SEM AULA de propósito (0186): a904a206 (Lei 13.021/2014 não trata do técnico em farmácia), 13f962a0 (6 afirmações, alternativas de 5 e 6 itens)
+- 0186: 542ca8a5, ea8b5d50; e6320415 (0184, Lei 14.071/2020: conferir norma atual)
+- 0172-0176: bb28af61 (audiência pública "inviabilizar"), 6052f36b (interdição/apreensão: gabarito provavelmente errado), 73592f8c (D e E idênticas); dependem de imagem: 05a1c1cb, 5a8d28d5, 491fb5be
+- 0177-0181 (trânsito): 98ad47d3 (JARI), 72474abb (infração grave x gravíssima), 6ecabe88 (pedágio), 6d8f2e01 (cassação, Lei 14.071), 6369d78a, 403d5494 (farol baixo), 6a498be8/718570ff (acidente x sinistro); dependem de imagem: 19dbf63a, 53b6393b, 76c5a48a, 7ebc7cf5, 7ecb49ec, 91c11a94, 93dc46d5, 983323e9, 3338dd29
+- SEM AULA (0197): 90d37e7a ("válvula de ignição" como gabarito; o certo é válvula de admissão)
+- 0193-0198: 5a4b9a0f (LOAS, A bate melhor), 91efd5e7/e6b36c96 (duplicadas), 5063ad6e (dupla negação), 2dbc8c7a (truncada), ca51db47 (dado de manual), d146a94d, c441a52a; imagem: d18d453f, d4ff6b69, ee9c9e0e, 28db20b6, a2c5f82d, ac6338ef, bb654a67, c38f7acb, db4f9092, 80a961e0
+- SEM AULA (0205-0208, atalhos do Word com gabaritos contraditórios entre si, inglês x português): 04f65afc, 34ddb343, 6e72beba, 9b5496e5, edfe8833, 8eb12d2b
+- 0207-0210: 67f11bef (roteador x camada de rede), fcb7af7b (sete parênteses desordenados), 4acb602a (TFG), 49aa3e63 (curvas Down/PC), 68a3d8c0, 33555f18 (retrogradação); imagem: 6dab142a
+- 0187-0192: 9f536550 (alternativas com números de lei sem relação: lixo de extração), 8c1fcc82 (pede INCORRETA, gabarito "todas corretas"), 9137ea1c, 6752c03c, f8c4068a (lei orgânica local), 6625b8a2 (limite de dispensa muda a cada ano); lei orgânica/uso do solo de município (não conferido): 4045559d, 18f227a6, 202ca779, 1f53c26d, 092c34ad, 5aaffbd9, 9ab267ec; Libras (sinal só na imagem): 2d934e4a, 89208ff7, a1540f14, f9a0883b
+- SEM AULA (0204): 7c799f78 (Museu Nacional é da UFRJ/MEC, não do Ministério da Cultura)
+- 0199-0204: d9047498, 83c72b5b (museus), b12c8944 (ionóforo x virginiamicina), b1487c47 (esporotricose), 8d339fac, e5d5c57b (frêmito: 3 a 4 meses), e9f5e827, 7149d5c5, 3280c774, 71ef49a6
+- SEM AULA (0221): e9765254, d6d535a0 (o texto entregava a resposta)
+- Gabarito provavelmente ERRADO (0217-0222, odontologia): 9ad6ad8b ("técnica da bolinha" é Fones, gabarito Bass), bccf5c1a (pinça de Ivory), b8964e71, d493bba3 (grampo A2 não varia pelo lado)
+- Outros: b5a024f4 (apoio de outra questão), c4e30a02, d705037b, f9c187b3, fd285800, 89da832c, 74b22797 (instrumento de Lucas diverge de ad5e55b9 e de27baef); imagem: 7a245896, 7b2adb48, 7f93eab6, 92910a26, 96eab937, 9ecb02fd, e2d495f6, e8dceb39
+- 0211-0216 (odontologia): c7aeef63 (alternativas B e E parecidas), 2923d052 (adesivo de moldeira: silicone de adição e polissulfeto também usam), 3dddaa65/586d8abf (nomes de autores de incisões), 46f2d0ea (lactose), 3a0536da ("mlolares"), 87b365d6, 6038d2ca (ulotomia: gabarito possivelmente errado); imagem: 5260909a, 4199c499, 1beb5d89, 29b199f9, 29c68f0f, 210fbb85, 31e68799, 2cc537de, 637bcd08, 6ac8948a, 4b5f2b60
+- 0229-0234: 99540c78 (apoio de outra questão), 3167a9e0 ("tH"), 6631a901 (supremacia x indisponibilidade), 72d5c820 (A e C idênticas), 7a342228, 5fac0c41, f203cc2a, a4fbd4d5 (bolus 10 min), e59187df (prescrição intercorrente é CPC), 93ffe6aa (ECG V1); imagem: 0456e45d
+- Lotes com releitura parcial (priorizar auditoria): 0229, 0230, 0234, 0218, 0219, 0221, 0222
+- Gabarito provavelmente ERRADO (0236-0240): 43075e02 (técnica de Randall, gabarito Mannkopf), 89a518a3 (inibição recíproca é terapia comportamental)
+- Outros: 1a8592ce, 014fe54c (imagem), 010928ab/4ccf233b/ebebf381 (nº de lei/artigo do técnico em radiologia), e4a43157 (prazo 30 dias), 6e65c654 (lei municipal), 415a03e0 (memorando), 0b89fb63 (circular x instrução), ef30a091 (truncada)
+- Lote 0236: só o ajuste do validador, sem releitura (priorizar na auditoria)
+- 0244-0246 (saúde): 9e8f70f1 (pneumonia em adolescentes: Mycoplasma; gabarito "todos corretos" provavelmente errado), d137107d (suprarrenal, B reproduz o manual), 3251a632 (líquido livre fisiológico), 27d94abb, 30fc63bb, abd38597, 90f0a043 (OMS 6 meses x Guia brasileiro 12), 2b9c59ff, 05899f98
+- 0223-0228: 00558487/85ffa3cd/97492708/c90019c3 (mesma pergunta, gabaritos A/C/B/D: dependem de imagens diferentes), 4cbf612d (linha quente, E parece mais errada), adc6662e ("II I, II, I, I"), 6d8ec4fd, ccecd286, 76a89f51, 28994226, 55f7904f, c5f476a4, 8fe297e4, c66130d2 (NPT 017-PR); imagem: d4ea7bda, eb185c60, 4e74f2e8
+- 0255-0262: ae12f763 (Lei 8.142 não diz "consultiva"; 50/25/25 é de resolução; digitação "IV" repetido), 0059dd02 (integralidade x equidade), 4eb09184 (Lei 15.390/2026 não confirmada), c74f3243 (NOB 01/93), 5bba23fa/6d16eef4 ("Lei 9.142/90"), 9785394f, f5c63711 (NR-04), ebaf4ade (eSocial), f79051b3 (nome social), 954c461f, d6821c87
+- 0263-0270: 9b202a8e (filtro de café: tamanhos são 101-104; gabarito provavelmente errado), 6c96527d (software livre x código aberto), ffd6d02f (SMTP "enviar e receber" com POP3 como alternativa), c1d7d469, e70d26cb, 8cb13c73 (Saúde Pública x Coletiva); imagem: cb1613be, cb95dd1d
+- 0271-0279: 078124cc (azimute: gabarito E x explicação diz C), 18a019d1 ("Enzootia" não é sinônimo de endemia), 7593ee0d, e3d22ecb, dbe6b80f, b6e2111d (vigilância passiva), e43bb163, f512fb9e
+- 0247-0254: 362a2a9e (10.708/2003 é lei, não portaria), a8958330 (pede "não condiz", gabarito V,V,V,V), e7fa926c, fd848bf1, 76c9afdb, f778dda5 (redemocratização "década de 70"), fd246ed6, 9e3c2095 (PNASH), 2cd6bf0e, 2fe8a69c, 6c99d536, 4c672b51 ("kg/m³"), 0f7b2a0b, 454c5207
