@@ -47,14 +47,14 @@ export function agruparPorTema(itens: readonly Item[]): Grupo[] {
   const ordem: SlugDisciplina[] = ['portugues', 'matematica', 'gerais', 'especificos'];
   return [...porDisc.values()]
     .sort((a, b) => ordem.indexOf(a.slug) - ordem.indexOf(b.slug))
-    .map((g) => ({ ...g, assuntos: g.assuntos.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')) }));
+    .map((g) => ({
+      ...g,
+      assuntos: g.assuntos.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')),
+    }));
 }
 
 function normalizar(t: string): string {
-  return t
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase();
+  return t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 }
 
 /** D28: Minhas anotações (`/anotacoes`), do concurso ativo, organizadas por disciplina e tema. */
@@ -72,8 +72,7 @@ export default function Anotacoes() {
     const itens = (q.data?.anotacoes ?? []).filter(
       (a) =>
         (!disciplina || a.disciplina.slug === disciplina) &&
-        (!termo ||
-          normalizar(`${a.texto} ${a.assunto.nome} ${a.resumo}`).includes(termo)),
+        (!termo || normalizar(`${a.texto} ${a.assunto.nome} ${a.resumo}`).includes(termo)),
     );
     return agruparPorTema(itens);
   }, [q.data, busca, disciplina]);
@@ -91,8 +90,8 @@ export default function Anotacoes() {
           <Capi pose="explicando" tamanho={180} descrever />
           <p className={s.vazioTitulo}>Você ainda não tem anotações</p>
           <p className={s.vazioTexto}>
-            Depois de responder uma questão, toque em <strong>Anotar</strong> na folha da correção
-            e escreva o que quer lembrar. Elas aparecem aqui, separadas por tema.
+            Depois de responder uma questão, toque em <strong>Anotar</strong> na folha da correção e
+            escreva o que quer lembrar. Elas aparecem aqui, separadas por tema.
           </p>
         </section>
       ) : (

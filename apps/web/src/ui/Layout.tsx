@@ -54,14 +54,20 @@ export function CabecalhoApp({
       </Link>
       {direita ??
         (nome ? (
-          <Link
-            to="/perfil"
-            className={s.avatarLink}
-            // O nome acessível contém o texto visível, as iniciais (WCAG 2.5.3).
-            aria-label={`Abrir seu perfil, ${iniciais(nome)}`}
-          >
-            <Avatar nome={nome} id={id} suave tamanho={46} />
-          </Link>
+          <span className={s.cabDireita}>
+            {/* D28: atalho fixo para "Minhas anotações" nas telas principais do aluno. */}
+            <Link to="/anotacoes" className={s.atalhoAnotacoes}>
+              <IconeTraco nome="lapis" tamanho={18} /> Anotações
+            </Link>
+            <Link
+              to="/perfil"
+              className={s.avatarLink}
+              // O nome acessível contém o texto visível, as iniciais (WCAG 2.5.3).
+              aria-label={`Abrir seu perfil, ${iniciais(nome)}`}
+            >
+              <Avatar nome={nome} id={id} suave tamanho={46} />
+            </Link>
+          </span>
         ) : null)}
     </header>
   );

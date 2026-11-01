@@ -366,3 +366,20 @@
   font-size: 14.5px;
   font-weight: 600;
 }
+
+/* ---- salvamento automático ---- */
+.editorRodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+}
+.editorSalvo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--fa-green-shade);
+}

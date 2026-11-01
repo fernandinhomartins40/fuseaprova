@@ -22,6 +22,30 @@
   border-radius: 10px;
   margin-left: -6px;
 }
+.cabDireita {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.atalhoAnotacoes {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--fa-r-pill);
+  border: 1.5px solid var(--fa-line);
+  border-bottom-width: 3px;
+  background: var(--fa-surface);
+  color: var(--fa-petroleo);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.atalhoAnotacoes:active {
+  transform: translateY(1px);
+  border-bottom-width: 2px;
+}
 .avatarLink {
   text-decoration: none;
   border-radius: 50%;

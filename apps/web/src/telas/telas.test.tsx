@@ -220,10 +220,14 @@ describe('telas do aluno contra a API simulada', () => {
     const campo = await screen.findByLabelText(/Minha anotação/);
     await waitFor(() => expect(campo).toBeEnabled());
     await userEvent.type(campo, 'Lembrar da regra');
-    await userEvent.click(screen.getByRole('button', { name: 'SALVAR ANOTAÇÃO' }));
-    expect(await screen.findByText('Anotação salva.')).toBeInTheDocument();
+    // Salva sozinha, sem botão: "Salvo" aparece logo depois de parar de digitar.
+    expect(await screen.findByText(/^Salvo\./, {}, { timeout: 4000 })).toBeInTheDocument();
     unmount();
 
+    // O atalho "Anotações" do cabeçalho leva à lista organizada por tema.
+    abrir('/aprender');
+    await userEvent.click(await screen.findByRole('link', { name: /Anotações/ }));
+    await waitFor(() => expect(local).toBe('/anotacoes'));
     abrir('/anotacoes');
     expect(await screen.findByText('Lembrar da regra')).toBeInTheDocument();
     await userEvent.click(screen.getByText('Lembrar da regra'));

@@ -431,6 +431,7 @@ function TelaLicao({ revisao }: { revisao: boolean }) {
               questaoId={questao.id}
               offline={sx.modo === 'offline'}
               antesDeSalvar={() => sx.confirmar(questao.id)}
+              onMudou={() => void qc.invalidateQueries({ queryKey: CHAVES.anotacoes })}
             />
           }
           linhaRevisao={!resposta.acertou && resposta.voltaNaRevisao ? LINHA_REVISAO_AMANHA : null}

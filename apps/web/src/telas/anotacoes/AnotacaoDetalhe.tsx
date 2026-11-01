@@ -38,7 +38,8 @@ export default function AnotacaoDetalhe() {
         <>
           <div className={s.detCab}>
             <Chip variante="marca">
-              {NOME_CURTO_DISCIPLINA[q.data.questao.disciplina.slug]} · {q.data.questao.assunto.nome}
+              {NOME_CURTO_DISCIPLINA[q.data.questao.disciplina.slug]} ·{' '}
+              {q.data.questao.assunto.nome}
             </Chip>
             <span className={s.detOrigem}>{q.data.questao.chipOrigem}</span>
           </div>
@@ -47,6 +48,7 @@ export default function AnotacaoDetalhe() {
             <EditorAnotacao
               questaoId={id}
               inicial={q.data.anotacao.texto}
+              dicaOndeVer={false}
               onMudou={(texto) => {
                 void qc.invalidateQueries({ queryKey: CHAVES.anotacoes });
                 if (texto === null) navegar('/anotacoes', { replace: true });
