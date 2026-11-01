@@ -44,7 +44,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- O plugin de lembrete pede alarme exato, que a Play Store só aceita para alarme e calendário
-         (exige declaração). O lembrete diário tolera alguns minutos: usa o agendamento inexato. -->
+         (exige declaração). O lembrete diário tolera alguns minutos: usa o agendamento inexato.
+         Todo agendamento vai com isExactNotification: false (D30); sem isso o plugin 8.3 abre a tela
+         "Alarmes e lembretes" a cada agendamento. POST_NOTIFICATIONS (Android 13+) e
+         RECEIVE_BOOT_COMPLETED (reagendar após reiniciar) vêm do manifesto do plugin. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" tools:node="remove" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" tools:node="remove" />
 </manifest>

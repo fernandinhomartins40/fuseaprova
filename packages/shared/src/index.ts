@@ -25,3 +25,6 @@ export * from './cifra.js';
 export * from './email.js';
 export * from './operacao.js';
 export * as api from './api/index.js';
+export * from './desempenho.js';
+export * from './lembretes.js';
+export * from './agenda.js';

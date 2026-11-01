@@ -140,3 +140,33 @@
   margin-top: 14px;
   text-align: left;
 }
+
+/* D30: explicação dos lembretes e ações da agenda */
+.ajuda {
+  margin: -4px 0 6px;
+  color: var(--fa-muted);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.acaoLinha {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1.5px solid var(--fa-line);
+  border-radius: 12px;
+  background: var(--fa-surface);
+  color: var(--fa-blue-shade);
+  font-family: var(--fa-font-body);
+  font-weight: 800;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 8px;
+}

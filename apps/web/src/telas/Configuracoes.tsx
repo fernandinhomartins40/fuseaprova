@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { GEMAS, PROTETORES_MAX, nomeComSobrenomeAbreviado } from '@fuse/shared';
@@ -11,6 +11,7 @@ import {
 } from '@fuse/shared/api';
 import { camposDoErro, chamar, mensagemDeErro } from '../api/cliente';
 import { CHAVES, useConcurso, useMe } from '../api/consultas';
+import { adicionarNaAgenda, linkDoGoogleAgenda } from '../app/agenda';
 import { ativarPush, desativarPush } from '../app/push';
 import { limparLocal, sair } from '../app/sair';
 import { EH_APP } from '../nativo/plataforma';
@@ -81,6 +82,19 @@ export default function Configuracoes() {
   /** Respostas offline ainda não enviadas: sair as apaga, então pede confirmação. */
   const [pendentesAoSair, setPendentesAoSair] = useState(0);
   const [saindo, setSaindo] = useState(false);
+  /** D30: no app, a permissão do aparelho pode estar desligada mesmo com o lembrete ligado na conta. */
+  const [permissaoApp, setPermissaoApp] = useState<string | null>(null);
+  useEffect(() => {
+    if (!EH_APP) return;
+    let vivo = true;
+    void import('../nativo/nativo')
+      .then((n) => n.estadoPermissaoLembrete())
+      .then((e) => vivo && setPermissaoApp(e))
+      .catch(() => undefined);
+    return () => {
+      vivo = false;
+    };
+  }, []);
 
   const atualizar = useMutation({
     mutationFn: (corpo: MeAtualizarEntrada) => chamar('meAtualizar', { corpo }),
@@ -116,6 +130,7 @@ export default function Configuracoes() {
   async function mudarNotificacoes(v: boolean) {
     if (v) {
       const r = await ativarPush();
+      if (EH_APP) setPermissaoApp(r === 'ativado' ? 'ativado' : r);
       if (r !== 'ativado') {
         toast(
           r === 'negado'
@@ -134,6 +149,26 @@ export default function Configuracoes() {
       notificacoes: v,
       ...(v && !u.lembreteHora ? { lembreteHora: '19:00' } : {}),
     });
+  }
+
+  async function permitirNoAparelho() {
+    const r = await ativarPush();
+    setPermissaoApp(r === 'ativado' ? 'ativado' : r);
+    if (r === 'ativado') toast('Lembretes ativados neste aparelho', 'sucesso');
+    else toast('As notificações estão bloqueadas nos ajustes do aparelho.', 'erro');
+  }
+
+  async function agenda() {
+    try {
+      await adicionarNaAgenda({
+        hora: u.lembreteHora ?? '19:00',
+        dataProva: u.concurso?.dataProva ?? null,
+      });
+      if (!EH_APP) toast('Arquivo da agenda baixado: abra para adicionar', 'sucesso');
+    } catch (e) {
+      // Fechar o compartilhamento sem escolher nada não é erro.
+      if (!/cancel/i.test(String((e as Error)?.message ?? ''))) toast(mensagemDeErro(e), 'erro');
+    }
   }
 
   async function baixarDados() {
@@ -219,6 +254,28 @@ export default function Configuracoes() {
             onMudar={(v) => void mudarNotificacoes(v)}
           />
         </div>
+        <p className={s.ajuda}>
+          No máximo um lembrete por dia, no horário escolhido, com o que revisar ou reforçar. O
+          aviso é agendado no próprio aparelho e você pode desligar quando quiser.
+        </p>
+        {EH_APP && u.notificacoes && permissaoApp && permissaoApp !== 'ativado' ? (
+          <div className={s.linha}>
+            <span className={s.ajuda}>
+              {permissaoApp === 'negado'
+                ? 'As notificações deste app estão bloqueadas nos ajustes do aparelho.'
+                : 'Falta permitir as notificações neste aparelho.'}
+            </span>
+            {permissaoApp !== 'negado' ? (
+              <button
+                type="button"
+                className={s.acaoLinha}
+                onClick={() => void permitirNoAparelho()}
+              >
+                Permitir
+              </button>
+            ) : null}
+          </div>
+        ) : null}
         <label className={s.linha}>
           <span>Horário do lembrete</span>
           <input
@@ -233,6 +290,22 @@ export default function Configuracoes() {
             }
           />
         </label>
+        <div className={s.acoes}>
+          <button type="button" className={s.acaoLinha} onClick={() => void agenda()}>
+            Adicionar à minha agenda
+          </button>
+          <a
+            className={s.acaoLinha}
+            href={linkDoGoogleAgenda({
+              hora: u.lembreteHora ?? '19:00',
+              dataProva: u.concurso?.dataProva ?? null,
+            })}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Google Agenda
+          </a>
+        </div>
         <div className={s.linha}>
           <span>Sons e vibração</span>
           <Interruptor

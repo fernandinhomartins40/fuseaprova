@@ -173,7 +173,8 @@ export default function Onboarding() {
             Quer um lembrete?
           </h1>
           <p className={s.sub}>
-            Mandamos no máximo 1 aviso por dia, só se a meta ainda não foi cumprida.
+            No máximo 1 aviso por dia no seu horário, só se a meta ainda não foi cumprida, com o
+            que revisar ou reforçar. Dá para desligar quando quiser em Configurações.
           </p>
           <Capi
             pose="explicando"

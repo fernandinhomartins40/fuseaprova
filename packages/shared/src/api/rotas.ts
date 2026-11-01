@@ -20,6 +20,7 @@ import * as ac from './admin-conteudo.js';
 import * as ag from './admin-gestao.js';
 import * as sa from './superadmin.js';
 import * as pr from './precos.js';
+import * as lem from './lembretes.js';
 
 export const PREFIXO_API = '/api';
 
@@ -203,6 +204,13 @@ export const ROTAS = {
     params: IdParams,
     resposta: mc.MeusConcursosResposta,
   }),
+  meLembretes: rota({
+    metodo: 'GET',
+    caminho: '/me/lembretes',
+    guarda: 'acesso',
+    descricao: 'Plano de notificações locais dos próximos 7 dias, cada uma com a tela que abre (D30).',
+    resposta: lem.LembretesResposta,
+  }),
   meComprarProtetor: rota({
     metodo: 'POST',
     caminho: '/me/protetores',
@@ -313,6 +321,21 @@ export const ROTAS = {
     params: est.SessaoParams,
     corpo: est.DicaEntrada,
     resposta: est.DicaResposta,
+  }),
+  desempenho: rota({
+    metodo: 'GET',
+    caminho: '/desempenho',
+    guarda: 'acesso',
+    descricao: 'Central de desempenho: domínio por tema da trilha e o próximo passo (D29).',
+    resposta: est.DesempenhoResposta,
+  }),
+  reforcoIniciar: rota({
+    metodo: 'POST',
+    caminho: '/reforco/iniciar',
+    guarda: 'acesso',
+    descricao: 'Treino inteligente (10 questões) ou reforço de um tema da trilha (D29).',
+    corpo: est.IniciarReforcoEntrada,
+    resposta: est.IniciarSessaoResposta,
   }),
   anotacaoObter: rota({
     metodo: 'GET',

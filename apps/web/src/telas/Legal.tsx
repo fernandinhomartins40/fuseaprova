@@ -267,7 +267,8 @@ export function Privacidade() {
           </li>
           <li>
             <strong>Notificações:</strong> se você permitir, o endereço técnico de inscrição de
-            notificações do navegador ou do aparelho.
+            notificações do navegador (no site). No app, os lembretes são agendados no próprio
+            aparelho e não geram nenhum endereço de inscrição.
           </li>
         </ul>
         <p>
@@ -275,6 +276,40 @@ export function Privacidade() {
           e não usamos ferramentas de análise, publicidade, rastreamento ou redes de anúncios de
           terceiros.
         </p>
+        <h3>Lembretes e notificações</h3>
+        <ul>
+          <li>
+            <strong>Só com a sua permissão:</strong> o app e o navegador pedem a permissão do
+            sistema quando você ativa o lembrete, depois de explicar para que serve.
+          </li>
+          <li>
+            <strong>No app (Android e iPhone):</strong> os lembretes são{' '}
+            <strong>notificações locais</strong>, agendadas no próprio aparelho para os próximos 7
+            dias. Elas não passam por servidores do Google, da Apple ou de terceiros, e o app não
+            usa Firebase nem identificador de publicidade.
+          </li>
+          <li>
+            <strong>No site:</strong> o lembrete chega pelo serviço de notificação do navegador
+            (Web Push), com a inscrição técnica citada acima.
+          </li>
+          <li>
+            <strong>Conteúdo:</strong> o texto e a tela que a notificação abre são calculados no
+            nosso servidor a partir do seu progresso no estudo (revisões pendentes, temas com mais
+            erros, ofensiva, meta do dia e data da prova). No máximo um lembrete por dia, no
+            horário que você escolher, e às vezes um aviso à noite se a ofensiva estiver em risco.
+            Nada disso é usado para publicidade ou rastreamento.
+          </li>
+          <li>
+            <strong>Agenda:</strong> o botão &quot;Adicionar à minha agenda&quot; só gera um
+            arquivo com o seu horário de estudo e a data da prova. O app não lê nem altera a sua
+            agenda e não pede permissão de calendário.
+          </li>
+          <li>
+            <strong>Como desligar:</strong> em Configurações → Lembrete e notificações (o app
+            cancela na hora os lembretes agendados), ou nas permissões de notificação do aparelho
+            ou do navegador.
+          </li>
+        </ul>
 
         <h2>4. Para que usamos e com qual base legal</h2>
         <ul>
@@ -330,8 +365,9 @@ export function Privacidade() {
             <strong>Provedor de envio de e-mails</strong>: nome, e-mail e o conteúdo da mensagem.
           </li>
           <li>
-            <strong>Serviços de notificação</strong> do navegador ou do aparelho (Google, Apple ou
-            Mozilla), só se você ativar as notificações.
+            <strong>Serviços de notificação</strong> do navegador (Google, Apple ou Mozilla), só se
+            você ativar as notificações no site. No app, os lembretes são locais e não passam por
+            esses serviços.
           </li>
         </ul>
         <p>

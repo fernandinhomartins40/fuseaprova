@@ -200,8 +200,36 @@ describe('lembretes (a cada 5 min)', () => {
     expect(r.enviados).toBe(1);
     expect(enviados).toHaveLength(1);
     expect(enviados[0]!.endpoint).toContain(alvo.id);
-    expect(JSON.parse(enviados[0]!.payload).corpo).toBe('Sua ofensiva de 8 dias está em risco.');
+    // D30: texto e tela da mesma regra do app (escolherLembrete); todo push leva uma rota válida
+    expect(JSON.parse(enviados[0]!.payload)).toMatchObject({ titulo: 'Ofensiva de 8 dias: não pare agora', url: '/aprender', tipo: 'trilha' });
     expect((await enviarLembretes(b.db, e, new Date('2026-11-10T19:05:30-03:00'))).enviados).toBe(0);
+  });
+
+  it('D30: erros vencidos e tema fraco abrem a tela certa', async () => {
+    const a = await aluno({ lembreteHora: '07:00' });
+    await b.db.insert(pushInscricoes).values({ usuarioId: a.id, endpoint: `https://push.exemplo.com/r${a.id}`, p256dh: 'k', auth: 'a' });
+    const [q] = await b.db.select().from(schema.questoes).limit(1);
+    await b.db.update(schema.questoes).set({ status: 'publicada' }).where(eq(schema.questoes.id, q!.id));
+    // 5 erros no mesmo assunto: tema fraco
+    for (let i = 0; i < 5; i++)
+      await b.db.insert(schema.tentativas).values({ usuarioId: a.id, questaoId: q!.id, resposta: 'A', acertou: false } as typeof schema.tentativas.$inferInsert);
+    await b.db
+      .insert(schema.revisoes)
+      .values({ usuarioId: a.id, questaoId: q!.id, venceEm: new Date('2026-11-12T06:00:00-03:00') });
+    const { e, enviados } = enviadorFalso();
+    await enviarLembretes(b.db, e, new Date('2026-11-12T07:00:00-03:00'));
+    expect(JSON.parse(enviados[0]!.payload)).toMatchObject({
+      titulo: '1 erro esperando revisão',
+      url: '/revisar/praticar',
+      tipo: 'revisao_vencida',
+    });
+    // sem revisão vencida, o tema fraco vira o reforço do assunto
+    await b.db.delete(schema.revisoes).where(eq(schema.revisoes.usuarioId, a.id));
+    enviados.length = 0;
+    await enviarLembretes(b.db, e, new Date('2026-11-13T07:00:00-03:00'));
+    const p = JSON.parse(enviados[0]!.payload) as { tipo: string; url: string };
+    expect(p.tipo).toBe('tema_fraco');
+    expect(p.url).toBe(`/reforco/praticar?assunto=${q!.assuntoId}`);
   });
 
   it('texto padrão sem ofensiva e remove inscrições expiradas', async () => {
@@ -209,7 +237,7 @@ describe('lembretes (a cada 5 min)', () => {
     await b.db.insert(pushInscricoes).values({ usuarioId: a.id, endpoint: `https://push.exemplo.com/x${a.id}`, p256dh: 'k', auth: 'a' });
     const { e, enviados } = enviadorFalso(true);
     const r = await enviarLembretes(b.db, e, new Date('2026-11-11T08:00:00-03:00'));
-    expect(JSON.parse(enviados[0]!.payload).corpo).toBe('A Capi está te esperando. 5 minutinhos e a ofensiva continua!');
+    expect(JSON.parse(enviados[0]!.payload)).toMatchObject({ titulo: 'Hora de estudar', url: '/aprender' });
     expect(r.inscricoesRemovidas).toBe(1);
     expect(await b.db.select().from(pushInscricoes).where(eq(pushInscricoes.usuarioId, a.id))).toHaveLength(0);
   });

@@ -8,20 +8,30 @@ Guia do dono para gerar, testar e publicar o app do Fuse Aprova. A primeira loja
 |---|---|---|
 | Telas | `apps/web` (o mesmo React do site) | `pnpm --filter @fuse/web build:app` gera `apps/web/dist-app`: só o painel do aluno |
 | Casca nativa | `apps/mobile` (Capacitor 8) | Projetos `android/` e `ios/`, plugins nativos e `capacitor.config.ts` |
-| Recursos nativos | `apps/web/src/nativo/` | Splash, botão voltar do Android, lembrete local, imagens com sessão, exportação de dados |
+| Recursos nativos | `apps/web/src/nativo/` | Splash, botão voltar do Android, lembretes locais personalizados (D30), agenda (.ics), imagens com sessão, exportação de dados |
 | Imagens do app | `apps/mobile/assets/` → `pnpm --filter @fuse/mobile assets` | Ícones, notificação e splash nos tamanhos de cada plataforma |
 
 **O que o app tem:**
 - entrar, recuperar a senha e o onboarding;
 - trilha, lição, revisão, simulado, liga, perfil e configurações;
 - estudo offline;
-- lembrete diário;
+- lembretes personalizados (notificações locais) e "Adicionar à minha agenda";
 - baixar os dados e excluir a conta.
 
 **O que o app não tem:** cadastro, pagamento, preço ou link de compra, `/admin` e `/super`. Quem ainda não pagou vê "Seu acesso ainda não está ativo". **A venda continua só no site**, para cumprir as regras das lojas (D20).
 
 - **Identificador nas duas lojas:** `br.com.fuseaprova.app`.
 - **API:** `https://www.fuseaprova.com.br`. Não mudou nada no servidor.
+
+### 1.1 Lembretes e notificações (D30)
+
+- **Só notificações locais**, agendadas no aparelho. Sem Firebase/FCM, sem APNs remoto e sem push do servidor para o app.
+- **De onde vem o conteúdo:** `GET /me/lembretes` devolve o plano dos próximos 7 dias (texto, horário e tela de cada aviso), calculado no servidor a partir do progresso. O app cancela os pendentes e agenda os novos ao abrir, ao voltar ao app, ao concluir uma sessão (o `/me` muda), ao mudar horário ou opt-in em Configurações e quando a permissão é concedida. Sem internet, os já agendados continuam valendo.
+- **Toda notificação abre uma tela:** `extra.rota` (lista fechada em `packages/shared/src/lembretes.ts`); rota inválida abre a trilha.
+- **Android:** canal `lembrete-diario` (importância alta), ícone `ic_stat_fuse` (`res/drawable-*`), agendamento **inexato** com `allowWhileIdle` (`isExactNotification: false`); o manifesto remove `SCHEDULE_EXACT_ALARM` e `USE_EXACT_ALARM`. `POST_NOTIFICATIONS` (Android 13+) e `RECEIVE_BOOT_COMPLETED` vêm do plugin. O aviso pode chegar alguns minutos depois do horário (o Android agrupa alarmes inexatos para poupar bateria).
+- **iOS:** a permissão de notificação é pedida pelo sistema no toque em "Ativar lembrete" (onboarding) ou no interruptor de Configurações. Notificação local não precisa de texto de uso no `Info.plist` nem de capability de Push.
+- **Permissão:** nunca é pedida sozinha na abertura do app; antes do pedido a tela explica para que serve. Se a conta tem o lembrete ligado e o aparelho ainda não permitiu, Configurações mostra "Falta permitir as notificações neste aparelho" com o botão **Permitir**.
+- **Agenda:** "Adicionar à minha agenda" gera um `.ics` (estudo diário no horário do lembrete, até a véspera da prova, e o dia da prova) e abre o compartilhamento do sistema; "Google Agenda" abre o modelo do Google. Sem permissão de calendário.
 
 ## 2. Rodar no computador
 
@@ -105,7 +115,11 @@ No GitHub, em Settings → Secrets and variables → Actions, crie:
 - Entrar com uma conta paga. A trilha abre, e a lição corrige e conclui.
 - Ativar o modo avião no meio dos estudos: a lição do pacote offline funciona e, ao voltar a internet, sincroniza.
 - Entrar com uma conta **sem** pagamento: aparece "Seu acesso ainda não está ativo", sem preço e sem link de compra.
-- Em Configurações, ligar o lembrete: o sistema pede a permissão. Com o horário daqui a 2 minutos, a notificação chega e o toque abre a trilha.
+- Em Configurações, ligar o lembrete: a tela explica e o sistema pede a permissão. Com o horário daqui a 5 minutos, a notificação chega (no Android pode atrasar alguns minutos, porque o alarme é inexato) e o toque abre a tela do aviso (revisão, reforço do tema, trilha…), com o app fechado, em segundo plano ou aberto.
+- Desligar o lembrete em Configurações: em "Ajustes › Notificações" do aparelho não sobra nada pendente do Fuse.
+- Reiniciar o celular: os lembretes agendados continuam (Android: `RECEIVE_BOOT_COMPLETED` do plugin).
+- Conta com lembrete ligado na web, app recém-instalado: Configurações mostra **Permitir**; ao tocar, os lembretes são agendados.
+- "Adicionar à minha agenda": abre o compartilhamento com o arquivo `.ics`; escolher a agenda cria o evento diário.
 - Baixar meus dados: abre o compartilhamento com o arquivo JSON.
 - O botão voltar do Android volta entre telas e, na trilha, minimiza o app.
 - Imagens das questões com figura aparecem.
@@ -124,7 +138,7 @@ No GitHub, em Settings → Secrets and variables → Actions, crie:
 6. **Versão** (General): Version `1.0.0` e Build `1`. O Build cresce a cada envio.
 7. **Enviar:** Product → Archive → Distribute App → App Store Connect.
 8. **No App Store Connect:**
-   - **Privacidade do app:** os mesmos dados da Play Store; sem rastreamento.
+   - **Privacidade do app:** os mesmos dados da Play Store; sem rastreamento (lista na seção 7).
    - **Informações para revisão:** conta de demonstração com acesso pago. Na nota ao revisor, explique: "O acesso é adquirido no site; o app não vende conteúdo (aplicativo de leitura/consulta da conta existente)".
    - **Exportação de criptografia:** já declarada no `Info.plist` (`ITSAppUsesNonExemptEncryption = false`, só HTTPS).
    - **Capturas de tela:** só de iPhone, porque o app é só para iPhone (seção 6).
@@ -191,3 +205,31 @@ O Fuse Aprova é um produto privado e independente. O app NÃO representa nenhum
 
 Dúvidas? Fale com o nosso suporte pelo contato informado nesta página.
 ```
+
+## 7. Lista de verificação de privacidade das lojas
+
+### 7.1 Google Play: Segurança dos dados (Data safety)
+
+- [ ] **Coleta dados?** Sim. **Compartilha com terceiros?** Não (os operadores, como hospedagem e e-mail, processam em nome do Fuse e não contam como compartilhamento).
+- [ ] **Dados coletados** (todos obrigatórios para a conta, ligados ao usuário, finalidade "Funcionalidade do app" e "Gerenciamento da conta"):
+  - Informações pessoais: nome, endereço de e-mail, número de telefone, outros IDs (CPF);
+  - Atividade no app: interações no app (respostas, progresso, XP, ofensiva) e outro conteúdo gerado pelo usuário (relatos de erro, anotações);
+  - Informações financeiras: **não** pelo app (o Pix é no site; o app não tem pagamento).
+- [ ] **Não coletados:** localização, contatos, agenda/calendário, fotos, arquivos, áudio, saúde, identificador de publicidade, dados do dispositivo para análise.
+- [ ] **Notificações:** são locais. O conteúdo é calculado no servidor a partir do progresso (já declarado em "Atividade no app"); nenhum token de push é coletado no app.
+- [ ] **Criptografia em trânsito:** sim (HTTPS). **Exclusão de conta:** sim, no app (Configurações › Excluir conta) e pela web.
+- [ ] **Permissões do AAB** (conferir no Play Console › Pacote › Permissões): `INTERNET`, `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED`, `WAKE_LOCK`. **Não** pode aparecer `SCHEDULE_EXACT_ALARM`, `USE_EXACT_ALARM`, `READ_CALENDAR`/`WRITE_CALENDAR` nem `AD_ID`. Se aparecer `AD_ID`, declare "não usa ID de publicidade" e remova a permissão.
+- [ ] **Declaração de alarme exato:** não se aplica (o app não pede alarme exato).
+- [ ] **Política de privacidade** publicada em `https://www.fuseaprova.com.br/privacidade`, com a seção "Lembretes e notificações".
+
+### 7.2 Apple App Store: Privacidade do app (App Privacy)
+
+- [ ] **Rastreamento:** não. O app não usa IDFA nem App Tracking Transparency, e não há SDK de terceiros de análise ou anúncios.
+- [ ] **Dados ligados ao usuário, finalidade "Funcionalidade do app":** Informações de contato (nome, e-mail, telefone), Identificadores (ID do usuário), Uso (interações com o produto), Conteúdo do usuário (outros: relatos e anotações). Nenhum é usado para rastreamento.
+- [ ] **Não coletados:** localização, contatos, calendário, fotos, saúde, financeiro (o pagamento é fora do app), diagnóstico de terceiros.
+- [ ] **`PrivacyInfo.xcprivacy`** no alvo App (`apps/mobile/ios/App/App/PrivacyInfo.xcprivacy`, já no projeto Xcode): `NSPrivacyTracking = false`; dados coletados como acima; Required Reason APIs: data de arquivo (`C617.1`, arquivos do próprio app no cache: `.ics` e exportação LGPD) e UserDefaults (`CA92.1`, preferências do próprio app). Ao adicionar plugin novo, confira se ele traz o próprio manifesto e se usa outra API da lista da Apple.
+- [ ] **Info.plist:** nenhum texto de uso é exigido (notificação local, compartilhamento e cache não pedem). Se um dia entrar acesso direto ao calendário, câmera ou fotos, adicione o `NS…UsageDescription` correspondente em português.
+- [ ] **Capabilities:** sem Push Notifications e sem Background Modes (notificação local não precisa).
+- [ ] **Notificações (diretriz 4.5.4):** não são obrigatórias para usar o app, não têm publicidade e o aluno desliga em Configurações.
+- [ ] **Exclusão de conta (diretriz 5.1.1(v)):** em Configurações › Excluir conta.
+- [ ] **Nota ao revisor:** explicar que o acesso é adquirido no site e que os lembretes são locais (aparecem no horário escolhido em Configurações; para testar, ponha o horário para daqui a 5 minutos).

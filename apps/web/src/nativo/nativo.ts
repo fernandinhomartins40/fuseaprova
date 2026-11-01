@@ -3,8 +3,9 @@
  * de `EH_APP`): o site não baixa nada disto.
  *
  * - splash, barra de status e botão voltar do Android;
- * - lembrete diário por notificação LOCAL, agendada no aparelho no horário escolhido pelo
- *   aluno (sem Firebase/FCM, regra do CLAUDE.md; ver DECISOES D20);
+ * - lembretes por notificação LOCAL, agendados no aparelho no horário escolhido pelo
+ *   aluno, com texto e tela calculados pela API (sem Firebase/FCM; DECISOES D20 e D30);
+ * - "Adicionar à agenda": arquivo .ics pelo compartilhamento do sistema (sem permissão);
  * - exportação dos dados (LGPD) pelo compartilhamento do sistema;
  * - imagens dos enunciados pelo HTTP nativo (o cookie de sessão não vai em <img> de outra origem).
  */
@@ -14,7 +15,13 @@ import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Share } from '@capacitor/share';
 import { SplashScreen } from '@capacitor/splash-screen';
-import { diaSP, inicioDoDiaSP, somarDias, textoLembrete } from '@fuse/shared';
+import type { LembretesResposta } from '@fuse/shared/api';
+import {
+  CANAL_LEMBRETES,
+  idsDosLembretes,
+  paraNotificacoesLocais,
+  rotaDaNotificacao,
+} from './notificacoes';
 import { urlDoServidor } from './plataforma';
 
 /** Telas em que o "voltar" do Android sai do app em vez de voltar no histórico. */
@@ -40,78 +47,125 @@ export async function iniciarApp(): Promise<void> {
 
 /* --------------------------------------------------------------- lembrete */
 
-const DIAS_AGENDADOS = 7;
-const ID_BASE = 1000;
-const CANAL = 'lembrete-diario';
+/*
+ * D30: notificações LOCAIS personalizadas (sem Firebase/FCM). O plano dos próximos 7 dias vem
+ * da API (GET /me/lembretes): texto e tela calculados no servidor a partir do progresso.
+ *
+ * Por que o agendamento falhava (corrigido aqui):
+ * 1. o canal Android `lembrete-diario` só era criado ao ligar o lembrete em Configurações NAQUELE
+ *    aparelho; quem ativou no onboarding da web, ou reinstalou o app, agendava num canal
+ *    inexistente e o Android descartava a notificação em silêncio;
+ * 2. o plugin 8.3 agenda com alarme EXATO por padrão e, sem a permissão (removida do manifesto
+ *    para a Play Store), abria a tela "Alarmes e lembretes" a cada abertura do app; agora todo
+ *    item vai com `isExactNotification: false` (inexato + allowWhileIdle);
+ * 3. `schedule()` sem permissão fazia o Android 13+ pedir a permissão sem explicação, na abertura
+ *    do app; agora só agenda com a permissão já concedida (o pedido sai de um toque do aluno em
+ *    Configurações ou no onboarding, com o texto explicando antes);
+ * 4. só reagendava quando o perfil mudava; agora também ao voltar ao app (resume).
+ */
 
 export type PermissaoLembrete = 'ativado' | 'negado' | 'indisponivel';
+export type EstadoPermissaoLembrete = 'ativado' | 'negado' | 'pendente' | 'indisponivel';
 
+async function garantirCanal(): Promise<void> {
+  if (Capacitor.getPlatform() !== 'android') return;
+  // Idempotente: recriar o canal só atualiza nome e descrição.
+  await LocalNotifications.createChannel({
+    id: CANAL_LEMBRETES,
+    name: 'Lembretes de estudo',
+    description: 'Lembretes no horário que você escolheu, com o que revisar e reforçar.',
+    importance: 4,
+    visibility: 1,
+  });
+}
+
+/** Estado da permissão sem pedir nada ao sistema. */
+export async function estadoPermissaoLembrete(): Promise<EstadoPermissaoLembrete> {
+  try {
+    const p = await LocalNotifications.checkPermissions();
+    if (p.display === 'granted') return 'ativado';
+    if (p.display === 'denied') return 'negado';
+    return 'pendente';
+  } catch {
+    return 'indisponivel';
+  }
+}
+
+/** Pede a permissão (só a partir de um toque do aluno, depois da explicação na tela). */
 export async function pedirPermissaoLembrete(): Promise<PermissaoLembrete> {
   try {
     let p = await LocalNotifications.checkPermissions();
     if (p.display !== 'granted') p = await LocalNotifications.requestPermissions();
     if (p.display !== 'granted') return 'negado';
-    if (Capacitor.getPlatform() === 'android') {
-      await LocalNotifications.createChannel({
-        id: CANAL,
-        name: 'Lembrete diário',
-        description: 'O lembrete para estudar no horário que você escolheu.',
-        importance: 4,
-      });
-    }
+    await garantirCanal();
     return 'ativado';
   } catch {
     return 'indisponivel';
   }
 }
 
+/** Cancela os lembretes pendentes do Fuse (os do plano e os das versões antigas). */
 export async function cancelarLembretes(): Promise<void> {
   try {
-    const ids = Array.from({ length: DIAS_AGENDADOS + 1 }, (_, i) => ({ id: ID_BASE + i }));
-    await LocalNotifications.cancel({ notifications: ids });
+    const pendentes = await LocalNotifications.getPending().catch(() => ({ notifications: [] }));
+    const ids = new Set([...idsDosLembretes(), ...pendentes.notifications.map((n) => n.id)]);
+    await LocalNotifications.cancel({ notifications: [...ids].map((id) => ({ id })) });
   } catch {
     /* sem permissão ou nada agendado */
   }
 }
 
+export type ResultadoSincronizacao =
+  | 'agendado'
+  | 'desligado'
+  | 'sem_permissao'
+  | 'sem_acesso'
+  | 'sem_conexao';
+
 /**
- * Agenda os lembretes dos próximos 7 dias no horário de São Paulo escolhido (o mesmo
- * `lembrete_hora` que o worker usa no Web Push). Hoje fica de fora se a meta já foi cumprida.
- * Reagendado a cada abertura do app e quando o perfil muda.
+ * Busca o plano na API, cancela os antigos e agenda os novos. Sem conexão (ou erro do servidor),
+ * mantém os que já estão agendados. Sem sessão ou sem acesso (401/402/403), cancela.
  */
-export async function agendarLembretes(o: {
-  hora: string;
-  ofensiva: number;
-  metaCumpridaHoje: boolean;
-  agora?: Date;
-}): Promise<void> {
-  const agora = o.agora ?? new Date();
-  const [h, m] = o.hora.split(':').map(Number) as [number, number];
-  const hoje = diaSP(agora);
-  const avisos = [];
-  for (let i = 0; i <= DIAS_AGENDADOS; i++) {
-    const quando = new Date(inicioDoDiaSP(somarDias(hoje, i)).getTime() + (h * 60 + m) * 60_000);
-    if (quando.getTime() <= agora.getTime() + 60_000) continue;
-    if (i === 0 && o.metaCumpridaHoje) continue;
-    avisos.push({
-      id: ID_BASE + i,
-      title: 'Fuse Aprova',
-      body: textoLembrete(i === 0 ? o.ofensiva : 0),
-      schedule: { at: quando, allowWhileIdle: true },
-      channelId: CANAL,
-      extra: { url: '/aprender' },
-    });
+export async function sincronizarLembretes(
+  buscar: () => Promise<LembretesResposta>,
+  agora: () => Date = () => new Date(),
+): Promise<ResultadoSincronizacao> {
+  if ((await estadoPermissaoLembrete()) !== 'ativado') return 'sem_permissao';
+  let plano: LembretesResposta;
+  try {
+    plano = await buscar();
+  } catch (e) {
+    const status = (e as { status?: number }).status;
+    if (status === 401 || status === 402 || status === 403) {
+      await cancelarLembretes();
+      return 'sem_acesso';
+    }
+    return 'sem_conexao';
   }
   await cancelarLembretes();
-  if (avisos.length) await LocalNotifications.schedule({ notifications: avisos });
+  if (!plano.ativo) return 'desligado';
+  const notificacoes = paraNotificacoesLocais(plano.itens, agora());
+  if (!notificacoes.length) return 'agendado';
+  await garantirCanal();
+  await LocalNotifications.schedule({ notifications: notificacoes });
+  return 'agendado';
 }
 
-/** Tocar no lembrete abre a trilha. */
-export async function aoTocarLembrete(abrir: (url: string) => void): Promise<void> {
-  await LocalNotifications.addListener('localNotificationActionPerformed', (a) => {
-    const url = (a.notification.extra as { url?: string } | undefined)?.url;
-    abrir(typeof url === 'string' && url.startsWith('/') ? url : '/aprender');
+/**
+ * Toque na notificação → abre a tela de `extra.rota` (validada; senão, a trilha). O plugin guarda
+ * o toque que abriu o app fechado até alguém escutar, então o toque nunca se perde.
+ */
+export async function aoTocarLembrete(abrir: (rota: string) => void): Promise<() => void> {
+  const h = await LocalNotifications.addListener('localNotificationActionPerformed', (a) => {
+    abrir(rotaDaNotificacao(a.notification.extra));
   });
+  return () => void h.remove();
+}
+
+/** O app voltou do segundo plano (reagenda os lembretes). */
+export async function aoVoltarAoApp(fazer: () => void): Promise<() => void> {
+  const h = await App.addListener('resume', fazer);
+  return () => void h.remove();
 }
 
 /* --------------------------------------------------------------- arquivos */
@@ -125,6 +179,24 @@ export async function compartilharArquivo(nome: string, conteudo: string): Promi
     encoding: Encoding.UTF8,
   });
   await Share.share({ title: nome, files: [r.uri], dialogTitle: 'Salvar meus dados' });
+}
+
+/**
+ * D30: grava o .ics no cache e abre o compartilhamento do sistema, onde o aluno escolhe o app de
+ * agenda (Agenda do Google/Samsung, Outlook, Calendário, Arquivos…). Sem permissão de calendário.
+ */
+export async function compartilharAgenda(nome: string, ics: string): Promise<void> {
+  const r = await Filesystem.writeFile({
+    path: nome,
+    data: ics,
+    directory: Directory.Cache,
+    encoding: Encoding.UTF8,
+  });
+  await Share.share({
+    title: 'Horário de estudo',
+    files: [r.uri],
+    dialogTitle: 'Adicionar à agenda',
+  });
 }
 
 /* ---------------------------------------------------------------- imagens */

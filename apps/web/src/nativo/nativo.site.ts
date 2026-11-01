@@ -8,9 +8,12 @@ function soNoApp(): never {
 }
 
 export const iniciarApp = soNoApp;
+export const estadoPermissaoLembrete = soNoApp;
 export const pedirPermissaoLembrete = soNoApp;
 export const cancelarLembretes = soNoApp;
-export const agendarLembretes = soNoApp;
+export const sincronizarLembretes = soNoApp;
 export const aoTocarLembrete = soNoApp;
+export const aoVoltarAoApp = soNoApp;
 export const compartilharArquivo = soNoApp;
+export const compartilharAgenda = soNoApp;
 export const carregarImagem = soNoApp;
