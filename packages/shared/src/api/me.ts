@@ -35,7 +35,12 @@ export const MeResposta = ContadoresUsuario.extend({
   cpfOculto: z.string(),
   celular: z.string(),
   papel: ZPapel,
+  /** Pode estudar agora: pagou ou está no teste grátis (D32). É o que o app nativo lê. */
   acesso: z.boolean(),
+  /** D32: pagou ou foi liberado à mão. O site usa para oferecer o Pix e o app. */
+  acessoPago: z.boolean(),
+  /** D32: fim do teste de quem ainda não pagou (pode estar no passado); null para quem pagou. */
+  testeAte: z.string().nullable(),
   avatar: Avatar,
   concurso: z
     .object({

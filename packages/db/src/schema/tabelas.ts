@@ -327,6 +327,13 @@ export const usuarios = pgTable(
     onboardingConcluidoEm: ts('onboarding_concluido_em'),
     /** extra: no máximo 1 push por dia. */
     ultimoPushEm: ts('ultimo_push_em'),
+    /** extra D32: fim do teste grátis de 3 dias (null = sem teste). Não mexe em `acesso`. */
+    testeAte: ts('teste_ate'),
+    /** extra D32: cadastro antigo sem pagamento; o teste começa na próxima visita. */
+    testePendente: boolean('teste_pendente').notNull().default(false),
+    /** extra D32: e-mails do teste já enviados (véspera e fim). */
+    testeAvisoVesperaEm: ts('teste_aviso_vespera_em'),
+    testeAvisoFimEm: ts('teste_aviso_fim_em'),
     aceiteTermosEm: ts('aceite_termos_em'),
     versaoTermos: text('versao_termos'),
     /** extra D13: opt-in de e-mail e push de novidades (marketing). */

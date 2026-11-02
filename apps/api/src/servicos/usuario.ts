@@ -10,6 +10,7 @@ import {
   nomeComSobrenomeAbreviado,
   normalizarVidas,
   ocultarCpf,
+  temAcessoAoEstudo,
   VIDAS_MAX,
 } from '@fuse/shared';
 import type { MeResposta } from '@fuse/shared/api';
@@ -131,7 +132,9 @@ export async function montarMe(
     cpfOculto: ocultarCpf(u.cpf ?? ''),
     celular: u.celular ?? '',
     papel: u.papel,
-    acesso: u.acesso,
+    acesso: temAcessoAoEstudo(u, agora),
+    acessoPago: u.acesso,
+    testeAte: u.acesso ? null : isoOuNull(u.testeAte),
     avatar: { iniciais: iniciais(u.nome), cor: corDoAvatar(u.id) },
     concurso: concurso
       ? {

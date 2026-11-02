@@ -336,3 +336,14 @@
   gap: 10px;
   font-size: 15px;
 }
+
+.gerarPix {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  text-align: center;
+}
+.gerarPix p {
+  color: var(--fa-ink-2);
+  font-size: 14px;
+}

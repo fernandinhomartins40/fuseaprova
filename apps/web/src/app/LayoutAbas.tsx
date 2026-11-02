@@ -1,12 +1,16 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { TEXTO_EDITAL_SAIU } from '@fuse/shared';
 import { chamar, mensagemDeErro } from '../api/cliente';
 import { CHAVES, useConcurso, useMe } from '../api/consultas';
 import { Botao3D, Capi, Modal, NavInferior } from '../ui';
+import { EH_APP } from '../nativo/plataforma';
 import { rotaInicial } from './rotaInicial';
 import s from './LayoutAbas.module.css';
+
+/** D32: fora do build do app, que não pode citar pagamento (mesmo padrão das telas de venda). */
+const AvisosConta = EH_APP ? () => null : lazy(() => import('./AvisosConta'));
 
 /** Abas com a navegação inferior e o modal "O edital saiu! Confirme seu cargo". */
 export function LayoutAbas() {
@@ -22,6 +26,9 @@ export function LayoutAbas() {
           </a>
         </div>
       ) : null}
+      <Suspense fallback={null}>
+        <AvisosConta />
+      </Suspense>
       <Outlet />
       <NavInferior revisoesPendentes={me.data?.revisoesPendentes ?? 0} />
       {me.data?.confirmarCargoEdital ? (

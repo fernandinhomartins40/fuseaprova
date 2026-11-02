@@ -66,7 +66,8 @@ export const MENSAGENS_ERRO: Record<CodigoErro, string> = {
   credenciais_invalidas: 'E-mail ou senha incorretos.',
   nao_autenticado: 'Entre na sua conta para continuar.',
   webhook_token_invalido: 'Token do webhook inválido.',
-  sem_acesso: 'Seu acesso ainda não foi liberado. Conclua o pagamento via Pix.',
+  // Sem citar pagamento: o app nativo também mostra esta mensagem (regras das lojas, D20 e D32).
+  sem_acesso: 'Seu acesso não está ativo.',
   proibido: 'Você não tem permissão para isso.',
   nao_encontrado: 'Não encontramos o que você procurou.',
   conta_existente: 'Já existe uma conta com este e-mail ou CPF. Entre com sua senha.',

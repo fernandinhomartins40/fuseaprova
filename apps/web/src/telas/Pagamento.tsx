@@ -39,10 +39,11 @@ const BENEFICIOS = [
   'Até o dia da prova',
 ];
 
-type Estado = 'gerando' | 'aguardando' | 'expirado' | 'erro' | 'pago';
+type Estado = 'inicial' | 'gerando' | 'aguardando' | 'expirado' | 'erro' | 'pago';
 
 /**
- * 03 Pagamento Pix (`/pagamento`), etapa 2 de 2. O acesso libera sozinho (polling de 4 s).
+ * 03 Pagamento Pix (`/pagamento`). O acesso libera sozinho (polling de 4 s). D32: abrir a tela não
+ * cria cobrança no Asaas; o Pix só é gerado quando o aluno toca no botão.
  * `?concurso=<id>` paga um concurso ADICIONAL de quem já é aluno (D21): preço com desconto e,
  * depois de pago, o concurso novo vira o ativo.
  */
@@ -54,15 +55,17 @@ export default function Pagamento() {
   const [params] = useSearchParams();
   const concursoPedido = params.get('concurso') ?? undefined;
   // Quem ainda não pagou e há mais de um concurso aberto escolhe para qual vai pagar.
-  const lista = useMeusConcursos(!concursoPedido && !!me.data && !me.data.acesso);
+  const lista = useMeusConcursos(!concursoPedido && !!me.data && !me.data.acessoPago);
   const [escolhido, setEscolhido] = useState(false);
   const total = lista.data ? lista.data.seguidos.length + lista.data.disponiveis.length : 0;
-  const precisaEscolher = !concursoPedido && !escolhido && total > 1;
+  // Quem já estudou no teste paga o concurso que está usando; os outros ficam em Meus concursos.
+  const precisaEscolher = !concursoPedido && !escolhido && total > 1 && !me.data?.onboardingConcluido;
+  const emTeste = !!me.data?.acesso && !me.data.acessoPago;
+  const testeEncerrado = !!me.data && !me.data.acesso && !!me.data.testeAte;
   const [pix, setPix] = useState<PixResposta | null>(null);
-  const [estado, setEstado] = useState<Estado>('gerando');
+  const [estado, setEstado] = useState<Estado>('inicial');
   const [erro, setErro] = useState<string>(TEXTO_PIX_ERRO);
   const [restante, setRestante] = useState(0);
-  const pedido = useRef(false);
   const config = useConfigPublica();
   // D23: cupom de desconto (conferido no servidor ao gerar o Pix).
   const [cupomAberto, setCupomAberto] = useState(false);
@@ -71,9 +74,9 @@ export default function Pagamento() {
   const [aplicando, setAplicando] = useState(false);
   const cupom = useRef<string | undefined>(undefined);
 
-  // Quem já tem acesso não fica aqui.
+  // Quem já pagou não fica aqui.
   useEffect(() => {
-    if (!concursoPedido && me.data?.acesso && estado !== 'pago') {
+    if (!concursoPedido && me.data?.acessoPago && estado !== 'pago') {
       navegar(me.data.onboardingConcluido ? '/aprender' : '/onboarding', { replace: true });
     }
   }, [concursoPedido, me.data, estado, navegar]);
@@ -105,15 +108,6 @@ export default function Pagamento() {
       setEstado('erro');
     }
   }, [qc, concursoPedido]);
-
-  useEffect(() => {
-    if (pedido.current || (!concursoPedido && me.data?.acesso)) return;
-    if (!me.data) return;
-    // Espera saber se há mais de um concurso para o aluno escolher antes de gerar o Pix.
-    if (!concursoPedido && (lista.isPending || precisaEscolher)) return;
-    pedido.current = true;
-    void gerar();
-  }, [gerar, me.data, concursoPedido, lista.isPending, precisaEscolher]);
 
   // Polling do status a cada 4 s.
   const status = useQuery({
@@ -148,15 +142,19 @@ export default function Pagamento() {
     }
   }, [concursoPedido, qc, navegar, toast]);
 
+  // Quem estudou no teste já escolheu o cargo: volta para a trilha, com o progresso guardado.
+  const jaEstudava = !!me.data?.onboardingConcluido;
+  const continuar = useCallback(() => {
+    if (concursoPedido) void concluirAdicional();
+    else navegar(jaEstudava ? '/aprender' : '/onboarding', { replace: true });
+  }, [concursoPedido, concluirAdicional, jaEstudava, navegar]);
+
   // Celebração e depois a escolha do cargo (1º concurso) ou a troca para o concurso novo.
   useEffect(() => {
     if (estado !== 'pago') return;
-    const id = window.setTimeout(
-      () => (concursoPedido ? void concluirAdicional() : navegar('/onboarding', { replace: true })),
-      2800,
-    );
+    const id = window.setTimeout(continuar, 2800);
     return () => window.clearTimeout(id);
-  }, [estado, navegar, concursoPedido, concluirAdicional]);
+  }, [estado, continuar]);
 
   // Contagem regressiva até expirar.
   useEffect(() => {
@@ -222,15 +220,11 @@ export default function Pagamento() {
         <p className={s.textoPago}>
           {concursoPedido
             ? 'O concurso foi liberado. Vamos abrir a sua trilha.'
-            : 'Seu acesso está liberado. Agora escolha o seu cargo.'}
+            : jaEstudava
+              ? 'Seu acesso está liberado. Vamos continuar de onde você parou.'
+              : 'Seu acesso está liberado. Agora escolha o seu cargo.'}
         </p>
-        <Botao3D
-          onClick={() =>
-            concursoPedido ? void concluirAdicional() : navegar('/onboarding', { replace: true })
-          }
-        >
-          Continuar
-        </Botao3D>
+        <Botao3D onClick={continuar}>Continuar</Botao3D>
       </Pagina>
     );
   }
@@ -239,8 +233,10 @@ export default function Pagamento() {
     <Pagina>
       {concursoPedido ? (
         <CabecalhoVoltar para="/meus-concursos" titulo="Liberar concurso" />
+      ) : emTeste ? (
+        <CabecalhoVoltar para="/aprender" />
       ) : (
-        <CabecalhoVoltar semVoltar etapa={{ atual: 2, total: 2 }} />
+        <CabecalhoVoltar semVoltar />
       )}
       {precisaEscolher && lista.data ? (
         <EscolherConcurso
@@ -252,12 +248,18 @@ export default function Pagamento() {
         />
       ) : null}
       <h1 className={s.titulo}>
-        {concursoPedido ? 'Libere este concurso' : 'Comece sua preparação'}
+        {concursoPedido
+          ? 'Libere este concurso'
+          : testeEncerrado
+            ? 'Seu teste grátis terminou'
+            : 'Comece sua preparação'}
       </h1>
       <p className={s.subtitulo}>
         {pix
           ? `Acesso ao ${pix.concursoNome}. Finalize o pagamento e tenha acesso imediato.`
-          : 'Finalize o pagamento e tenha acesso imediato a todo o conteúdo.'}
+          : testeEncerrado
+            ? 'Seu progresso está guardado. Finalize o pagamento e continue de onde parou.'
+            : 'Finalize o pagamento e tenha acesso imediato a todo o conteúdo.'}
       </p>
 
       <section className={s.oferta} aria-label="Acesso completo">
@@ -338,6 +340,15 @@ export default function Pagamento() {
           </p>
           <Botao3D onClick={() => void gerar()}>GERAR NOVO PIX</Botao3D>
         </section>
+      ) : estado === 'inicial' ? (
+        precisaEscolher ? null : (
+          <section className={s.gerarPix}>
+            <p>O código Pix é criado quando você tocar no botão.</p>
+            <Botao3D disabled={!me.data || lista.isFetching} onClick={() => void gerar()}>
+              GERAR PIX
+            </Botao3D>
+          </section>
+        )
       ) : (
         <>
           <section className={s.qr} aria-label="QR Code Pix" aria-busy={estado === 'gerando'}>

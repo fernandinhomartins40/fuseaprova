@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { and, eq, gt, isNull, or } from 'drizzle-orm';
 import type { FastifyRequest } from 'fastify';
 import { schema } from '@fuse/db';
-import { AREA_DO_PAPEL, type AreaConta, type Papel } from '@fuse/shared';
+import { AREA_DO_PAPEL, fimDoTeste, temAcessoAoEstudo, type AreaConta, type Papel } from '@fuse/shared';
 import {
   MENSAGEM_RECUPERAR,
   MENSAGENS_CADASTRO,
@@ -20,24 +20,24 @@ import { ehViolacaoUnica, falha } from '../http/erros.js';
 import type { Contexto, Registrador } from '../http/registrar.js';
 import { emailRecuperacao } from '../integracoes/email.js';
 import { conferirSenha, gerarHashSenha } from '../servicos/senhas.js';
-import { abrirSessao, encerrarSessao, encerrarSessoesDoUsuario, gerarToken } from '../servicos/sessoes.js';
+import { abrirSessao, comecarTestePendente, encerrarSessao, encerrarSessoesDoUsuario, gerarToken } from '../servicos/sessoes.js';
 import { concursoAtivo } from '../servicos/usuario.js';
 
 const { usuarios, redefinicoesSenha, usuariosConcursos, registrosAcesso } = schema;
 
-export function proximoPasso(u: Pick<Usuario, 'papel' | 'acesso' | 'onboardingConcluidoEm'>): ProximoPasso {
+export function proximoPasso(u: Pick<Usuario, 'papel' | 'acesso' | 'testeAte' | 'onboardingConcluidoEm'>, agora: Date): ProximoPasso {
   // D13: o superadmin sempre passa pelo 2FA (configurar ou digitar o código) ao entrar.
   if (u.papel === 'superadmin') return 'dois_fatores';
   if (u.papel === 'admin') return 'conteudo';
-  if (!u.acesso) return 'pagamento';
+  if (!temAcessoAoEstudo(u, agora)) return 'pagamento';
   if (!u.onboardingConcluidoEm) return 'onboarding';
   return 'trilha';
 }
 
-export function respostaSessao(u: Usuario): SessaoResposta {
+export function respostaSessao(u: Usuario, agora: Date): SessaoResposta {
   return {
-    usuario: { id: u.id, nome: u.nome, email: u.email, papel: u.papel, acesso: u.acesso },
-    proximo: proximoPasso(u),
+    usuario: { id: u.id, nome: u.nome, email: u.email, papel: u.papel, acesso: temAcessoAoEstudo(u, agora) },
+    proximo: proximoPasso(u, agora),
     area: AREA_DO_PAPEL[u.papel],
   };
 }
@@ -121,6 +121,7 @@ export function rotasAuth(r: Registrador): void {
           aceiteTermosEm: agora,
           versaoTermos: corpo.versaoTermos,
           vidasAtualizadoEm: agora,
+          testeAte: fimDoTeste(agora), // D32: um teste por conta, e o CPF é único
           criadoEm: agora,
         })
         .returning()) as [Usuario];
@@ -136,7 +137,7 @@ export function rotasAuth(r: Registrador): void {
     }
     await iniciarSessao(deps, req, reply, novo.id, agora, { evento: 'cadastro' });
     reply.status(201);
-    return respostaSessao(novo);
+    return respostaSessao(novo, agora);
   });
 
   /**
@@ -156,8 +157,9 @@ export function rotasAuth(r: Registrador): void {
     const ok = await conferirSenha(u?.senhaHash, corpo.senha);
     if (!u || !ok || u.papel !== PAPEL_DO_PORTAL[area]) throw falha('credenciais_invalidas');
     if (u.bloqueadoEm) throw falha('conta_bloqueada');
+    const conta = await comecarTestePendente(deps.db, u, agora);
     await iniciarSessao(deps, req, reply, u.id, agora, { superadmin: u.papel === 'superadmin' });
-    return respostaSessao(u);
+    return respostaSessao(conta, agora);
   };
   // Os três têm o mesmo contrato (LoginEntrada → SessaoResposta).
   type CtxLogin = Contexto<'authLogin'>;
@@ -219,7 +221,8 @@ export function rotasAuth(r: Registrador): void {
       await encerrarSessoesDoUsuario(tx, u.id);
       return u;
     });
+    const conta = await comecarTestePendente(deps.db, usuario, agora);
     await iniciarSessao(deps, req, reply, usuario.id, agora, { superadmin: usuario.papel === 'superadmin', evento: 'redefinicao' });
-    return respostaSessao(usuario);
+    return respostaSessao(conta, agora);
   });
 }

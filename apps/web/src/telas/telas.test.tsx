@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -44,7 +44,7 @@ describe('telas do aluno contra a API simulada', () => {
     const api = ligarApiSimulada();
     await api.cenario('novo');
     const { container } = abrir('/cadastro');
-    const botao = await screen.findByRole('button', { name: /Criar conta e ir para o pagamento/ });
+    const botao = await screen.findByRole('button', { name: /Criar conta e começar o teste grátis/ });
     await userEvent.type(screen.getByLabelText('Nome completo'), 'Marina');
     await userEvent.type(screen.getByLabelText('CPF'), '11111111111');
     await userEvent.click(botao);
@@ -104,6 +104,8 @@ describe('telas do aluno contra a API simulada', () => {
     await userEvent.click(
       screen.getByRole('button', { name: /Prefeitura Municipal de Cidade Exemplo/ }),
     );
+    // D32: abrir a tela não cria cobrança; o Pix só nasce no toque.
+    await userEvent.click(await screen.findByRole('button', { name: 'GERAR PIX' }));
     expect(await screen.findByAltText(/QR Code do Pix/)).toBeInTheDocument();
     expect(screen.getByText('Pix copia e cola')).toBeInTheDocument();
     expect(screen.getByText(/Quando o edital sair/)).toBeInTheDocument();
@@ -114,6 +116,51 @@ describe('telas do aluno contra a API simulada', () => {
     ).toBeInTheDocument();
   }, 10000);
 
+  it('D32: no teste, a trilha abre, a faixa leva ao pagamento e a tela não gera Pix sozinha', async () => {
+    const api = ligarApiSimulada();
+    await api.cenario('emTeste');
+    abrir('/aprender');
+    expect(await screen.findByText(/Faltam 2 dias/)).toBeInTheDocument();
+    expect(local).toBe('/aprender');
+    await userEvent.click(screen.getByRole('link', { name: 'Garantir acesso' }));
+    await waitFor(() => expect(local).toBe('/pagamento'));
+    expect(await screen.findByRole('button', { name: 'GERAR PIX' })).toBeInTheDocument();
+    expect(screen.queryByAltText(/QR Code do Pix/)).not.toBeInTheDocument();
+    expect(api.fn.mock.calls.some(([url]) => String(url).includes('/pagamento/pix'))).toBe(false);
+    await limparTudo();
+  });
+
+  it('D32: com o teste vencido, a conta vai ao pagamento e vê que o teste terminou', async () => {
+    const api = ligarApiSimulada();
+    await api.cenario('testeEncerrado');
+    abrir('/aprender');
+    await waitFor(() => expect(local).toBe('/pagamento'));
+    expect(await screen.findByRole('heading', { name: 'Seu teste grátis terminou' })).toBeInTheDocument();
+    await limparTudo();
+  });
+
+  it('D32: o convite do app aparece só para quem pagou, no Android, até ser fechado', async () => {
+    const api = ligarApiSimulada();
+    const ua = vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Mozilla/5.0 (Linux; Android 14)');
+    await api.cenario('emTeste');
+    const emTeste = abrir('/aprender');
+    await screen.findByText(/Faltam 2 dias/);
+    expect(screen.queryByText('Baixe o app no Google Play')).not.toBeInTheDocument();
+    emTeste.unmount();
+    await limparTudo();
+
+    await api.cenario('aluno');
+    const pago = abrir('/aprender');
+    expect(await screen.findByText('Baixe o app no Google Play')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Baixar' })).toHaveAttribute('href', expect.stringContaining('play.google.com'));
+    await userEvent.click(screen.getByRole('button', { name: 'Fechar o convite para baixar o app' }));
+    expect(screen.queryByText('Baixe o app no Google Play')).not.toBeInTheDocument();
+    pago.unmount();
+    await limparTudo();
+    localStorage.clear();
+    ua.mockRestore();
+  });
+
   it('1ª compra: escolher outro concurso muda o Pix para esse concurso, a R$ 397', async () => {
     const api = ligarApiSimulada();
     await api.cenario('semAcesso');
@@ -123,6 +170,7 @@ describe('telas do aluno contra a API simulada', () => {
     });
     expect(opcao).toHaveTextContent('R$ 397,00');
     await userEvent.click(opcao);
+    await userEvent.click(await screen.findByRole('button', { name: 'GERAR PIX' }));
     expect(await screen.findByAltText(/QR Code do Pix/)).toBeInTheDocument();
     expect(
       screen.getByText(/Acesso ao Concurso Municipal de Vila Modelo 2026/),
@@ -147,6 +195,7 @@ describe('telas do aluno contra a API simulada', () => {
     await userEvent.click(continuar);
     // Pix do concurso adicional
     await waitFor(() => expect(local).toBe('/pagamento'));
+    await userEvent.click(await screen.findByRole('button', { name: 'GERAR PIX' }));
     expect(await screen.findByAltText(/QR Code do Pix/)).toBeInTheDocument();
     expect(screen.getAllByText('R$ 197').length).toBeGreaterThan(0);
     await api.fn('/api/__mock/pagar', { method: 'POST' });

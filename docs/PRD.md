@@ -40,7 +40,7 @@ Treinar no formato exato da banca que vai aplicar a prova, com questões reais d
 
 1. **Nome:** Fuse Aprova. O wordmark é "fuse" em laranja e "aprova" em verde.
 2. **Preço:** R$ 397,00, pagamento único, à vista, só por Pix. Não existe cartão, boleto nem parcelamento.
-3. **Não existe acesso gratuito.** Não há período de teste, modo demo nem lições abertas. Sem pagamento confirmado, a conta só vê o fluxo de pagamento, os termos e a saída.
+3. **O único acesso gratuito é o teste de 3 dias (D32).** Cada conta tem um teste de 72 horas, a partir do cadastro. Não há modo demo nem lições abertas. Fora do teste e sem pagamento confirmado, a conta só vê o fluxo de pagamento, os termos e a saída.
 4. **Gateway:** Asaas, que é o único serviço externo do sistema.
 5. **Acesso:** todas as provas e questões FAU do acervo, de todas as disciplinas e cargos. O acesso vale até a homologação do concurso de Palmital (veja 2.9).
 6. **Comunicação obrigatória:** em cadastro, pagamento, perfil e termos deve estar claro que, **quando o edital de Palmital for publicado, o app se ajusta aos cargos e ao conteúdo do edital, sem custo adicional**.
@@ -436,7 +436,7 @@ Nada disso exige deploy: é dado no banco.
 - O papel é `aluno` ou `admin`. O primeiro admin é criado por `pnpm --filter api cli admin:criar`.
 - Guardas:
   - `exigirLogin` responde 401;
-  - `exigirAcesso` responde 402 se não houver pagamento confirmado; **toda rota de conteúdo usa essa guarda**;
+  - `exigirAcesso` responde 402 se não houver pagamento confirmado nem teste grátis no prazo (D32); **toda rota de conteúdo usa essa guarda**;
   - `exigirAdmin` responde 403.
 
 ### 8.3 Pagamento (Asaas)

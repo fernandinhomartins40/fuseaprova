@@ -56,3 +56,40 @@
   font-weight: 700;
   text-decoration: underline;
 }
+
+.faixaTeste,
+.bannerApp {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--fa-blue-soft);
+  color: var(--fa-ink);
+  font-size: 14px;
+}
+.faixaTeste {
+  justify-content: space-between;
+}
+.faixaTeste a,
+.bannerApp a {
+  flex: none;
+  color: var(--fa-blue-shade);
+  font-weight: 800;
+  text-decoration: underline;
+}
+.bannerApp p {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.bannerApp span {
+  font-size: 13px;
+}
+.bannerApp button {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -8px -12px -8px -8px;
+}

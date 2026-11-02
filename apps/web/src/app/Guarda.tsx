@@ -10,7 +10,7 @@ import { rotaInicial } from './rotaInicial';
 /**
  * Guardas do lado da PWA (espelham as da API, que é quem decide de verdade):
  * - login: precisa de sessão (senão /entrar);
- * - acesso: precisa de pagamento confirmado (senão /pagamento) e de onboarding feito;
+ * - acesso: precisa de pagamento ou teste grátis em dia (senão /pagamento) e de onboarding feito;
  * - painel (D24): admin ou superadmin (senão a casa do papel). Superadmin sem 2FA nesta
  *   sessão vai para /super/2fa; o admin não tem 2FA (P-09). O que cada papel vê dentro do
  *   painel é decidido pelo módulo do /super (e, de verdade, pela API).

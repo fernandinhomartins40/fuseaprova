@@ -14,7 +14,7 @@ import rateLimit from '@fastify/rate-limit';
 import Fastify, { type FastifyInstance, type FastifyServerOptions } from 'fastify';
 import { sql } from 'drizzle-orm';
 import type { BancoDados } from '@fuse/db';
-import { podeEstudar, podeGerirConteudo, rngPadrao, type Rng } from '@fuse/shared';
+import { podeEstudar, podeGerirConteudo, rngPadrao, temAcessoAoEstudo, type Rng } from '@fuse/shared';
 import {
   HEADER_SEGUNDO_PLANO,
   NOME_COOKIE_SESSAO,
@@ -229,7 +229,7 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
     if (!u) throw new ErroHttp('nao_autenticado');
     if (podeGerirConteudo(u.papel)) exigirConteudo(u);
     else if (!podeEstudar(u.papel)) throw new ErroHttp('proibido');
-    else if (!u.acesso) throw new ErroHttp('sem_acesso');
+    else if (!temAcessoAoEstudo(u, deps.relogio.agora())) throw new ErroHttp('sem_acesso');
     const nome = req.params.nome;
     if (!/^[0-9a-f-]{36}\.(png|jpg|webp|gif)$/.test(nome)) throw new ErroHttp('nao_encontrado');
     try {

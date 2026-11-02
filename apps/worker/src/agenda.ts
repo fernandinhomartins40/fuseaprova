@@ -11,6 +11,7 @@ import {
   registrarSinal,
   temComunicacaoNaFila,
   verificarAlertas,
+  avisarTeste,
   enviarLembretes,
   executarBackup,
   expirarPix,
@@ -69,6 +70,9 @@ export function definirJobs(d: DependenciasWorker): DefinicaoJob[] {
       d.push ? enviarLembretes(d.db, d.push, agora(), d.log) : { desligado: 'VAPID não configurado' },
     ),
     job('expirar-pix', () => expirarPix(d.db, agora())),
+    job('avisar-teste', () =>
+      avisarTeste(d.db, { email: d.email ?? null, appUrl: d.appUrl ?? 'http://localhost:5173', log: d.log }, agora()),
+    ),
     job('limpar-sessoes', async () => {
       const r = await limparSessoes(d.db, agora());
       const limite = new Date(agora().getTime() - DIAS_EXECUCOES * 86_400_000);

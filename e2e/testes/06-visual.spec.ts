@@ -85,10 +85,12 @@ test('Visual: as 13 telas em 390×844', async ({ page }) => {
   await page.getByLabel('Senha', { exact: true }).fill('senha-forte-123');
   await page.getByLabel('Confirmar senha').fill('senha-forte-123');
   await page.getByLabel(/Li e aceito/).check();
-  await page.getByRole('button', { name: 'Criar conta e ir para o pagamento' }).click();
+  await page.getByRole('button', { name: 'Criar conta e começar o teste grátis' }).click();
 
   // 03 Pagamento Pix (contagem e copia e cola mascarados: dependem do tempo e do id da cobrança)
-  await expect(page).toHaveURL(/\/pagamento$/);
+  await expect(page).toHaveURL(/\/onboarding$/);
+  await page.goto('/pagamento');
+  await page.getByRole('button', { name: 'GERAR PIX' }).click();
   await expect(page.getByAltText(/QR Code do Pix/)).toBeVisible();
   await foto(page, '03_Pagamento_Pix', [
     page.getByText(/Expira em/),

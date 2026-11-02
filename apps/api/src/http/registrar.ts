@@ -14,7 +14,7 @@ import {
   type DefinicaoRota,
   type NomeRota,
 } from '@fuse/shared/api';
-import { podeEstudar, podeGerirConteudo } from '@fuse/shared';
+import { podeEstudar, podeGerirConteudo, temAcessoAoEstudo } from '@fuse/shared';
 import type { Deps, UsuarioSessao } from '../contexto.js';
 import { lerConfiguracoes } from '../servicos/configuracoes.js';
 import { exigirLimite } from '../servicos/limitador.js';
@@ -116,10 +116,10 @@ export function exigirGuarda(def: DefinicaoRota, req: FastifyRequest, deps: Deps
       if (!u) throw falha('nao_autenticado');
       if (!podeEstudar(u.papel)) throw falha('proibido');
       return;
-    case 'acesso': // exigirAcesso: só o aluno (a equipe recebe 403) e 402 sem pagamento confirmado
+    case 'acesso': // exigirAcesso: só o aluno (a equipe recebe 403) e 402 sem pagamento nem teste (D32)
       if (!u) throw falha('nao_autenticado');
       if (!podeEstudar(u.papel)) throw falha('proibido');
-      if (!u.acesso) throw falha('sem_acesso');
+      if (!temAcessoAoEstudo(u, deps.relogio.agora())) throw falha('sem_acesso');
       return;
     case 'conteudo': // D24: admin, ou superadmin com 2FA
       exigirConteudo(u);

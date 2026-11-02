@@ -28,3 +28,4 @@ export * as api from './api/index.js';
 export * from './desempenho.js';
 export * from './lembretes.js';
 export * from './agenda.js';
+export * from './teste.js';

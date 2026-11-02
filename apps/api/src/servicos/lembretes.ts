@@ -12,6 +12,7 @@ import {
   diaSP,
   MS_DIA,
   planejarLembretes,
+  temAcessoAoEstudo,
   type Dia,
   type TemaFracoLembrete,
 } from '@fuse/shared';
@@ -78,7 +79,7 @@ export async function montarLembretes(
     agora,
     notificacoes: u.notificacoes,
     hora: u.lembreteHora,
-    acesso: u.acesso,
+    acesso: temAcessoAoEstudo(u, agora),
     metaCumpridaHoje: feitasHoje >= u.metaDiaria,
     estudouHoje: u.ultimoDiaEstudo === diaSP(agora),
     ofensiva: ofensivaHoje(u, agora),

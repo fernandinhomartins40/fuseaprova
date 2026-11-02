@@ -87,8 +87,8 @@ export function Termos() {
         {EH_APP ? (
           // App nativo: sem preço nem meio de pagamento (regras das lojas, D20).
           <p>
-            O app é usado com uma conta que já tem acesso. Não há mensalidade, renovação
-            automática, período de teste nem acesso gratuito.
+            O app é usado com uma conta que já tem acesso. Não há mensalidade nem renovação
+            automática.
           </p>
         ) : (
           <>
@@ -102,8 +102,12 @@ export function Termos() {
               <strong>Vale o valor mostrado na tela de pagamento no momento da compra</strong>, já
               com o cupom de desconto, se houver. O pagamento é à vista e só por Pix, processado pelo
               Asaas (instituição de pagamento). O acesso é liberado automaticamente quando o Asaas
-              confirma o pagamento. Não há mensalidade, renovação automática, período de teste nem
-              acesso gratuito.
+              confirma o pagamento. Não há mensalidade nem renovação automática.
+            </p>
+            <p>
+              <strong>Teste grátis:</strong> cada conta tem um único teste de 3 dias (72 horas), sem
+              cobrança e sem compromisso de compra. No fim do prazo, o acesso ao conteúdo fica
+              bloqueado até o pagamento, e o seu progresso continua guardado.
             </p>
             <p>
               <strong>Cupons:</strong> um por compra, com validade, limite de usos e concurso

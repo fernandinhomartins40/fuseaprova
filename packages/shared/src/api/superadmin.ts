@@ -1248,6 +1248,7 @@ export const JOBS_WORKER = [
   { nome: 'verificar-ofensivas', titulo: 'Verificação das ofensivas', cron: '5 0 * * *', descricao: 'Zera ofensivas e gasta protetores' },
   { nome: 'enviar-lembretes', titulo: 'Lembretes de estudo', cron: '*/5 * * * *', descricao: 'Lembretes por push' },
   { nome: 'expirar-pix', titulo: 'Expiração dos Pix', cron: '*/10 * * * *', descricao: 'Marca Pix vencidos' },
+  { nome: 'avisar-teste', titulo: 'Avisos do teste grátis', cron: '0 8-21 * * *', descricao: 'E-mail na véspera e no fim do teste de 3 dias' },
   {
     nome: 'limpar-sessoes',
     titulo: 'Limpeza diária',
