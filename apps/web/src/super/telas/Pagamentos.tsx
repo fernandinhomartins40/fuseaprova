@@ -15,7 +15,7 @@ import { dataHora, NOMES_STATUS_PEDIDO, TOM_STATUS_PEDIDO } from '../../admin/ut
 import { BotaoAtualizar, CartaoLinha, Cartoes, Folha, Pagina, estilosSuper as s, useCelular } from '../componentes';
 import { FiltroConcurso } from '../concursos';
 import { Icone } from '../icones';
-import { baixarCsv, caminho, NOMES_METODO, periodoPadrao } from '../util';
+import { baixarCsv, caminho, NOMES_METODO, periodoPadrao, produtoDoPedido } from '../util';
 
 type Filtros = { q: string; status: StatusPedido | ''; metodo: MetodoPedido | ''; concursoId: string; de: string; ate: string };
 const FILTROS_VAZIOS: Filtros = { q: '', status: '', metodo: '', concursoId: '', de: '', ate: '' };
@@ -195,7 +195,7 @@ export default function Pagamentos() {
                     key={p.id}
                     para={caminho(`pagamentos/${p.id}`)}
                     titulo={p.usuario.nome}
-                    sub={`${p.concurso?.nome ?? 'Sem concurso'} · ${NOMES_METODO[p.metodo]} · ${dataHora(p.pagoEm ?? p.criadoEm)}${p.cupomCodigo ? ` · cupom ${p.cupomCodigo}` : ''}`}
+                    sub={`${produtoDoPedido(p)} · ${NOMES_METODO[p.metodo]} · ${dataHora(p.pagoEm ?? p.criadoEm)}${p.cupomCodigo ? ` · cupom ${p.cupomCodigo}` : ''}`}
                     valor={formatarReais(p.valorCentavos)}
                     extra={
                       <div style={{ marginTop: 4 }}>
@@ -211,7 +211,7 @@ export default function Pagamentos() {
                   <tr>
                     <th>Aluno</th>
                     <th>Status</th>
-                    <th>Concurso</th>
+                    <th>Produto</th>
                     <th>Método</th>
                     <th className={a.direita}>Valor</th>
                     <th>Cupom</th>
@@ -232,7 +232,7 @@ export default function Pagamentos() {
                       <td>
                         <Selo tom={TOM_STATUS_PEDIDO[p.status]}>{NOMES_STATUS_PEDIDO[p.status]}</Selo>
                       </td>
-                      <td>{p.concurso?.nome ?? '—'}</td>
+                      <td>{produtoDoPedido(p, '—')}</td>
                       <td>{NOMES_METODO[p.metodo]}</td>
                       <td className={a.direita}>{formatarReais(p.valorCentavos)}</td>
                       <td className={a.mono}>

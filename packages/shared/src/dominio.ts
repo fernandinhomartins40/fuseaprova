@@ -100,6 +100,10 @@ export type StatusPedido = (typeof STATUS_PEDIDO)[number];
 export const METODOS_PEDIDO = ['asaas', 'manual'] as const;
 export type MetodoPedido = (typeof METODOS_PEDIDO)[number];
 
+/** D34: o que o pedido compra: o preparatório de um concurso ou as 4 apostilas em PDF. */
+export const PRODUTOS_PEDIDO = ['concurso', 'apostilas'] as const;
+export type ProdutoPedido = (typeof PRODUTOS_PEDIDO)[number];
+
 /** D13: forma do pagamento recebido por fora (aprovação manual). */
 export const FORMAS_PAGAMENTO_MANUAL = ['transferencia', 'dinheiro', 'pix_direto', 'outro'] as const;
 export type FormaPagamentoManual = (typeof FORMAS_PAGAMENTO_MANUAL)[number];

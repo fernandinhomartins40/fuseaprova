@@ -102,7 +102,8 @@ export default defineConfig(({ mode }) => {
             manifest: {
               name: 'Fuse Aprova',
               short_name: 'Fuse Aprova',
-              description: 'Estude para concursos com lições curtas, questões explicadas e simulados.',
+              description:
+                'Estude para concursos com lições curtas, questões explicadas e simulados.',
               lang: 'pt-BR',
               start_url: '/aprender',
               scope: '/',
@@ -138,7 +139,16 @@ export default defineConfig(({ mode }) => {
               // "/" é a landing: o SW não troca por index.html nem pelo índice do precache.
               // Painel da equipe (/super, /admin): sempre o index.html da rede, para um SW antigo
               // não servir um app que ainda não conhece as rotas novas (ex.: /super/entrar, D24).
-              navigateFallbackDenylist: [/^\/api\//, /^\/$/, /^\/lp\//, /^\/super(\/|$)/, /^\/admin(\/|$)/],
+              // D34: /apostilas também (é nova e é o link da campanha). Os PDFs (/api/apostilas/…,
+              // ~45 MB) não entram em nenhum runtimeCaching abaixo.
+              navigateFallbackDenylist: [
+                /^\/api\//,
+                /^\/$/,
+                /^\/lp\//,
+                /^\/super(\/|$)/,
+                /^\/admin(\/|$)/,
+                /^\/apostilas(\/|$)/,
+              ],
               directoryIndex: null,
               cleanupOutdatedCaches: true,
               // Mostra os lembretes e as comunicações enviados pelo worker (auditoria PIE R2-01).

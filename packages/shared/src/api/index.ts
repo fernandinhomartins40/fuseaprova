@@ -6,6 +6,7 @@ export * from './auth.js';
 export * from './me.js';
 export * from './meus-concursos.js';
 export * from './pagamento.js';
+export * from './apostilas.js';
 export * from './conteudo.js';
 export * from './estudo.js';
 export * from './offline.js';

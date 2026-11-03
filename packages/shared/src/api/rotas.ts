@@ -11,6 +11,7 @@ import * as auth from './auth.js';
 import * as me from './me.js';
 import * as mc from './meus-concursos.js';
 import * as pag from './pagamento.js';
+import * as apo from './apostilas.js';
 import * as cont from './conteudo.js';
 import * as est from './estudo.js';
 import * as off from './offline.js';
@@ -245,6 +246,22 @@ export const ROTAS = {
     descricao: 'Status do pagamento de um concurso; após 60 s pendente consulta o Asaas.',
     query: pag.StatusPagamentoQuery,
     resposta: pag.StatusPagamentoResposta,
+  }),
+  /* ---------------------------------------------------------- apostilas (D34) */
+  apostilasPix: rota({
+    metodo: 'POST',
+    caminho: '/apostilas/pix',
+    guarda: 'aluno',
+    descricao: 'D34: gera ou reaproveita o Pix pendente das 4 apostilas (R$ 47, pagamento único).',
+    resposta: apo.ApostilasPixResposta,
+    limite: { max: 10, janelaMs: HORA, por: 'usuario' },
+  }),
+  apostilasStatus: rota({
+    metodo: 'GET',
+    caminho: '/apostilas/status',
+    guarda: 'aluno',
+    descricao: 'D34: compra das apostilas (paga ou não) e o Pix mais recente; após 60 s pendente consulta o Asaas.',
+    resposta: apo.ApostilasStatusResposta,
   }),
   webhookAsaas: rota({
     metodo: 'POST',

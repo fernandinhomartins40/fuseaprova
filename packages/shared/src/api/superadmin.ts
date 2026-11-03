@@ -26,6 +26,7 @@ import {
   ZAreaCargo,
   ZDivisao,
   ZMetodoPedido,
+  ZProdutoPedido,
   ZPapel,
   ZSlugDisciplina,
   ZStatusPedido,
@@ -231,6 +232,8 @@ export const PagamentoSuper = z.object({
   id: Uuid,
   usuario: UsuarioPagamento,
   metodo: ZMetodoPedido,
+  /** D34: o preparatório de um concurso ou as apostilas em PDF. */
+  produto: ZProdutoPedido.default('concurso'),
   status: ZStatusPedido,
   valorCentavos: z.number().int(),
   valorLiquidoCentavos: z.number().int().nullable(),
@@ -266,6 +269,8 @@ export const PagamentosQuery = PaginacaoQuery.merge(PeriodoQuery).extend({
   metodo: ZMetodoPedido.optional(),
   /** D21: só os pedidos deste concurso. */
   concursoId: Uuid.optional(),
+  /** D34: só os pedidos de um produto. */
+  produto: ZProdutoPedido.optional(),
 });
 export type PagamentosQuery = z.input<typeof PagamentosQuery>;
 export const PagamentosListaResposta = paginada(PagamentoSuper);

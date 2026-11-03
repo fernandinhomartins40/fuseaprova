@@ -16,7 +16,7 @@ import {
 } from '@fuse/shared/api';
 import type { Deps, Usuario } from '../contexto.js';
 import { ErroHttp, falha } from '../http/erros.js';
-import { emailBoasVindas, emailReembolso } from '../integracoes/email.js';
+import { emailApostilasLiberadas, emailBoasVindas, emailReembolso } from '../integracoes/email.js';
 import { lerDataAsaas } from '../integracoes/asaas.js';
 import { concursoAbertoPorId, liberarConcurso, precoDoConcurso, revogarConcurso } from './concursos.js';
 import { cupomValido, descricaoCupom, garantirReservaCupom, precoComCupom } from './precos.js';
@@ -48,7 +48,7 @@ function respostaPix(p: Pedido, concurso: { id: string; nome: string }, cupom: s
  * Vale para uma instância da API, que é o deploy atual (ver R3-11 em docs/pie).
  */
 const filaPix = new Map<string, Promise<unknown>>();
-function umPorAluno<T>(usuarioId: string, fn: () => Promise<T>): Promise<T> {
+export function umPorAluno<T>(usuarioId: string, fn: () => Promise<T>): Promise<T> {
   const anterior = filaPix.get(usuarioId) ?? Promise.resolve();
   const atual = anterior.catch(() => undefined).then(fn);
   filaPix.set(usuarioId, atual);
@@ -96,7 +96,14 @@ export async function gerarPix(
     const [pendente] = await db
       .select()
       .from(pedidos)
-      .where(and(eq(pedidos.usuarioId, u.id), eq(pedidos.concursoId, concurso.id), eq(pedidos.status, 'pendente')))
+      .where(
+        and(
+          eq(pedidos.usuarioId, u.id),
+          eq(pedidos.produto, 'concurso'),
+          eq(pedidos.concursoId, concurso.id),
+          eq(pedidos.status, 'pendente'),
+        ),
+      )
       .orderBy(desc(pedidos.criadoEm))
       .limit(1);
     // O Pix pendente só vale se ainda é o preço de hoje (o aluno pode ter pago outro concurso
@@ -237,7 +244,8 @@ export async function statusPagamento(
   let [p] = await db
     .select()
     .from(pedidos)
-    .where(and(eq(pedidos.usuarioId, u.id), concursoId ? eq(pedidos.concursoId, concursoId) : undefined))
+    // D34: o pedido das apostilas não entra no status do concurso.
+    .where(and(eq(pedidos.usuarioId, u.id), eq(pedidos.produto, 'concurso'), concursoId ? eq(pedidos.concursoId, concursoId) : undefined))
     .orderBy(desc(pedidos.criadoEm))
     .limit(1);
   if (p && p.status === 'pendente' && p.asaasPaymentId && agora.getTime() - p.criadoEm.getTime() > CONSULTA_ASAAS_APOS_MS) {
@@ -282,6 +290,19 @@ export function idRecibo(p: Pick<Pedido, 'id' | 'asaasPaymentId' | 'metodo'>): s
 
 /** E-mail de confirmação com o recibo (boas-vindas). Usado no webhook, no manual e no reenvio. */
 export function enviarEmailConfirmacao(deps: Deps, pedido: Pedido, usuario: Usuario): void {
+  if (pedido.produto === 'apostilas') {
+    deps.enviarEmail(
+      emailApostilasLiberadas({
+        nome: usuario.nome,
+        email: usuario.email,
+        valorCentavos: pedido.valorCentavos,
+        pagoEm: pedido.pagoEm ?? pedido.criadoEm,
+        cobrancaId: idRecibo(pedido),
+        appUrl: deps.config.appUrl,
+      }),
+    );
+    return;
+  }
   deps.enviarEmail(
     emailBoasVindas({
       nome: usuario.nome,
@@ -322,6 +343,8 @@ export async function confirmarPagamento(
       })
       .where(eq(pedidos.id, p.id))
       .returning();
+    // D34: as apostilas só abrem o download; não liberam concurso nem gastam o teste grátis.
+    if (p.produto === 'apostilas') return { pedido: pago!, usuario: await usuarioDe(tx, p.usuarioId) };
     // D21: o pagamento libera o CONCURSO do pedido (pedidos antigos sem concurso: o do aluno).
     const concursoId = p.concursoId ?? (await concursoDoUsuario(tx, await usuarioDe(tx, p.usuarioId)))?.id;
     if (concursoId) await liberarConcurso(tx, p.usuarioId, concursoId, agora);
@@ -353,6 +376,8 @@ export async function estornarPagamento(deps: Deps, paymentId: string, agora: Da
     const [p] = await tx.select().from(pedidos).where(eq(pedidos.asaasPaymentId, paymentId)).for('update');
     if (!p || p.status === 'estornado') return null;
     await tx.update(pedidos).set({ status: 'estornado', estornadoEm: agora }).where(eq(pedidos.id, p.id));
+    // D34: estornar as apostilas só fecha o download; o concurso e as sessões não mudam.
+    if (p.produto === 'apostilas') return { pedido: p, usuario: await usuarioDe(tx, p.usuarioId) };
     const concursoId = p.concursoId ?? (await concursoDoUsuario(tx, await usuarioDe(tx, p.usuarioId)))?.id ?? null;
     const [outroPago] = await tx
       .select({ id: pedidos.id })
@@ -361,6 +386,7 @@ export async function estornarPagamento(deps: Deps, paymentId: string, agora: Da
         and(
           eq(pedidos.usuarioId, p.usuarioId),
           eq(pedidos.status, 'pago'),
+          eq(pedidos.produto, 'concurso'),
           ne(pedidos.id, p.id),
           concursoId ? eq(pedidos.concursoId, concursoId) : undefined,
         ),
@@ -383,6 +409,7 @@ export async function estornarPagamento(deps: Deps, paymentId: string, agora: Da
         email: resultado.usuario.email,
         valorCentavos: resultado.pedido.valorCentavos,
         cobrancaId: paymentId,
+        produto: resultado.pedido.produto,
       }),
     );
   }

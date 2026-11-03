@@ -24,6 +24,7 @@ const ExclusaoDeConta = lazy(() =>
   import('../telas/Legal').then((m) => ({ default: m.ExclusaoDeConta })),
 );
 const Pagamento = EH_APP ? Vazio : lazy(() => import('../telas/Pagamento'));
+const Apostilas = EH_APP ? Vazio : lazy(() => import('../telas/apostilas/Apostilas'));
 const Onboarding = lazy(() => import('../telas/Onboarding'));
 const Aprender = lazy(() => import('../telas/Aprender'));
 const SobreConcurso = lazy(() => import('../telas/SobreConcurso'));
@@ -46,10 +47,16 @@ const NaoEncontrada = lazy(() => import('../telas/NaoEncontrada'));
 const Super = EH_APP ? Vazio : lazy(() => import('../super/rotas'));
 const EntrarConteudo = EH_APP
   ? Vazio
-  : lazy(() => import('../painel/EntrarPainel').then((m) => ({ default: () => <m.default area="conteudo" /> })));
+  : lazy(() =>
+      import('../painel/EntrarPainel').then((m) => ({
+        default: () => <m.default area="conteudo" />,
+      })),
+    );
 const EntrarSuper = EH_APP
   ? Vazio
-  : lazy(() => import('../painel/EntrarPainel').then((m) => ({ default: () => <m.default area="super" /> })));
+  : lazy(() =>
+      import('../painel/EntrarPainel').then((m) => ({ default: () => <m.default area="super" /> })),
+    );
 const Convite = EH_APP ? Vazio : lazy(() => import('../painel/Convite'));
 const MeusConcursos = lazy(() => import('../telas/MeusConcursos'));
 const AcessoApp = EH_APP ? lazy(() => import('../telas/AcessoApp')) : Vazio;
@@ -81,12 +88,23 @@ function Redirecionador() {
         if (local.pathname === destino) return;
         if (
           destino === '/entrar' &&
-          ['/', '/cadastro', '/entrar', '/termos', '/privacidade', '/excluir-conta'].includes(
-            local.pathname,
-          )
+          [
+            '/',
+            '/cadastro',
+            '/entrar',
+            '/termos',
+            '/privacidade',
+            '/excluir-conta',
+            '/apostilas',
+          ].includes(local.pathname)
         )
           return;
-        if (destino !== '/entrar' && destino.endsWith('/entrar') && local.pathname.endsWith('/entrar')) return;
+        if (
+          destino !== '/entrar' &&
+          destino.endsWith('/entrar') &&
+          local.pathname.endsWith('/entrar')
+        )
+          return;
         navegar(destino, { replace: true });
       }),
     [navegar, local.pathname],
@@ -143,6 +161,12 @@ export function Rotas() {
         <Route path="/termos" element={<Termos />} />
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/excluir-conta" element={<ExclusaoDeConta />} />
+        {/* D34: campanha das apostilas, pública (no app nativo não há compra, D20). */}
+        {EH_APP ? (
+          <Route path="/apostilas" element={<Navigate to="/" replace />} />
+        ) : (
+          <Route path="/apostilas" element={<Apostilas />} />
+        )}
 
         {EH_APP ? (
           <>

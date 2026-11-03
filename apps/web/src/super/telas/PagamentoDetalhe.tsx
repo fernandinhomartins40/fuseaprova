@@ -18,7 +18,7 @@ import { Alerta, Cartao, Consulta, Marcar, Selo, estilos as a } from '../../admi
 import { cpfMascarado, dataHora, dia, NOMES_STATUS_PEDIDO, TOM_STATUS_PEDIDO } from '../../admin/util';
 import { AcaoConfirmada, AprovarManual } from '../acoes';
 import { AcoesFicha, Pagina, estilosSuper as s } from '../componentes';
-import { caminho, NOMES_FORMA_PAGAMENTO_MANUAL, NOMES_METODO } from '../util';
+import { caminho, NOMES_FORMA_PAGAMENTO_MANUAL, NOMES_METODO, produtoDoPedido } from '../util';
 
 type Aberta = null | 'estornar' | 'cancelar' | 'manual' | 'liberar';
 
@@ -42,9 +42,9 @@ function Dados({ p }: { p: PagamentoSuper }) {
       </dd>
       <dt>CPF</dt>
       <dd className={a.mono}>{cpfMascarado(p.usuario.cpfOculto)}</dd>
-      <dt>Concurso</dt>
-      <dd>{p.concurso?.nome ?? 'Pedido antigo, sem concurso (vale o acesso geral)'}</dd>
-      <dt>Concurso deste pedido</dt>
+      <dt>{p.produto === 'apostilas' ? 'Produto' : 'Concurso'}</dt>
+      <dd>{produtoDoPedido(p, 'Pedido antigo, sem concurso (vale o acesso geral)')}</dd>
+      <dt>{p.produto === 'apostilas' ? 'Download das apostilas' : 'Concurso deste pedido'}</dt>
       <dd>{p.concursoLiberado ? <Selo tom="sucesso">Liberado</Selo> : <Selo tom="aviso">Não liberado</Selo>}</dd>
       <dt>Status</dt>
       <dd>

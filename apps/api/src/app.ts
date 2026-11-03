@@ -5,7 +5,8 @@
  *   const app = await criarApp({ db, asaas: criarAsaasFalso(), mailer: criarMailerMemoria(), relogio });
  *   await app.inject({ method: 'GET', url: '/api/saude' });
  */
-import { readFile } from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
+import { readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import cookie from '@fastify/cookie';
 import helmet from '@fastify/helmet';
@@ -16,8 +17,11 @@ import { sql } from 'drizzle-orm';
 import type { BancoDados } from '@fuse/db';
 import { podeEstudar, podeGerirConteudo, rngPadrao, temAcessoAoEstudo, type Rng } from '@fuse/shared';
 import {
+  arquivoApostila,
   HEADER_SEGUNDO_PLANO,
   NOME_COOKIE_SESSAO,
+  nomeDownloadApostila,
+  VOLUMES_APOSTILA,
   erroApi,
   instalarMensagensPtBr,
 } from '@fuse/shared/api';
@@ -39,6 +43,7 @@ import { rotasAdminGestao } from './rotas/admin/gestao.js';
 import { rotasAuth } from './rotas/auth.js';
 import { rotasConteudo } from './rotas/conteudo.js';
 import { rotasAnotacoes } from './rotas/anotacoes.js';
+import { rotasApostilas } from './rotas/apostilas.js';
 import { rotasLembretes } from './rotas/lembretes.js';
 import { rotasEstudo } from './rotas/estudo.js';
 import { rotasMe } from './rotas/me.js';
@@ -47,6 +52,7 @@ import { rotasPagamento } from './rotas/pagamento.js';
 import { rotasSimulados } from './rotas/simulados.js';
 import { rotasSocial } from './rotas/social.js';
 import { rotasSuper } from './rotas/super/index.js';
+import { registrarDownload } from './servicos/apostilas.js';
 import { carregarSessao } from './servicos/sessoes.js';
 
 declare module 'fastify' {
@@ -243,6 +249,32 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
     }
   });
 
+  // D34: as apostilas em PDF, para o aluno que comprou. Stream (cada volume tem ~45 MB) e cada
+  // download fica registrado (controle de compartilhamento), com limite diário.
+  app.get<{ Params: { volume: string } }>('/api/apostilas/:volume/pdf', async (req, reply) => {
+    const u = req.usuario;
+    if (!u) throw new ErroHttp('nao_autenticado');
+    if (!podeEstudar(u.papel)) throw new ErroHttp('proibido', 'As apostilas são baixadas pela conta de aluno.');
+    const volume = Number(req.params.volume);
+    if (!VOLUMES_APOSTILA.some((v) => v.volume === volume)) throw new ErroHttp('nao_encontrado', 'Volume não encontrado.');
+    const caminho = join(config.arquivosDir, 'apostilas', arquivoApostila(volume));
+    let tamanho: number;
+    try {
+      tamanho = (await stat(caminho)).size;
+    } catch {
+      throw new ErroHttp('nao_encontrado', 'Este volume ainda não está disponível. Tente de novo mais tarde.');
+    }
+    await registrarDownload(deps.db, u, volume, req.ip ?? null, deps.relogio.agora());
+    const nome = nomeDownloadApostila(volume);
+    const ascii = nome.normalize('NFD').replace(/[^ -~]/g, '').replace(/"/g, '');
+    return reply
+      .header('Content-Type', 'application/pdf')
+      .header('Content-Length', String(tamanho))
+      .header('Content-Disposition', `attachment; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(nome)}`)
+      .header('Cache-Control', 'private, no-store')
+      .send(createReadStream(caminho));
+  });
+
   // D13: comprovantes da aprovação manual, só para o superadmin (com 2FA).
   app.get<{ Params: { nome: string } }>('/api/super/comprovantes/:nome', async (req, reply) => {
     exigirSuperadmin(req.usuario);
@@ -274,6 +306,7 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
   rotasAuth(r);
   rotasMe(r);
   rotasPagamento(r);
+  rotasApostilas(r);
   rotasConteudo(r);
   rotasEstudo(r);
   rotasAnotacoes(r);

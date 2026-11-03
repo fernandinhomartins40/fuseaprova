@@ -177,13 +177,15 @@ export async function calcularFinanceiro(
 
   const pedidosPorStatus = Object.fromEntries(STATUS_PEDIDO.map((s) => [s, contar(criados?.[s])])) as FinanceiroResposta['pedidosPorStatus'];
 
-  // Conversão: dos cadastrados no período, quantos têm pagamento (em qualquer data).
+  // Conversão: dos cadastrados no período, quantos pagaram o preparatório (em qualquer data). D34:
+  // a receita soma as apostilas, mas a conversão conta só o pedido de concurso.
   let convertidos = 0;
   if (totalNovos) {
     const [c] = await consultar<{ n: number }>(
       db,
       sql`select count(distinct p.usuario_id)::int n from pedidos p join usuarios u on u.id = p.usuario_id
-          where u.papel = 'aluno' and u.criado_em >= ${dataSql(inicio)} and u.criado_em < ${dataSql(fim)} and p.status in ('pago','estornado')`,
+          where u.papel = 'aluno' and u.criado_em >= ${dataSql(inicio)} and u.criado_em < ${dataSql(fim)} and p.status in ('pago','estornado')
+            and p.produto = 'concurso'`,
     );
     convertidos = contar(c?.n);
   }

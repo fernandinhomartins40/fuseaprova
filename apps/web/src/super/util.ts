@@ -18,6 +18,14 @@ export { NOMES_FORMA_PAGAMENTO_MANUAL, NOMES_PAPEL, NOMES_SEGMENTO_COMUNICACAO }
 
 export const NOMES_METODO: Record<'asaas' | 'manual', string> = { asaas: 'Pix (Asaas)', manual: 'Manual' };
 
+/** D34: o que o pedido comprou (as apostilas não têm concurso). */
+export function produtoDoPedido(
+  p: { produto?: 'concurso' | 'apostilas' | undefined; concurso: { nome: string } | null },
+  semConcurso = 'Sem concurso',
+): string {
+  return p.produto === 'apostilas' ? 'Apostilas (PDF)' : (p.concurso?.nome ?? semConcurso);
+}
+
 export function tomPapel(p: Papel): 'neutro' | 'info' | 'destaque' {
   return p === 'superadmin' ? 'destaque' : p === 'admin' ? 'info' : 'neutro';
 }

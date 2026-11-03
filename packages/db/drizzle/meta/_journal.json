@@ -92,6 +92,13 @@
       "when": 1793663560606,
       "tag": "0012_validade_acesso",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793716525116,
+      "tag": "0013_apostilas",
+      "breakpoints": true
     }
   ]
 }

@@ -39,7 +39,7 @@ Treinar no formato exato da banca que vai aplicar a prova, com questões reais d
 ## 2. Regras de negócio (não negociáveis)
 
 1. **Nome:** Fuse Aprova. O wordmark é "fuse" em laranja e "aprova" em verde.
-2. **Preço:** R$ 397,00, pagamento único, à vista, só por Pix. Não existe cartão, boleto nem parcelamento.
+2. **Preço:** R$ 397,00, pagamento único, à vista, só por Pix. Não existe cartão, boleto nem parcelamento. Exceção (D34): as 4 apostilas em PDF são um produto à parte, por R$ 47 no Pix, que não libera o app.
 3. **O único acesso gratuito é o teste de 3 dias (D32, D33).** Cada pessoa tem um teste de 72 horas, a partir do cadastro. Não há modo demo nem lições abertas. Fora do teste e sem pagamento confirmado, a conta só vê o fluxo de pagamento, os termos e a saída.
 4. **Gateway:** Asaas, que é o único serviço externo do sistema.
 5. **Acesso:** todas as provas e questões FAU do acervo, de todas as disciplinas e cargos. O acesso vale até a homologação do concurso de Palmital ou por 24 meses, o que vier primeiro (D33).

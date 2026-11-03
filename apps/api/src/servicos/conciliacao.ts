@@ -19,7 +19,8 @@ const { pedidos, usuarios, usuariosConcursos } = schema;
  * conta de aluno ativa, com reembolso não pedido; devolve o concurso a liberar.
  */
 async function pagoSemLiberacao(deps: Deps, p: Pedido): Promise<{ concursoId: string } | null> {
-  if (p.reembolsoSolicitadoEm) return null;
+  // D34: as apostilas não liberam concurso.
+  if (p.reembolsoSolicitadoEm || p.produto === 'apostilas') return null;
   const [u] = await deps.db.select().from(usuarios).where(eq(usuarios.id, p.usuarioId));
   if (!u || u.papel !== 'aluno' || u.excluidoEm) return null;
   const concursoId = p.concursoId ?? (await concursoDoUsuario(deps.db, u))?.id ?? null;
@@ -105,10 +106,10 @@ export async function conciliarPedido(
     mensagem = 'Divergência: pago no Asaas com valor menor que o do pedido. Confira antes de liberar o acesso.';
   } else if (esperado === 'pago' && (p.status === 'pendente' || p.status === 'vencido')) {
     acao = () => confirmarPagamento(deps, p.asaasPaymentId!, agora, { valorLiquidoCentavos: liquido, valorPagoCentavos: valorPago });
-    mensagem = 'Pago no Asaas: pedido marcado como pago e acesso liberado.';
+    mensagem = p.produto === 'apostilas' ? 'Pago no Asaas: pedido das apostilas marcado como pago e download liberado.' : 'Pago no Asaas: pedido marcado como pago e acesso liberado.';
   } else if (esperado === 'estornado' && p.status === 'pago') {
     acao = () => estornarPagamento(deps, p.asaasPaymentId!, agora);
-    mensagem = 'Estornado no Asaas: pedido estornado e acesso revogado.';
+    mensagem = p.produto === 'apostilas' ? 'Estornado no Asaas: pedido das apostilas estornado e download fechado.' : 'Estornado no Asaas: pedido estornado e acesso revogado.';
   } else if (esperado === 'vencido' && p.status === 'pendente') {
     acao = () => vencerPagamento(deps.db, p.asaasPaymentId!);
     mensagem = 'Vencido ou removido no Asaas: pedido marcado como vencido.';

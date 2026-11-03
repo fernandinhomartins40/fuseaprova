@@ -15,6 +15,7 @@ import {
   METODOS_PEDIDO,
   ORIGENS_QUESTAO,
   PAPEIS,
+  PRODUTOS_PEDIDO,
   SLUGS_DISCIPLINA,
   STATUS_CONCURSO,
   STATUS_PEDIDO,
@@ -155,6 +156,8 @@ export const ZTipoSessaoEstudo = z.enum(TIPOS_SESSAO_ESTUDO);
 export const ZDivisao = z.enum(DIVISOES);
 export const ZPapel = z.enum(PAPEIS);
 export const ZMetodoPedido = z.enum(METODOS_PEDIDO);
+/** D34 */
+export const ZProdutoPedido = z.enum(PRODUTOS_PEDIDO);
 
 export const IdParams = z.object({ id: Uuid });
 export type IdParams = z.infer<typeof IdParams>;

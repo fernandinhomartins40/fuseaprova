@@ -224,6 +224,8 @@ export async function precoBase(
       and(
         eq(pedidos.usuarioId, usuarioId),
         eq(pedidos.status, 'pago'),
+        // D34: as apostilas não contam como concurso pago (não dão o preço de adicional).
+        eq(pedidos.produto, 'concurso'),
         sql`${pedidos.concursoId} is distinct from ${concursoId}`,
       ),
     )
@@ -260,6 +262,7 @@ export async function sincronizarPixPendentes(deps: Deps, agora: Date, filtro: {
       and(
         eq(pedidos.status, 'pendente'),
         eq(pedidos.metodo, 'asaas'),
+        eq(pedidos.produto, 'concurso'),
         isNotNull(pedidos.asaasPaymentId),
         isNotNull(pedidos.concursoId),
         filtro.cupomId ? eq(pedidos.cupomId, filtro.cupomId) : undefined,

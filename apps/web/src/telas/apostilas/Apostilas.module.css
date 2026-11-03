@@ -1,0 +1,372 @@
+/* D34: página da campanha das apostilas. Celular primeiro; no desktop, venda à esquerda e compra à direita. */
+.pagina {
+  padding: calc(14px + env(safe-area-inset-top)) 18px 32px;
+  min-height: 100dvh;
+}
+.topo {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  margin-bottom: 8px;
+}
+.marca {
+  display: inline-flex;
+  border-radius: 10px;
+}
+.grade {
+  display: grid;
+  gap: 24px;
+}
+.colunaVenda {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  min-width: 0;
+}
+.colunaCompra {
+  min-width: 0;
+}
+.caixaCompra {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  box-shadow: var(--fa-sombra-cartao);
+}
+
+/* ---- venda ---- */
+.heroi {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.selo {
+  align-self: flex-start;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fa-petroleo);
+  background: var(--fa-turquesa-soft);
+  border-radius: var(--fa-r-pill);
+  padding: 6px 12px;
+}
+.titulo {
+  font-size: 30px;
+  line-height: 1.12;
+  font-weight: 800;
+  color: var(--fa-ink);
+}
+.destaque {
+  color: var(--fa-laranja-texto);
+}
+.subtitulo {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+}
+.precoLinha {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.preco {
+  font-family: var(--fa-font-display);
+  font-weight: 800;
+  font-size: 44px;
+  line-height: 1;
+  color: var(--fa-petroleo);
+}
+.precoSub {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--fa-ink-2);
+}
+.secaoTitulo {
+  font-size: var(--fa-t-secao);
+  font-weight: 800;
+  color: var(--fa-ink);
+  margin-bottom: 12px;
+}
+.volumes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.volume {
+  padding: 16px 16px 14px;
+  border-radius: var(--fa-r-xl);
+  color: #fff;
+  background: linear-gradient(
+    160deg,
+    var(--cor-volume),
+    color-mix(in srgb, var(--cor-volume) 72%, #000)
+  );
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--cor-volume) 60%, #000);
+}
+.volumeNum {
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.volumeTitulo {
+  color: #fff;
+  font-size: 21px;
+  line-height: 1.15;
+  margin: 4px 0 6px;
+}
+.volumeSub {
+  font-size: 14.5px;
+  font-weight: 700;
+}
+.volumeMeta {
+  margin-top: 10px;
+  display: inline-block;
+  font-size: 13.5px;
+  font-weight: 900;
+  color: var(--fa-ink);
+  background: #fff;
+  border-radius: var(--fa-r-pill);
+  padding: 4px 10px;
+}
+.itens {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+}
+.itens li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.itens strong {
+  color: var(--fa-ink);
+}
+.check {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border-radius: 50%;
+  background: var(--fa-turquesa-acao);
+  color: #fff;
+  flex: none;
+}
+
+/* ---- compra ---- */
+.compraTitulo {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--fa-ink);
+}
+.compraTexto {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+}
+.compraPreco {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+}
+.compraPreco strong {
+  font-family: var(--fa-font-display);
+  font-size: 30px;
+  color: var(--fa-petroleo);
+}
+.abas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 4px;
+  border-radius: var(--fa-r-pill);
+  background: var(--fa-turquesa-soft);
+}
+.aba {
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--fa-r-pill);
+  background: transparent;
+  font: inherit;
+  font-weight: 900;
+  font-size: 15px;
+  color: var(--fa-petroleo);
+  cursor: pointer;
+}
+.aba[aria-pressed='true'] {
+  background: var(--fa-surface);
+  box-shadow: var(--fa-sombra-cartao);
+}
+.aba:focus-visible,
+.comprarAgora:focus-visible,
+.download:focus-visible,
+.estudarApp:focus-visible {
+  outline: 3px solid var(--fa-turquesa);
+  outline-offset: 2px;
+}
+.gerar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+}
+.logado {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fa-muted);
+  text-align: center;
+}
+.aviso {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+}
+.downloads {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.download {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 56px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  color: #fff;
+  text-decoration: none;
+  background: var(--cor-volume);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--cor-volume) 60%, #000);
+  transition: transform 80ms;
+}
+.download:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+.download svg {
+  flex: none;
+}
+.downloadTexto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.downloadTitulo {
+  font-weight: 900;
+  font-size: 15.5px;
+  line-height: 1.25;
+}
+.downloadMeta {
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.95;
+}
+.estudarApp {
+  align-self: center;
+  font-weight: 900;
+  font-size: 15.5px;
+  color: var(--fa-petroleo);
+  padding: 8px;
+  border-radius: 10px;
+}
+
+/* ---- FAQ e rodapé ---- */
+.faq {
+  margin-top: 30px;
+}
+.faq dl {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+.faqItem {
+  padding: 14px 16px;
+  border-radius: var(--fa-r-lg);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+}
+.faqItem dt {
+  font-weight: 900;
+  font-size: 16px;
+  color: var(--fa-ink);
+}
+.faqItem dd {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--fa-ink-2);
+}
+.rodape {
+  margin-top: 26px;
+  display: grid;
+  gap: 6px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fa-muted);
+}
+
+@media (min-width: 900px) {
+  .pagina {
+    padding: 22px 36px 40px;
+  }
+  .grade {
+    grid-template-columns: minmax(0, 1fr) 400px;
+    align-items: start;
+    gap: 36px;
+  }
+  .colunaCompra {
+    position: sticky;
+    top: 20px;
+  }
+  .titulo {
+    font-size: 40px;
+  }
+  .volumes {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.comprarAgora {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 16px;
+  background: var(--fa-acao);
+  box-shadow: 0 4px 0 var(--fa-acao-shade);
+  color: #fff;
+  font-weight: 900;
+  font-size: 17px;
+  text-decoration: none;
+}
+.comprarAgora:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+@media (min-width: 900px) {
+  .comprarAgora {
+    display: none;
+  }
+}

@@ -183,7 +183,8 @@ export async function recalcularAcessoPorPedidos(tx: Db, usuarioId: string, agor
   const pagos = await tx
     .select({ concursoId: pedidos.concursoId })
     .from(pedidos)
-    .where(and(eq(pedidos.usuarioId, usuarioId), eq(pedidos.status, 'pago')));
+    // D34: o pedido das apostilas (sem concurso) não é o pedido legado do acesso geral.
+    .where(and(eq(pedidos.usuarioId, usuarioId), eq(pedidos.status, 'pago'), eq(pedidos.produto, 'concurso')));
   const ids = [...new Set(pagos.map((p) => p.concursoId).filter((x): x is string => x !== null))];
   // Pedido pago antigo, sem concurso: valia o acesso geral (D21, legado).
   const legado = pagos.some((p) => p.concursoId === null);
@@ -254,7 +255,7 @@ export async function montarMeusConcursos(deps: Deps, u: Usuario, agora: Date): 
     db
       .selectDistinct({ concursoId: pedidos.concursoId })
       .from(pedidos)
-      .where(and(eq(pedidos.usuarioId, u.id), eq(pedidos.status, 'pago'))),
+      .where(and(eq(pedidos.usuarioId, u.id), eq(pedidos.status, 'pago'), eq(pedidos.produto, 'concurso'))),
   ]);
   const pagosIds = new Set(pagos.map((p) => p.concursoId).filter((x): x is string => x !== null));
   const precoPara = (concursoId: string) => {

@@ -33,6 +33,7 @@ import {
   metodoPedidoEnum,
   origemQuestaoEnum,
   papelEnum,
+  produtoPedidoEnum,
   resultadoLigaEnum,
   segmentoComunicacaoEnum,
   situacaoCertameEnum,
@@ -556,6 +557,8 @@ export const pedidos = pgTable(
       .references(() => usuarios.id),
     /** extra D21: de qual concurso é a compra (o acesso é por concurso). Pedidos antigos: o do aluno. */
     concursoId: uuid('concurso_id').references(() => concursos.id),
+    /** extra D34: o preparatório de um concurso ou as 4 apostilas em PDF (sem concurso). */
+    produto: produtoPedidoEnum('produto').notNull().default('concurso'),
     asaasCustomerId: text('asaas_customer_id'),
     asaasPaymentId: text('asaas_payment_id').unique(),
     valorCentavos: integer('valor_centavos').notNull(),
@@ -600,6 +603,21 @@ export const pedidos = pgTable(
     // S-22: reembolsos por período no financeiro.
     index('pedidos_estornado_em_idx').on(t.estornadoEm),
   ],
+);
+
+/** extra D34: cada download de apostila, para o controle de compartilhamento. */
+export const apostilasDownloads = pgTable(
+  'apostilas_downloads',
+  {
+    id: id(),
+    usuarioId: uuid('usuario_id')
+      .notNull()
+      .references(() => usuarios.id, { onDelete: 'cascade' }),
+    volume: smallint('volume').notNull(),
+    ip: text('ip'),
+    criadoEm: criadoEm(),
+  },
+  (t) => [index('apostilas_downloads_usuario_idx').on(t.usuarioId, t.criadoEm)],
 );
 
 export const webhookEventos = pgTable(

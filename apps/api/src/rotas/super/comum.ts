@@ -94,6 +94,7 @@ export function mapPagamento(
     id: p.id,
     usuario: { id: u.id, nome: u.nome, email: u.email, cpfOculto: ocultarCpf(u.cpf ?? ''), acesso: u.acesso, papel: u.papel },
     metodo: p.metodo,
+    produto: p.produto,
     status: p.status,
     valorCentavos: p.valorCentavos,
     valorLiquidoCentavos: p.metodo === 'manual' ? p.valorCentavos : p.valorLiquidoCentavos,
@@ -119,8 +120,10 @@ export function mapPagamento(
           }
         : null,
     concurso: extras.concurso,
-    // Pedido sem concurso (antigo): vale o acesso geral do aluno.
-    concursoLiberado: p.concursoId ? extras.acessoConcurso === true : u.acesso,
+    // Pedido sem concurso (antigo): vale o acesso geral do aluno. D34: nas apostilas, o download
+    // abre enquanto o pedido estiver pago (não há concurso a liberar).
+    concursoLiberado:
+      p.produto === 'apostilas' ? p.status === 'pago' : p.concursoId ? extras.acessoConcurso === true : u.acesso,
     cupomCodigo: extras.cupomCodigo,
     valorOriginalCentavos: p.valorOriginalCentavos,
     descontoCentavos: p.valorOriginalCentavos !== null ? Math.max(0, p.valorOriginalCentavos - p.valorCentavos) : 0,

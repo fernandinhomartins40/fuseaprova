@@ -10,6 +10,7 @@ import {
   METODOS_PEDIDO,
   ORIGENS_QUESTAO,
   PAPEIS,
+  PRODUTOS_PEDIDO,
   RESULTADOS_LIGA,
   SEGMENTOS_COMUNICACAO,
   SITUACOES_CERTAME,
@@ -58,6 +59,8 @@ export const situacaoCertameEnum = pgEnum('situacao_certame', SITUACOES_CERTAME)
 // D13: superadmin (pagamento manual, comunicação em massa).
 export const metodoPedidoEnum = pgEnum('metodo_pedido', METODOS_PEDIDO);
 export const formaPagamentoManualEnum = pgEnum('forma_pagamento_manual', FORMAS_PAGAMENTO_MANUAL);
+/** D34 */
+export const produtoPedidoEnum = pgEnum('produto_pedido', PRODUTOS_PEDIDO);
 /** D23 */
 export const tipoCupomEnum = pgEnum('tipo_cupom', TIPOS_CUPOM);
 export const canalComunicacaoEnum = pgEnum('canal_comunicacao', CANAIS_COMUNICACAO);

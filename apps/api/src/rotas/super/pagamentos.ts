@@ -63,6 +63,7 @@ interface FiltrosPagamento {
   de?: string | undefined;
   ate?: string | undefined;
   concursoId?: string | undefined;
+  produto?: Pedido['produto'] | undefined;
 }
 
 function ondePagamentos(q: FiltrosPagamento, agora: Date): SQL | undefined {
@@ -83,6 +84,7 @@ function ondePagamentos(q: FiltrosPagamento, agora: Date): SQL | undefined {
     q.status ? eq(pedidos.status, q.status) : undefined,
     q.metodo ? eq(pedidos.metodo, q.metodo) : undefined,
     q.concursoId ? eq(pedidos.concursoId, q.concursoId) : undefined,
+    q.produto ? eq(pedidos.produto, q.produto) : undefined,
     p ? gte(pedidos.criadoEm, p.inicio) : undefined,
     p ? lt(pedidos.criadoEm, p.fim) : undefined,
   );
@@ -276,7 +278,7 @@ export function rotasSuperPagamentos(r: Registrador): void {
           p.manual?.aprovadoPor?.nome ?? '',
           p.estornadoEm,
           p.canceladoEm,
-          p.concurso?.nome ?? '',
+          p.produto === 'apostilas' ? 'Apostilas (PDF)' : (p.concurso?.nome ?? ''),
           p.cupomCodigo ?? '',
           reais(p.valorOriginalCentavos),
           reais(p.descontoCentavos),

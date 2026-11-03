@@ -123,7 +123,13 @@ export async function concursoEstaLiberado(tx: Db, aluno: Pick<Usuario, 'id' | '
   return l?.acesso === true;
 }
 
-async function pagoDoConcurso(tx: Db, usuarioId: string, concursoId: string | null, exceto?: string): Promise<Pedido | undefined> {
+async function pagoDoConcurso(
+  tx: Db,
+  usuarioId: string,
+  concursoId: string | null,
+  exceto?: string,
+  produto: Pedido['produto'] = 'concurso',
+): Promise<Pedido | undefined> {
   const [p] = await tx
     .select()
     .from(pedidos)
@@ -131,6 +137,7 @@ async function pagoDoConcurso(tx: Db, usuarioId: string, concursoId: string | nu
       and(
         eq(pedidos.usuarioId, usuarioId),
         eq(pedidos.status, 'pago'),
+        eq(pedidos.produto, produto),
         concursoId ? eq(pedidos.concursoId, concursoId) : undefined,
         exceto ? ne(pedidos.id, exceto) : undefined,
       ),
@@ -202,7 +209,10 @@ export async function aprovarPedidoManual(
           jaAprovado: false,
           pagoNoAsaas: true,
           asaas: { acao: 'nenhuma', ok: true, mensagem: 'A cobrança já estava paga no Asaas.' },
-          mensagem: 'Este Pix já estava pago no Asaas: o pedido foi confirmado pelo Asaas (não como manual) e o concurso liberado.',
+          mensagem:
+            pedido0.produto === 'apostilas'
+              ? 'Este Pix já estava pago no Asaas: o pedido foi confirmado pelo Asaas (não como manual) e o download das apostilas liberado.'
+              : 'Este Pix já estava pago no Asaas: o pedido foi confirmado pelo Asaas (não como manual) e o concurso liberado.',
         },
         antes: pedido0,
         depois: depois!,
@@ -215,8 +225,28 @@ export async function aprovarPedidoManual(
     const aluno = await alunoAlvo(tx, pedido0.usuarioId, aprovadorId, { travar: true });
     const [p] = await tx.select().from(pedidos).where(eq(pedidos.id, pedidoId)).for('update');
     const pedido = p!;
-    const concursoId = await concursoDoPedido(tx, pedido, aluno);
     if (pedido.status === 'estornado') throw falha('conflito', 'Este pagamento foi estornado. Para cobrar de novo, gere um novo pedido.');
+    if (pedido.produto === 'apostilas') {
+      // D34: as apostilas não liberam concurso; aprovar só marca o pedido pago (o download abre).
+      const jaPagas = pedido.status === 'pago' ? pedido : await pagoDoConcurso(tx, aluno.id, null, pedido.id, 'apostilas');
+      if (jaPagas) {
+        await auditar(tx, { alvo: `pedido:${pedido.id}`, antes: resumoPedido(pedido), depois: resumoPedido(pedido), detalhes: { jaAprovado: true, pedidoPagoId: jaPagas.id } });
+        return { jaAprovado: true as const, aluno, antes: pedido, depois: pedido, pedidoPago: jaPagas };
+      }
+      const [depois] = (await tx
+        .update(pedidos)
+        .set({ ...dadosManuais(d, aprovadorId, agora), valorLiquidoCentavos: pedido.valorCentavos })
+        .where(and(eq(pedidos.id, pedido.id), inArray(pedidos.status, ['pendente', 'vencido'])))
+        .returning()) as [Pedido];
+      await auditar(tx, {
+        alvo: `pedido:${pedido.id}`,
+        antes: resumoPedido(pedido),
+        depois: resumoPedido(depois),
+        detalhes: { usuarioId: aluno.id, produto: 'apostilas', forma: d.forma, recebidoEm: d.recebidoEm, referencia: d.referencia ?? null, comprovante: d.comprovante ?? null, acaoAsaas: d.acaoAsaas },
+      });
+      return { jaAprovado: false as const, aluno, antes: pedido, depois, pedidoPago: depois };
+    }
+    const concursoId = await concursoDoPedido(tx, pedido, aluno);
     const jaPago = pedido.status === 'pago' ? pedido : await pagoDoConcurso(tx, aluno.id, concursoId, pedido.id);
     if (jaPago) {
       // V-02: com reembolso pedido, o concurso não volta (como em "Liberar acesso").
@@ -248,6 +278,7 @@ export async function aprovarPedidoManual(
     return { jaAprovado: false as const, aluno: atualizado!, antes: pedido, depois, pedidoPago: depois };
   });
 
+  const apostilas = r.depois.produto === 'apostilas';
   if (r.jaAprovado) {
     const mesmo = r.pedidoPago.id === r.depois.id;
     return {
@@ -256,7 +287,11 @@ export async function aprovarPedidoManual(
         jaAprovado: true,
         pagoNoAsaas: false,
         asaas: { acao: 'nenhuma', ok: true, mensagem: 'Nada foi feito no Asaas.' },
-        mensagem: mesmo
+        mensagem: apostilas
+          ? mesmo
+            ? 'Este pedido de apostilas já estava pago: nada foi duplicado. O download está liberado.'
+            : 'O aluno já tem outro pagamento das apostilas aprovado: nada foi duplicado. Se este Pix ainda estiver aberto, cancele-o.'
+          : mesmo
           ? 'Este pedido já estava pago: nada foi duplicado. O concurso do pedido está liberado.'
           : 'Este concurso já tem outro pagamento aprovado: nada foi duplicado. Se este Pix ainda estiver aberto, cancele-o.',
       },
@@ -273,7 +308,9 @@ export async function aprovarPedidoManual(
       jaAprovado: false,
       pagoNoAsaas: false,
       asaas,
-      mensagem: 'Pagamento aprovado manualmente com o valor do pedido, e o concurso do pedido foi liberado.',
+      mensagem: apostilas
+        ? 'Pagamento das apostilas aprovado manualmente: o download está liberado para o aluno.'
+        : 'Pagamento aprovado manualmente com o valor do pedido, e o concurso do pedido foi liberado.',
     },
     antes: r.antes,
     depois: r.depois,
@@ -303,13 +340,20 @@ export async function aprovarPagamentoManual(
   const [aberto] = await deps.db
     .select({ id: pedidos.id })
     .from(pedidos)
-    .where(and(eq(pedidos.usuarioId, usuarioId), eq(pedidos.concursoId, d.concursoId), inArray(pedidos.status, ['pendente', 'vencido'])))
+    .where(
+      and(
+        eq(pedidos.usuarioId, usuarioId),
+        eq(pedidos.produto, 'concurso'),
+        eq(pedidos.concursoId, d.concursoId),
+        inArray(pedidos.status, ['pendente', 'vencido']),
+      ),
+    )
     .orderBy(desc(pedidos.criadoEm))
     .limit(1);
   const [pago] = await deps.db
     .select({ id: pedidos.id })
     .from(pedidos)
-    .where(and(eq(pedidos.usuarioId, usuarioId), eq(pedidos.concursoId, d.concursoId), eq(pedidos.status, 'pago')))
+    .where(and(eq(pedidos.usuarioId, usuarioId), eq(pedidos.produto, 'concurso'), eq(pedidos.concursoId, d.concursoId), eq(pedidos.status, 'pago')))
     .limit(1);
   if (aberto && !pago) return aprovarPedidoManual(deps, aprovadorId, aberto.id, d, agora, auditar);
 
@@ -440,6 +484,9 @@ export async function liberarPedido(
       throw falha('conflito', 'Este pedido não está pago. Use "Conciliar" (pago no Asaas) ou "Aprovar pagamento manual" (pago por fora).');
     }
     if (pedido.reembolsoSolicitadoEm) throw falha('conflito', 'Há um reembolso pedido para este pagamento: o acesso não pode ser liberado.');
+    if (pedido.produto === 'apostilas') {
+      throw falha('conflito', 'Este pedido é das apostilas: não libera concurso. O download já está liberado enquanto o pedido estiver pago.');
+    }
     const concursoId = await concursoDoPedido(tx, pedido, aluno);
     const antes = await concursoEstaLiberado(tx, aluno, concursoId);
     if (!antes) await liberar(tx, aluno, concursoId, agora);
@@ -481,13 +528,15 @@ export async function desfazerAprovacaoManual(
         and(
           eq(pedidos.usuarioId, pedido.usuarioId),
           eq(pedidos.status, 'pago'),
+          eq(pedidos.produto, pedido.produto),
           ne(pedidos.id, pedido.id),
           concursoId ? eq(pedidos.concursoId, concursoId) : undefined,
         ),
       )
       .limit(1);
     let temAcesso = true;
-    if (!outroPago) {
+    // D34: desfazer as apostilas só fecha o download; o concurso e as sessões não mudam.
+    if (!outroPago && pedido.produto === 'concurso') {
       temAcesso = concursoId
         ? await revogarConcurso(tx, pedido.usuarioId, concursoId)
         : (await tx.update(usuarios).set({ acesso: false }).where(eq(usuarios.id, pedido.usuarioId)), false);

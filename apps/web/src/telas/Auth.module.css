@@ -71,3 +71,12 @@
   align-self: flex-end;
   font-size: 14.5px;
 }
+.linkBotao {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}

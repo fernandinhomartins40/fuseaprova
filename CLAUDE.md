@@ -15,7 +15,7 @@ Se o PRD e o design divergirem, **o PRD vale para o comportamento e o design val
 ## Regras inegociáveis
 - **Sem fases e sem MVP reduzido.** Implemente tudo o que o PRD descreve.
 - **Acesso só com pagamento ou no teste grátis de 3 dias (D32).** Toda rota de conteúdo passa pela guarda `exigirAcesso`, que responde 402 sem pagamento e fora do teste.
-- **R$ 397 só no Pix via Asaas**, que é o único serviço externo.
+- **R$ 397 só no Pix via Asaas** (e as apostilas em PDF por R$ 47, D34), que é o único serviço externo.
 - **Nada de Supabase, Firebase, Vercel, Clerk, Auth0, Sentry SaaS, Google Analytics, Google Fonts ou CDN.** Tudo roda na VPS com Docker Compose. As fontes e os ícones ficam no próprio bundle.
 - **Não copie a identidade do Duolingo** (coruja, nome, sons, ilustrações). Use a Capi e os tokens do kit.
 - **Português do Brasil** em toda a interface, nas mensagens de erro e nos e-mails.

@@ -15,11 +15,11 @@ import { Alerta, Botao, Cartao, CampoSelecao, CampoTexto, Consulta, Marcar, Selo
 import { cpfMascarado, dataHora, dia, numero, NOMES_STATUS_PEDIDO, TOM_STATUS_PEDIDO } from '../../admin/util';
 import { AcaoConfirmada, AprovarManual } from '../acoes';
 import { AcoesFicha, CartaoLinha, Cartoes, Pagina, estilosSuper as s, useCelular } from '../componentes';
-import { baixarJson, caminho, NOMES_METODO, NOMES_PAPEL, tomPapel } from '../util';
+import { baixarJson, caminho, NOMES_METODO, NOMES_PAPEL, produtoDoPedido, tomPapel } from '../util';
 
 type Aberta = null | 'editar' | 'senha' | 'bloquear' | 'desbloquear' | 'papel' | 'liberar' | 'revogar' | 'manual' | 'excluir' | 'exportar';
 
-const nomeConcurso = (p: { concurso: { nome: string } | null }) => p.concurso?.nome ?? 'Sem concurso';
+const nomeConcurso = (p: Parameters<typeof produtoDoPedido>[0]) => produtoDoPedido(p);
 const cupom = (p: { cupomCodigo: string | null }) => p.cupomCodigo ?? '—';
 
 function Pedidos({ f }: { f: FichaUsuarioResposta }) {

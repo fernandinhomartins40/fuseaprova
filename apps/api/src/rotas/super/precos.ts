@@ -19,7 +19,10 @@ const { concursos, cupons, pedidos, usuarios } = schema;
 async function respostaPrecos(db: Db, config: Config): Promise<PrecosResposta> {
   const l = await lerPrecos(db, config, { semCache: true });
   const [autor] = l.atualizadoPor ? await db.select({ id: usuarios.id, nome: usuarios.nome }).from(usuarios).where(eq(usuarios.id, l.atualizadoPor)) : [];
-  const [pend] = await db.select({ n: count() }).from(pedidos).where(and(eq(pedidos.status, 'pendente'), eq(pedidos.metodo, 'asaas')));
+  const [pend] = await db
+    .select({ n: count() })
+    .from(pedidos)
+    .where(and(eq(pedidos.status, 'pendente'), eq(pedidos.metodo, 'asaas'), eq(pedidos.produto, 'concurso')));
   const padrao = precosPadrao(config);
   return {
     valores: l.valores,

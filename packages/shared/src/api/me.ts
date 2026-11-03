@@ -138,6 +138,8 @@ export const ExportarResposta = z.object({
   registrosAcesso: z.array(z.record(z.unknown())).default([]),
   /** D28: anotações pessoais nas questões. */
   anotacoes: z.array(z.record(z.unknown())).default([]),
+  /** D34: data, volume e IP de cada download das apostilas. */
+  downloadsApostilas: z.array(z.record(z.unknown())).default([]),
 });
 export type ExportarResposta = z.infer<typeof ExportarResposta>;
 

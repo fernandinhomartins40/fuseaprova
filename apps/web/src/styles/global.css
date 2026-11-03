@@ -53,6 +53,11 @@ body {
   box-shadow: none;
 }
 
+/* D34: a página das apostilas é de venda e usa a largura do desktop. */
+#raiz:has([data-pagina-larga]) {
+  max-width: 1120px;
+}
+
 h1,
 h2,
 h3,

@@ -107,6 +107,39 @@ Acesse: ${d.appUrl}/aprender`;
   return { para: d.email, assunto: 'Pagamento confirmado: seu acesso ao Fuse Aprova', html, texto };
 }
 
+/** D34: compra das apostilas confirmada, com o recibo e o link da página de download. */
+export function emailApostilasLiberadas(d: {
+  nome: string;
+  email: string;
+  valorCentavos: number;
+  pagoEm: Date;
+  cobrancaId: string;
+  appUrl: string;
+}): MensagemEmail {
+  const valor = formatarReais(d.valorCentavos);
+  const data = `${formatarDataBR(diaSP(d.pagoEm))} às ${horaMinutoSP(d.pagoEm)}`;
+  const nome = primeiroNome(d.nome);
+  const link = `${d.appUrl}/apostilas`;
+  const html = layout(
+    `Pronto, ${nome}! Suas apostilas estão liberadas.`,
+    `<p>Seu pagamento via Pix foi confirmado. As 4 apostilas de questões comentadas da banca FAU já podem ser baixadas: entre com o seu e-mail e senha na página das apostilas.</p>
+${botao(link, 'BAIXAR AS APOSTILAS')}
+<h2 style="font-size:18px;color:${COR.turquesa};margin:24px 0 8px">Recibo</h2>
+<table role="presentation" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:15px">
+<tr><td>Produto</td><td><b>Apostilas Fuse Aprova (4 volumes em PDF)</b></td></tr>
+<tr><td>Valor</td><td><b>${esc(valor)}</b> (Pix, pagamento único)</td></tr>
+<tr><td>Data</td><td>${esc(data)}</td></tr>
+<tr><td>Cobrança</td><td>${esc(d.cobrancaId)}</td></tr>
+</table>
+<p style="margin-top:20px">As apostilas são para o seu uso pessoal. Cada download fica registrado na sua conta.</p>
+<p style="font-size:14px;color:#5b6b6c">Você tem 7 dias para desistir da compra com reembolso integral (CDC, art. 49).</p>`,
+  );
+  const texto = `Olá, ${nome}! Seu pagamento via Pix foi confirmado e as 4 apostilas Fuse Aprova estão liberadas.
+Recibo: Apostilas Fuse Aprova (4 volumes em PDF) · ${valor} · ${data} · cobrança ${d.cobrancaId}.
+Baixe em: ${link}`;
+  return { para: d.email, assunto: 'Pagamento confirmado: suas apostilas Fuse Aprova', html, texto };
+}
+
 export function emailRecuperacao(d: { nome: string; email: string; link: string }): MensagemEmail {
   const nome = primeiroNome(d.nome);
   const html = layout(
@@ -126,15 +159,18 @@ export function emailReembolso(d: {
   email: string;
   valorCentavos: number;
   cobrancaId: string;
+  /** D34: o estorno das apostilas encerra o download, não o acesso ao app. */
+  produto?: 'concurso' | 'apostilas';
 }): MensagemEmail {
   const nome = primeiroNome(d.nome);
   const valor = formatarReais(d.valorCentavos);
+  const encerrado = d.produto === 'apostilas' ? 'o download das apostilas foi encerrado' : 'o acesso ao Fuse Aprova foi encerrado';
   const html = layout(
     'Reembolso confirmado',
     `<p>Olá, ${esc(nome)}. O reembolso de <b>${esc(valor)}</b> (cobrança ${esc(d.cobrancaId)}) foi confirmado e o valor volta pelo Pix para a conta de origem.</p>
-<p>Com o estorno, o acesso ao Fuse Aprova foi encerrado. Obrigado por ter experimentado!</p>`,
+<p>Com o estorno, ${encerrado}. Obrigado por ter experimentado!</p>`,
   );
-  const texto = `Olá, ${nome}. O reembolso de ${valor} (cobrança ${d.cobrancaId}) foi confirmado. O acesso ao Fuse Aprova foi encerrado.`;
+  const texto = `Olá, ${nome}. O reembolso de ${valor} (cobrança ${d.cobrancaId}) foi confirmado. Com o estorno, ${encerrado}.`;
   return { para: d.email, assunto: 'Fuse Aprova: reembolso confirmado', html, texto };
 }
 

@@ -4,8 +4,9 @@
  * corpo com o schema da rota e confere a RESPOSTA com o schema de resposta (um desvio de
  * contrato vira erro 500 no console). Não é usada em produção.
  *
- * Cenários: GET /api/__mock/cenario?nome=novo|semAcesso|testeEncerrado|emTeste|onboarding|aluno|revisaoVazia|ligaInicial|ligaResultado|edital|semVidas
+ * Cenários: GET /api/__mock/cenario?nome=novo|semAcesso|equipe|apostilasCompradas|testeEncerrado|emTeste|onboarding|aluno|revisaoVazia|ligaInicial|ligaResultado|edital|semVidas
  * Pagamento: POST /api/__mock/pagar confirma o Pix pendente (simula o webhook do Asaas).
+ * Apostilas (D34): cenário apostilasCompradas; POST /api/__mock/pagar-apostilas confirma o Pix delas.
  */
 import {
   AREAS_CARGO,
@@ -43,6 +44,7 @@ import {
 } from '@fuse/shared';
 import {
   erroApi,
+  PRECO_APOSTILAS_CENTAVOS,
   ROTAS,
   seloSimulado,
   type CodigoErro,
@@ -154,6 +156,13 @@ function novoEstado() {
       expiraEm: Date;
       status: 'pendente' | 'pago' | 'vencido';
       cupom?: string | null;
+    },
+    /** D34: pedido das apostilas (produto à parte do preparatório). */
+    pedidoApostilas: null as null | {
+      id: string;
+      criadoEm: Date;
+      expiraEm: Date;
+      status: 'pendente' | 'pago' | 'vencido';
     },
     progresso: new Map<string, number>(),
     bausAbertos: new Set<string>(),
@@ -452,6 +461,19 @@ function aplicarCenario(nome: string) {
   if (nome === 'novo') return;
   estado.logado = true;
   if (nome === 'semAcesso') return;
+  if (nome === 'equipe') {
+    u.papel = 'admin';
+    return;
+  }
+  if (nome === 'apostilasCompradas') {
+    estado.pedidoApostilas = {
+      id: uuid(),
+      criadoEm: agora(),
+      expiraEm: new Date(Date.now() + 30 * 60_000),
+      status: 'pago',
+    };
+    return;
+  }
   if (nome === 'testeEncerrado') {
     estado.testeAte = new Date(Date.now() - 3600_000).toISOString();
     return;
@@ -800,6 +822,39 @@ const H: Partial<Record<NomeRota, Handler>> = {
       cupom,
     };
     return pix();
+  },
+  apostilasPix: () => {
+    const p = estado.pedidoApostilas;
+    if (p?.status === 'pago') throw new Falha(409, 'conflito', 'Suas apostilas já estão liberadas.');
+    if (!p || p.status !== 'pendente' || p.expiraEm.getTime() <= Date.now()) {
+      estado.pedidoApostilas = {
+        id: uuid(),
+        criadoEm: agora(),
+        expiraEm: new Date(Date.now() + 30 * 60_000),
+        status: 'pendente',
+      };
+    }
+    const n = estado.pedidoApostilas!;
+    return {
+      pedidoId: n.id,
+      valorCentavos: PRECO_APOSTILAS_CENTAVOS,
+      imagem: pngQrFalso(),
+      payload: `00020126580014br.gov.bcb.pix0136mock-${n.id}520400005303986540547.005802BR5911FUSE APROVA6008EXEMPLO 62070503***6304ABCD`,
+      expiraEm: n.expiraEm.toISOString(),
+      status: n.status,
+    };
+  },
+  apostilasStatus: () => {
+    const p = estado.pedidoApostilas;
+    return {
+      comprado: p?.status === 'pago',
+      status: p ? p.status : ('nenhum' as const),
+      pedidoId: p?.id ?? null,
+      expiraEm: p?.expiraEm.toISOString() ?? null,
+      pagoEm: p?.status === 'pago' ? agora().toISOString() : null,
+      expirado: !!p && p.status === 'pendente' && p.expiraEm.getTime() <= Date.now(),
+      valorCentavos: PRECO_APOSTILAS_CENTAVOS,
+    };
   },
   pagamentoCupom: ({ corpo }) => {
     const c = corpo as { codigo: string };
@@ -1798,6 +1853,23 @@ export async function tratar(req: Req, res: Res): Promise<void> {
     if (linha) linha.acesso = true;
     else estado.seguidos.push({ id: alvo, acesso: true });
     return responder(res, 200, { ok: true });
+  }
+
+  if (caminho === '/__mock/pagar-apostilas') {
+    if (estado.pedidoApostilas) estado.pedidoApostilas.status = 'pago';
+    return responder(res, 200, { ok: true });
+  }
+  // D34: download falso (a API real serve o PDF de ARQUIVOS_DIR/apostilas com a sessão).
+  const pdf = /^\/apostilas\/([1-4])\/pdf$/.exec(caminho);
+  if (pdf && metodo === 'GET') {
+    const logado = estado.logado && cookies(req)[COOKIE] === TOKEN;
+    if (!logado) return responder(res, 401, erroApi('nao_autenticado'));
+    if (estado.pedidoApostilas?.status !== 'pago') return responder(res, 403, erroApi('proibido'));
+    res.statusCode = 200;
+    res.setHeader('content-type', 'application/pdf');
+    res.setHeader('content-disposition', `attachment; filename="apostila-volume-${pdf[1]}.pdf"`);
+    res.end(`%PDF-1.4\n% Apostila Fuse Aprova (mock) volume ${pdf[1]}\n%%EOF\n`);
+    return;
   }
 
   const achado = casar(metodo, caminho);
