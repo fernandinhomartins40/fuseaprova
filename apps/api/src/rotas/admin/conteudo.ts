@@ -158,9 +158,22 @@ export function rotasAdminConteudo(r: Registrador): void {
     }
   });
   r.rota('adminConcursoAtualizar', async ({ params, corpo, deps, usuario, agora }) => {
+    const [antes] = await deps.db.select().from(concursos).where(eq(concursos.id, params.id));
+    existe(antes, 'Concurso não encontrado.');
+    // D33: a data da homologação encerra o acesso de quem pagou, então é decisão do superadmin.
+    if (corpo.homologadoEm !== undefined && corpo.homologadoEm !== antes!.homologadoEm && usuario.papel !== 'superadmin') {
+      throw falha('proibido', 'Só o superadmin registra a homologação do concurso.');
+    }
+    const homologadoEm = corpo.homologadoEm === undefined ? antes!.homologadoEm : corpo.homologadoEm;
+    if (corpo.status === 'homologado' && !homologadoEm) {
+      const msg = 'Informe a data da homologação.';
+      throw falha('validacao', msg, { homologadoEm: msg });
+    }
+    // Concurso homologado sai de venda: não aparece no cadastro nem gera Pix.
+    const encerrado = corpo.homologadoEm ? { status: 'homologado' as const, ativo: false } : {};
     const [c] = await deps.db
       .update(concursos)
-      .set({ ...corpo, versaoConteudo: sql`${concursos.versaoConteudo} + 1` })
+      .set({ ...corpo, ...encerrado, versaoConteudo: sql`${concursos.versaoConteudo} + 1` })
       .where(eq(concursos.id, params.id))
       .returning();
     existe(c, 'Concurso não encontrado.');

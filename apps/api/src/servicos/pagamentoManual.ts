@@ -110,7 +110,7 @@ async function concursoDoPedido(tx: Db, p: Pick<Pedido, 'concursoId'>, aluno: Us
 
 async function liberar(tx: Db, aluno: Usuario, concursoId: string | null, agora: Date): Promise<void> {
   if (concursoId) await liberarConcurso(tx, aluno.id, concursoId, agora);
-  else await tx.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, aluno.id));
+  else await tx.update(usuarios).set({ acesso: true, testeAte: null, testePendente: false }).where(eq(usuarios.id, aluno.id));
 }
 
 /** O concurso já está liberado para o aluno? (sem concurso: o acesso geral) */

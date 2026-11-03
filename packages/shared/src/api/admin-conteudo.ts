@@ -49,6 +49,7 @@ export const ConcursoAdmin = z.object({
   ano: z.number().int(),
   status: ZStatusConcurso,
   dataProva: Dia.nullable(),
+  homologadoEm: Dia.nullable(),
   links: z.array(LinkOficial),
   ativo: z.boolean(),
   versaoConteudo: z.number().int(),
@@ -68,6 +69,8 @@ export const ConcursoEntrada = z.object({
   ano: z.number().int().min(2000).max(2100),
   status: ZStatusConcurso,
   dataProva: Dia.nullable().default(null),
+  /** D33: encerra o acesso pago a este concurso no fim deste dia. Só o superadmin altera. */
+  homologadoEm: Dia.nullable().default(null),
   links: z.array(LinkOficial).default([]),
   ativo: z.boolean().default(true),
 });

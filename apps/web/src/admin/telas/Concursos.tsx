@@ -81,6 +81,7 @@ interface FormConcurso {
   ano: string;
   status: ConcursoAdmin['status'];
   dataProva: string;
+  homologadoEm: string;
   links: LinkForm[];
   ativo: boolean;
 }
@@ -95,6 +96,7 @@ const CONCURSO_VAZIO: FormConcurso = {
   ano: String(new Date().getFullYear()),
   status: 'aguardando_edital',
   dataProva: '',
+  homologadoEm: '',
   links: [],
   ativo: true,
 };
@@ -326,6 +328,7 @@ function ModalConcurso({
           ano: String(concurso.ano),
           status: concurso.status,
           dataProva: concurso.dataProva ?? '',
+          homologadoEm: concurso.homologadoEm ?? '',
           links: concurso.links.map((l) => ({ ...l })),
           ativo: concurso.ativo,
         }
@@ -358,6 +361,7 @@ function ModalConcurso({
       ano: Number(f.ano),
       status: f.status,
       dataProva: f.dataProva || null,
+      homologadoEm: f.homologadoEm || null,
       links: f.links.filter((l) => l.titulo.trim() || l.url.trim()),
       ativo: f.ativo,
     });
@@ -433,6 +437,14 @@ function ModalConcurso({
             value={f.dataProva}
             onChange={(e) => set('dataProva', e.target.value)}
             erro={erros.dataProva}
+          />
+          <CampoTexto
+            rotulo="Data da homologação"
+            type="date"
+            value={f.homologadoEm}
+            onChange={(e) => set('homologadoEm', e.target.value)}
+            erro={erros.homologadoEm}
+            ajuda="Só o superadmin preenche. Encerra o acesso de todos os alunos deste concurso no fim desse dia e tira o concurso de venda."
           />
         </div>
         <EditorLinks links={f.links} aoMudar={(l) => set('links', l)} erros={erros} />

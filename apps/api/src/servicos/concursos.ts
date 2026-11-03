@@ -8,8 +8,9 @@
  *    `cargo_id`/`area` do usuário espelham a linha dele em `usuarios_concursos`.
  */
 import { and, asc, eq, notInArray, sql } from 'drizzle-orm';
-import { schema } from '@fuse/db';
+import { schema, type BancoDados } from '@fuse/db';
 import {
+  acessoVencido,
   AREAS_CARGO,
   AVISO_EDITAL,
   diaSP,
@@ -100,16 +101,56 @@ export async function sincronizarAcesso(tx: Db, usuarioId: string): Promise<bool
   return true;
 }
 
-/** Libera um concurso para o aluno (pagamento confirmado ou liberação do admin). */
+/**
+ * Libera um concurso para o aluno (pagamento confirmado ou liberação do admin). A compra gasta o
+ * teste grátis (D33): um estorno depois não devolve o que restava dele. Quem volta depois de uma
+ * revogação conta a validade do zero; quem já estava liberado continua com a data original.
+ */
 export async function liberarConcurso(tx: Db, usuarioId: string, concursoId: string, agora: Date): Promise<void> {
+  const liberadoEm = sql`${agora.toISOString()}::timestamptz`;
   await tx
     .insert(usuariosConcursos)
     .values({ usuarioId, concursoId, acesso: true, acessoEm: agora, criadoEm: agora })
     .onConflictDoUpdate({
       target: [usuariosConcursos.usuarioId, usuariosConcursos.concursoId],
-      set: { acesso: true, acessoEm: sql`coalesce(${usuariosConcursos.acessoEm}, ${agora.toISOString()}::timestamptz)` },
+      set: {
+        acesso: true,
+        acessoEm: sql`case when ${usuariosConcursos.acesso} then coalesce(${usuariosConcursos.acessoEm}, ${liberadoEm}) else ${liberadoEm} end`,
+      },
     });
+  await tx.update(usuarios).set({ testeAte: null, testePendente: false }).where(eq(usuarios.id, usuarioId));
   await sincronizarAcesso(tx, usuarioId);
+}
+
+/**
+ * D33: revoga os concursos que passaram da validade (homologação ou 24 meses). Roda a cada
+ * requisição, como o prazo do teste: não depende de job. Devolve a conta já atualizada.
+ */
+export async function encerrarAcessosVencidos<U extends Pick<Usuario, 'id' | 'papel' | 'acesso'>>(
+  db: BancoDados,
+  u: U,
+  agora: Date,
+): Promise<U> {
+  if (!u.acesso || u.papel !== 'aluno') return u;
+  const linhas = await db
+    .select({
+      concursoId: usuariosConcursos.concursoId,
+      liberadoEm: sql<Date>`coalesce(${usuariosConcursos.acessoEm}, ${usuariosConcursos.criadoEm})`.mapWith(usuariosConcursos.criadoEm),
+      homologadoEm: concursos.homologadoEm,
+    })
+    .from(usuariosConcursos)
+    .innerJoin(concursos, eq(concursos.id, usuariosConcursos.concursoId))
+    .where(and(eq(usuariosConcursos.usuarioId, u.id), eq(usuariosConcursos.acesso, true)));
+  const vencidos = linhas.filter((l) => acessoVencido(l.liberadoEm, l.homologadoEm, agora));
+  if (vencidos.length === 0) return u;
+  return db.transaction(async (tx) => {
+    for (const v of vencidos) await revogarConcurso(tx, u.id, v.concursoId);
+    const [atual] = await tx
+      .select({ acesso: usuarios.acesso, concursoId: usuarios.concursoId, cargoId: usuarios.cargoId, area: usuarios.area })
+      .from(usuarios)
+      .where(eq(usuarios.id, u.id));
+    return { ...u, ...atual };
+  });
 }
 
 /** Revoga um concurso (estorno, chargeback). Devolve se o aluno ainda tem outro liberado. */

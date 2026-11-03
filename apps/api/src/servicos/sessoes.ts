@@ -9,6 +9,7 @@ import { fimDoTeste, MS_DIA, MS_HORA, MS_MINUTO } from '@fuse/shared';
 import { DIAS_SESSAO } from '@fuse/shared/api';
 import type { UsuarioSessao } from '../contexto.js';
 import type { Db } from '../util.js';
+import { encerrarAcessosVencidos } from './concursos.js';
 
 const { sessoes, usuarios } = schema;
 
@@ -96,7 +97,8 @@ export async function carregarSessao(
       .where(eq(sessoes.id, linha.sessao.id));
   }
   // Requisição automática não conta como visita: o prazo do teste só começa com o aluno presente.
-  const usuario = opcoes.segundoPlano ? linha.usuario : await comecarTestePendente(db, linha.usuario, agora);
+  const conta = opcoes.segundoPlano ? linha.usuario : await comecarTestePendente(db, linha.usuario, agora);
+  const usuario = await encerrarAcessosVencidos(db, conta, agora);
   return {
     usuario: { ...usuario, sessaoId: linha.sessao.id, sessaoDoisFatoresEm: linha.sessao.doisFatoresEm },
     renovada,

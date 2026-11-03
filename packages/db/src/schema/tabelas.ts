@@ -147,6 +147,8 @@ export const concursos = pgTable('concursos', {
   ano: integer('ano').notNull(),
   status: statusConcursoEnum('status').notNull().default('aguardando_edital'),
   dataProva: dia('data_prova'),
+  /** extra D33: dia da homologação; o acesso pago a este concurso termina no fim desse dia. */
+  homologadoEm: dia('homologado_em'),
   links: jsonb('links').$type<LinkJson[]>().notNull().default([]),
   ativo: boolean('ativo').notNull().default(true),
   /** extra: sobe a cada mudança de conteúdo; invalida cache e pacote offline. */
@@ -155,6 +157,15 @@ export const concursos = pgTable('concursos', {
   editalPublicadoEm: ts('edital_publicado_em'),
   criadoEm: criadoEm(),
   atualizadoEm: atualizadoEm(),
+});
+
+/**
+ * D33: CPFs e e-mails que já usaram o teste grátis, só como HMAC com o segredo do servidor (não dá
+ * para recuperar o dado). Sobrevive à exclusão da conta por 24 meses: excluir não dá outro teste.
+ */
+export const testesUsados = pgTable('testes_usados', {
+  hash: text('hash').primaryKey(),
+  criadoEm: criadoEm(),
 });
 
 /**

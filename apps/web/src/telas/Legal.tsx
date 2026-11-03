@@ -105,9 +105,12 @@ export function Termos() {
               confirma o pagamento. Não há mensalidade nem renovação automática.
             </p>
             <p>
-              <strong>Teste grátis:</strong> cada conta tem um único teste de 3 dias (72 horas), sem
-              cobrança e sem compromisso de compra. No fim do prazo, o acesso ao conteúdo fica
-              bloqueado até o pagamento, e o seu progresso continua guardado.
+              <strong>Teste grátis:</strong> cada pessoa tem um único teste de 3 dias (72 horas),
+              sem cobrança e sem compromisso de compra. No fim do prazo, o acesso ao conteúdo fica
+              bloqueado até o pagamento, e o seu progresso continua guardado. A conta é criada
+              sem teste quando o CPF, o e-mail ou o aparelho já tiverem sido usados em outro teste,
+              mesmo que a conta anterior tenha sido excluída, ou quando houver muitos cadastros
+              seguidos da mesma conexão. A compra encerra o que restava do teste.
             </p>
             <p>
               <strong>Cupons:</strong> um por compra, com validade, limite de usos e concurso
@@ -398,6 +401,11 @@ export function Privacidade() {
             apagados automaticamente.
           </li>
           <li>
+            <strong>Controle do teste grátis:</strong> um código irreversível gerado a partir do
+            CPF e do e-mail, que não permite recuperar esses dados, por 24 meses, mesmo depois da
+            exclusão da conta, só para impedir que o mesmo teste seja repetido.
+          </li>
+          <li>
             <strong>Pedidos e pagamentos:</strong> pelo prazo da legislação fiscal e do Código de
             Defesa do Consumidor, de no mínimo 5 anos, sem nome, e-mail, CPF nem celular depois da
             exclusão da conta.
@@ -445,8 +453,9 @@ export function Privacidade() {
 
         <h2>10. Cookies e armazenamento no aparelho</h2>
         <p>
-          Usamos <strong>só um cookie essencial</strong>, o da sessão (para manter você
-          conectado), e o armazenamento local do navegador ou do app para preferências e para o
+          Usamos <strong>só dois cookies essenciais</strong>: o da sessão (para manter você
+          conectado) e o que marca que este navegador já usou o teste grátis (prevenção a fraudes).
+          Também usamos o armazenamento local do navegador ou do app para preferências e para o
           estudo offline. Não usamos cookies de publicidade nem de rastreamento. As fontes e os
           ícones vêm do nosso próprio servidor.
         </p>
@@ -534,6 +543,11 @@ export function ExclusaoDeConta() {
           <li>
             <strong>Registros de acesso</strong> (data, hora, IP e porta) por 6 meses, por
             obrigação do Marco Civil da Internet (art. 15), e depois apagados automaticamente.
+          </li>
+          <li>
+            <strong>Controle do teste grátis:</strong> um código irreversível do CPF e do e-mail
+            por 24 meses, só para impedir a repetição do teste. Ele não permite recuperar esses
+            dados.
           </li>
           <li>
             <strong>Histórico de respostas e simulados</strong>, sem nome, e-mail nem qualquer dado

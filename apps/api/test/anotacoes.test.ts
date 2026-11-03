@@ -94,7 +94,7 @@ describe('anotações (D28)', () => {
     const exp = (await t.chamar('meExportar', { cookie: a.cookie })).json();
     expect(exp.anotacoes).toHaveLength(1);
     const { anonimizarUsuario } = await import('../src/servicos/lgpd.js');
-    await t.db.transaction((tx) => anonimizarUsuario(tx, a.id, new Date()));
+    await t.db.transaction((tx) => anonimizarUsuario(tx, t.config.segredoSessao, a.id, new Date()));
     const restantes = await t.db.select().from(schema.anotacoes).where(eq(schema.anotacoes.usuarioId, a.id));
     expect(restantes).toHaveLength(0);
   });

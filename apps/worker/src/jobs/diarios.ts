@@ -7,7 +7,7 @@ import { schema } from '@fuse/db';
 import { diaSP, somarDias, VIDAS_MAX, verificarOfensiva } from '@fuse/shared';
 import type { Db } from '../util.js';
 
-const { usuarios, pedidos, sessoes, redefinicoesSenha, pacotesOffline, registrosAcesso, auditoria, webhookEventos } = schema;
+const { usuarios, pedidos, sessoes, redefinicoesSenha, pacotesOffline, registrosAcesso, auditoria, webhookEventos, testesUsados } = schema;
 
 /** 00:00 — todo mundo volta para 5 vidas. */
 export async function resetarVidas(db: Db, agora: Date): Promise<number> {
@@ -96,7 +96,7 @@ export async function limparSessoes(
  * - Auditoria das ações da equipe e eventos de pagamento do Asaas: 5 anos (prazos do CDC, art.
  *   27, e tributários, CTN art. 173 e 174). Os pedidos em si não são apagados (registro fiscal).
  */
-export const RETENCAO_LEGAL = { acessoMeses: 6, auditoriaAnos: 5, webhookAnos: 5 } as const;
+export const RETENCAO_LEGAL = { acessoMeses: 6, auditoriaAnos: 5, webhookAnos: 5, testeUsadoMeses: 24 } as const;
 
 function menosMeses(d: Date, meses: number): Date {
   const r = new Date(d);
@@ -105,7 +105,7 @@ function menosMeses(d: Date, meses: number): Date {
 }
 
 /** 03:00, no mesmo job da limpeza: apaga o que passou do prazo legal de guarda. */
-export async function limpezaLegal(db: Db, agora: Date): Promise<{ acessos: number; auditoria: number; webhooks: number }> {
+export async function limpezaLegal(db: Db, agora: Date): Promise<{ acessos: number; auditoria: number; webhooks: number; testes: number }> {
   const a = await db
     .delete(registrosAcesso)
     .where(lt(registrosAcesso.criadoEm, menosMeses(agora, RETENCAO_LEGAL.acessoMeses)))
@@ -118,5 +118,9 @@ export async function limpezaLegal(db: Db, agora: Date): Promise<{ acessos: numb
     .delete(webhookEventos)
     .where(lt(webhookEventos.recebidoEm, menosMeses(agora, RETENCAO_LEGAL.webhookAnos * 12)))
     .returning({ id: webhookEventos.id });
-  return { acessos: a.length, auditoria: au.length, webhooks: w.length };
+  const t = await db
+    .delete(testesUsados)
+    .where(lt(testesUsados.criadoEm, menosMeses(agora, RETENCAO_LEGAL.testeUsadoMeses)))
+    .returning({ hash: testesUsados.hash });
+  return { acessos: a.length, auditoria: au.length, webhooks: w.length, testes: t.length };
 }

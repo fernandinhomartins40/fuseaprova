@@ -52,6 +52,7 @@ export function mapConcurso(c: typeof schema.concursos.$inferSelect) {
     ano: c.ano,
     status: c.status,
     dataProva: c.dataProva,
+    homologadoEm: c.homologadoEm,
     links: c.links,
     ativo: c.ativo,
     versaoConteudo: c.versaoConteudo,

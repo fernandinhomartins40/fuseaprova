@@ -500,7 +500,7 @@ export function rotasSuperUsuarios(r: Registrador): void {
     }
     await deps.db.transaction(async (tx) => {
       await garantirOutroSuperadmin(tx, u);
-      await anonimizarUsuario(tx, u.id, agora);
+      await anonimizarUsuario(tx, deps.config.segredoSessao, u.id, agora);
     });
     // Sem dados pessoais no "antes": só o que identifica o registro.
     await auditarSuper(ctx, 'usuario.anonimizar', `usuario:${u.id}`, { motivo: corpo.motivo, antes: { papel: u.papel, acesso: u.acesso }, depois: { excluido: true } });

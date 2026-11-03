@@ -20,6 +20,17 @@ export function temAcessoAoEstudo(
   return u.acesso || (u.testeAte !== null && u.testeAte > agora);
 }
 
+/**
+ * D33: a mesma caixa de entrada escrita de outro jeito não dá outro teste. O Gmail ignora pontos, e
+ * o "+etiqueta" chega na mesma caixa na maioria dos provedores.
+ */
+export function emailCanonico(email: string): string {
+  const [local = '', dominio = ''] = email.trim().toLowerCase().split('@');
+  const nome = local.split('+')[0]!;
+  const gmail = dominio === 'gmail.com' || dominio === 'googlemail.com';
+  return gmail ? `${nome.replaceAll('.', '')}@gmail.com` : `${nome}@${dominio}`;
+}
+
 /** "Faltam 3 dias" / "Faltam 2 dias" / "Último dia" do teste, para a faixa do site. */
 export function textoTesteRestante(testeAte: Date, agora: Date): string {
   const dias = Math.ceil((testeAte.getTime() - agora.getTime()) / (24 * 3600_000));

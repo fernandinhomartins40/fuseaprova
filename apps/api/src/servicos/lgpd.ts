@@ -8,6 +8,7 @@ import type { ExportarResposta } from '@fuse/shared/api';
 import type { Usuario } from '../contexto.js';
 import { iso, type Db } from '../util.js';
 import { encerrarSessoesDoUsuario } from './sessoes.js';
+import { marcarTesteUsado } from './testeGratis.js';
 
 const {
   usuarios,
@@ -69,7 +70,10 @@ export async function exportarDadosUsuario(db: Db, usuario: Usuario, agora: Date
 }
 
 /** Anonimiza o perfil e mantém os pedidos (obrigação fiscal). Rode dentro de uma transação. */
-export async function anonimizarUsuario(tx: Db, usuarioId: string, agora: Date): Promise<void> {
+export async function anonimizarUsuario(tx: Db, segredo: string, usuarioId: string, agora: Date): Promise<void> {
+  // D33: excluir a conta não libera o CPF nem o e-mail para outro teste grátis.
+  const [conta] = await tx.select({ cpf: usuarios.cpf, email: usuarios.email }).from(usuarios).where(eq(usuarios.id, usuarioId));
+  if (conta?.cpf) await marcarTesteUsado(tx, segredo, { cpf: conta.cpf, email: conta.email }, agora);
   await tx
     .update(usuarios)
     .set({

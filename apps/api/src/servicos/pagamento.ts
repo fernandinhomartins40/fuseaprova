@@ -80,6 +80,8 @@ export async function gerarPix(
       ? await concursoAbertoPorId(db, concursoIdPedido)
       : await concursoDoUsuario(db, u);
     if (!concurso) throw falha('nao_encontrado', 'Concurso não encontrado.');
+    // D33: concurso homologado ou fora de venda não recebe Pix, nem de quem já estudava nele.
+    if (!concurso.ativo) throw falha('nao_encontrado', 'Este concurso não está mais disponível para compra.');
     const [linha] = await db
       .select()
       .from(usuariosConcursos)
@@ -323,7 +325,7 @@ export async function confirmarPagamento(
     // D21: o pagamento libera o CONCURSO do pedido (pedidos antigos sem concurso: o do aluno).
     const concursoId = p.concursoId ?? (await concursoDoUsuario(tx, await usuarioDe(tx, p.usuarioId)))?.id;
     if (concursoId) await liberarConcurso(tx, p.usuarioId, concursoId, agora);
-    else await tx.update(usuarios).set({ acesso: true }).where(eq(usuarios.id, p.usuarioId));
+    else await tx.update(usuarios).set({ acesso: true, testeAte: null, testePendente: false }).where(eq(usuarios.id, p.usuarioId));
     return { pedido: pago!, usuario: await usuarioDe(tx, p.usuarioId) };
   });
   if (!resultado) return false;

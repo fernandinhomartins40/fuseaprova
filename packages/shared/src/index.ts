@@ -29,3 +29,4 @@ export * from './desempenho.js';
 export * from './lembretes.js';
 export * from './agenda.js';
 export * from './teste.js';
+export * from './validadeAcesso.js';

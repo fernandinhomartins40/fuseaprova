@@ -160,7 +160,7 @@ describe('jobs diários', () => {
       { id: `evt_velho_${n}`, evento: 'PAYMENT_RECEIVED', corpo: {}, recebidoEm: dias(5 * 366) },
       { id: `evt_novo_${n}`, evento: 'PAYMENT_RECEIVED', corpo: {}, recebidoEm: dias(30) },
     ]);
-    expect(await limpezaLegal(b.db, agora)).toEqual({ acessos: 1, auditoria: 1, webhooks: 1 });
+    expect(await limpezaLegal(b.db, agora)).toEqual({ acessos: 1, auditoria: 1, webhooks: 1, testes: 0 });
     const ips = (await b.db.select().from(schema.registrosAcesso).where(eq(schema.registrosAcesso.usuarioId, a.id))).map((r) => r.ip);
     expect(ips).toEqual(['200.1.1.2']);
   });

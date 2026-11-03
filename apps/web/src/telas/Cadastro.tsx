@@ -5,7 +5,7 @@ import { AVISO_EDITAL } from '@fuse/shared';
 import { CadastroEntrada, MENSAGENS_CADASTRO, VERSAO_TERMOS_ATUAL } from '@fuse/shared/api';
 import { camposDoErro, chamar, ErroApi, mensagemDeErro } from '../api/cliente';
 import { CHAVES } from '../api/consultas';
-import { Botao3D, CabecalhoVoltar, Campo, CamposNovaSenha, Capi, IconeTraco, Pagina } from '../ui';
+import { Botao3D, CabecalhoVoltar, Campo, CamposNovaSenha, Capi, IconeTraco, Pagina, useToast } from '../ui';
 import { errosPorCampo, rotaDoProximo } from './formulario';
 import s from './Auth.module.css';
 
@@ -13,6 +13,7 @@ import s from './Auth.module.css';
 export default function Cadastro() {
   const navegar = useNavigate();
   const qc = useQueryClient();
+  const toast = useToast();
   const [v, setV] = useState({ nome: '', email: '', celular: '', cpf: '', senha: '' });
   const [confirma, setConfirma] = useState('');
   const [aceite, setAceite] = useState(false);
@@ -48,6 +49,7 @@ export default function Cadastro() {
     try {
       const sessao = await chamar('authCadastro', { corpo });
       await qc.invalidateQueries({ queryKey: CHAVES.me });
+      if (sessao.proximo === 'pagamento') toast('O teste grátis já foi usado com estes dados ou neste aparelho.', 'erro');
       navegar(rotaDoProximo(sessao.proximo), { replace: true });
     } catch (err) {
       if (err instanceof ErroApi && err.codigo === 'conta_existente') {

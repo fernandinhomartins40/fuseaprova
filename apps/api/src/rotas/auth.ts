@@ -19,8 +19,10 @@ import { definirCookieSessao, limparCookieSessao } from '../http/cookies.js';
 import { ehViolacaoUnica, falha } from '../http/erros.js';
 import type { Contexto, Registrador } from '../http/registrar.js';
 import { emailRecuperacao } from '../integracoes/email.js';
+import { encerrarAcessosVencidos } from '../servicos/concursos.js';
 import { conferirSenha, gerarHashSenha } from '../servicos/senhas.js';
 import { abrirSessao, comecarTestePendente, encerrarSessao, encerrarSessoesDoUsuario, gerarToken } from '../servicos/sessoes.js';
+import { marcarNavegador, marcarTesteUsado, podeComecarTeste } from '../servicos/testeGratis.js';
 import { concursoAtivo } from '../servicos/usuario.js';
 
 const { usuarios, redefinicoesSenha, usuariosConcursos, registrosAcesso } = schema;
@@ -94,7 +96,7 @@ async function registrarAcesso(deps: Deps, req: FastifyRequest, usuarioId: strin
 const hashSimples = (t: string) => createHash('sha256').update(t).digest('hex');
 
 export function rotasAuth(r: Registrador): void {
-  r.rota('authCadastro', async ({ corpo, deps, req, reply, agora }) => {
+  r.rota('authCadastro', async ({ corpo, deps, req, reply, agora, limitar }) => {
     const { db } = deps;
     const existente = await db
       .select({ email: usuarios.email, cpf: usuarios.cpf })
@@ -107,6 +109,7 @@ export function rotasAuth(r: Registrador): void {
     };
     if (existente.length) throw contaExistente();
     const concurso = await concursoAtivo(db);
+    const comTeste = await podeComecarTeste(db, deps.config.segredoSessao, req, limitar, corpo);
     let novo: Usuario;
     try {
       [novo] = (await db
@@ -121,7 +124,7 @@ export function rotasAuth(r: Registrador): void {
           aceiteTermosEm: agora,
           versaoTermos: corpo.versaoTermos,
           vidasAtualizadoEm: agora,
-          testeAte: fimDoTeste(agora), // D32: um teste por conta, e o CPF é único
+          testeAte: comTeste ? fimDoTeste(agora) : null,
           criadoEm: agora,
         })
         .returning()) as [Usuario];
@@ -134,6 +137,10 @@ export function rotasAuth(r: Registrador): void {
         .insert(usuariosConcursos)
         .values({ usuarioId: novo.id, concursoId: concurso.id, criadoEm: agora })
         .onConflictDoNothing();
+    }
+    if (comTeste) {
+      await marcarTesteUsado(db, deps.config.segredoSessao, corpo, agora);
+      marcarNavegador(reply, deps.config, agora);
     }
     await iniciarSessao(deps, req, reply, novo.id, agora, { evento: 'cadastro' });
     reply.status(201);
@@ -157,7 +164,7 @@ export function rotasAuth(r: Registrador): void {
     const ok = await conferirSenha(u?.senhaHash, corpo.senha);
     if (!u || !ok || u.papel !== PAPEL_DO_PORTAL[area]) throw falha('credenciais_invalidas');
     if (u.bloqueadoEm) throw falha('conta_bloqueada');
-    const conta = await comecarTestePendente(deps.db, u, agora);
+    const conta = await encerrarAcessosVencidos(deps.db, await comecarTestePendente(deps.db, u, agora), agora);
     await iniciarSessao(deps, req, reply, u.id, agora, { superadmin: u.papel === 'superadmin' });
     return respostaSessao(conta, agora);
   };
@@ -221,7 +228,7 @@ export function rotasAuth(r: Registrador): void {
       await encerrarSessoesDoUsuario(tx, u.id);
       return u;
     });
-    const conta = await comecarTestePendente(deps.db, usuario, agora);
+    const conta = await encerrarAcessosVencidos(deps.db, await comecarTestePendente(deps.db, usuario, agora), agora);
     await iniciarSessao(deps, req, reply, usuario.id, agora, { superadmin: usuario.papel === 'superadmin', evento: 'redefinicao' });
     return respostaSessao(conta, agora);
   });

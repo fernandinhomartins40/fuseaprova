@@ -85,6 +85,13 @@
       "when": 1793657028011,
       "tag": "0011_teste_gratis",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793663560606,
+      "tag": "0012_validade_acesso",
+      "breakpoints": true
     }
   ]
 }

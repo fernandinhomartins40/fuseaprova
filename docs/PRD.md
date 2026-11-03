@@ -40,9 +40,9 @@ Treinar no formato exato da banca que vai aplicar a prova, com questões reais d
 
 1. **Nome:** Fuse Aprova. O wordmark é "fuse" em laranja e "aprova" em verde.
 2. **Preço:** R$ 397,00, pagamento único, à vista, só por Pix. Não existe cartão, boleto nem parcelamento.
-3. **O único acesso gratuito é o teste de 3 dias (D32).** Cada conta tem um teste de 72 horas, a partir do cadastro. Não há modo demo nem lições abertas. Fora do teste e sem pagamento confirmado, a conta só vê o fluxo de pagamento, os termos e a saída.
+3. **O único acesso gratuito é o teste de 3 dias (D32, D33).** Cada pessoa tem um teste de 72 horas, a partir do cadastro. Não há modo demo nem lições abertas. Fora do teste e sem pagamento confirmado, a conta só vê o fluxo de pagamento, os termos e a saída.
 4. **Gateway:** Asaas, que é o único serviço externo do sistema.
-5. **Acesso:** todas as provas e questões FAU do acervo, de todas as disciplinas e cargos. O acesso vale até a homologação do concurso de Palmital (veja 2.9).
+5. **Acesso:** todas as provas e questões FAU do acervo, de todas as disciplinas e cargos. O acesso vale até a homologação do concurso de Palmital ou por 24 meses, o que vier primeiro (D33).
 6. **Comunicação obrigatória:** em cadastro, pagamento, perfil e termos deve estar claro que, **quando o edital de Palmital for publicado, o app se ajusta aos cargos e ao conteúdo do edital, sem custo adicional**.
 7. **Infra própria:** tudo roda na VPS do dono, num monorepo Turborepo. São **proibidos** Supabase, Firebase, Vercel, Clerk, Auth0 e qualquer BaaS ou SaaS de backend. Não há analytics de terceiros nem CDN de fontes ou scripts.
 8. **Questões reais da FAU desde o lançamento.** Cada questão guarda a origem (banca, órgão, ano, cargo, link) e pode ser retirada do ar em minutos pelo painel admin.
@@ -522,7 +522,7 @@ Os ids são `uuid`. As datas são `timestamptz`. As colunas estão em snake_case
 
 | Tabela | Colunas principais |
 |---|---|
-| `concursos` | id, nome, banca, orgao, municipio, uf, ano, status (`aguardando_edital`·`edital_publicado`·`prova_realizada`·`homologado`), data_prova, links (jsonb), ativo |
+| `concursos` | id, nome, banca, orgao, municipio, uf, ano, status (`aguardando_edital`·`edital_publicado`·`prova_realizada`·`homologado`), data_prova, homologado_em, links (jsonb), ativo |
 | `cargos` | id, concurso_id, nome, area, escolaridade, vagas, distribuicao (jsonb `{portugues:5,matematica:5,gerais:5,especificos:25}`) |
 | `provas_origem` | id, banca, orgao, municipio, uf, ano, cargo, nivel, url_caderno, url_gabarito, url_recursos, hash_pdf, slug_fau |
 | `disciplinas` | id, slug (`portugues`·`matematica`·`gerais`·`especificos`), nome, cor |

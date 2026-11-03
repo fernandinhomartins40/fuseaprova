@@ -1,8 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { DURACAO_TESTE_MS, fimDoTeste, temAcessoAoEstudo, textoTesteRestante } from './teste.js';
+import { DURACAO_TESTE_MS, emailCanonico, fimDoTeste, temAcessoAoEstudo, textoTesteRestante } from './teste.js';
 
 const agora = new Date('2026-11-02T12:00:00-03:00');
 const horas = (n: number) => new Date(agora.getTime() + n * 3600_000);
+
+describe('emailCanonico (D33)', () => {
+  it('junta as variações de uma caixa do Gmail', () => {
+    for (const e of ['Maria.Silva@gmail.com', 'mariasilva+2@gmail.com', 'm.a.r.i.a.silva@googlemail.com']) {
+      expect(emailCanonico(e)).toBe('mariasilva@gmail.com');
+    }
+  });
+
+  it('nos outros provedores tira só a etiqueta, porque o ponto faz parte do nome', () => {
+    expect(emailCanonico('Maria.Silva+x@empresa.com.br')).toBe('maria.silva@empresa.com.br');
+  });
+});
 
 describe('teste grátis (D32)', () => {
   it('dura exatamente 72 horas', () => {

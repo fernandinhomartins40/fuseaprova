@@ -96,7 +96,7 @@ export function rotasMe(r: Registrador): void {
       throw falha('validacao', 'A senha não confere.', { senha: 'A senha não confere.' });
     }
     // LGPD: anonimiza o perfil e mantém os pedidos (obrigação fiscal).
-    await deps.db.transaction((tx) => anonimizarUsuario(tx, usuario.id, agora));
+    await deps.db.transaction((tx) => anonimizarUsuario(tx, deps.config.segredoSessao, usuario.id, agora));
     limparCookieSessao(reply, deps.config);
     return { ok: true as const };
   });
