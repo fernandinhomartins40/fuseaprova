@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { AREA_DO_PAPEL, NOMES_PAPEL, PAPEIS, podeEstudar, podeGerirConteudo, podeGerirNegocio } from './dominio.js';
-import { emailComunicacao, escHtml, layoutEmail, paragrafosHtml } from './email.js';
+import { avisoEmail, botaoEmail, CORES_EMAIL, emailComunicacao, escHtml, layoutEmail, notaEmail, paragrafosHtml, reciboEmail } from './email.js';
 import {
   AprovarManualEntrada,
   AprovarManualPedidoEntrada,
@@ -130,12 +130,34 @@ describe('e-mail (layout compartilhado)', () => {
   it('escapa HTML, separa parágrafos e leva o descadastro no rodapé', () => {
     expect(escHtml('<b>"x"</b>')).toBe('&#60;b&#62;&#34;x&#34;&#60;/b&#62;');
     expect(paragrafosHtml('um\nlinha\n\ndois')).toBe('<p>um<br>linha</p>\n<p>dois</p>');
-    expect(layoutEmail('Título', '<p>x</p>')).toContain('<h1');
+    expect(layoutEmail('Título', '<p>x</p>', { appUrl: 'https://app.x' })).toContain('<h1');
     const e = emailComunicacao({ nome: 'Marina Souza', assunto: 'Novidade', mensagem: 'Oi <script>', appUrl: 'https://app.x' });
     expect(e.html).toContain('Olá, Marina!');
     expect(e.html).not.toContain('<script>');
     expect(e.html).toContain('https://app.x/aprender');
     expect(e.texto).toContain('https://app.x/configuracoes');
     expect(emailComunicacao({ nome: 'Ana', assunto: 'a', mensagem: 'b', link: '/liga', appUrl: 'https://app.x' }).html).toContain('https://app.x/liga');
+  });
+
+  it('usa a logo e a Capi do próprio domínio, o botão turquesa e o recibo da marca', () => {
+    const html = layoutEmail('Oi', `${botaoEmail('https://app.x/a?b=1&c=2', 'IR')}${reciboEmail([['Valor', 'R$ 1']])}`, {
+      appUrl: 'https://app.x/',
+      capi: 'celebrando',
+      previa: 'Resumo <curto>',
+    });
+    expect(html).toContain('src="https://app.x/email/logo.png"');
+    expect(html).toContain('src="https://app.x/email/capi-celebrando.png"');
+    expect(html).toContain("url('https://app.x/email/fontes/baloo-2-latin-800-normal.woff2')");
+    expect(html).toContain('href="https://app.x/a?b=1&#38;c=2"');
+    expect(html).toContain(`background:${CORES_EMAIL.turquesaAcao}`);
+    expect(html).toContain('RECIBO');
+    expect(html).toContain('Resumo &#60;curto&#62;');
+    expect(html).toContain('Equipe Fuse Aprova');
+    // Sem Capi escolhida, a de boas-vindas; sem assinatura quando pedido.
+    const simples = layoutEmail('Oi', 'x', { appUrl: 'https://app.x', assinatura: false });
+    expect(simples).toContain('capi-boas-vindas.png');
+    expect(simples).not.toContain('Equipe Fuse Aprova');
+    expect(avisoEmail('<b>a</b>')).toContain('<b>a</b>');
+    expect(notaEmail('n')).toContain('>n</p>');
   });
 });

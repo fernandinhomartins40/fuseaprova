@@ -97,6 +97,7 @@ export async function registrarFalha2fa(
       emailAlertaSeguranca({
         nome: u.nome,
         email: u.email,
+        appUrl: deps.config.appUrl,
         titulo: 'Muitos códigos errados na sua conta',
         texto: `Houve ${r.n} tentativas erradas de código do app autenticador (ou de senha de confirmação) na sua conta do painel do Fuse Aprova. A verificação ficou bloqueada até ${horaMinutoSP(r.janelaFim)} (Brasília). Se não foi você, troque a senha e encerre as sessões abertas.`,
       }),

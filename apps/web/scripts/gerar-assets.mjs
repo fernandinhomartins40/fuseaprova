@@ -9,6 +9,7 @@
  *   src/assets/gerados/*.webp      imagens usadas pelos componentes
  *   src/assets/gerados/index.ts    mapa nome → { x1, x2, largura, altura } (imports do Vite)
  *   public/icons/*.png             ícones da PWA (192, 512, maskable 512, apple 180, favicon 32)
+ *   public/email/*.png             logo e Capi dos e-mails (PNG, porque nem todo leitor de e-mail abre WebP)
  *
  * Tamanhos (Guia_para_desenvolvimento.md): navegação 24–32 px, cartões 40–64 px,
  * ilustrações 120–240 px, mascote 240–360 px. O tamanho abaixo é o 1× (CSS px, maior lado).
@@ -24,6 +25,7 @@ const web = path.resolve(aqui, '..');
 const origem = path.resolve(web, '../../Fuse_Aprova_Assets_4K');
 const destino = path.join(web, 'src/assets/gerados');
 const destinoIcones = path.join(web, 'public/icons');
+const destinoEmail = path.join(web, 'public/email');
 
 const MARFIM = '#FAF8F2';
 
@@ -78,6 +80,26 @@ const ASSETS = [
   ['elementos/elemento_confetes', 'elemento-confetes', 240],
   ['elementos/elemento_faisca', 'elemento-faisca', 64],
 ];
+
+/**
+ * Imagens dos e-mails (packages/shared/src/email.ts), em 2× do tamanho exibido. Ficam em public/email
+ * com nome fixo, porque os e-mails já enviados continuam apontando para elas.
+ */
+const EMAIL = [
+  ['marca/logo_completa', 'logo', 440],
+  ['mascote/mascote_boas_vindas', 'capi-boas-vindas', 400],
+  ['mascote/mascote_celebrando', 'capi-celebrando', 400],
+  ['mascote/mascote_estudando', 'capi-estudando', 400],
+  ['mascote/mascote_explicando', 'capi-explicando', 400],
+  ['mascote/mascote_incentivando', 'capi-incentivando', 400],
+];
+
+async function gerarPngEmail(entrada, saida, maiorLado) {
+  return sharp(entrada, { limitInputPixels: false })
+    .resize({ width: maiorLado, height: maiorLado, fit: 'inside', kernel: 'lanczos3' })
+    .png({ compressionLevel: 9, palette: true, quality: 92, effort: 10 })
+    .toFile(saida);
+}
 
 function camel(nome) {
   return nome.replace(/-([a-z0-9])/g, (_, c) => c.toUpperCase());
@@ -184,6 +206,12 @@ async function main() {
     fundo: marfim,
   });
   await iconePwa(simbolo, path.join(destinoIcones, 'favicon-32.png'), 32);
+
+  await mkdir(destinoEmail, { recursive: true });
+  for (const [arquivo, nome, tamanho] of EMAIL) {
+    const info = await gerarPngEmail(path.join(origem, `${arquivo}_4k.png`), path.join(destinoEmail, `${nome}.png`), tamanho);
+    console.info(`email/${nome}.png`.padEnd(24), `${info.width}×${info.height}  ${(info.size / 1024).toFixed(1)} kB`);
+  }
 
   const arquivos = await readdir(destino);
   console.info(

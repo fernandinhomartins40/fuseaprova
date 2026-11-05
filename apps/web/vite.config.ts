@@ -127,7 +127,8 @@ export default defineConfig(({ mode }) => {
               // Precache do shell: JS, CSS, HTML, fontes e imagens geradas (WebP pequenos).
               globPatterns: ['**/*.{js,css,html,woff2,webp,png,svg}'],
               // A landing (public/lp, servida pelo nginx em "/") fica fora do app offline.
-              globIgnores: ['lp/**'],
+              // As imagens dos e-mails (public/email) também.
+              globIgnores: ['lp/**', 'email/**'],
               // S-27: sem o código do painel da equipe (ver arquivosDoPainel).
               manifestTransforms: [
                 (entradas) => ({

@@ -410,6 +410,7 @@ export async function estornarPagamento(deps: Deps, paymentId: string, agora: Da
         valorCentavos: resultado.pedido.valorCentavos,
         cobrancaId: paymentId,
         produto: resultado.pedido.produto,
+        appUrl: deps.config.appUrl,
       }),
     );
   }

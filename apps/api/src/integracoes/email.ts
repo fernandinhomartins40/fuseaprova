@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import nodemailer from 'nodemailer';
 import { formatarDataBR, formatarReais, diaSP, horaMinutoSP, primeiroNome } from '@fuse/shared';
-import { AVISO_EDITAL, botaoEmail, CORES_EMAIL, criarEnviadorVelomail, escHtml, layoutEmail } from '@fuse/shared';
+import { AVISO_EDITAL, avisoEmail, botaoEmail, CORES_EMAIL, criarEnviadorVelomail, escHtml, layoutEmail, notaEmail, pEmail, reciboEmail } from '@fuse/shared';
 import type { Config } from '../config.js';
 
 export interface MensagemEmail {
@@ -85,10 +85,20 @@ export function criarMailerPadrao(config: Config): Mailer {
 
 /* ------------------------------------------------------------- templates */
 
-const COR = CORES_EMAIL;
 const esc = escHtml;
-const layout = layoutEmail;
 const botao = botaoEmail;
+
+/** Recibo comum aos e-mails de pagamento confirmado. */
+function recibo(produto: string, valor: string, data: string, cobrancaId: string): string {
+  return reciboEmail([
+    ['Produto', esc(produto)],
+    ['Valor', `${esc(valor)}<br><span style="font-size:13px;font-weight:600;color:${CORES_EMAIL.apagado}">Pix, pagamento único</span>`],
+    ['Data', esc(data)],
+    ['Cobrança', esc(cobrancaId)],
+  ]);
+}
+
+const ARREPENDIMENTO = 'Você tem 7 dias para desistir da compra com reembolso integral (CDC, art. 49).';
 
 export function emailBoasVindas(d: {
   nome: string;
@@ -101,19 +111,14 @@ export function emailBoasVindas(d: {
   const valor = formatarReais(d.valorCentavos);
   const data = `${formatarDataBR(diaSP(d.pagoEm))} às ${horaMinutoSP(d.pagoEm)}`;
   const nome = primeiroNome(d.nome);
-  const html = layout(
+  const html = layoutEmail(
     `Bem-vindo(a), ${nome}! Seu acesso está liberado.`,
-    `<p>Seu pagamento via Pix foi confirmado e o acesso completo ao Fuse Aprova já está liberado.</p>
+    `${pEmail('Seu pagamento via Pix foi confirmado e o acesso completo ao Fuse Aprova já está liberado. As lições, a revisão, os simulados e a liga estão esperando por você.')}
 ${botao(`${d.appUrl}/aprender`, 'COMEÇAR A ESTUDAR')}
-<h2 style="font-size:18px;color:${COR.turquesa};margin:24px 0 8px">Recibo</h2>
-<table role="presentation" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:15px">
-<tr><td>Produto</td><td><b>Fuse Aprova – acesso completo</b></td></tr>
-<tr><td>Valor</td><td><b>${esc(valor)}</b> (Pix, pagamento único)</td></tr>
-<tr><td>Data</td><td>${esc(data)}</td></tr>
-<tr><td>Cobrança</td><td>${esc(d.cobrancaId)}</td></tr>
-</table>
-<p style="margin-top:20px">${esc(AVISO_EDITAL)}</p>
-<p style="font-size:14px;color:#5b6b6c">Você tem 7 dias para desistir da compra com reembolso integral (CDC, art. 49).</p>`,
+${recibo('Fuse Aprova – acesso completo', valor, data, d.cobrancaId)}
+${avisoEmail(esc(AVISO_EDITAL))}
+${notaEmail(esc(ARREPENDIMENTO))}`,
+    { appUrl: d.appUrl, capi: 'celebrando', previa: 'Pagamento confirmado. Seu acesso ao Fuse Aprova já está liberado.' },
   );
   const texto = `Olá, ${nome}! Seu pagamento via Pix foi confirmado e o acesso ao Fuse Aprova está liberado.
 Recibo: Fuse Aprova – acesso completo · ${valor} · ${data} · cobrança ${d.cobrancaId}.
@@ -135,19 +140,14 @@ export function emailApostilasLiberadas(d: {
   const data = `${formatarDataBR(diaSP(d.pagoEm))} às ${horaMinutoSP(d.pagoEm)}`;
   const nome = primeiroNome(d.nome);
   const link = `${d.appUrl}/apostilas`;
-  const html = layout(
+  const html = layoutEmail(
     `Pronto, ${nome}! Suas apostilas estão liberadas.`,
-    `<p>Seu pagamento via Pix foi confirmado. As 4 apostilas de questões comentadas da banca FAU já podem ser baixadas: entre com o seu e-mail e senha na página das apostilas.</p>
+    `${pEmail('Seu pagamento via Pix foi confirmado. As 4 apostilas de questões comentadas da banca FAU já podem ser baixadas: entre com o seu e-mail e senha na página das apostilas.')}
 ${botao(link, 'BAIXAR AS APOSTILAS')}
-<h2 style="font-size:18px;color:${COR.turquesa};margin:24px 0 8px">Recibo</h2>
-<table role="presentation" cellpadding="6" cellspacing="0" style="border-collapse:collapse;font-size:15px">
-<tr><td>Produto</td><td><b>Apostilas Fuse Aprova (4 volumes em PDF)</b></td></tr>
-<tr><td>Valor</td><td><b>${esc(valor)}</b> (Pix, pagamento único)</td></tr>
-<tr><td>Data</td><td>${esc(data)}</td></tr>
-<tr><td>Cobrança</td><td>${esc(d.cobrancaId)}</td></tr>
-</table>
-<p style="margin-top:20px">As apostilas são para o seu uso pessoal. Cada download fica registrado na sua conta.</p>
-<p style="font-size:14px;color:#5b6b6c">Você tem 7 dias para desistir da compra com reembolso integral (CDC, art. 49).</p>`,
+${recibo('Apostilas Fuse Aprova (4 volumes em PDF)', valor, data, d.cobrancaId)}
+${avisoEmail('As apostilas são para o seu uso pessoal. Cada download fica registrado na sua conta.')}
+${notaEmail(esc(ARREPENDIMENTO))}`,
+    { appUrl: d.appUrl, capi: 'estudando', previa: 'Pagamento confirmado. Suas 4 apostilas já podem ser baixadas.' },
   );
   const texto = `Olá, ${nome}! Seu pagamento via Pix foi confirmado e as 4 apostilas Fuse Aprova estão liberadas.
 Recibo: Apostilas Fuse Aprova (4 volumes em PDF) · ${valor} · ${data} · cobrança ${d.cobrancaId}.
@@ -155,14 +155,15 @@ Baixe em: ${link}`;
   return { para: d.email, assunto: 'Pagamento confirmado: suas apostilas Fuse Aprova', html, texto };
 }
 
-export function emailRecuperacao(d: { nome: string; email: string; link: string }): MensagemEmail {
+export function emailRecuperacao(d: { nome: string; email: string; link: string; appUrl: string }): MensagemEmail {
   const nome = primeiroNome(d.nome);
-  const html = layout(
+  const html = layoutEmail(
     'Crie uma nova senha',
-    `<p>Olá, ${esc(nome)}. Recebemos um pedido para criar uma nova senha na sua conta.</p>
+    `${pEmail(`Olá, ${esc(nome)}! Recebemos um pedido para criar uma nova senha na sua conta do Fuse Aprova. É só tocar no botão abaixo.`)}
 ${botao(d.link, 'CRIAR NOVA SENHA')}
-<p>O link vale por 1 hora. Ao trocar a senha, as outras sessões abertas são encerradas.</p>
-<p style="font-size:14px;color:#5b6b6c">Se não foi você, ignore este e-mail: sua senha continua a mesma.</p>`,
+${avisoEmail('<b>O link vale por 1 hora.</b> Ao trocar a senha, as outras sessões abertas são encerradas.')}
+${notaEmail('Se não foi você, ignore este e-mail: sua senha continua a mesma.')}`,
+    { appUrl: d.appUrl, capi: 'explicando', previa: 'Toque no botão para criar uma nova senha. O link vale por 1 hora.' },
   );
   const texto = `Olá, ${nome}. Para criar uma nova senha no Fuse Aprova, abra o link (vale por 1 hora): ${d.link}
 Se não foi você, ignore este e-mail.`;
@@ -174,25 +175,36 @@ export function emailReembolso(d: {
   email: string;
   valorCentavos: number;
   cobrancaId: string;
+  appUrl: string;
   /** D34: o estorno das apostilas encerra o download, não o acesso ao app. */
   produto?: 'concurso' | 'apostilas';
 }): MensagemEmail {
   const nome = primeiroNome(d.nome);
   const valor = formatarReais(d.valorCentavos);
   const encerrado = d.produto === 'apostilas' ? 'o download das apostilas foi encerrado' : 'o acesso ao Fuse Aprova foi encerrado';
-  const html = layout(
+  const html = layoutEmail(
     'Reembolso confirmado',
-    `<p>Olá, ${esc(nome)}. O reembolso de <b>${esc(valor)}</b> (cobrança ${esc(d.cobrancaId)}) foi confirmado e o valor volta pelo Pix para a conta de origem.</p>
-<p>Com o estorno, ${encerrado}. Obrigado por ter experimentado!</p>`,
+    `${pEmail(`Olá, ${esc(nome)}. O reembolso de <b>${esc(valor)}</b> foi confirmado e o valor volta pelo Pix para a conta de origem.`)}
+${reciboEmail([
+  ['Valor devolvido', esc(valor)],
+  ['Cobrança', esc(d.cobrancaId)],
+])}
+${notaEmail(`Com o estorno, ${encerrado}. Obrigado por ter experimentado!`)}`,
+    { appUrl: d.appUrl, capi: 'incentivando', previa: `O reembolso de ${valor} foi confirmado.` },
   );
   const texto = `Olá, ${nome}. O reembolso de ${valor} (cobrança ${d.cobrancaId}) foi confirmado. Com o estorno, ${encerrado}.`;
   return { para: d.email, assunto: 'Fuse Aprova: reembolso confirmado', html, texto };
 }
 
 /** S-16: aviso de segurança para o dono da conta (ex.: muitos códigos errados). */
-export function emailAlertaSeguranca(d: { nome: string; email: string; titulo: string; texto: string }): MensagemEmail {
+export function emailAlertaSeguranca(d: { nome: string; email: string; titulo: string; texto: string; appUrl: string }): MensagemEmail {
   const nome = primeiroNome(d.nome);
-  const html = layout(d.titulo, `<p>Olá, ${esc(nome)}.</p>\n<p>${esc(d.texto)}</p>`);
+  const html = layoutEmail(d.titulo, `${pEmail(`Olá, ${esc(nome)}.`)}\n${avisoEmail(esc(d.texto))}`, {
+    appUrl: d.appUrl,
+    capi: 'explicando',
+    previa: d.texto.slice(0, 120),
+    assinatura: false,
+  });
   return { para: d.email, assunto: `Fuse Aprova: ${d.titulo.toLowerCase()}`, html, texto: `Olá, ${nome}. ${d.texto}` };
 }
 
@@ -200,12 +212,17 @@ export function emailAlertaSeguranca(d: { nome: string; email: string; titulo: s
  * S-11: o e-mail de uma conta da equipe foi trocado pelo superadmin. Vai para o endereço ANTIGO,
  * para o dono perceber uma troca que não pediu.
  */
-export function emailAvisoTrocaEmail(d: { nome: string; emailAntigo: string; emailNovo: string; quando: Date }): MensagemEmail {
+export function emailAvisoTrocaEmail(d: { nome: string; emailAntigo: string; emailNovo: string; quando: Date; appUrl: string }): MensagemEmail {
   const nome = primeiroNome(d.nome);
   const data = `${formatarDataBR(diaSP(d.quando))} às ${horaMinutoSP(d.quando)}`;
   const novo = d.emailNovo.replace(/^(.).*(@.*)$/, '$1***$2');
   const texto = `O e-mail de acesso da sua conta no painel do Fuse Aprova foi trocado por um superadmin em ${data} (Brasília), para ${novo}. A partir de agora os links de senha vão para o endereço novo. Se você não pediu essa troca, avise o responsável pelo Fuse Aprova imediatamente.`;
-  const html = layout('O e-mail da sua conta foi trocado', `<p>Olá, ${esc(nome)}.</p>\n<p>${esc(texto)}</p>`);
+  const html = layoutEmail('O e-mail da sua conta foi trocado', `${pEmail(`Olá, ${esc(nome)}.`)}\n${avisoEmail(esc(texto))}`, {
+    appUrl: d.appUrl,
+    capi: 'explicando',
+    previa: `O e-mail de acesso da sua conta foi trocado para ${novo}.`,
+    assinatura: false,
+  });
   return { para: d.emailAntigo, assunto: 'Fuse Aprova: o e-mail da sua conta foi trocado', html, texto: `Olá, ${nome}. ${texto}` };
 }
 
@@ -217,14 +234,16 @@ export function emailConvite(d: {
   link: string;
   entrar: string;
   validadeHoras: number;
+  appUrl: string;
 }): MensagemEmail {
   const nome = primeiroNome(d.nome);
-  const html = layout(
+  const html = layoutEmail(
     'Você foi convidado(a) para a equipe do Fuse Aprova',
-    `<p>Olá, ${esc(nome)}. Você recebeu acesso como <b>${esc(d.papel)}</b> no painel do Fuse Aprova.</p>
+    `${pEmail(`Olá, ${esc(nome)}! Você recebeu acesso como <b>${esc(d.papel)}</b> no painel do Fuse Aprova.`)}
 ${botao(d.link, 'DEFINIR MINHA SENHA')}
-<p>O link vale por ${d.validadeHoras} horas. Depois de definir a senha, entre em ${esc(d.entrar)}.</p>
-<p style="font-size:14px;color:#5b6b6c">Se você não esperava este convite, ignore este e-mail.</p>`,
+${avisoEmail(`<b>O link vale por ${d.validadeHoras} horas.</b> Depois de definir a senha, entre em <a href="${esc(d.entrar)}" style="color:${CORES_EMAIL.turquesaAcao};font-weight:800">${esc(d.entrar)}</a>.`)}
+${notaEmail('Se você não esperava este convite, ignore este e-mail.')}`,
+    { appUrl: d.appUrl, capi: 'boas-vindas', previa: `Você recebeu acesso como ${d.papel} no painel do Fuse Aprova.`, assinatura: false },
   );
   const texto = `Olá, ${nome}. Você recebeu acesso como ${d.papel} no painel do Fuse Aprova. Defina sua senha (o link vale por ${d.validadeHoras} horas): ${d.link}
 

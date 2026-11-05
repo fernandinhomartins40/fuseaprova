@@ -188,7 +188,7 @@ export function rotasAuth(r: Registrador): void {
         criadoEm: agora,
       });
       deps.enviarEmail(
-        emailRecuperacao({ nome: u.nome, email: u.email, link: `${deps.config.appUrl}/recuperar/${token}` }),
+        emailRecuperacao({ nome: u.nome, email: u.email, link: `${deps.config.appUrl}/recuperar/${token}`, appUrl: deps.config.appUrl }),
       );
     }
     // Sempre a mesma resposta: não revela se o e-mail existe.

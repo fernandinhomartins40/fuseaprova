@@ -405,7 +405,7 @@ export function rotasSuperUsuarios(r: Registrador): void {
     let revogadas = 0;
     if (trocaEmail) {
       // O endereço antigo fica sabendo; na equipe, os links de senha pendentes e as sessões caem.
-      deps.enviarEmail(emailAvisoTrocaEmail({ nome: antes.nome, emailAntigo: antes.email, emailNovo: depois.email, quando: agora }));
+      deps.enviarEmail(emailAvisoTrocaEmail({ nome: antes.nome, emailAntigo: antes.email, emailNovo: depois.email, quando: agora, appUrl: deps.config.appUrl }));
       if (antes.papel !== 'aluno' && antes.id !== usuario.id) {
         await deps.db.delete(redefinicoesSenha).where(eq(redefinicoesSenha.usuarioId, antes.id));
         revogadas = await encerrarSessoesDoUsuario(deps.db, antes.id);
@@ -426,7 +426,7 @@ export function rotasSuperUsuarios(r: Registrador): void {
     if (u.excluidoEm) throw falha('conflito', 'Esta conta foi excluída.');
     if (u.papel !== 'aluno') await exigirReconfirmacao(ctx, corpo.confirmacao, 'forçar a troca de senha de uma conta da equipe');
     const { link } = await criarLinkSenha(deps, u.id, agora, VALIDADE_LINK_SENHA_MS);
-    deps.enviarEmail(emailRecuperacao({ nome: u.nome, email: u.email, link }));
+    deps.enviarEmail(emailRecuperacao({ nome: u.nome, email: u.email, link, appUrl: deps.config.appUrl }));
     const revogadas = corpo.revogarSessoes ? await encerrarSessoesDoUsuario(deps.db, u.id) : 0;
     await auditarSuper(ctx, 'usuario.forcar_senha', `usuario:${u.id}`, { motivo: corpo.motivo, detalhes: { para: u.email, revogadas } });
     return { ok: true as const };
@@ -645,6 +645,7 @@ export function rotasSuperUsuarios(r: Registrador): void {
         link,
         entrar: `${deps.config.appUrl}${PAGINA_LOGIN[corpo.papel]}`,
         validadeHoras: VALIDADE_CONVITE_MS / 3_600_000,
+        appUrl: deps.config.appUrl,
       }),
     );
     await auditarSuper(ctx, 'equipe.convidar', `usuario:${novo!.id}`, { motivo: corpo.motivo, depois: { email: corpo.email, papel: corpo.papel } });
@@ -674,6 +675,7 @@ export function rotasSuperUsuarios(r: Registrador): void {
         link,
         entrar: `${deps.config.appUrl}${PAGINA_LOGIN[u.papel]}`,
         validadeHoras: VALIDADE_CONVITE_MS / 3_600_000,
+        appUrl: deps.config.appUrl,
       }),
     );
     await auditarSuper(ctx, 'equipe.convite_reenviar', `usuario:${u.id}`, { motivo: corpo.motivo, depois: { expiraEm: iso(expiraEm) } });

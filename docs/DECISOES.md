@@ -410,3 +410,9 @@ O cadastro continua sem teste (D35). O dono libera, aluno por aluno, um teste de
 - **Revogar:** `DELETE /super/usuarios/:id/teste-24h` encerra o teste na hora (auditado, `usuario.teste_revogar`). O botão fica verde ("Liberar teste 24 h") sem teste e vermelho ("Revogar teste") com o teste ativo, ao lado do selo "Teste ativo até ...".
 - **Onde fica o botão:** na lista e na ficha do usuário, como "Liberar teste 24 h". Na ficha, o "Liberar" do concurso virou "Liberar sem pagamento (definitivo)", para o dono não confundir com o teste.
 - No site, quem está no teste vê a faixa "Teste liberado até dd/mm às hh:mm" com "Garantir acesso", e a tela do Pix tem seta para voltar à trilha. O app nativo só lê `acesso` e funciona igual.
+
+## D40. E-mails na identidade do app (05/11/2026, pedido do dono)
+- **Layout único** (`packages/shared/src/email.ts`, `layoutEmail`): logo completa no topo, cartão branco sobre marfim com a borda 3D, faixa laranja, a Capi numa pose por assunto sobre turquesa suave, título em Baloo 2 petróleo, botão turquesa 3D (`#007C83` com base petróleo), recibo em cartão marfim, avisos em laranja suave, assinatura "Equipe Fuse Aprova" e o rodapé legal.
+- **Imagens:** PNG (nem todo leitor de e-mail abre WebP) gerados das matrizes 4K por `apps/web/scripts/gerar-assets.mjs` em `apps/web/public/email/`, com nome fixo, porque e-mails já enviados continuam apontando para eles. As fontes vão junto (`/email/fontes`): Apple Mail e iOS usam; Gmail e Outlook caem em Nunito/Arial.
+- **Servidas pelo próprio domínio** (`<APP_URL>/email/`, sem CDN). O nginx serve `/email/` sem o `Cross-Origin-Resource-Policy: same-origin` do resto do site, que bloquearia a imagem no webmail, e com cache de 1 semana. A PWA não as põe no cache offline.
+- Todos os modelos recebem `appUrl`. Prévia local: `pnpm --filter @fuse/api exec tsx --conditions=@fuse/source scripts/previa-emails.ts <pasta>`.
