@@ -18,7 +18,7 @@ describe('autenticação (PRD 8.2)', () => {
       corpo: { nome: 'Carlos da Silva', email: 'Carlos@Teste.com', cpf: '529.982.247-25', celular: '(42) 99876-5432', senha: '12345678', aceiteTermos: true },
     });
     expect(r.statusCode, r.body).toBe(201);
-    expect(r.json().proximo).toBe('onboarding'); // D32: começa no teste grátis
+    expect(r.json()).toMatchObject({ proximo: 'pagamento', usuario: { acesso: false } }); // D35: sem teste grátis
     const c = r.cookies.find((x) => x.name === 'fuse_sessao')!;
     expect(c.httpOnly).toBe(true);
     expect(c.secure).toBe(true);

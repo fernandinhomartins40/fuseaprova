@@ -62,24 +62,16 @@ describe('Pix das apostilas (D34)', () => {
     expect((await pedido(r1.pedidoId)).status).toBe('vencido');
   });
 
-  it('pago: libera as apostilas e NÃO libera o app nem mexe no teste grátis', async () => {
-    const semTeste = await t.cadastrar();
-    await comprar(semTeste);
-    expect(await status(semTeste)).toMatchObject({ comprado: true, status: 'pago' });
+  it('pago: libera as apostilas e NÃO libera o app', async () => {
+    const a = await t.cadastrar();
+    await comprar(a);
+    expect(await status(a)).toMatchObject({ comprado: true, status: 'pago' });
     expect(t.mailer.enviados.at(-1)!.assunto).toMatch(/apostilas/i);
-    expect((await t.chamar('trilha', { cookie: semTeste.cookie })).statusCode).toBe(402);
-    expect((await usuario(t, semTeste.id)).acesso).toBe(false);
-    expect((await t.chamar('meObter', { cookie: semTeste.cookie })).json().acessoPago).toBe(false);
-
-    const emTeste = await t.emTeste();
-    const testeAntes = (await usuario(t, emTeste.id)).testeAte;
-    await comprar(emTeste);
-    const depois = await usuario(t, emTeste.id);
-    expect(depois.testeAte).toEqual(testeAntes);
-    expect(depois.acesso).toBe(false);
-    expect((await t.chamar('trilha', { cookie: emTeste.cookie })).statusCode).toBe(200);
+    expect((await t.chamar('trilha', { cookie: a.cookie })).statusCode).toBe(402);
+    expect((await usuario(t, a.id)).acesso).toBe(false);
+    expect((await t.chamar('meObter', { cookie: a.cookie })).json().acessoPago).toBe(false);
     // Já comprado: não gera outro Pix.
-    const de2 = await t.chamar('apostilasPix', { cookie: emTeste.cookie });
+    const de2 = await t.chamar('apostilasPix', { cookie: a.cookie });
     expect(de2.statusCode).toBe(409);
     expect(de2.json().erro).toBe('Suas apostilas já estão liberadas.');
   });

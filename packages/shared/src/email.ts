@@ -88,26 +88,3 @@ export function emailComunicacao(d: {
   const texto = `${ola}\n\n${d.mensagem}\n\nAcesse: ${url}\n\n${sair}`;
   return { assunto: d.assunto, html, texto };
 }
-
-/**
- * D32: aviso do fim do teste grátis, com o link direto para gerar o Pix no site. É por aqui que a
- * cobrança chega a quem estuda no app, que não pode citar pagamento (regras das lojas, D20).
- */
-export function emailTeste(d: {
-  nome: string;
-  momento: 'vespera' | 'fim';
-  appUrl: string;
-}): { assunto: string; html: string; texto: string } {
-  const ola = `Olá, ${primeiroNome(d.nome)}.`;
-  const link = `${d.appUrl}/pagamento`;
-  const titulo = d.momento === 'vespera' ? 'Seu teste grátis termina amanhã' : 'Seu teste grátis terminou';
-  const corpo =
-    d.momento === 'vespera'
-      ? 'Para continuar estudando sem interrupção, gere o Pix no site. Seu progresso fica guardado.'
-      : 'Seu progresso está guardado. Gere o Pix no site para voltar a estudar: o acesso libera assim que o pagamento é confirmado, no site e no app.';
-  return {
-    assunto: `Fuse Aprova: ${titulo.toLowerCase()}`,
-    html: layoutEmail(titulo, `<p>${escHtml(ola)} ${escHtml(corpo)}</p>\n${botaoEmail(link, 'GERAR MEU PIX')}`),
-    texto: `${ola} ${corpo}\n\nGerar o Pix: ${link}`,
-  };
-}

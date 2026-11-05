@@ -53,9 +53,7 @@ export async function montarPacote(deps: Deps, u: Usuario, agora: Date): Promise
   const mapaRev = await carregarQuestoes(db, vencidas, { soVisiveis: true, revisao: new Set(vencidas) });
   const concurso = await concursoDoUsuario(db, u);
   const pacoteId = randomUUID();
-  // D33: no teste grátis, o pacote não dura mais do que o próprio teste.
-  const limite = new Date(agora.getTime() + VALIDADE_PACOTE_MS);
-  const expiraEm = !u.acesso && u.testeAte && u.testeAte < limite ? u.testeAte : limite;
+  const expiraEm = new Date(agora.getTime() + VALIDADE_PACOTE_MS);
   await db.insert(pacotesOffline).values({ id: pacoteId, usuarioId: u.id, geradoEm: agora, expiraEm });
   return {
     pacoteId,

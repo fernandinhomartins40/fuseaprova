@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { textoTesteRestante } from '@fuse/shared';
 import { useMe } from '../api/consultas';
 import { IconeTraco } from '../ui';
 import s from './LayoutAbas.module.css';
@@ -18,26 +16,14 @@ function appFechado(): boolean {
 }
 
 /**
- * Avisos da conta, só no site (D32; o app nativo não carrega este arquivo, porque não pode citar
- * pagamento): a faixa do teste grátis e, para quem pagou no Android, o convite para baixar o app.
- * Quem está no teste não vê o convite: o app fica para depois do pagamento.
+ * Avisos da conta, só no site (o app nativo não carrega este arquivo, porque não pode citar
+ * pagamento): para quem pagou no Android, o convite para baixar o app.
  */
 export default function AvisosConta() {
   const me = useMe();
   const [fechado, setFechado] = useState(appFechado);
   const u = me.data;
   if (!u || u.papel !== 'aluno') return null;
-
-  if (u.acesso && !u.acessoPago && u.testeAte) {
-    return (
-      <div className={s.faixaTeste} role="note">
-        <span>
-          <strong>Teste grátis:</strong> {textoTesteRestante(new Date(u.testeAte), new Date())}
-        </span>
-        <Link to="/pagamento">Garantir acesso</Link>
-      </div>
-    );
-  }
 
   if (u.acessoPago && !fechado && /Android/i.test(navigator.userAgent)) {
     return (

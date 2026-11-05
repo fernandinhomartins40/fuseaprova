@@ -1,7 +1,7 @@
 /**
  * D34: as 4 apostilas em PDF, produto à parte do preparatório. R$ 47 no Pix via Asaas, pagamento
- * único, sem cupom nem desconto. A compra libera só o download das apostilas: não libera o app,
- * não gasta o teste grátis e não conta para o desconto de concurso adicional (D21).
+ * único, sem cupom nem desconto. A compra libera só o download das apostilas: não libera o app
+ * e não conta para o desconto de concurso adicional (D21).
  */
 import { z } from 'zod';
 import { DataHora, Uuid, ZStatusPedido } from './comum.js';

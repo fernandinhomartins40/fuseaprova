@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 import {
   API,
-  avancarRelogio,
   cadastrarViaApi,
   confirmarPagamento,
   cpfValido,
@@ -15,7 +14,7 @@ test.describe('Acesso e pagamento Pix', () => {
     await definirRelogio(page, '2026-10-20T09:00:00-03:00');
   });
 
-  test('cadastro → teste grátis → Pix no toque (QR e copia e cola) → webhook → onboarding → /aprender', async ({
+  test('cadastro → Pix no toque (QR e copia e cola) → webhook → onboarding → /aprender', async ({
     page,
   }) => {
     const email = emailUnico('pix');
@@ -31,12 +30,11 @@ test.describe('Acesso e pagamento Pix', () => {
     await page.getByLabel('Confirmar senha').fill('senha-forte-123');
     await expect(page.getByText('As senhas coincidem.')).toBeVisible();
     await page.getByLabel(/Li e aceito/).check();
-    await page.getByRole('button', { name: 'Criar conta e começar o teste grátis' }).click();
+    await page.getByRole('button', { name: 'Criar conta e gerar o Pix' }).click();
 
-    // D32: a conta nova estuda sem Pix, e abrir o pagamento não gera cobrança.
-    await expect(page).toHaveURL(/\/onboarding$/);
-    expect((await page.request.get('/api/trilha')).status()).toBe(200);
-    await page.goto('/pagamento');
+    // D35: sem teste grátis, a conta nova vai direto ao Pix e não estuda antes de pagar.
+    await expect(page).toHaveURL(/\/pagamento$/);
+    expect((await page.request.get('/api/trilha')).status()).toBe(402);
     await expect(page.getByText('R$ 397', { exact: false }).first()).toBeVisible();
     await expect(page.getByAltText(/QR Code do Pix/)).toHaveCount(0);
     expect((await page.request.get(`${API}/__e2e/pagamento`, { params: { email } })).ok()).toBe(false);
@@ -72,9 +70,8 @@ test.describe('Acesso e pagamento Pix', () => {
     expect((await page.request.get('/api/trilha')).status()).toBe(200);
   });
 
-  test('teste vencido: rotas de conteúdo dão 402 e a PWA manda para /pagamento', async ({ page }) => {
+  test('sem pagamento: rotas de conteúdo dão 402 e a PWA manda para /pagamento', async ({ page }) => {
     await cadastrarViaApi(page, novaConta('semPix'));
-    await avancarRelogio(page, 72 * 3600_000 + 1000);
     for (const rota of [
       '/api/concurso',
       '/api/trilha',
@@ -93,7 +90,7 @@ test.describe('Acesso e pagamento Pix', () => {
       await page.goto(rota);
       await expect(page, rota).toHaveURL(/\/pagamento$/);
     }
-    await expect(page.getByRole('heading', { name: 'Seu teste grátis terminou' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Comece sua preparação' })).toBeVisible();
   });
 
   test('webhook: token errado dá 401 e o repetido 5 vezes não duplica nada', async ({ page }) => {

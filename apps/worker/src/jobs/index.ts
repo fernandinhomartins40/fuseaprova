@@ -4,4 +4,3 @@ export * from './lembretes.js';
 export * from './backup.js';
 export * from './comunicacoes.js';
 export * from './alertas.js';
-export * from './teste.js';

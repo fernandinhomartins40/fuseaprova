@@ -134,7 +134,7 @@ export async function montarMe(
     papel: u.papel,
     acesso: temAcessoAoEstudo(u, agora),
     acessoPago: u.acesso,
-    testeAte: u.acesso ? null : isoOuNull(u.testeAte),
+    testeAte: null,
     avatar: { iniciais: iniciais(u.nome), cor: corDoAvatar(u.id) },
     concurso: concurso
       ? {

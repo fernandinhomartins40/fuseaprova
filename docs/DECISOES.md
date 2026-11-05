@@ -326,7 +326,7 @@ O PRD só prevê o papel `admin` (conteúdo e operação). O dono do produto pre
 - **Selo:** arquivo oficial do Google em `public/lp/assets/img/google-play.png`, servido pelo próprio site (sem CDN), sem recolorir nem distorcer.
 - **iPhone:** o app ainda não está na App Store; a página orienta a estudar pelo navegador. Quando sair, somar o selo da App Store nos mesmos pontos e tirar essa nota.
 
-## D32. Teste grátis de 3 dias e Pix só no toque (02/11/2026, pedido do dono)
+## D32. Teste grátis de 3 dias e Pix só no toque (02/11/2026, pedido do dono; teste retirado em D35)
 - **Motivo:** alunos faziam o cadastro e não pagavam o Pix, por não conhecer o app. Substitui a regra "sem acesso gratuito" do CLAUDE.md e do PRD; o teste é a única exceção.
 - **Regra:** toda conta nova tem 72 horas de teste a partir do cadastro, com todo o conteúdo do concurso ativo. O CPF é único, então é um teste por pessoa. Ao vencer, a API responde 402 sem nenhum job: o prazo é conferido a cada requisição.
 - **`usuarios.acesso` continua sendo "pagou ou foi liberado à mão".** O teste fica em `usuarios.teste_ate` e a guarda usa `temAcessoAoEstudo` (`@fuse/shared`). Se o teste ligasse `acesso`, o Pix seria recusado com "já está liberado", os relatórios contariam quem não pagou e `guardarCargoNoConcurso` gravaria um acesso pago permanente em `usuarios_concursos`.
@@ -340,7 +340,7 @@ O PRD só prevê o papel `admin` (conteúdo e operação). O dono do produto pre
 - **Termos de uso:** a seção 5 mudou (versão `2026-11-02`) e **precisa da revisão jurídica do dono**.
 - **Limites conhecidos:** o app publicado não mostra a contagem do teste nem explica o fim do teste, e o texto de `/acesso` só muda com novo AAB. O `/super` mostra quem está em teste como "Sem acesso", porque lê o pagamento. O reaproveitamento do CPF ao excluir a conta foi fechado na D33.
 
-## D33. Validade do acesso pago e travas do teste grátis (02/11/2026, pedido do dono)
+## D33. Validade do acesso pago e travas do teste grátis (02/11/2026, pedido do dono; travas retiradas em D35)
 - **Motivo:** a revisão de segurança pedida pelo dono achou que o acesso pago nunca terminava: os termos prometem "até a homologação ou 24 meses", mas nenhum campo ou rotina aplicava isso. O teste grátis também podia ser repetido.
 - **Validade do acesso:** vale a regra dos termos (seção 6), que já foi aceita pelos alunos: até o fim do dia da homologação (São Paulo) ou 24 meses desde a liberação, o que vier primeiro. A regra pura é `fimDoAcesso` (`@fuse/shared`).
 - **Como é aplicada:** `encerrarAcessosVencidos` confere os concursos liberados no carregamento da sessão e no login, sem job, como o prazo do teste. O vencido passa por `revogarConcurso`, a mesma função do estorno, e a conta e o progresso continuam guardados.
@@ -362,3 +362,12 @@ O PRD só prevê o papel `admin` (conteúdo e operação). O dono do produto pre
 - **Arquivos:** os PDFs ficam em `ARQUIVOS_DIR/apostilas/volume-N.pdf` (na VPS, `/root/fuseaprova/arquivos/apostilas`), fora do repositório, e saem por `GET /api/apostilas/:volume/pdf`: sessão de aluno com a compra paga (401 sem sessão, 403 sem compra), em stream, com `Cache-Control: private, no-store`.
 - **Controle de compartilhamento:** cada download fica em `apostilas_downloads` (aluno, volume, IP, data), entra na exportação LGPD e sai na exclusão da conta. Limite de 30 downloads por aluno em 24 horas. O e-mail de confirmação avisa que o uso é pessoal e que os downloads ficam registrados.
 - **Superadmin:** a lista, o detalhe, a ficha e o CSV dos pagamentos mostram "Apostilas (PDF)" no lugar do concurso; o filtro `produto` separa os pedidos. Aprovar manualmente um pedido de apostilas só o marca como pago; "Liberar acesso" é recusado, porque não há concurso.
+
+## D35. Fim do teste grátis (05/11/2026, pedido do dono)
+O dono retirou o teste de 3 dias, porque as pessoas estavam confundindo. O fluxo agora é direto: cadastrou, gera o Pix, paga e tem acesso.
+
+- **Guarda:** `temAcessoAoEstudo` devolve só `usuarios.acesso`. Quem estava no meio do teste perde o acesso na hora, até pagar. O progresso fica guardado.
+- **Cadastro:** a conta nasce sem `teste_ate` e vai para `/pagamento`. O Pix continua sendo gerado no toque em "GERAR PIX" (D32), para não criar cobrança no Asaas para quem só abriu a tela.
+- **Retirados:** o início do teste na próxima visita (`teste_pendente`), as travas de CPF, e-mail, navegador e IP (`testeGratis.ts`), o job `avisar-teste` com os e-mails, a faixa "Teste grátis: faltam N dias" e os textos da landing, do cadastro e dos termos.
+- **Mantidos no banco, sem efeito:** as colunas `teste_ate` e `teste_pendente` e a tabela `testes_usados`, que a limpeza legal apaga no prazo de 24 meses. O `/me` continua devolvendo `acessoPago` e `testeAte` (sempre null) para o app publicado.
+- **Pacote offline:** volta a valer o prazo normal, porque só quem pagou o gera.

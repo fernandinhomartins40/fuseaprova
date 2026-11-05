@@ -58,10 +58,8 @@ export default function Pagamento() {
   const lista = useMeusConcursos(!concursoPedido && !!me.data && !me.data.acessoPago);
   const [escolhido, setEscolhido] = useState(false);
   const total = lista.data ? lista.data.seguidos.length + lista.data.disponiveis.length : 0;
-  // Quem já estudou no teste paga o concurso que está usando; os outros ficam em Meus concursos.
+  // Quem já estudou (acesso vencido ou estornado) paga o concurso que usava; os outros ficam em Meus concursos.
   const precisaEscolher = !concursoPedido && !escolhido && total > 1 && !me.data?.onboardingConcluido;
-  const emTeste = !!me.data?.acesso && !me.data.acessoPago;
-  const testeEncerrado = !!me.data && !me.data.acesso && !!me.data.testeAte;
   const [pix, setPix] = useState<PixResposta | null>(null);
   const [estado, setEstado] = useState<Estado>('inicial');
   const [erro, setErro] = useState<string>(TEXTO_PIX_ERRO);
@@ -142,7 +140,7 @@ export default function Pagamento() {
     }
   }, [concursoPedido, qc, navegar, toast]);
 
-  // Quem estudou no teste já escolheu o cargo: volta para a trilha, com o progresso guardado.
+  // Quem já estudava escolheu o cargo: volta para a trilha, com o progresso guardado.
   const jaEstudava = !!me.data?.onboardingConcluido;
   const continuar = useCallback(() => {
     if (concursoPedido) void concluirAdicional();
@@ -233,8 +231,6 @@ export default function Pagamento() {
     <Pagina>
       {concursoPedido ? (
         <CabecalhoVoltar para="/meus-concursos" titulo="Liberar concurso" />
-      ) : emTeste ? (
-        <CabecalhoVoltar para="/aprender" />
       ) : (
         <CabecalhoVoltar semVoltar />
       )}
@@ -248,18 +244,12 @@ export default function Pagamento() {
         />
       ) : null}
       <h1 className={s.titulo}>
-        {concursoPedido
-          ? 'Libere este concurso'
-          : testeEncerrado
-            ? 'Seu teste grátis terminou'
-            : 'Comece sua preparação'}
+        {concursoPedido ? 'Libere este concurso' : 'Comece sua preparação'}
       </h1>
       <p className={s.subtitulo}>
         {pix
           ? `Acesso ao ${pix.concursoNome}. Finalize o pagamento e tenha acesso imediato.`
-          : testeEncerrado
-            ? 'Seu progresso está guardado. Finalize o pagamento e continue de onde parou.'
-            : 'Finalize o pagamento e tenha acesso imediato a todo o conteúdo.'}
+          : 'Finalize o pagamento e tenha acesso imediato a todo o conteúdo.'}
       </p>
 
       <section className={s.oferta} aria-label="Acesso completo">

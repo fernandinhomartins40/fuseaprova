@@ -44,7 +44,7 @@ describe('telas do aluno contra a API simulada', () => {
     const api = ligarApiSimulada();
     await api.cenario('novo');
     const { container } = abrir('/cadastro');
-    const botao = await screen.findByRole('button', { name: /Criar conta e começar o teste grátis/ });
+    const botao = await screen.findByRole('button', { name: /Criar conta e gerar o Pix/ });
     await userEvent.type(screen.getByLabelText('Nome completo'), 'Marina');
     await userEvent.type(screen.getByLabelText('CPF'), '11111111111');
     await userEvent.click(botao);
@@ -116,37 +116,33 @@ describe('telas do aluno contra a API simulada', () => {
     ).toBeInTheDocument();
   }, 10000);
 
-  it('D32: no teste, a trilha abre, a faixa leva ao pagamento e a tela não gera Pix sozinha', async () => {
+  it('D35: sem teste grátis, o cadastro vai direto ao Pix', async () => {
     const api = ligarApiSimulada();
-    await api.cenario('emTeste');
-    abrir('/aprender');
-    expect(await screen.findByText(/Faltam 2 dias/)).toBeInTheDocument();
-    expect(local).toBe('/aprender');
-    await userEvent.click(screen.getByRole('link', { name: 'Garantir acesso' }));
+    await api.cenario('novo');
+    abrir('/cadastro');
+    expect(await screen.findByText(/pague no Pix e comece a estudar na hora/)).toBeInTheDocument();
+    expect(screen.queryByText(/grátis/)).not.toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText('Nome completo'), 'Marina Souza');
+    await userEvent.type(screen.getByLabelText('E-mail'), 'nova@email.com');
+    await userEvent.type(screen.getByLabelText('Celular'), '42998765432');
+    await userEvent.type(screen.getByLabelText('CPF'), '52998224725');
+    await userEvent.type(screen.getByLabelText('Senha'), 'senhaforte');
+    await userEvent.type(screen.getByLabelText('Confirmar senha'), 'senhaforte');
+    await userEvent.click(screen.getByRole('checkbox'));
+    await userEvent.click(screen.getByRole('button', { name: /Criar conta e gerar o Pix/ }));
     await waitFor(() => expect(local).toBe('/pagamento'));
-    expect(await screen.findByRole('button', { name: 'GERAR PIX' })).toBeInTheDocument();
-    expect(screen.queryByAltText(/QR Code do Pix/)).not.toBeInTheDocument();
-    expect(api.fn.mock.calls.some(([url]) => String(url).includes('/pagamento/pix'))).toBe(false);
-    await limparTudo();
-  });
-
-  it('D32: com o teste vencido, a conta vai ao pagamento e vê que o teste terminou', async () => {
-    const api = ligarApiSimulada();
-    await api.cenario('testeEncerrado');
-    abrir('/aprender');
-    await waitFor(() => expect(local).toBe('/pagamento'));
-    expect(await screen.findByRole('heading', { name: 'Seu teste grátis terminou' })).toBeInTheDocument();
+    expect(screen.queryByText(/grátis/)).not.toBeInTheDocument();
     await limparTudo();
   });
 
   it('D32: o convite do app aparece só para quem pagou, no Android, até ser fechado', async () => {
     const api = ligarApiSimulada();
     const ua = vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Mozilla/5.0 (Linux; Android 14)');
-    await api.cenario('emTeste');
-    const emTeste = abrir('/aprender');
-    await screen.findByText(/Faltam 2 dias/);
+    await api.cenario('semAcesso');
+    const semPagar = abrir('/aprender');
+    await waitFor(() => expect(local).toBe('/pagamento'));
     expect(screen.queryByText('Baixe o app no Google Play')).not.toBeInTheDocument();
-    emTeste.unmount();
+    semPagar.unmount();
     await limparTudo();
 
     await api.cenario('aluno');

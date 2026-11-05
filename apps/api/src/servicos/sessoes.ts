@@ -5,7 +5,7 @@
 import { createHmac, randomBytes } from 'node:crypto';
 import { and, eq, gt, isNull, lt, ne } from 'drizzle-orm';
 import { schema, type BancoDados } from '@fuse/db';
-import { fimDoTeste, MS_DIA, MS_HORA, MS_MINUTO } from '@fuse/shared';
+import { MS_DIA, MS_HORA, MS_MINUTO } from '@fuse/shared';
 import { DIAS_SESSAO } from '@fuse/shared/api';
 import type { UsuarioSessao } from '../contexto.js';
 import type { Db } from '../util.js';
@@ -96,35 +96,12 @@ export async function carregarSessao(
       .set({ expiraEm, ultimoUsoEm: agora })
       .where(eq(sessoes.id, linha.sessao.id));
   }
-  // Requisição automática não conta como visita: o prazo do teste só começa com o aluno presente.
-  const conta = opcoes.segundoPlano ? linha.usuario : await comecarTestePendente(db, linha.usuario, agora);
-  const usuario = await encerrarAcessosVencidos(db, conta, agora);
+  const usuario = await encerrarAcessosVencidos(db, linha.usuario, agora);
   return {
     usuario: { ...usuario, sessaoId: linha.sessao.id, sessaoDoisFatoresEm: linha.sessao.doisFatoresEm },
     renovada,
     expiraEm,
   };
-}
-
-/**
- * D32: quem se cadastrou antes do teste e nunca pagou ganha os 3 dias na próxima visita. O filtro
- * no UPDATE garante um único início, mesmo com várias requisições ao mesmo tempo.
- */
-export async function comecarTestePendente<U extends { id: string; testePendente: boolean; testeAte: Date | null }>(
-  db: BancoDados,
-  u: U,
-  agora: Date,
-): Promise<U> {
-  if (!u.testePendente) return u;
-  const [novo] = await db
-    .update(usuarios)
-    .set({ testeAte: fimDoTeste(agora), testePendente: false })
-    .where(and(eq(usuarios.id, u.id), eq(usuarios.testePendente, true), eq(usuarios.acesso, false)))
-    .returning({ testeAte: usuarios.testeAte });
-  if (novo) return { ...u, testeAte: novo.testeAte, testePendente: false };
-  // Outra requisição começou o teste ao mesmo tempo: vale o prazo que ela gravou.
-  const [atual] = await db.select({ testeAte: usuarios.testeAte }).from(usuarios).where(eq(usuarios.id, u.id));
-  return { ...u, testeAte: atual?.testeAte ?? null, testePendente: false };
 }
 
 export async function encerrarSessao(db: BancoDados, sessaoId: string): Promise<void> {

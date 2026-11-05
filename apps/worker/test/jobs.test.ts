@@ -278,7 +278,6 @@ describe('backup e agendamento', () => {
       'verificar-ofensivas': '5 0 * * *',
       'enviar-lembretes': '*/5 * * * *',
       'expirar-pix': '*/10 * * * *',
-      'avisar-teste': '0 8-21 * * *',
       'limpar-sessoes': '0 3 * * *',
       backup: '30 3 * * *',
       'enviar-comunicacoes': '* * * * *',

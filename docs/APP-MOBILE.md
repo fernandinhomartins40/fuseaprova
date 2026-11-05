@@ -18,7 +18,7 @@ Guia do dono para gerar, testar e publicar o app do Fuse Aprova. A primeira loja
 - lembretes personalizados (notificações locais) e "Adicionar à minha agenda";
 - baixar os dados e excluir a conta.
 
-**O que o app não tem:** cadastro, pagamento, preço ou link de compra, `/admin` e `/super`. Quem está no teste grátis estuda normalmente; quem não pagou e passou do teste vê "Seu acesso ainda não está ativo". **A venda continua só no site**, para cumprir as regras das lojas (D20, D32). Nenhum texto do app pode citar Pix, preço, site de compra nem o fim do teste como pedido de pagamento.
+**O que o app não tem:** cadastro, pagamento, preço ou link de compra, `/admin` e `/super`. Quem não pagou vê "Seu acesso ainda não está ativo" (D35, sem teste grátis). **A venda continua só no site**, para cumprir as regras das lojas (D20, D32). Nenhum texto do app pode citar Pix, preço nem site de compra.
 
 - **Identificador nas duas lojas:** `br.com.fuseaprova.app`.
 - **API:** `https://www.fuseaprova.com.br`. Não mudou nada no servidor.
@@ -114,7 +114,7 @@ No GitHub, em Settings → Secrets and variables → Actions, crie:
 
 - Entrar com uma conta paga. A trilha abre, e a lição corrige e conclui.
 - Ativar o modo avião no meio dos estudos: a lição do pacote offline funciona e, ao voltar a internet, sincroniza.
-- Entrar com uma conta em teste grátis: a trilha abre normalmente.
+- Entrar com uma conta sem pagamento: aparece "Seu acesso ainda não está ativo".
 - Entrar com uma conta **sem** pagamento e com o teste vencido: aparece "Seu acesso ainda não está ativo", sem preço e sem link de compra.
 - Em Configurações, ligar o lembrete: a tela explica e o sistema pede a permissão. Com o horário daqui a 5 minutos, a notificação chega (no Android pode atrasar alguns minutos, porque o alarme é inexato) e o toque abre a tela do aviso (revisão, reforço do tema, trilha…), com o app fechado, em segundo plano ou aberto.
 - Desligar o lembrete em Configurações: em "Ajustes › Notificações" do aparelho não sobra nada pendente do Fuse.

@@ -84,14 +84,8 @@ export async function criarAmbienteTeste(o: OpcoesAmbienteTeste = {}) {
     });
   }
 
-  /** Conta sem pagamento com o teste grátis já vencido (D32); `emTeste` é a conta recém-criada. */
+  /** Conta recém-criada, sem pagamento (D35: sem teste grátis). */
   async function cadastrar(dados: Partial<{ nome: string; email: string; senha: string; cpf: string }> = {}): Promise<Aluno> {
-    const a = await emTeste(dados);
-    await banco.db.update(schema.usuarios).set({ testeAte: new Date(0) }).where(eq(schema.usuarios.id, a.id));
-    return a;
-  }
-
-  async function emTeste(dados: Parameters<typeof cadastrar>[0] = {}): Promise<Aluno> {
     const n = ++contador;
     const email = dados.email ?? `aluno${n}.${Date.now()}@teste.com`;
     const senha = dados.senha ?? 'senha-forte-123';
@@ -183,7 +177,6 @@ export async function criarAmbienteTeste(o: OpcoesAmbienteTeste = {}) {
     config,
     chamar,
     cadastrar,
-    emTeste,
     webhook,
     alunoPago,
     admin,

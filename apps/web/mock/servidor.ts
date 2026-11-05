@@ -4,7 +4,7 @@
  * corpo com o schema da rota e confere a RESPOSTA com o schema de resposta (um desvio de
  * contrato vira erro 500 no console). Não é usada em produção.
  *
- * Cenários: GET /api/__mock/cenario?nome=novo|semAcesso|equipe|apostilasCompradas|testeEncerrado|emTeste|onboarding|aluno|revisaoVazia|ligaInicial|ligaResultado|edital|semVidas
+ * Cenários: GET /api/__mock/cenario?nome=novo|semAcesso|equipe|apostilasCompradas|onboarding|aluno|revisaoVazia|ligaInicial|ligaResultado|edital|semVidas
  * Pagamento: POST /api/__mock/pagar confirma o Pix pendente (simula o webhook do Asaas).
  * Apostilas (D34): cenário apostilasCompradas; POST /api/__mock/pagar-apostilas confirma o Pix delas.
  */
@@ -122,8 +122,6 @@ function novoEstado() {
     }[],
     ativoId: '00000000-0000-4000-8000-0000000c0001',
     logado: false,
-    /** D32: fim do teste grátis (ISO), como `usuarios.teste_ate`. */
-    testeAte: null as string | null,
     usuario: {
       nome: 'Marina Souza',
       email: 'marina@email.com',
@@ -392,9 +390,9 @@ function me() {
     cpfOculto: ocultarCpf(u.cpf),
     celular: u.celular,
     papel: u.papel,
-    acesso: u.acesso || testeAtivo(),
+    acesso: u.acesso,
     acessoPago: u.acesso,
-    testeAte: u.acesso ? null : estado.testeAte,
+    testeAte: null,
     avatar: { iniciais: iniciais(u.nome), cor: corDoAvatar(ID_USUARIO) },
     concurso: {
       id: CONCURSO_ID,
@@ -423,20 +421,15 @@ function me() {
   };
 }
 
-/** D32: o teste grátis não mexe em `acesso`, como na API. */
-function testeAtivo() {
-  return estado.testeAte !== null && new Date(estado.testeAte) > new Date();
-}
-
 function sessaoResposta() {
   const u = estado.usuario;
   return {
-    usuario: { id: ID_USUARIO, nome: u.nome, email: u.email, papel: u.papel, acesso: u.acesso || testeAtivo() },
+    usuario: { id: ID_USUARIO, nome: u.nome, email: u.email, papel: u.papel, acesso: u.acesso },
     area: u.papel === 'admin' ? ('conteudo' as const) : ('aluno' as const),
     proximo:
       u.papel === 'admin'
         ? ('conteudo' as const)
-        : !u.acesso && !testeAtivo()
+        : !u.acesso
           ? ('pagamento' as const)
           : !u.onboardingConcluido
             ? ('onboarding' as const)
@@ -472,16 +465,6 @@ function aplicarCenario(nome: string) {
       expiraEm: new Date(Date.now() + 30 * 60_000),
       status: 'pago',
     };
-    return;
-  }
-  if (nome === 'testeEncerrado') {
-    estado.testeAte = new Date(Date.now() - 3600_000).toISOString();
-    return;
-  }
-  if (nome === 'emTeste') {
-    estado.testeAte = new Date(Date.now() + 2 * 24 * 3600_000).toISOString();
-    u.onboardingConcluido = true;
-    u.cargoId = CARGOS[0]!.id;
     return;
   }
   u.acesso = true;
@@ -670,7 +653,6 @@ const H: Partial<Record<NomeRota, Handler>> = {
     estado = novoEstado();
     estado.logado = true;
     Object.assign(estado.usuario, { nome: c.nome, email: c.email, cpf: c.cpf, celular: c.celular });
-    estado.testeAte = new Date(Date.now() + 3 * 24 * 3600_000).toISOString();
     return sessaoResposta();
   },
   authLogin: ({ corpo }) => {
@@ -1884,7 +1866,7 @@ export async function tratar(req: Req, res: Res): Promise<void> {
       // D24: estudo e pagamento só para o aluno; conteúdo para a equipe.
       if ((def.guarda === 'aluno' || def.guarda === 'acesso') && estado.usuario.papel !== 'aluno')
         throw new Falha(403, 'proibido');
-      if (def.guarda === 'acesso' && !estado.usuario.acesso && !testeAtivo()) throw new Falha(402, 'sem_acesso');
+      if (def.guarda === 'acesso' && !estado.usuario.acesso) throw new Falha(402, 'sem_acesso');
       if (def.guarda === 'conteudo' && estado.usuario.papel !== 'admin')
         throw new Falha(403, 'proibido');
     }

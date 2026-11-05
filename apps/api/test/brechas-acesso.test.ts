@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { schema } from '@fuse/db';
-import { completarCpf, DURACAO_TESTE_MS, MS_DIA } from '@fuse/shared';
+import { completarCpf, MS_DIA } from '@fuse/shared';
 import { criarAmbienteTeste, type Aluno, type AmbienteTeste } from '../src/teste/index.js';
 import { usuario } from './ajuda.js';
 
@@ -66,7 +66,7 @@ describe('validade do acesso pago (D33)', () => {
 
   it('a homologação encerra no fim do dia e o concurso sai de venda', async () => {
     const a = await t.alunoPago();
-    const novo = await t.emTeste();
+    const novo = await t.cadastrar();
     const hoje = new Date(t.relogio.agora().getTime() - 3 * 3600_000).toISOString().slice(0, 10);
     const r = await ajustarConcurso({ homologadoEm: hoje });
     expect(r.statusCode, r.body).toBe(200);
@@ -121,74 +121,35 @@ describe('um concurso não abre outro (D21)', () => {
   });
 });
 
-describe('repetir o teste grátis (D33)', () => {
-  it('excluir a conta e voltar com o mesmo CPF não dá outro teste', async () => {
-    const d = dadosNovos();
-    const r = await cadastrar(d);
-    expect(r.json()).toMatchObject({ proximo: 'onboarding' });
-    const cookie = r.headers['set-cookie'] as string[];
-    const sessao = cookie.find((c) => !c.startsWith('fuse_teste_usado'))!.split(';')[0]!;
-    expect((await t.chamar('meExcluir', { cookie: sessao, corpo: { senha: d.senha, confirmacao: 'EXCLUIR' } })).statusCode).toBe(200);
-
-    const denovo = await cadastrar({ ...d, email: `outra${n}@teste.com` });
-    expect(denovo.statusCode, denovo.body).toBe(201);
-    expect(denovo.json()).toMatchObject({ proximo: 'pagamento', usuario: { acesso: false } });
-  });
-
-  it('variação do mesmo Gmail com outro CPF não dá outro teste', async () => {
-    expect((await cadastrar(dadosNovos({ email: 'maria.teste@gmail.com' }))).json().proximo).toBe('onboarding');
-    expect((await cadastrar(dadosNovos({ email: 'mariateste+2@gmail.com' }))).json().proximo).toBe('pagamento');
-  });
-
-  it('o navegador que já testou cria a conta sem teste', async () => {
-    const r = await cadastrar(dadosNovos(), 'fuse_teste_usado=1');
-    expect(r.json().proximo).toBe('pagamento');
+describe('sem teste grátis (D35)', () => {
+  it('o cadastro vai direto para o Pix, sem estudar e sem cookie de teste', async () => {
+    const r = await cadastrar(dadosNovos());
+    expect(r.statusCode, r.body).toBe(201);
+    expect(r.json()).toMatchObject({ proximo: 'pagamento', usuario: { acesso: false } });
+    const cookies = ([] as string[]).concat(r.headers['set-cookie'] ?? []);
+    expect(cookies.some((c) => c.startsWith('fuse_teste_usado'))).toBe(false);
     const u = await usuario(t, r.json().usuario.id);
     expect(u.testeAte).toBeNull();
+    const cookie = cookies.find((c) => c.startsWith('fuse_sessao'))!.split(';')[0]!;
+    expect((await t.chamar('trilha', { cookie })).statusCode).toBe(402);
+    expect((await t.chamar('meObter', { cookie })).json()).toMatchObject({ acesso: false, acessoPago: false, testeAte: null });
   });
 
-  it('a compra gasta o teste: estorno no 1º dia não devolve os outros dois', async () => {
-    const a = await t.emTeste();
-    const pix = await t.chamar('pagamentoPix', { cookie: a.cookie });
-    const [p] = await t.db.select().from(schema.pedidos).where(eq(schema.pedidos.id, pix.json().pedidoId));
-    await t.webhook('PAYMENT_CONFIRMED', p!.asaasPaymentId!);
-    expect((await usuario(t, a.id)).testeAte).toBeNull();
-    await t.webhook('PAYMENT_REFUNDED', p!.asaasPaymentId!);
+  it('quem estava no meio do teste antigo perde o acesso até pagar', async () => {
+    const a = await t.cadastrar();
+    await t.db
+      .update(schema.usuarios)
+      .set({ testeAte: new Date(t.relogio.agora().getTime() + 2 * MS_DIA) })
+      .where(eq(schema.usuarios.id, a.id));
+    expect(await trilha(a)).toBe(402);
     const login = await t.chamar('authLogin', { corpo: { email: a.email, senha: a.senha } });
     expect(login.json()).toMatchObject({ proximo: 'pagamento', usuario: { acesso: false } });
   });
 
-  it('cadastro antigo pendente que pagou e estornou não ganha teste novo', async () => {
+  it('cadastro antigo marcado como pendente não ganha teste ao voltar', async () => {
     const a = await t.cadastrar();
     await t.db.update(schema.usuarios).set({ testeAte: null, testePendente: true }).where(eq(schema.usuarios.id, a.id));
-    const pix = await t.chamar('pagamentoPix', { cookie: a.cookie });
-    const [p] = await t.db.select().from(schema.pedidos).where(eq(schema.pedidos.id, pix.json().pedidoId));
-    await t.webhook('PAYMENT_CONFIRMED', p!.asaasPaymentId!);
-    await t.webhook('PAYMENT_REFUNDED', p!.asaasPaymentId!);
-    const login = await t.chamar('authLogin', { corpo: { email: a.email, senha: a.senha } });
-    expect(login.json().proximo).toBe('pagamento');
+    expect(await trilha(a)).toBe(402);
+    expect((await usuario(t, a.id)).testeAte).toBeNull();
   });
-
-  it('o pacote offline do teste não dura mais do que o teste', async () => {
-    const a = await t.emTeste();
-    const pacote = (await t.chamar('offlinePacote', { cookie: a.cookie })).json();
-    expect(new Date(pacote.expiraEm).getTime()).toBe(t.relogio.agora().getTime() + DURACAO_TESTE_MS);
-  });
-});
-
-describe('limite de testes por conexão (D33)', () => {
-  it('passado o limite, a conta nasce sem teste, sem barrar o cadastro', async () => {
-    const r = await criarAmbienteTeste({ rateLimit: true });
-    try {
-      const contas = [];
-      for (let i = 0; i < 6; i++) {
-        const corpo = dadosNovos();
-        contas.push(await r.chamar('authCadastro', { corpo }));
-      }
-      expect(contas.map((c) => c.statusCode)).toEqual(Array(6).fill(201));
-      expect(contas.map((c) => c.json().proximo)).toEqual([...Array(5).fill('onboarding'), 'pagamento']);
-    } finally {
-      await r.fechar();
-    }
-  }, 60_000);
 });
