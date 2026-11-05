@@ -176,9 +176,16 @@ fi
 log "baixando as imagens ..."
 # Por digest a imagem é imutável: se já está na VPS, não precisa do GHCR
 # (permite reimplantar à mão, sem login).
+# Prazo por imagem: com a VPS lenta (CPU limitada pela Hostinger), o pull travava por mais de
+# 40 min e seguia rodando depois de o GitHub cancelar o job, segurando a trava do próximo deploy.
+# O que já baixou fica em cache, então repetir o deploy continua de onde parou.
+PRAZO_PULL="${PRAZO_PULL:-600}"
 for ref in "$NOVA_API" "$NOVA_WEB" "$NOVA_WORKER"; do
   if ! docker image inspect "$ref" >/dev/null 2>&1; then
-    docker pull --quiet "$ref" >/dev/null || fail "não consegui baixar $ref (sem login no ghcr.io? rode pelo workflow)"
+    codigo=0
+    timeout "$PRAZO_PULL" docker pull --quiet "$ref" >/dev/null || codigo=$?
+    [ "$codigo" -eq 124 ] && fail "o download de $ref passou de ${PRAZO_PULL}s (VPS lenta? confira 'top': %st alto = CPU limitada pela Hostinger). O que já baixou fica em cache; rode o deploy de novo."
+    [ "$codigo" -eq 0 ] || fail "não consegui baixar $ref (sem login no ghcr.io? rode pelo workflow)"
   fi
 done
 
