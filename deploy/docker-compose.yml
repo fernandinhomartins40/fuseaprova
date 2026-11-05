@@ -74,10 +74,11 @@ services:
     healthcheck:
       # -h 127.0.0.1 evita "pronto" durante o initdb (que só ouve o socket).
       test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
-      interval: 10s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
-      retries: 10
-      start_period: 30s
+      retries: 5
+      start_period: 120s
     logging: *logging
 
   # ---------------------------------------------------------------------------
@@ -158,10 +159,11 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/saude').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 15s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 20s
+      start_period: 120s
     logging: *logging
 
   # ---------------------------------------------------------------------------
@@ -193,10 +195,11 @@ services:
       # O worker não tem HTTP: saudável = o processo `node .../dist/index.js`
       # vivo. O [x] impede o grep de achar a própria linha de comando.
       test: ["CMD-SHELL", "grep -qa 'apps/worker/dist/inde[x]\\.js' /proc/[0-9]*/cmdline 2>/dev/null"]
-      interval: 30s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 20s
+      start_period: 120s
     logging: *logging
 
   # ---------------------------------------------------------------------------
@@ -218,10 +221,11 @@ services:
         condition: service_started
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/nginx-saude"]
-      interval: 15s
+      interval: 60s
+      start_interval: 5s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 120s
     logging: *logging
 
 networks:
