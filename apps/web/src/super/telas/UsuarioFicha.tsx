@@ -123,8 +123,8 @@ function Concursos({
                   Revogar
                 </Botao>
               ) : (
-                <Botao pequeno onClick={() => aoAgir('liberar', c)} aria-label={`Liberar ${c.nome}`}>
-                  Liberar
+                <Botao pequeno onClick={() => aoAgir('liberar', c)} aria-label={`Liberar ${c.nome} sem pagamento, de forma definitiva`}>
+                  Liberar sem pagamento (definitivo)
                 </Botao>
               )}
             </span>
@@ -176,6 +176,11 @@ export default function UsuarioFicha() {
   const me = useQuery({ queryKey: ['super', 'me'], queryFn: () => api('meObter'), staleTime: 60_000 });
   const consulta = useQuery({ queryKey: ['super', 'usuario', id], queryFn: () => api('superUsuarioObter', { params: { id } }) });
   // S-21: a exportação LGPD pede motivo e reconfirmação (a confirmação abre pelo botão).
+  // D39: teste de 24 h (temporário), separado do "Liberar sem pagamento (definitivo)" do concurso.
+  const teste = useMutation({
+    mutationFn: () => api('superUsuarioTesteLiberar', { params: { id } }),
+    onSuccess: () => void consulta.refetch(),
+  });
   const exportar = useMutation({
     mutationFn: (v: { motivo: string; confirmacao: Reconfirmacao }) => api('superUsuarioExportar', { params: { id }, corpo: v }),
     onSuccess: (d) => baixarJson(`fuse-aprova-dados-${id}.json`, d),
@@ -224,11 +229,21 @@ export default function UsuarioFicha() {
                 ) : null}
                 {u.bloqueado ? <Selo tom="erro">Bloqueado</Selo> : null}
                 {u.doisFatores ? <Selo tom="info">2FA ativo</Selo> : null}
+                {u.testeAte && new Date(u.testeAte) > new Date() ? <Selo tom="info">Teste até {dataHora(u.testeAte)}</Selo> : null}
               </div>
               {!excluido ? (
                 <AcoesFicha
                   rotulo="Ações do usuário"
                   itens={[
+                    podeAgir &&
+                      !comAcesso &&
+                      !u.bloqueado && {
+                        rotulo: u.testeAte && new Date(u.testeAte) > new Date() ? 'Renovar teste 24 h' : 'Liberar teste 24 h',
+                        principal: true,
+                        variante: 'primario',
+                        carregando: teste.isPending,
+                        aoClicar: () => teste.mutate(),
+                      },
                     {
                       rotulo: 'Editar dados',
                       principal: true,
@@ -257,6 +272,12 @@ export default function UsuarioFicha() {
                     },
                   ]}
                 />
+              ) : null}
+              {teste.isError ? <Alerta tom="erro">{mensagemDeErro(teste.error)}</Alerta> : null}
+              {teste.isSuccess ? (
+                <Alerta tom="sucesso">
+                  Teste liberado até {dataHora(teste.data.testeAte)}. Depois disso o acesso fecha sozinho, sem precisar fazer nada.
+                </Alerta>
               ) : null}
               {exportar.isError ? <Alerta tom="erro">{mensagemDeErro(exportar.error)}</Alerta> : null}
               {exportar.isSuccess ? <Alerta tom="sucesso">Arquivo JSON com os dados do usuário gerado.</Alerta> : null}
@@ -451,7 +472,7 @@ export default function UsuarioFicha() {
                 {papel === 'superadmin' ? <Alerta tom="aviso">Superadmin vê o financeiro e tudo da conta Asaas. Ele vai precisar configurar o 2FA.</Alerta> : null}
               </AcaoConfirmada>
               <AcaoConfirmada
-                titulo="Liberar o concurso?"
+                titulo="Liberar o concurso sem pagamento, de forma definitiva?"
                 aberta={aberta === 'liberar' && podeAgir}
                 aoFechar={fechar}
                 rotuloConfirmar="Liberar"

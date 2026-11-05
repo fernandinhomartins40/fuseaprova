@@ -376,3 +376,22 @@ describe('teste de 24 h na lista de usuários (D39)', () => {
     expect(f.chamadas.some((c) => c.metodo === 'POST' && c.caminho === `/super/usuarios/${IDS.usuario}/teste-24h`)).toBe(true);
   });
 });
+
+describe('teste de 24 h na ficha do usuário (D39)', () => {
+  it('o botão do teste fica separado do "Liberar sem pagamento (definitivo)" do concurso', async () => {
+    let liberado = false;
+    simularFetch({
+      ...BASE,
+      'GET /super/usuarios/:id': () => ficha(liberado ? { testeAte: '2099-11-06T15:40:00.000Z' } : {}),
+      'POST /super/usuarios/:id/teste-24h': () => {
+        liberado = true;
+        return { ok: true, testeAte: '2099-11-06T15:40:00.000Z' };
+      },
+    });
+    renderizarSuper(`/super/usuarios/${IDS.usuario}`);
+    expect(await screen.findByRole('button', { name: /sem pagamento, de forma definitiva/ })).toHaveTextContent('Liberar sem pagamento (definitivo)');
+    await userEvent.click(screen.getByRole('button', { name: 'Liberar teste 24 h' }));
+    expect(await screen.findByText(/Teste liberado até .* o acesso fecha sozinho/)).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Renovar teste 24 h' })).toBeInTheDocument();
+  });
+});

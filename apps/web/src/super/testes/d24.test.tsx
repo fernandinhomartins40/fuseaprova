@@ -259,14 +259,14 @@ describe('Ficha por concurso (D21/D24)', () => {
     expect(within(lista).getByText('Concurso de Palmital 2026')).toBeInTheDocument();
     expect(within(lista).getByRole('link', { name: 'pedido pago' })).toHaveAttribute('href', `/super/pagamentos/${IDS.pedido}`);
     await waitFor(() => expect(within(lista).getByRole('button', { name: 'Revogar Concurso de Palmital 2026' })).toBeInTheDocument());
-    expect(within(lista).queryByRole('button', { name: 'Liberar Concurso de Palmital 2026' })).not.toBeInTheDocument();
+    expect(within(lista).queryByRole('button', { name: 'Liberar Concurso de Palmital 2026 sem pagamento, de forma definitiva' })).not.toBeInTheDocument();
     expect(within(lista).getByRole('button', { name: 'Aprovar pagamento manual de Concurso de Ourinhos 2027' })).toBeInTheDocument();
     // O "acesso geral" saiu dos botões do topo.
     expect(screen.queryByRole('button', { name: 'Liberar acesso' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Revogar acesso' })).not.toBeInTheDocument();
 
-    await usuario.click(within(lista).getByRole('button', { name: 'Liberar Concurso de Ourinhos 2027' }));
-    const dialogo = screen.getByRole('dialog', { name: 'Liberar o concurso?' });
+    await usuario.click(within(lista).getByRole('button', { name: 'Liberar Concurso de Ourinhos 2027 sem pagamento, de forma definitiva' }));
+    const dialogo = screen.getByRole('dialog', { name: 'Liberar o concurso sem pagamento, de forma definitiva?' });
     await usuario.type(within(dialogo).getByLabelText('Motivo (fica na auditoria)'), 'Cortesia aprovada pela direção.');
     await usuario.type(within(dialogo).getByLabelText('Sua senha'), 'senha-super');
     await usuario.click(within(dialogo).getByRole('button', { name: 'Liberar' }));
