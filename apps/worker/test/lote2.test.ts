@@ -8,6 +8,7 @@ import { schema } from '@fuse/db';
 import { criarBancoTeste, type BancoTeste } from '@fuse/db/teste';
 import { completarCpf } from '@fuse/shared';
 import { definirJobs } from '../src/agenda.js';
+import { ErroVelomail } from '@fuse/shared';
 import { enviarComunicacoes, executarBackup, falhaDoSmtp, verificarAlertas, type EnviadorEmail } from '../src/jobs/index.js';
 import { logMudo } from '../src/util.js';
 
@@ -83,6 +84,9 @@ describe('S-17: disjuntor do SMTP', () => {
     expect(es.find((e) => e.status === 'pendente')!.proximaTentativaEm!.getTime()).toBe(agora.getTime() + 60_000);
     expect(falhaDoSmtp({ code: 'EAUTH' })).toBe(true);
     expect(falhaDoSmtp({ code: 'EENVELOPE' })).toBe(false);
+    // D37: no Velomail, a resposta diz se é temporária (429/401/5xx) ou recusa da mensagem (400).
+    expect(falhaDoSmtp(new ErroVelomail('limite', 429, 'RATE_LIMIT_EXCEEDED', true))).toBe(true);
+    expect(falhaDoSmtp(new ErroVelomail('inválido', 400, null, false))).toBe(false);
   });
 
   it('o cancelamento interrompe o lote em andamento', async () => {

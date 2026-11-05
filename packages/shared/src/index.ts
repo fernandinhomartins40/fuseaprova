@@ -31,3 +31,4 @@ export * from './agenda.js';
 export * from './teste.js';
 export * from './validadeAcesso.js';
 export * from './areas.js';
+export * from './velomail.js';

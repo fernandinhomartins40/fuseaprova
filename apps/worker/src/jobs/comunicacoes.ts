@@ -17,7 +17,7 @@
 import { and, asc, eq, gte, inArray, isNull, lte, ne, or, sql } from 'drizzle-orm';
 import nodemailer from 'nodemailer';
 import { schema } from '@fuse/db';
-import { emailComunicacao } from '@fuse/shared';
+import { criarEnviadorVelomail, emailComunicacao, ErroVelomail } from '@fuse/shared';
 import { LIMITE_COMUNICACAO } from '@fuse/shared/api';
 import type { Db, Log } from '../util.js';
 import type { EnviadorPush } from './lembretes.js';
@@ -48,11 +48,23 @@ export function criarEnviadorSmtp(smtp: { host: string; porta: number; usuario: 
   };
 }
 
+/** D37: mesma interface do SMTP, pela API do Velomail. */
+export function criarEnviadorVelomailWorker(c: { apiKey: string; url: string; remetente: string }): EnviadorEmail {
+  const v = criarEnviadorVelomail(c);
+  return {
+    async enviar(m) {
+      await v.enviar(m);
+    },
+  };
+}
+
 /**
  * Falha do servidor de e-mail (conexão, autenticação, timeout ou resposta 4xx, que é temporária)
  * × rejeição daquele destinatário (5xx do servidor para o endereço, ex.: 550 caixa inexistente).
+ * No Velomail (D37), a própria resposta diz se é temporária.
  */
 export function falhaDoSmtp(e: unknown): boolean {
+  if (e instanceof ErroVelomail) return e.temporaria;
   const o = e as { code?: string; responseCode?: number };
   if (typeof o.responseCode === 'number') return o.responseCode < 500;
   return o.code !== 'EENVELOPE';

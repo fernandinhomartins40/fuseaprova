@@ -3,6 +3,7 @@
  */
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { URL_VELOMAIL_PADRAO } from '@fuse/shared';
 
 export interface Config {
   ambiente: 'development' | 'production' | 'test';
@@ -20,6 +21,8 @@ export interface Config {
   precoAdicionalCentavos: number;
   asaas: { apiKey: string; baseUrl: string; webhookToken: string };
   smtp: { host: string; porta: number; usuario: string; senha: string; remetente: string };
+  /** D37: com a chave, o e-mail sai pela API do Velomail (o remetente é o SMTP_FROM). */
+  velomail: { apiKey: string; url: string };
   vapid: { publica: string; privada: string; assunto: string };
   arquivosDir: string;
   suporte: { whatsapp: string; email: string };
@@ -65,6 +68,10 @@ export function lerConfig(env: NodeJS.ProcessEnv = process.env): Config {
       usuario: env.SMTP_USER ?? '',
       senha: env.SMTP_PASS ?? '',
       remetente: env.SMTP_FROM ?? 'Fuse Aprova <nao-responda@localhost>',
+    },
+    velomail: {
+      apiKey: env.VELOMAIL_API_KEY ?? '',
+      url: env.VELOMAIL_URL ?? URL_VELOMAIL_PADRAO,
     },
     vapid: {
       publica: env.VAPID_PUBLIC_KEY ?? '',

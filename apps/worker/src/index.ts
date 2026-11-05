@@ -8,7 +8,8 @@ import { fileURLToPath } from 'node:url';
 import cron from 'node-cron';
 import { conectar, migrar } from '@fuse/db';
 import { definirJobs, FUSO } from './agenda.js';
-import { criarEnviadorSmtp, criarEnviadorWebPush } from './jobs/index.js';
+import { URL_VELOMAIL_PADRAO } from '@fuse/shared';
+import { criarEnviadorSmtp, criarEnviadorVelomailWorker, criarEnviadorWebPush } from './jobs/index.js';
 import { logConsole } from './util.js';
 
 const env = fileURLToPath(new URL('../../../.env', import.meta.url));
@@ -23,9 +24,15 @@ const push =
     ? criarEnviadorWebPush({ publica: VAPID_PUBLIC_KEY, privada: VAPID_PRIVATE_KEY, assunto: VAPID_SUBJECT || 'mailto:contato@localhost' })
     : null;
 if (!push) logConsole.warn({}, 'VAPID não configurado: lembretes desligados');
-// D13: e-mail da comunicação do superadmin (o mesmo SMTP do .env da API).
-const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM } = process.env;
-const email = SMTP_HOST
+// D13: e-mail da comunicação do superadmin (o mesmo do .env da API: Velomail, D37, ou SMTP).
+const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM, VELOMAIL_API_KEY, VELOMAIL_URL } = process.env;
+const email = VELOMAIL_API_KEY
+  ? criarEnviadorVelomailWorker({
+      apiKey: VELOMAIL_API_KEY,
+      url: VELOMAIL_URL || URL_VELOMAIL_PADRAO,
+      remetente: SMTP_FROM || 'Fuse Aprova <nao-responda@localhost>',
+    })
+  : SMTP_HOST
   ? criarEnviadorSmtp({
       host: SMTP_HOST,
       porta: Number(SMTP_PORT) || 587,

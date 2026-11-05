@@ -1,5 +1,5 @@
 /**
- * E-mail (PRD 8.6): SMTP do próprio dono via nodemailer. Em dev/teste, um transporte em
+ * E-mail (PRD 8.6): API do Velomail (D37) ou SMTP do próprio dono via nodemailer. Em dev/teste, um transporte em
  * memória (e, em dev, um arquivo .html por e-mail na pasta temporária).
  */
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import nodemailer from 'nodemailer';
 import { formatarDataBR, formatarReais, diaSP, horaMinutoSP, primeiroNome } from '@fuse/shared';
-import { AVISO_EDITAL, botaoEmail, CORES_EMAIL, escHtml, layoutEmail } from '@fuse/shared';
+import { AVISO_EDITAL, botaoEmail, CORES_EMAIL, criarEnviadorVelomail, escHtml, layoutEmail } from '@fuse/shared';
 import type { Config } from '../config.js';
 
 export interface MensagemEmail {
@@ -60,8 +60,23 @@ export function criarMailerSmtp(smtp: Config['smtp']): Mailer {
   };
 }
 
-/** SMTP se configurado; senão memória (dev grava os e-mails em $TMP/fuse-emails). */
+export function criarMailerVelomail(config: Config): Mailer {
+  const v = criarEnviadorVelomail({ apiKey: config.velomail.apiKey, url: config.velomail.url, remetente: config.smtp.remetente });
+  return {
+    async enviar(m) {
+      await v.enviar(m);
+    },
+  };
+}
+
+/** Há um jeito real de enviar e-mail (Velomail ou SMTP)? */
+export function emailConfigurado(config: Config): boolean {
+  return !!config.velomail.apiKey || !!config.smtp.host;
+}
+
+/** Velomail, senão SMTP, senão memória (dev grava os e-mails em $TMP/fuse-emails). */
 export function criarMailerPadrao(config: Config): Mailer {
+  if (config.velomail.apiKey) return criarMailerVelomail(config);
   if (config.smtp.host) return criarMailerSmtp(config.smtp);
   return criarMailerMemoria(
     config.ambiente === 'development' ? { pasta: join(tmpdir(), 'fuse-emails') } : {},

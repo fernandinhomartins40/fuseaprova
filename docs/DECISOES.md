@@ -382,3 +382,14 @@ Quem ainda está em dúvida sobre o cargo pode estudar as matérias de outras á
 - **Trocar de concurso** limpa as extras, porque eram do concurso anterior.
 - **Simulado:** continua por cargo, escolhido na tela do simulado.
 - **App nativo:** o app publicado não mostra a escolha, mas mostra a trilha com as áreas escolhidas no site. Um próximo AAB já leva a escolha junto.
+
+## D37. E-mail pelo Velomail (05/11/2026, pedido do dono)
+Antes disto, o `.env` de produção não tinha SMTP. A API usava o transporte em memória, e nenhum e-mail saía: nem a recuperação de senha, nem a confirmação de pagamento, nem as apostilas liberadas.
+
+- **Envio:** API HTTP do Velomail (`POST /api/emails/send`, header `x-api-key` com a chave `re_...` em `VELOMAIL_API_KEY`). Com a chave, a API e o worker usam o Velomail. Sem ela, usam o SMTP. Sem nenhum dos dois, usam a memória.
+- **Remetente:** continua sendo o `SMTP_FROM`. O Velomail recusa `Nome <email>` em `from`, então o código manda o e-mail puro em `from` e o nome em `from_name`.
+- **Templates:** os e-mails seguem montados no código (`layoutEmail`, `CORES_EMAIL`), com a identidade do Fuse Aprova, e o HTML vai pronto para o Velomail. Os templates da conta do Velomail não são usados, porque a conta é compartilhada com outros produtos do dono.
+- **Rastreio:** `tracking_enabled: false`. Sem pixel e sem troca de links, o link de redefinir senha chega intacto.
+- **Domínio:** fuseaprova.com.br verificado no Velomail, com MX e SPF em `uz-mail`, DKIM em `default._domainkey` e DMARC `p=none`. O site e o MX principal não mudaram.
+- **Falhas no worker:** 400 é recusa daquela mensagem. Rede, 401/403, 429 e 5xx são temporárias e voltam para a fila, como o 4xx do SMTP.
+- **Painel do sistema:** confere a chave com um POST vazio, que passa pela autenticação e para na validação. Assim o teste não envia e-mail.

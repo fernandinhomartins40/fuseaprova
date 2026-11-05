@@ -10,6 +10,7 @@ import { LIMITE_COMUNICACAO, type ComunicacaoSuper } from '@fuse/shared/api';
 import type { Deps } from '../../contexto.js';
 import type { Registrador } from '../../http/registrar.js';
 import { existe, falha } from '../../http/erros.js';
+import { emailConfigurado } from '../../integracoes/email.js';
 import { reconfirmar } from '../../servicos/doisfatores.js';
 import { consultar, contar, dataSql, iso, isoOuNull, type Db } from '../../util.js';
 import { paginacao } from '../admin/comum.js';
@@ -45,7 +46,7 @@ function porMinuto(canal: Canal): number {
 }
 
 function exigirCanalConfigurado(deps: Deps, canal: Canal): void {
-  if (canal === 'email' && !deps.config.smtp.host) throw falha('conflito', 'O SMTP não está configurado no .env: nenhum e-mail sairia.');
+  if (canal === 'email' && !emailConfigurado(deps.config)) throw falha('conflito', 'O e-mail (Velomail ou SMTP) não está configurado no .env: nenhum e-mail sairia.');
   if (canal === 'push' && !(deps.config.vapid.publica && deps.config.vapid.privada)) throw falha('conflito', 'As chaves VAPID não estão configuradas: nenhum push sairia.');
 }
 

@@ -144,6 +144,35 @@ export async function testarSmtp(smtp: Config['smtp'], agora: Date): Promise<Tes
   return r;
 }
 
+/**
+ * D37: confere a chave do Velomail sem enviar e-mail. Um POST vazio em /emails/send passa pela
+ * autenticação e para na validação (400); chave errada ou revogada dá 401/403.
+ */
+export async function testarVelomail(v: Config['velomail'], agora: Date, f: typeof fetch = fetch): Promise<Teste> {
+  const chave = `velomail:${v.url}:${v.apiKey.slice(-6)}`;
+  const c = testesSmtp.get(chave);
+  if (c && c.ate > Date.now()) return c;
+  let r: Teste;
+  try {
+    const resp = await f(`${v.url.replace(/\/+$/, '')}/emails/send`, {
+      method: 'POST',
+      headers: { 'x-api-key': v.apiKey, 'Content-Type': 'application/json' },
+      body: '{}',
+      signal: AbortSignal.timeout(6000),
+    });
+    r =
+      resp.status === 401 || resp.status === 403
+        ? { estado: 'falhou', mensagem: `O Velomail recusou a chave (HTTP ${resp.status}).`, em: agora, ate: Date.now() + CACHE_TESTE_MS }
+        : resp.status >= 500
+          ? { estado: 'falhou', mensagem: `O Velomail respondeu com erro (HTTP ${resp.status}).`, em: agora, ate: Date.now() + CACHE_TESTE_MS }
+          : { estado: 'ok', mensagem: 'Velomail aceitou a chave (teste sem enviar e-mail).', em: agora, ate: Date.now() + CACHE_TESTE_MS };
+  } catch (e) {
+    r = { estado: 'falhou', mensagem: `O Velomail não respondeu: ${(e as Error).message.slice(0, 160)}`, em: agora, ate: Date.now() + CACHE_TESTE_MS };
+  }
+  testesSmtp.set(chave, r);
+  return r;
+}
+
 async function testarAsaasComCache(deps: Deps, agora: Date): Promise<Teste> {
   const c = testesAsaas.get(deps.asaas);
   if (c && c.ate > Date.now()) return c;
@@ -242,8 +271,9 @@ export function rotasSuperSistema(r: Registrador): void {
     }
     if (erroBanco) problemas.unshift(`Banco: ${erroBanco}`);
 
-    const smtpConfigurado = !!config.smtp.host;
-    const smtp = smtpConfigurado ? await testarSmtp(config.smtp, agora) : null;
+    const velomail = !!config.velomail.apiKey;
+    const smtpConfigurado = velomail || !!config.smtp.host;
+    const smtp = velomail ? await testarVelomail(config.velomail, agora) : smtpConfigurado ? await testarSmtp(config.smtp, agora) : null;
     if (smtp?.estado === 'falhou') problemas.push(smtp.mensagem);
     const asaasConfigurado = !!config.asaas.apiKey;
     const asaas = asaasConfigurado ? await testarAsaasComCache(deps, agora) : null;
@@ -306,9 +336,9 @@ export function rotasSuperSistema(r: Registrador): void {
       },
       smtp: {
         configurado: smtpConfigurado,
-        host: config.smtp.host || null,
+        host: velomail ? 'Velomail (API)' : config.smtp.host || null,
         estado: smtp?.estado ?? ('nao_configurado' as const),
-        mensagem: smtp?.mensagem ?? 'SMTP_HOST não está configurado: nenhum e-mail sai.',
+        mensagem: smtp?.mensagem ?? 'Nem VELOMAIL_API_KEY nem SMTP_HOST estão configurados: nenhum e-mail sai.',
         testadoEm: isoOuNull(smtp?.em),
       },
       asaas: {

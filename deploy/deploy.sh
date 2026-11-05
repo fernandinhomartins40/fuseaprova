@@ -260,16 +260,22 @@ fi
 (( ENV_NOVO )) && log "ASAAS_WEBHOOK_TOKEN novo: copie-o do .env para o painel do Asaas (veja docs/DEPLOY.md)."
 
 FALTANDO=()
-for chave in ASAAS_API_KEY SMTP_HOST SMTP_USER SMTP_PASS SMTP_FROM; do
+for chave in ASAAS_API_KEY SMTP_FROM; do
   [[ -n "$(ler_env "$chave")" ]] || FALTANDO+=("$chave")
 done
+# D37: o e-mail sai pelo Velomail (VELOMAIL_API_KEY) ou, sem ele, pelo SMTP.
+if [[ -z "$(ler_env VELOMAIL_API_KEY)" ]]; then
+  for chave in SMTP_HOST SMTP_USER SMTP_PASS; do
+    [[ -n "$(ler_env "$chave")" ]] || FALTANDO+=("VELOMAIL_API_KEY ou $chave")
+  done
+fi
 if ((${#FALTANDO[@]})); then
   aviso "================================================================"
   aviso "Faltam valores que só o dono pode preencher: ${FALTANDO[*]}"
   aviso "Edite /root/fuseaprova/deploy/.env na VPS (ASAAS_API_KEY entre"
   aviso "aspas simples, porque começa com \$) e rode:"
   aviso "  cd /root/fuseaprova/deploy && docker compose up -d --force-recreate api worker"
-  aviso "Sem ASAAS_API_KEY o Pix não funciona; sem SMTP nenhum e-mail sai."
+  aviso "Sem ASAAS_API_KEY o Pix não funciona; sem Velomail ou SMTP nenhum e-mail sai."
   aviso "================================================================"
 fi
 

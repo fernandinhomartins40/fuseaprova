@@ -153,7 +153,7 @@ function Saude({ origem }: { origem: ReturnType<typeof useSegundoPlano> }) {
                   : (d.backup.aviso ?? 'Nenhum backup registrado.')
               }
             />
-            <Kpi rotulo="E-mail (SMTP)" testId="kpi-smtp" valor={<Estado e={d.smtp.estado} />} detalhe={`${d.smtp.mensagem} · ${testado(d.smtp.testadoEm)}`} />
+            <Kpi rotulo="E-mail" testId="kpi-smtp" valor={<Estado e={d.smtp.estado} />} detalhe={`${d.smtp.mensagem} · ${testado(d.smtp.testadoEm)}`} />
             <Kpi
               rotulo={`Asaas (${d.asaas.ambiente})`}
               testId="kpi-asaas"
