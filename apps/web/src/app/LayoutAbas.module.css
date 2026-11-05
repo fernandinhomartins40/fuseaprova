@@ -57,6 +57,7 @@
   text-decoration: underline;
 }
 
+.faixaTeste,
 .bannerApp {
   display: flex;
   align-items: center;
@@ -66,6 +67,10 @@
   color: var(--fa-ink);
   font-size: 14px;
 }
+.faixaTeste {
+  justify-content: space-between;
+}
+.faixaTeste a,
 .bannerApp a {
   flex: none;
   color: var(--fa-blue-shade);

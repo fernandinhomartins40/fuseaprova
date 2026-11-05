@@ -104,8 +104,7 @@ describe('telas do aluno contra a API simulada', () => {
     await userEvent.click(
       screen.getByRole('button', { name: /Prefeitura Municipal de Cidade Exemplo/ }),
     );
-    // D32: abrir a tela não cria cobrança; o Pix só nasce no toque.
-    await userEvent.click(await screen.findByRole('button', { name: 'GERAR PIX' }));
+    // D38: escolhido o concurso, o Pix nasce sozinho, sem tocar em botão.
     expect(await screen.findByAltText(/QR Code do Pix/)).toBeInTheDocument();
     expect(screen.getByText('Pix copia e cola')).toBeInTheDocument();
     expect(screen.getByText(/Quando o edital sair/)).toBeInTheDocument();
@@ -179,7 +178,6 @@ describe('telas do aluno contra a API simulada', () => {
     });
     expect(opcao).toHaveTextContent('R$ 397,00');
     await userEvent.click(opcao);
-    await userEvent.click(await screen.findByRole('button', { name: 'GERAR PIX' }));
     expect(await screen.findByAltText(/QR Code do Pix/)).toBeInTheDocument();
     expect(
       screen.getByText(/Acesso ao Concurso Municipal de Vila Modelo 2026/),
@@ -204,7 +202,6 @@ describe('telas do aluno contra a API simulada', () => {
     await userEvent.click(continuar);
     // Pix do concurso adicional
     await waitFor(() => expect(local).toBe('/pagamento'));
-    await userEvent.click(await screen.findByRole('button', { name: 'GERAR PIX' }));
     expect(await screen.findByAltText(/QR Code do Pix/)).toBeInTheDocument();
     expect(screen.getAllByText('R$ 197').length).toBeGreaterThan(0);
     await api.fn('/api/__mock/pagar', { method: 'POST' });

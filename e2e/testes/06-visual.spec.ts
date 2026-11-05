@@ -89,7 +89,6 @@ test('Visual: as 13 telas em 390×844', async ({ page }) => {
 
   // 03 Pagamento Pix (contagem e copia e cola mascarados: dependem do tempo e do id da cobrança)
   await expect(page).toHaveURL(/\/pagamento$/);
-  await page.getByRole('button', { name: 'GERAR PIX' }).click();
   await expect(page.getByAltText(/QR Code do Pix/)).toBeVisible();
   await foto(page, '03_Pagamento_Pix', [
     page.getByText(/Expira em/),

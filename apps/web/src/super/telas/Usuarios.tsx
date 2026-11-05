@@ -2,7 +2,7 @@
  * /super/usuarios (D13): busca por nome, e-mail ou CPF, filtros (papel, acesso, pago,
  * bloqueado, atividade) e exportação CSV. No celular, cartões e filtros numa folha.
  */
-import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PAPEIS, type Papel } from '@fuse/shared';
@@ -64,6 +64,27 @@ function Selos({ u }: { u: UsuarioSuperResumo }) {
       <Selo tom={tomPapel(u.papel)}>{NOMES_PAPEL[u.papel]}</Selo>
       {u.excluidoEm ? <Selo tom="neutro">Excluído</Selo> : u.acesso ? <Selo tom="sucesso">Com acesso</Selo> : <Selo tom="aviso">Sem acesso</Selo>}
       {u.bloqueado ? <Selo tom="erro">Bloqueado</Selo> : null}
+      {emTeste(u) ? <Selo tom="info">Teste até {dataHora(u.testeAte)}</Selo> : null}
+    </span>
+  );
+}
+
+const emTeste = (u: UsuarioSuperResumo) => !!u.testeAte && new Date(u.testeAte) > new Date();
+
+/** D39: libera (ou renova) o teste de 24 h de um aluno que não pagou, com um clique. */
+function BotaoTeste({ u }: { u: UsuarioSuperResumo }) {
+  const qc = useQueryClient();
+  const liberar = useMutation({
+    mutationFn: () => api('superUsuarioTesteLiberar', { params: { id: u.id } }),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['super', 'usuarios'] }),
+  });
+  if (u.papel !== 'aluno' || u.acesso || u.bloqueado || u.excluidoEm) return null;
+  return (
+    <span>
+      <Botao onClick={() => liberar.mutate()} carregando={liberar.isPending} aria-label={`${emTeste(u) ? 'Renovar' : 'Liberar'} teste de 24 horas para ${u.nome}`}>
+        {emTeste(u) ? 'Renovar teste 24 h' : 'Liberar teste 24 h'}
+      </Botao>
+      {liberar.isError ? <div className={a.suave} role="alert">{mensagemDeErro(liberar.error)}</div> : null}
     </span>
   );
 }
@@ -153,6 +174,7 @@ export default function Usuarios() {
                         <Selos u={u} />
                       </div>
                     }
+                    acao={<BotaoTeste u={u} />}
                   />
                 ))}
               </Cartoes>
@@ -167,6 +189,7 @@ export default function Usuarios() {
                     <th className={a.direita}>Ofensiva</th>
                     <th>Última atividade</th>
                     <th>Cadastro</th>
+                    <th>Teste</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -186,6 +209,9 @@ export default function Usuarios() {
                       <td className={a.direita}>{numero(u.ofensiva)}</td>
                       <td>{dataHora(u.ultimaAtividadeEm)}</td>
                       <td>{dataHora(u.criadoEm)}</td>
+                      <td>
+                        <BotaoTeste u={u} />
+                      </td>
                     </tr>
                   ))}
                 </tbody>

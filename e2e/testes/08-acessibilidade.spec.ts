@@ -58,7 +58,6 @@ test.describe('Acessibilidade (axe)', () => {
     }
     await cadastrarViaApi(page, novaConta('axepix'));
     await page.goto('/pagamento');
-    await page.getByRole('button', { name: 'GERAR PIX' }).click();
     await expect(page.getByAltText(/QR Code do Pix/)).toBeVisible();
     await auditar(page, '/pagamento');
   });

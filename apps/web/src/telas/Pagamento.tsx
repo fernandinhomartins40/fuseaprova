@@ -107,6 +107,20 @@ export default function Pagamento() {
     }
   }, [qc, concursoPedido]);
 
+  // D38: o Pix nasce sozinho ao abrir a tela (cadastrou, vê o QR Code). Espera a lista de concursos
+  // para não cobrar o concurso errado de quem ainda precisa escolher; uma vez só por visita.
+  const autoGerado = useRef(false);
+  const prontoParaGerar =
+    estado === 'inicial' &&
+    !!me.data &&
+    (!!concursoPedido || (!me.data.acessoPago && !!lista.data && !lista.isFetching)) &&
+    !precisaEscolher;
+  useEffect(() => {
+    if (!prontoParaGerar || autoGerado.current) return;
+    autoGerado.current = true;
+    void gerar();
+  }, [prontoParaGerar, gerar]);
+
   // Polling do status a cada 4 s.
   const status = useQuery({
     queryKey: CHAVES.pagamentoStatus(concursoPedido),
@@ -231,6 +245,9 @@ export default function Pagamento() {
     <Pagina>
       {concursoPedido ? (
         <CabecalhoVoltar para="/meus-concursos" titulo="Liberar concurso" />
+      ) : me.data?.acesso && !me.data.acessoPago ? (
+        // D39: no teste de 24 h, dá para voltar à trilha sem pagar agora.
+        <CabecalhoVoltar para="/aprender" />
       ) : (
         <CabecalhoVoltar semVoltar />
       )}
@@ -333,7 +350,7 @@ export default function Pagamento() {
       ) : estado === 'inicial' ? (
         precisaEscolher ? null : (
           <section className={s.gerarPix}>
-            <p>O código Pix é criado quando você tocar no botão.</p>
+            <p>Preparando o seu código Pix…</p>
             <Botao3D disabled={!me.data || lista.isFetching} onClick={() => void gerar()}>
               GERAR PIX
             </Botao3D>

@@ -393,3 +393,18 @@ Antes disto, o `.env` de produção não tinha SMTP. A API usava o transporte em
 - **Domínio:** fuseaprova.com.br verificado no Velomail, com MX e SPF em `uz-mail`, DKIM em `default._domainkey` e DMARC `p=none`. O site e o MX principal não mudaram.
 - **Falhas no worker:** 400 é recusa daquela mensagem. Rede, 401/403, 429 e 5xx são temporárias e voltam para a fila, como o 4xx do SMTP.
 - **Painel do sistema:** confere a chave com um POST vazio, que passa pela autenticação e para na validação. Assim o teste não envia e-mail.
+
+## D38. Pix gerado sozinho ao abrir a tela (05/11/2026, pedido do dono)
+Uma aluna se cadastrou, ficou 17 minutos na tela de pagamento e não tocou em "GERAR PIX", então nenhuma cobrança nasceu no Asaas. O dono tinha pedido "cadastrou, gera o QR Code".
+
+- `/pagamento` e `/apostilas` criam o Pix sozinhos, uma vez por visita, assim que a tela sabe qual produto cobrar. Em `/pagamento`, isso acontece depois da escolha do concurso, quando há mais de um aberto. O botão continua para tentar de novo e para gerar um Pix novo depois que o anterior vence.
+- Isso substitui o "Pix só no toque" da D32. Uma cobrança que ninguém paga vence sozinha (job `expirar-pix`), e a fila `umPorAluno` não deixa duplicar.
+
+## D39. Teste de 24 h liberado pelo superadmin (05/11/2026, pedido do dono)
+O cadastro continua sem teste (D35). O dono libera, aluno por aluno, um teste de 24 horas pelo botão na lista de usuários do superadmin.
+
+- `POST /super/usuarios/:id/teste-24h` grava `usuarios.teste_ate` = agora + 24 h. Renovar conta do zero. A ação é auditada (`usuario.teste_liberar`).
+- Não recebem o teste: quem já pagou, contas da equipe, contas bloqueadas e contas excluídas.
+- `temAcessoAoEstudo` volta a aceitar `teste_ate` no futuro. O prazo é conferido a cada requisição, então o bloqueio volta sozinho. O pacote offline não dura mais do que o teste. Pagar zera o teste.
+- A migração 0015 zera os prazos do teste de 3 dias antigo (D32) de quem não pagou. Sem ela, quem ganhou os 3 dias antes da D35 voltaria a estudar sem pagar.
+- No site, quem está no teste vê a faixa "Teste liberado até dd/mm às hh:mm" com "Garantir acesso", e a tela do Pix tem seta para voltar à trilha. O app nativo só lê `acesso` e funciona igual.

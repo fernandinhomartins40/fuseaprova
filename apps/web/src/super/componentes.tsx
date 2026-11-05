@@ -271,7 +271,8 @@ export function Kpi(props: { rotulo: string; valor: ReactNode; detalhe?: ReactNo
 /* -------------------------------------------------- lista → cartões */
 
 /** Item de lista no celular: título, subtítulo, valor à direita e chevron. */
-export function CartaoLinha(props: { para?: string; aoTocar?: () => void; titulo: ReactNode; sub?: ReactNode; valor?: ReactNode; extra?: ReactNode }) {
+/** `acao` fica fora do link do cartão (um botão dentro de um link não funciona bem no toque). */
+export function CartaoLinha(props: { para?: string; aoTocar?: () => void; titulo: ReactNode; sub?: ReactNode; valor?: ReactNode; extra?: ReactNode; acao?: ReactNode }) {
   const corpo = (
     <>
       <div className={s.cartaoCorpo}>
@@ -293,6 +294,7 @@ export function CartaoLinha(props: { para?: string; aoTocar?: () => void; titulo
         <Link className={s.cartaoLinha} to={props.para}>
           {corpo}
         </Link>
+        {props.acao ? <div className={s.cartaoAcao}>{props.acao}</div> : null}
       </li>
     );
   }

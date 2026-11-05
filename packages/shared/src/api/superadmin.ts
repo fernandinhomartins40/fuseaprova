@@ -677,6 +677,8 @@ export const UsuarioSuperResumo = z.object({
   acesso: z.boolean(),
   pago: z.boolean(),
   bloqueado: z.boolean(),
+  /** D39: fim do teste de 24 h liberado pelo superadmin (null = nunca liberado; pode estar no passado). */
+  testeAte: DataHora.nullable().default(null),
   doisFatores: z.boolean(),
   marketing: z.boolean(),
   xpTotal: z.number().int(),
@@ -806,6 +808,10 @@ export const ForcarSenhaEntrada = z.object({
 export type ForcarSenhaEntrada = z.input<typeof ForcarSenhaEntrada>;
 
 /** POST /super/usuarios/:id/bloquear e /desbloquear */
+/** POST /super/usuarios/:id/teste-24h (D39): resposta com o novo fim do teste. */
+export const TesteLiberadoResposta = z.object({ ok: z.literal(true), testeAte: DataHora });
+export type TesteLiberadoResposta = z.infer<typeof TesteLiberadoResposta>;
+
 export const BloqueioEntrada = z.object({
   motivo: MotivoObrigatorio,
   /** S-11: obrigatória para bloquear um superadmin. */

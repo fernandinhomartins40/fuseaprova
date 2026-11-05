@@ -6,7 +6,7 @@
 import { createHash } from 'node:crypto';
 import { and, asc, count, desc, eq, gte, inArray, isNotNull, isNull, lt, max, or, sql, type SQL } from 'drizzle-orm';
 import { schema } from '@fuse/db';
-import { NOMES_PAPEL, ocultarCpf, somenteDigitos, MS_DIA } from '@fuse/shared';
+import { DURACAO_TESTE_LIBERADO_MS, NOMES_PAPEL, ocultarCpf, somenteDigitos, MS_DIA } from '@fuse/shared';
 import {
   gerarCsv,
   VALIDADE_CONVITE_MS,
@@ -108,6 +108,7 @@ const colunasResumo = {
   papel: usuarios.papel,
   acesso: usuarios.acesso,
   bloqueadoEm: usuarios.bloqueadoEm,
+  testeAte: usuarios.testeAte,
   totpAtivadoEm: usuarios.totpAtivadoEm,
   marketing: usuarios.marketing,
   xpTotal: usuarios.xpTotal,
@@ -131,6 +132,7 @@ function mapResumo(u: UsuarioResumoDb, ultima: Date | string | null, pago: boole
     acesso: u.acesso,
     pago: !!pago,
     bloqueado: !!u.bloqueadoEm,
+    testeAte: u.acesso ? null : isoOuNull(u.testeAte),
     doisFatores: !!u.totpAtivadoEm,
     marketing: u.marketing,
     xpTotal: u.xpTotal,
@@ -453,6 +455,26 @@ export function rotasSuperUsuarios(r: Registrador): void {
     await deps.db.update(usuarios).set({ bloqueadoEm: null, bloqueioMotivo: null }).where(eq(usuarios.id, u.id));
     await auditarSuper(ctx, 'usuario.desbloquear', `usuario:${u.id}`, { motivo: corpo.motivo, antes: { bloqueado: true, motivo: u.bloqueioMotivo }, depois: { bloqueado: false } });
     return { ok: true as const };
+  });
+
+  /**
+   * D39: o dono libera, aluno por aluno, um teste de 24 horas a partir de agora (renovar também
+   * conta do zero). Quem já pagou não precisa; conta da equipe, bloqueada ou excluída não recebe.
+   */
+  r.rota('superUsuarioTesteLiberar', async (ctx) => {
+    const { deps, params, agora } = ctx;
+    const u = await usuarioPorId(deps.db, params.id);
+    if (u.excluidoEm) throw falha('conflito', 'Esta conta foi excluída.');
+    if (u.papel !== 'aluno') throw falha('conflito', 'Só alunos recebem o teste de 24 horas.');
+    if (u.bloqueadoEm) throw falha('conflito', 'A conta está bloqueada: desbloqueie antes de liberar o teste.');
+    if (u.acesso) throw falha('conflito', 'Este aluno já tem acesso pago.');
+    const testeAte = new Date(agora.getTime() + DURACAO_TESTE_LIBERADO_MS);
+    await deps.db.update(usuarios).set({ testeAte, testePendente: false }).where(eq(usuarios.id, u.id));
+    await auditarSuper(ctx, 'usuario.teste_liberar', `usuario:${u.id}`, {
+      antes: { testeAte: isoOuNull(u.testeAte) },
+      depois: { testeAte: iso(testeAte) },
+    });
+    return { ok: true as const, testeAte: iso(testeAte) };
   });
 
   r.rota('superUsuarioPapel', async (ctx) => {

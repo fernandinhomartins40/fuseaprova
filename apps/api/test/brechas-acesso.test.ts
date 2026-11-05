@@ -135,17 +135,6 @@ describe('sem teste grátis (D35)', () => {
     expect((await t.chamar('meObter', { cookie })).json()).toMatchObject({ acesso: false, acessoPago: false, testeAte: null });
   });
 
-  it('quem estava no meio do teste antigo perde o acesso até pagar', async () => {
-    const a = await t.cadastrar();
-    await t.db
-      .update(schema.usuarios)
-      .set({ testeAte: new Date(t.relogio.agora().getTime() + 2 * MS_DIA) })
-      .where(eq(schema.usuarios.id, a.id));
-    expect(await trilha(a)).toBe(402);
-    const login = await t.chamar('authLogin', { corpo: { email: a.email, senha: a.senha } });
-    expect(login.json()).toMatchObject({ proximo: 'pagamento', usuario: { acesso: false } });
-  });
-
   it('cadastro antigo marcado como pendente não ganha teste ao voltar', async () => {
     const a = await t.cadastrar();
     await t.db.update(schema.usuarios).set({ testeAte: null, testePendente: true }).where(eq(schema.usuarios.id, a.id));

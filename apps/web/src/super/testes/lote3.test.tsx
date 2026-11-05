@@ -333,3 +333,46 @@ describe('Cupons reservados (S-12)', () => {
     expect(screen.getByText(/reserva um uso até vencer/)).toBeInTheDocument();
   });
 });
+
+describe('teste de 24 h na lista de usuários (D39)', () => {
+  const aluno = (extra: Record<string, unknown> = {}) => ({
+    id: IDS.usuario,
+    nome: 'Louise Almeida',
+    email: 'louise@exemplo.com',
+    cpfOculto: '***.456.789-**',
+    celularOculto: '(42) *****-5432',
+    papel: 'aluno',
+    acesso: false,
+    pago: false,
+    bloqueado: false,
+    testeAte: null,
+    doisFatores: false,
+    marketing: false,
+    xpTotal: 0,
+    ofensiva: 0,
+    ultimaAtividadeEm: null,
+    criadoEm: '2026-11-05T15:37:00.000Z',
+    excluidoEm: null,
+    ...extra,
+  });
+
+  it('o botão libera o teste do aluno da linha; quem pagou não tem botão', async () => {
+    let liberado = false;
+    const pago = { ...aluno({ acesso: true, pago: true }), id: '99999999-9999-4999-8999-999999999999', nome: 'Aluno Pago' };
+    const f = simularFetch({
+      ...BASE,
+      'GET /super/usuarios': () =>
+        lista([liberado ? aluno({ testeAte: '2099-11-06T15:40:00.000Z' }) : aluno(), pago]),
+      'POST /super/usuarios/:id/teste-24h': () => {
+        liberado = true;
+        return { ok: true, testeAte: '2099-11-06T15:40:00.000Z' };
+      },
+    });
+    renderizarSuper('/super/usuarios');
+    await userEvent.click(await screen.findByRole('button', { name: 'Liberar teste de 24 horas para Louise Almeida' }));
+    expect(await screen.findByText(/Teste até/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Renovar teste de 24 horas para Louise Almeida' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /teste de 24 horas para Aluno Pago/ })).not.toBeInTheDocument();
+    expect(f.chamadas.some((c) => c.metodo === 'POST' && c.caminho === `/super/usuarios/${IDS.usuario}/teste-24h`)).toBe(true);
+  });
+});

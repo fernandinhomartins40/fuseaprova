@@ -14,7 +14,7 @@ test.describe('Acesso e pagamento Pix', () => {
     await definirRelogio(page, '2026-10-20T09:00:00-03:00');
   });
 
-  test('cadastro → Pix no toque (QR e copia e cola) → webhook → onboarding → /aprender', async ({
+  test('cadastro → Pix automático (QR e copia e cola) → webhook → onboarding → /aprender', async ({
     page,
   }) => {
     const email = emailUnico('pix');
@@ -36,9 +36,7 @@ test.describe('Acesso e pagamento Pix', () => {
     await expect(page).toHaveURL(/\/pagamento$/);
     expect((await page.request.get('/api/trilha')).status()).toBe(402);
     await expect(page.getByText('R$ 397', { exact: false }).first()).toBeVisible();
-    await expect(page.getByAltText(/QR Code do Pix/)).toHaveCount(0);
-    expect((await page.request.get(`${API}/__e2e/pagamento`, { params: { email } })).ok()).toBe(false);
-    await page.getByRole('button', { name: 'GERAR PIX' }).click();
+    // D38: o Pix nasce sozinho ao abrir a tela, sem tocar em botão.
     const qr = page.getByAltText('QR Code do Pix de R$ 397,00');
     await expect(qr).toBeVisible();
     expect(await qr.getAttribute('src')).toMatch(/^data:image\/png;base64,/);

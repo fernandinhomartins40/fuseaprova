@@ -148,6 +148,7 @@ export const ACOES_AUDITORIA = [
   'usuario.forcar_senha',
   'usuario.bloquear',
   'usuario.desbloquear',
+  'usuario.teste_liberar',
   'usuario.papel',
   'usuario.exportar',
   'usuario.anonimizar',

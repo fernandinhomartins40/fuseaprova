@@ -39,7 +39,7 @@ export const MeResposta = ContadoresUsuario.extend({
   acesso: z.boolean(),
   /** D32: igual a `acesso` desde o fim do teste grátis (D35); fica para o app publicado. */
   acessoPago: z.boolean(),
-  /** D35: sempre null, sem teste grátis; fica para o app publicado. */
+  /** D39: fim do teste de 24 h liberado pelo superadmin; null para quem pagou ou nunca teve. */
   testeAte: z.string().nullable(),
   avatar: Avatar,
   concurso: z

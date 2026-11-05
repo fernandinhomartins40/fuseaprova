@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -319,6 +319,15 @@ function Compra({ me }: { me: MeResposta }) {
       setEstado('erro');
     }
   }, [qc]);
+
+  // D38: logou ou cadastrou e ainda não comprou: o QR Code aparece sozinho, uma vez por visita.
+  const autoGerado = useRef(false);
+  const prontoParaGerar = estado === 'inicial' && me.papel === 'aluno' && !!status.data && !status.data.comprado;
+  useEffect(() => {
+    if (!prontoParaGerar || autoGerado.current) return;
+    autoGerado.current = true;
+    void gerar();
+  }, [prontoParaGerar, gerar]);
 
   // Contagem regressiva até expirar.
   useEffect(() => {

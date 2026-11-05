@@ -697,6 +697,10 @@
   text-align: left;
 }
 
+.cartaoAcao {
+  padding: 6px 14px 0;
+}
+
 a.cartaoLinha:active,
 button.cartaoLinha:active {
   background: var(--adm-turquesa-claro);

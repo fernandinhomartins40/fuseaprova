@@ -69,9 +69,10 @@ describe('página das apostilas (D34)', () => {
     await userEvent.type(screen.getByLabelText('Confirmar senha'), 'senha-forte-123');
     await userEvent.click(screen.getByRole('checkbox'));
     await userEvent.click(screen.getByRole('button', { name: /Criar conta e continuar/ }));
-    expect(await screen.findByRole('button', { name: 'Gerar Pix de R$ 47' })).toBeInTheDocument();
+    // D38: cadastrou, o QR Code aparece sozinho.
+    expect(await screen.findByAltText('QR Code do Pix de R$ 47,00')).toBeInTheDocument();
     expect(local).toBe('/apostilas');
-    expect(chamouPix(api.fn)).toBe(false);
+    expect(chamouPix(api.fn)).toBe(true);
   });
 
   it('"Já tenho conta" troca para o login', async () => {
@@ -84,14 +85,10 @@ describe('página das apostilas (D34)', () => {
     expect(screen.queryByLabelText('CPF')).not.toBeInTheDocument();
   });
 
-  it('logado sem compra: o Pix só nasce no toque e, pago, libera os downloads', async () => {
+  it('logado sem compra: o Pix nasce sozinho e, pago, libera os downloads', async () => {
     const api = ligarApiSimulada();
     await api.cenario('semAcesso');
     abrir('/apostilas');
-    const botao = await screen.findByRole('button', { name: 'Gerar Pix de R$ 47' });
-    expect(chamouPix(api.fn)).toBe(false);
-    expect(screen.queryByAltText(/QR Code do Pix/)).not.toBeInTheDocument();
-    await userEvent.click(botao);
     expect(await screen.findByAltText('QR Code do Pix de R$ 47,00')).toBeInTheDocument();
     expect((screen.getByLabelText('Pix copia e cola') as HTMLInputElement).value).toContain(
       'br.gov.bcb.pix',

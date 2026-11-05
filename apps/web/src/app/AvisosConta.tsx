@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { diaSP, formatarDiaMes, horaMinutoSP } from '@fuse/shared';
 import { useMe } from '../api/consultas';
 import { IconeTraco } from '../ui';
 import s from './LayoutAbas.module.css';
@@ -17,13 +19,26 @@ function appFechado(): boolean {
 
 /**
  * Avisos da conta, só no site (o app nativo não carrega este arquivo, porque não pode citar
- * pagamento): para quem pagou no Android, o convite para baixar o app.
+ * pagamento): a faixa do teste de 24 h liberado pelo superadmin (D39) e, para quem pagou no
+ * Android, o convite para baixar o app.
  */
 export default function AvisosConta() {
   const me = useMe();
   const [fechado, setFechado] = useState(appFechado);
   const u = me.data;
   if (!u || u.papel !== 'aluno') return null;
+
+  if (u.acesso && !u.acessoPago && u.testeAte) {
+    const fim = new Date(u.testeAte);
+    return (
+      <div className={s.faixaTeste} role="note">
+        <span>
+          <strong>Teste liberado</strong> até {formatarDiaMes(diaSP(fim))} às {horaMinutoSP(fim)}
+        </span>
+        <Link to="/pagamento">Garantir acesso</Link>
+      </div>
+    );
+  }
 
   if (u.acessoPago && !fechado && /Android/i.test(navigator.userAgent)) {
     return (
