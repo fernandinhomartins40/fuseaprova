@@ -477,6 +477,19 @@ export function rotasSuperUsuarios(r: Registrador): void {
     return { ok: true as const, testeAte: iso(testeAte) };
   });
 
+  /** D39: encerra o teste na hora; o acesso volta a depender só do pagamento. */
+  r.rota('superUsuarioTesteRevogar', async (ctx) => {
+    const { deps, params, agora } = ctx;
+    const u = await usuarioPorId(deps.db, params.id);
+    if (!u.testeAte || u.testeAte <= agora) throw falha('conflito', 'Este aluno não está com teste ativo.');
+    await deps.db.update(usuarios).set({ testeAte: null }).where(eq(usuarios.id, u.id));
+    await auditarSuper(ctx, 'usuario.teste_revogar', `usuario:${u.id}`, {
+      antes: { testeAte: iso(u.testeAte) },
+      depois: { testeAte: null },
+    });
+    return { ok: true as const };
+  });
+
   r.rota('superUsuarioPapel', async (ctx) => {
     const { deps, params, corpo, usuario, agora } = ctx;
     await reconfirmar(deps, usuario, corpo.confirmacao, agora);

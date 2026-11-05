@@ -202,6 +202,15 @@
   filter: brightness(0.92);
 }
 
+.sucesso {
+  background: var(--adm-sucesso, #15803d);
+  color: var(--adm-branco);
+}
+
+.sucesso:hover:not(:disabled) {
+  filter: brightness(0.92);
+}
+
 .fantasma {
   background: transparent;
   color: var(--adm-turquesa);

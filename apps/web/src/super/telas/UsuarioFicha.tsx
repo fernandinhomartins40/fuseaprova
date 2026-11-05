@@ -178,7 +178,13 @@ export default function UsuarioFicha() {
   // S-21: a exportação LGPD pede motivo e reconfirmação (a confirmação abre pelo botão).
   // D39: teste de 24 h (temporário), separado do "Liberar sem pagamento (definitivo)" do concurso.
   const teste = useMutation({
-    mutationFn: () => api('superUsuarioTesteLiberar', { params: { id } }),
+    mutationFn: async (revogar: boolean) => {
+      if (revogar) {
+        await api('superUsuarioTesteRevogar', { params: { id } });
+        return null;
+      }
+      return (await api('superUsuarioTesteLiberar', { params: { id } })).testeAte;
+    },
     onSuccess: () => void consulta.refetch(),
   });
   const exportar = useMutation({
@@ -208,6 +214,7 @@ export default function UsuarioFicha() {
           // RQ4/D24: ações de acesso só para aluno e nunca para a própria conta.
           const podeAgir = ehAluno && !excluido && !!me.data && me.data.id !== u.id;
           const comAcesso = f.concursos.some((c) => c.acesso);
+          const emTeste = !!u.testeAte && new Date(u.testeAte) > new Date();
           const pixDoConcurso = (c: ConcursoDoUsuario | null) =>
             !!c && f.pedidos.some((p) => p.concurso?.id === c.id && p.metodo === 'asaas' && !!p.asaasPaymentId && (p.status === 'pendente' || p.status === 'vencido'));
           const agir = (acao: 'liberar' | 'revogar' | 'manual', c: ConcursoDoUsuario) => {
@@ -229,7 +236,7 @@ export default function UsuarioFicha() {
                 ) : null}
                 {u.bloqueado ? <Selo tom="erro">Bloqueado</Selo> : null}
                 {u.doisFatores ? <Selo tom="info">2FA ativo</Selo> : null}
-                {u.testeAte && new Date(u.testeAte) > new Date() ? <Selo tom="info">Teste até {dataHora(u.testeAte)}</Selo> : null}
+                {emTeste ? <Selo tom="sucesso">Teste ativo até {dataHora(u.testeAte)}</Selo> : null}
               </div>
               {!excluido ? (
                 <AcoesFicha
@@ -238,11 +245,11 @@ export default function UsuarioFicha() {
                     podeAgir &&
                       !comAcesso &&
                       !u.bloqueado && {
-                        rotulo: u.testeAte && new Date(u.testeAte) > new Date() ? 'Renovar teste 24 h' : 'Liberar teste 24 h',
+                        rotulo: emTeste ? 'Revogar teste' : 'Liberar teste 24 h',
                         principal: true,
-                        variante: 'primario',
+                        variante: emTeste ? 'perigo' : 'sucesso',
                         carregando: teste.isPending,
-                        aoClicar: () => teste.mutate(),
+                        aoClicar: () => teste.mutate(emTeste),
                       },
                     {
                       rotulo: 'Editar dados',
@@ -275,9 +282,13 @@ export default function UsuarioFicha() {
               ) : null}
               {teste.isError ? <Alerta tom="erro">{mensagemDeErro(teste.error)}</Alerta> : null}
               {teste.isSuccess ? (
-                <Alerta tom="sucesso">
-                  Teste liberado até {dataHora(teste.data.testeAte)}. Depois disso o acesso fecha sozinho, sem precisar fazer nada.
-                </Alerta>
+                teste.data ? (
+                  <Alerta tom="sucesso">
+                    Teste liberado até {dataHora(teste.data)}. Depois disso o acesso fecha sozinho, sem precisar fazer nada.
+                  </Alerta>
+                ) : (
+                  <Alerta tom="aviso">Teste revogado: o aluno volta a precisar do pagamento para estudar.</Alerta>
+                )
               ) : null}
               {exportar.isError ? <Alerta tom="erro">{mensagemDeErro(exportar.error)}</Alerta> : null}
               {exportar.isSuccess ? <Alerta tom="sucesso">Arquivo JSON com os dados do usuário gerado.</Alerta> : null}

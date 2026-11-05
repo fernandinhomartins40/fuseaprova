@@ -113,6 +113,7 @@ export const NOMES_ACAO_AUDITORIA: Record<string, string> = {
   'usuario.bloquear': 'Bloqueou usuário',
   'usuario.desbloquear': 'Desbloqueou usuário',
   'usuario.teste_liberar': 'Liberou teste de 24 h',
+  'usuario.teste_revogar': 'Revogou teste de 24 h',
   'usuario.papel': 'Mudou o papel',
   'usuario.exportar': 'Exportou dados (LGPD)',
   'usuario.anonimizar': 'Excluiu conta (LGPD)',

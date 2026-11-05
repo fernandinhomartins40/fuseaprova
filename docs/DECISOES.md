@@ -407,5 +407,6 @@ O cadastro continua sem teste (D35). O dono libera, aluno por aluno, um teste de
 - Não recebem o teste: quem já pagou, contas da equipe, contas bloqueadas e contas excluídas.
 - `temAcessoAoEstudo` volta a aceitar `teste_ate` no futuro. O prazo é conferido a cada requisição, então o bloqueio volta sozinho. O pacote offline não dura mais do que o teste. Pagar zera o teste.
 - A migração 0015 zera os prazos do teste de 3 dias antigo (D32) de quem não pagou. Sem ela, quem ganhou os 3 dias antes da D35 voltaria a estudar sem pagar.
+- **Revogar:** `DELETE /super/usuarios/:id/teste-24h` encerra o teste na hora (auditado, `usuario.teste_revogar`). O botão fica verde ("Liberar teste 24 h") sem teste e vermelho ("Revogar teste") com o teste ativo, ao lado do selo "Teste ativo até ...".
 - **Onde fica o botão:** na lista e na ficha do usuário, como "Liberar teste 24 h". Na ficha, o "Liberar" do concurso virou "Liberar sem pagamento (definitivo)", para o dono não confundir com o teste.
 - No site, quem está no teste vê a faixa "Teste liberado até dd/mm às hh:mm" com "Garantir acesso", e a tela do Pix tem seta para voltar à trilha. O app nativo só lê `acesso` e funciona igual.

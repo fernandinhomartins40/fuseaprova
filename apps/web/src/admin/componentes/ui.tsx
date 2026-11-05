@@ -62,7 +62,7 @@ export function Cartao({ children, className }: { children: ReactNode; className
 
 /* --------------------------------------------------------------- botões */
 
-type VarianteBotao = 'primario' | 'secundario' | 'perigo' | 'fantasma';
+type VarianteBotao = 'primario' | 'secundario' | 'perigo' | 'sucesso' | 'fantasma';
 
 export function Botao({
   variante = 'secundario',

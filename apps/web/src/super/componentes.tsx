@@ -327,7 +327,7 @@ export function Cartoes({ children, rotulo }: { children: ReactNode; rotulo: str
 export interface ItemAcao {
   rotulo: string;
   aoClicar: () => void;
-  variante?: 'primario' | 'perigo';
+  variante?: 'primario' | 'perigo' | 'sucesso';
   carregando?: boolean;
   /** Fica à mostra no celular (as outras vão para a folha "Mais ações"). */
   principal?: boolean;

@@ -1353,6 +1353,15 @@ export const ROTAS = {
     resposta: sa.TesteLiberadoResposta,
     limite: LIMITE_SUPER,
   }),
+  superUsuarioTesteRevogar: rota({
+    metodo: 'DELETE',
+    caminho: '/super/usuarios/:id/teste-24h',
+    guarda: 'superadmin',
+    descricao: 'D39: encerra na hora o teste de 24 horas de um aluno.',
+    params: IdParams,
+    resposta: OkResposta,
+    limite: LIMITE_SUPER,
+  }),
   superUsuarioRevogarSessao: rota({
     metodo: 'DELETE',
     caminho: '/super/usuarios/:id/sessoes/:sessaoId',

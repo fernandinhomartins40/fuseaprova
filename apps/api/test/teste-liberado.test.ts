@@ -73,6 +73,20 @@ describe('teste de 24 h liberado pelo superadmin (D39)', () => {
     expect((await liberar(b.id)).statusCode).toBe(409);
   });
 
+  it('revogar encerra o teste na hora', async () => {
+    const a = await t.cadastrar();
+    await liberar(a.id);
+    expect((await t.chamar('trilha', { cookie: a.cookie })).statusCode).toBe(200);
+    const r = await t.chamar('superUsuarioTesteRevogar', { cookie: sup.cookie, params: { id: a.id } });
+    expect(r.statusCode, r.body).toBe(200);
+    expect((await t.chamar('trilha', { cookie: a.cookie })).statusCode).toBe(402);
+    expect((await usuario(t, a.id)).testeAte).toBeNull();
+    const [aud] = await t.db.select().from(schema.auditoria).where(eq(schema.auditoria.acao, 'usuario.teste_revogar'));
+    expect(aud).toMatchObject({ alvo: `usuario:${a.id}` });
+    const denovo = await t.chamar('superUsuarioTesteRevogar', { cookie: sup.cookie, params: { id: a.id } });
+    expect(denovo.json().erro).toBe('Este aluno não está com teste ativo.');
+  });
+
   it('só o superadmin libera', async () => {
     const a = await t.cadastrar();
     const adm = await t.admin();

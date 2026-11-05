@@ -356,7 +356,7 @@ describe('teste de 24 h na lista de usuários (D39)', () => {
     ...extra,
   });
 
-  it('o botão libera o teste do aluno da linha; quem pagou não tem botão', async () => {
+  it('verde libera o teste do aluno da linha, vermelho revoga; quem pagou não tem botão', async () => {
     let liberado = false;
     const pago = { ...aluno({ acesso: true, pago: true }), id: '99999999-9999-4999-8999-999999999999', nome: 'Aluno Pago' };
     const f = simularFetch({
@@ -367,11 +367,22 @@ describe('teste de 24 h na lista de usuários (D39)', () => {
         liberado = true;
         return { ok: true, testeAte: '2099-11-06T15:40:00.000Z' };
       },
+      'DELETE /super/usuarios/:id/teste-24h': () => {
+        liberado = false;
+        return { ok: true };
+      },
     });
     renderizarSuper('/super/usuarios');
-    await userEvent.click(await screen.findByRole('button', { name: 'Liberar teste de 24 horas para Louise Almeida' }));
-    expect(await screen.findByText(/Teste até/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Renovar teste de 24 horas para Louise Almeida' })).toBeInTheDocument();
+    const liberar = await screen.findByRole('button', { name: 'Liberar teste de 24 horas para Louise Almeida' });
+    expect(liberar.className).toMatch(/sucesso/);
+    await userEvent.click(liberar);
+    expect(await screen.findByText(/Teste ativo até/)).toBeInTheDocument();
+    const revogar = screen.getByRole('button', { name: 'Revogar teste de 24 horas para Louise Almeida' });
+    expect(revogar).toHaveTextContent('Revogar teste');
+    expect(revogar.className).toMatch(/perigo/);
+    await userEvent.click(revogar);
+    expect(await screen.findByRole('button', { name: 'Liberar teste de 24 horas para Louise Almeida' })).toBeInTheDocument();
+    expect(f.chamadas.some((c) => c.metodo === 'DELETE' && c.caminho === `/super/usuarios/${IDS.usuario}/teste-24h`)).toBe(true);
     expect(screen.queryByRole('button', { name: /teste de 24 horas para Aluno Pago/ })).not.toBeInTheDocument();
     expect(f.chamadas.some((c) => c.metodo === 'POST' && c.caminho === `/super/usuarios/${IDS.usuario}/teste-24h`)).toBe(true);
   });
@@ -392,6 +403,7 @@ describe('teste de 24 h na ficha do usuário (D39)', () => {
     expect(await screen.findByRole('button', { name: /sem pagamento, de forma definitiva/ })).toHaveTextContent('Liberar sem pagamento (definitivo)');
     await userEvent.click(screen.getByRole('button', { name: 'Liberar teste 24 h' }));
     expect(await screen.findByText(/Teste liberado até .* o acesso fecha sozinho/)).toBeInTheDocument();
-    expect(await screen.findByRole('button', { name: 'Renovar teste 24 h' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Revogar teste' })).toBeInTheDocument();
+    expect(screen.getByText(/Teste ativo até/)).toBeInTheDocument();
   });
 });
