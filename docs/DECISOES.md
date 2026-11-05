@@ -371,3 +371,14 @@ O dono retirou o teste de 3 dias, porque as pessoas estavam confundindo. O fluxo
 - **Retirados:** o início do teste na próxima visita (`teste_pendente`), as travas de CPF, e-mail, navegador e IP (`testeGratis.ts`), o job `avisar-teste` com os e-mails, a faixa "Teste grátis: faltam N dias" e os textos da landing, do cadastro e dos termos.
 - **Mantidos no banco, sem efeito:** as colunas `teste_ate` e `teste_pendente` e a tabela `testes_usados`, que a limpeza legal apaga no prazo de 24 meses. O `/me` continua devolvendo `acessoPago` e `testeAte` (sempre null) para o app publicado.
 - **Pacote offline:** volta a valer o prazo normal, porque só quem pagou o gera.
+
+## D36. Estudar para mais de um cargo até o edital (05/11/2026, pedido do dono)
+Quem ainda está em dúvida sobre o cargo pode estudar as matérias de outras áreas junto com as do seu cargo, até o edital sair. Tudo fica no servidor e no site, sem atualizar o app nativo: o app publicado só desenha a trilha que a API manda.
+
+- **Banco:** `usuarios.areas_extras` (lista de `area_cargo`, vazia por padrão). O cargo principal continua sendo `cargo_id`/`area`.
+- **Trilha:** `areasDaTrilha` (`@fuse/shared`) junta a área do cargo e as extras. As unidades específicas de cada área alternam uma seção de cada, e o conjunto segue intercalado com as comuns (3 : 5). As lições, o pacote offline e o desempenho já usavam a área de cada unidade, então funcionam sem mudança.
+- **Escolha:** em Configurações, "Estudar também para", com as áreas que têm cargo no concurso. `PATCH /me` com `areasExtras` troca a lista inteira. A área do próprio cargo é ignorada.
+- **Edital:** com o edital publicado, as extras deixam de valer (trilha e `/me`), e escolher extras é recusado. O estudo segue o cargo do edital, como no PRD.
+- **Trocar de concurso** limpa as extras, porque eram do concurso anterior.
+- **Simulado:** continua por cargo, escolhido na tela do simulado.
+- **App nativo:** o app publicado não mostra a escolha, mas mostra a trilha com as áreas escolhidas no site. Um próximo AAB já leva a escolha junto.

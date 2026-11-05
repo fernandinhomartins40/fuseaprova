@@ -99,6 +99,13 @@
       "when": 1793716525116,
       "tag": "0013_apostilas",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1793884765889,
+      "tag": "0014_varias_areas",
+      "breakpoints": true
     }
   ]
 }

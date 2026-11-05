@@ -114,6 +114,8 @@ interface SimuladoMock {
 
 function novoEstado() {
   return {
+    /** D36: outras áreas estudadas junto com a do cargo. */
+    areasExtras: [] as AreaCargo[],
     /** D21: concursos que o aluno acompanha ({ id, acesso }) e qual está ativo. */
     // (o id é o de CONCURSO_ID, declarado mais abaixo: novoEstado() roda antes dele existir)
     seguidos: [{ id: '00000000-0000-4000-8000-0000000c0001', acesso: false }] as {
@@ -403,6 +405,7 @@ function me() {
     },
     cargo: cg ? { id: cg.id, nome: cg.nome, area: cg.area, generico: cg.generico } : null,
     area: cg?.area ?? null,
+    areasExtras: estado.modoEdital ? [] : estado.areasExtras.filter((a) => a !== cg?.area),
     metaDiaria: u.metaDiaria,
     lembreteHora: u.lembreteHora,
     notificacoes: u.notificacoes,
@@ -695,8 +698,10 @@ const H: Partial<Record<NomeRota, Handler>> = {
       apelidoLiga: string | null;
       sons: boolean;
       onboardingConcluido: true;
+      areasExtras: AreaCargo[];
     }>;
     const u = estado.usuario;
+    if (c.areasExtras) estado.areasExtras = [...new Set(c.areasExtras)];
     if (c.cargoId) {
       if (!cargosAtivos().some((x) => x.id === c.cargoId))
         throw new Falha(404, 'nao_encontrado', 'Cargo não encontrado.');

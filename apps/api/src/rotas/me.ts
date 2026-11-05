@@ -63,6 +63,26 @@ export function rotasMe(r: Registrador): void {
         await guardarCargoNoConcurso(deps.db, usuario, concurso.id, cargo, agora);
       }
     }
+    // D36: outras áreas para estudar junto, até o edital sair. Só áreas com cargo no concurso.
+    if (corpo.areasExtras !== undefined) {
+      if (!podeEstudar(usuario.papel)) throw falha('proibido', 'Contas da equipe não escolhem cargo.');
+      const concurso = await concursoDoUsuario(deps.db, usuario);
+      if (!concurso) throw falha('validacao', 'Escolha um concurso primeiro.');
+      if (modoEdital(concurso) && corpo.areasExtras.length) {
+        throw falha('validacao', 'O edital saiu: agora o estudo segue só o seu cargo do edital.', {
+          areasExtras: 'O edital saiu: estude pelo seu cargo do edital.',
+        });
+      }
+      const doConcurso = await deps.db
+        .select({ area: cargos.area })
+        .from(cargos)
+        .where(and(eq(cargos.concursoId, concurso.id), eq(cargos.ativo, true)));
+      const validas = new Set(doConcurso.map((c) => c.area));
+      if (corpo.areasExtras.some((a) => !validas.has(a))) {
+        throw falha('validacao', 'Escolha áreas da lista.', { areasExtras: 'Escolha áreas da lista.' });
+      }
+      set.areasExtras = [...new Set(corpo.areasExtras)];
+    }
     if (corpo.metaDiaria !== undefined) set.metaDiaria = corpo.metaDiaria;
     if (corpo.lembreteHora !== undefined) set.lembreteHora = corpo.lembreteHora;
     if (corpo.notificacoes !== undefined) set.notificacoes = corpo.notificacoes;

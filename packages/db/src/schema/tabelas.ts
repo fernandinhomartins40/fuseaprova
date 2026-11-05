@@ -317,6 +317,11 @@ export const usuarios = pgTable(
     concursoId: uuid('concurso_id').references(() => concursos.id),
     cargoId: uuid('cargo_id').references(() => cargos.id),
     area: areaCargoEnum('area'),
+    /**
+     * extra D36: outras áreas que o aluno estuda junto com a do cargo, até o edital sair. A trilha
+     * soma as unidades específicas delas; com o edital publicado, vale só o cargo.
+     */
+    areasExtras: areaCargoEnum('areas_extras').array().notNull().default(sql`'{}'::area_cargo[]`),
     metaDiaria: smallint('meta_diaria').notNull().default(1),
     /** 'HH:MM' em São Paulo. */
     lembreteHora: varchar('lembrete_hora', { length: 5 }),

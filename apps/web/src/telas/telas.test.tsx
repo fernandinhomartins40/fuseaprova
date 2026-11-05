@@ -157,6 +157,19 @@ describe('telas do aluno contra a API simulada', () => {
     ua.mockRestore();
   });
 
+  it('D36: em Configurações, o aluno marca outra área para estudar junto até o edital', async () => {
+    const api = ligarApiSimulada();
+    await api.cenario('aluno');
+    abrir('/configuracoes');
+    const educacao = await screen.findByRole('checkbox', { name: 'Educação' });
+    expect(educacao).toHaveAttribute('aria-checked', 'false');
+    await userEvent.click(educacao);
+    await waitFor(() => expect(screen.getByRole('checkbox', { name: 'Educação' })).toHaveAttribute('aria-checked', 'true'));
+    const me = (await (await api.fn('/api/me')).json()) as { areasExtras: string[] };
+    expect(me.areasExtras).toEqual(['educacao']);
+    await limparTudo();
+  });
+
   it('1ª compra: escolher outro concurso muda o Pix para esse concurso, a R$ 397', async () => {
     const api = ligarApiSimulada();
     await api.cenario('semAcesso');

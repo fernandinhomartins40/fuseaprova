@@ -2,7 +2,7 @@
  * /me (perfil, preferências e LGPD) e loja de gemas.
  */
 import { z } from 'zod';
-import { METAS_DIARIAS } from '../dominio.js';
+import { AREAS_CARGO, METAS_DIARIAS } from '../dominio.js';
 import {
   Avatar,
   ContadoresUsuario,
@@ -56,6 +56,8 @@ export const MeResposta = ContadoresUsuario.extend({
     .object({ id: Uuid, nome: z.string(), area: ZAreaCargo, generico: z.boolean() })
     .nullable(),
   area: ZAreaCargo.nullable(),
+  /** D36: outras áreas estudadas junto com a do cargo, até o edital sair (vazio com o edital). */
+  areasExtras: z.array(ZAreaCargo).default([]),
   metaDiaria: ZMetaDiaria,
   lembreteHora: Hora.nullable(),
   notificacoes: z.boolean(),
@@ -90,6 +92,8 @@ export type MeResposta = z.infer<typeof MeResposta>;
 export const MeAtualizarEntrada = z
   .object({
     cargoId: Uuid,
+    /** D36: substitui a lista de áreas extras (a área do cargo é ignorada se vier junto). */
+    areasExtras: z.array(ZAreaCargo).max(AREAS_CARGO.length),
     metaDiaria: ZMetaDiaria,
     lembreteHora: Hora.nullable(),
     notificacoes: z.boolean(),

@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { GEMAS, PROTETORES_MAX, nomeComSobrenomeAbreviado } from '@fuse/shared';
+import { AREAS_CARGO, GEMAS, NOMES_AREA, PROTETORES_MAX, nomeComSobrenomeAbreviado, type AreaCargo } from '@fuse/shared';
 import {
   AlterarSenhaEntrada,
   MENSAGENS_CADASTRO,
@@ -100,7 +100,7 @@ export default function Configuracoes() {
     mutationFn: (corpo: MeAtualizarEntrada) => chamar('meAtualizar', { corpo }),
     onSuccess: (novo, corpo) => {
       qc.setQueryData(CHAVES.me, novo);
-      if ('cargoId' in corpo) void qc.invalidateQueries({ queryKey: CHAVES.trilha });
+      if ('cargoId' in corpo || 'areasExtras' in corpo) void qc.invalidateQueries({ queryKey: CHAVES.trilha });
       toast('Preferências salvas', 'sucesso');
     },
     onError: (e) => {
@@ -124,6 +124,13 @@ export default function Configuracoes() {
   const cargos = (concurso.data?.cargos ?? []).filter((c) =>
     concurso.data?.modoEdital ? !c.generico : true,
   );
+  // D36: até o edital sair, dá para estudar as áreas de outros cargos junto com a do cargo.
+  const outrasAreas = concurso.data?.modoEdital || !u.area
+    ? []
+    : AREAS_CARGO.filter((a) => a !== u.area && cargos.some((c) => c.area === a));
+  const extras = u.areasExtras ?? [];
+  const alternarArea = (a: AreaCargo) =>
+    atualizar.mutate({ areasExtras: extras.includes(a) ? extras.filter((x) => x !== a) : [...extras, a] });
   const usandoApelido = apelido !== null ? true : u.apelidoLiga !== null;
   const valorApelido = apelido ?? u.apelidoLiga ?? '';
 
@@ -224,6 +231,31 @@ export default function Configuracoes() {
             ))}
           </select>
         </label>
+        {outrasAreas.length ? (
+          <div className={s.campo}>
+            <span className={s.rotulo} id="areas-rotulo">
+              Estudar também para
+            </span>
+            <p className={s.ajuda}>
+              Em dúvida sobre o cargo? Até o edital sair, a sua trilha pode ter as matérias de
+              outras áreas junto com as do seu cargo.
+            </p>
+            <div role="group" aria-labelledby="areas-rotulo" className={s.opcoes}>
+              {outrasAreas.map((a) => (
+                <button
+                  key={a}
+                  type="button"
+                  role="checkbox"
+                  aria-checked={extras.includes(a)}
+                  className={[s.opcao, extras.includes(a) ? s.opcaoOn : ''].join(' ')}
+                  onClick={() => alternarArea(a)}
+                >
+                  {NOMES_AREA[a]}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
         <div className={s.campo}>
           <span className={s.rotulo} id="meta-rotulo">
             Meta diária

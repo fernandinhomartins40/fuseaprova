@@ -5,6 +5,8 @@
 import { and, asc, eq, gte, inArray, isNull, lt, or, sql } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import {
+  alternarListas,
+  areasDaTrilha,
   diaSP,
   estadoDaTrilha,
   inicioDoDiaSP,
@@ -33,11 +35,17 @@ export interface EstruturaTrilha {
   unidades: { unidade: Unidade; disciplina: Disciplina; secoes: { secao: Secao; licoes: Licao[] }[] }[];
 }
 
-/** Unidades visíveis ao aluno (comuns + da área), na ordem intercalada. */
-export async function estruturaDaTrilha(db: Db, u: Pick<Usuario, 'concursoId' | 'area'>): Promise<EstruturaTrilha | null> {
+type AlunoTrilha = Pick<Usuario, 'concursoId' | 'area'> & Partial<Pick<Usuario, 'areasExtras'>>;
+
+/**
+ * Unidades visíveis ao aluno (comuns + da área do cargo + das áreas extras antes do edital, D36),
+ * na ordem intercalada.
+ */
+export async function estruturaDaTrilha(db: Db, u: AlunoTrilha): Promise<EstruturaTrilha | null> {
   const concurso = await concursoDoUsuario(db, u);
   if (!concurso) return null;
   const edital = modoEdital(concurso);
+  const areas = areasDaTrilha(u.area, u.areasExtras ?? [], edital);
   const us = await db
     .select({ unidade: unidades, disciplina: disciplinas })
     .from(unidades)
@@ -45,7 +53,7 @@ export async function estruturaDaTrilha(db: Db, u: Pick<Usuario, 'concursoId' | 
     .where(
       and(
         eq(unidades.concursoId, concurso.id),
-        u.area ? or(isNull(unidades.area), eq(unidades.area, u.area)) : isNull(unidades.area),
+        areas.length ? or(isNull(unidades.area), inArray(unidades.area, areas)) : isNull(unidades.area),
       ),
     )
     .orderBy(asc(unidades.ordem), asc(unidades.criadoEm));
@@ -61,12 +69,13 @@ export async function estruturaDaTrilha(db: Db, u: Pick<Usuario, 'concursoId' | 
   const secoesPorUnidade = agrupar(ss, (s) => s.unidadeId);
 
   // Intercala por seção (3 comuns : 5 específicas) e ordena as unidades pela primeira aparição.
+  // Com áreas extras (D36), as específicas alternam uma seção de cada área.
   const comuns = us.filter((x) => x.unidade.area === null);
-  const especificas = us.filter((x) => x.unidade.area !== null);
   const secoesDe = (lista: typeof us) =>
     lista.flatMap((x) => (secoesPorUnidade.get(x.unidade.id) ?? []).map((s) => s.unidadeId));
+  const especificas = alternarListas(areas.map((a) => secoesDe(us.filter((x) => x.unidade.area === a))));
   const ordemUnidades: string[] = [];
-  for (const uid of intercalarSecoes(secoesDe(comuns), secoesDe(especificas))) {
+  for (const uid of intercalarSecoes(secoesDe(comuns), especificas)) {
     if (!ordemUnidades.includes(uid)) ordemUnidades.push(uid);
   }
   for (const x of us) if (!ordemUnidades.includes(x.unidade.id)) ordemUnidades.push(x.unidade.id);
@@ -99,7 +108,7 @@ export interface TrilhaCalculada {
   progresso: Map<string, { vezes: number; melhorPrecisao: number | null; concluidaEm: Date | null }>;
 }
 
-export async function calcularTrilha(db: Db, u: Pick<Usuario, 'id' | 'concursoId' | 'area'>): Promise<TrilhaCalculada | null> {
+export async function calcularTrilha(db: Db, u: AlunoTrilha & Pick<Usuario, 'id'>): Promise<TrilhaCalculada | null> {
   const estrutura = await estruturaDaTrilha(db, u);
   if (!estrutura) return null;
   const lista: { licao: Licao; secao: Secao; unidade: Unidade }[] = [];

@@ -1,0 +1,1 @@
+ALTER TABLE "usuarios" ADD COLUMN "areas_extras" "area_cargo"[] DEFAULT '{}'::area_cargo[] NOT NULL;

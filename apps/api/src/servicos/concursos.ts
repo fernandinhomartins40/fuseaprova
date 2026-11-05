@@ -77,7 +77,13 @@ async function ativarLinha(
 ): Promise<void> {
   await tx
     .update(usuarios)
-    .set({ concursoId: linha.concursoId, cargoId: linha.cargoId, area: linha.area })
+    .set({
+      concursoId: linha.concursoId,
+      cargoId: linha.cargoId,
+      area: linha.area,
+      // D36: as áreas extras eram do concurso anterior; no mesmo concurso, ficam.
+      areasExtras: sql`case when ${usuarios.concursoId} = ${linha.concursoId} then ${usuarios.areasExtras} else '{}'::area_cargo[] end`,
+    })
     .where(eq(usuarios.id, usuarioId));
 }
 
@@ -364,7 +370,7 @@ export async function deixarConcurso(deps: Deps, u: Usuario, concursoId: string,
         .orderBy(asc(usuariosConcursos.acessoEm))
         .limit(1);
       if (outro) await ativarLinha(tx, u.id, outro);
-      else await tx.update(usuarios).set({ concursoId: null, cargoId: null, area: null }).where(eq(usuarios.id, u.id));
+      else await tx.update(usuarios).set({ concursoId: null, cargoId: null, area: null, areasExtras: [] }).where(eq(usuarios.id, u.id));
     }
   });
   return montarMeusConcursos(deps, await recarregar(deps.db, u.id), agora);
