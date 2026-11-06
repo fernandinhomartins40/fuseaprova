@@ -282,10 +282,13 @@ fi
 # ---------------------------------------------------------------------------
 # Diretórios de dados do host (dono 1000 = usuário node dos containers)
 # ---------------------------------------------------------------------------
-mkdir -p "$ARQUIVOS/provas" "$ARQUIVOS/uploads" "$BACKUPS/diario" "$BACKUPS/semanal"
+mkdir -p "$ARQUIVOS/provas" "$ARQUIVOS/uploads" "$ARQUIVOS/videoaulas" "$BACKUPS/diario" "$BACKUPS/semanal"
 chown -R "$UID_APP:$UID_APP" "$ARQUIVOS" "$BACKUPS"
 chmod 750 "$ARQUIVOS"
 chmod 700 "$BACKUPS"
+# D41: o nginx (outro usuário) lê as videoaulas pela pasta montada só para leitura.
+chmod 755 "$ARQUIVOS/videoaulas"
+find "$ARQUIVOS/videoaulas" -type f -exec chmod 644 {} +
 
 # Daqui em diante o compose usa as imagens NOVAS (o ambiente vence o .env).
 usar_imagens() {

@@ -25,6 +25,8 @@ export interface Config {
   velomail: { apiKey: string; url: string };
   vapid: { publica: string; privada: string; assunto: string };
   arquivosDir: string;
+  /** D41: o nginx entrega as videoaulas (X-Accel-Redirect); sem isso, o Node envia o arquivo. */
+  videoaulasXAccel: boolean;
   suporte: { whatsapp: string; email: string };
   nivelLog: string;
   /** D13: versão em produção (APP_VERSION embutida na imagem, ou DEPLOY_COMMIT). */
@@ -79,6 +81,7 @@ export function lerConfig(env: NodeJS.ProcessEnv = process.env): Config {
       assunto: env.VAPID_SUBJECT ?? 'mailto:contato@localhost',
     },
     arquivosDir: env.ARQUIVOS_DIR ?? join(tmpdir(), 'fuse-arquivos'),
+    videoaulasXAccel: env.VIDEOAULAS_X_ACCEL === '1',
     suporte: { whatsapp: env.SUPORTE_WHATSAPP ?? '', email: env.SUPORTE_EMAIL ?? '' },
     nivelLog: env.LOG_LEVEL ?? (ambiente === 'test' ? 'silent' : 'info'),
     versao: env.APP_VERSION || env.DEPLOY_COMMIT || 'desenvolvimento',

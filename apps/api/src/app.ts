@@ -267,7 +267,10 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
     } catch {
       throw new ErroHttp('nao_encontrado', 'Esta videoaula ainda não está disponível.');
     }
-    reply.header('Content-Type', 'video/mp4').header('Accept-Ranges', 'bytes').header('Cache-Control', 'private, max-age=86400');
+    // Vídeo regravado ganha slug novo (-v2), então o cache longo nunca fica com a versão velha.
+    reply.header('Content-Type', 'video/mp4').header('Cache-Control', 'private, max-age=2592000');
+    if (config.videoaulasXAccel) return reply.header('X-Accel-Redirect', `/_videoaulas/${slug}.mp4`).send();
+    reply.header('Accept-Ranges', 'bytes');
     const faixa = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range ?? '');
     if (!faixa || (faixa[1] === '' && faixa[2] === '')) {
       return reply.header('Content-Length', String(tamanho)).send(createReadStream(caminho));

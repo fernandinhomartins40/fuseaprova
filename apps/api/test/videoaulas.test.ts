@@ -53,6 +53,33 @@ describe('videoaulas (D41)', () => {
     expect((await pedir('proparoxitonas', a.cookie, 'bytes=5000-')).statusCode).toBe(416);
   });
 
+  it('com X-Accel, confere o acesso e deixa o nginx entregar', async () => {
+    const x = await criarAmbienteTeste({ config: { arquivosDir: arquivos, videoaulasXAccel: true } });
+    try {
+      const url = '/api/videoaulas/proparoxitonas';
+      const anonimo = await x.app.inject({ method: 'GET', url });
+      expect(anonimo.statusCode).toBe(401);
+      expect(anonimo.headers['x-accel-redirect']).toBeUndefined();
+      const semPagar = await x.cadastrar();
+      const bloqueado = await x.app.inject({ method: 'GET', url, headers: { cookie: semPagar.cookie } });
+      expect(bloqueado.statusCode).toBe(402);
+      expect(bloqueado.headers['x-accel-redirect']).toBeUndefined();
+
+      const a = await x.alunoPago();
+      const ok = await x.app.inject({ method: 'GET', url, headers: { cookie: a.cookie, range: 'bytes=0-99' } });
+      expect(ok.statusCode).toBe(200);
+      expect(ok.headers['x-accel-redirect']).toBe('/_videoaulas/proparoxitonas.mp4');
+      expect(ok.headers['content-type']).toBe('video/mp4');
+      expect(ok.rawPayload.length).toBe(0);
+
+      const sem = await x.app.inject({ method: 'GET', url: '/api/videoaulas/nao-existe', headers: { cookie: a.cookie } });
+      expect(sem.statusCode).toBe(404);
+      expect(sem.headers['x-accel-redirect']).toBeUndefined();
+    } finally {
+      await x.fechar();
+    }
+  }, 60_000);
+
   it('slug inválido ou arquivo que não existe dão 404', async () => {
     const a = await t.alunoPago();
     expect((await pedir('..%2Fsegredo', a.cookie)).statusCode).toBe(404);

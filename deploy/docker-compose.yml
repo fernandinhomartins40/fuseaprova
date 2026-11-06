@@ -213,6 +213,9 @@ services:
     mem_limit: 64m
     environment:
       TZ: America/Sao_Paulo
+    # D41: só a pasta das videoaulas; o nginx não enxerga uploads, provas nem apostilas.
+    volumes:
+      - ${FUSEAPROVA_ARQUIVOS_HOST:-/root/fuseaprova/arquivos}/videoaulas:/srv/fuse/videoaulas:ro
     ports:
       - "127.0.0.1:${FUSEAPROVA_PORTA:-3600}:8080"
     networks: [interna]
