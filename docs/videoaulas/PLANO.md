@@ -196,7 +196,7 @@ O lote exato de cada vídeo está no índice (§9).
 ## 8. Pendências que dependem do dono
 
 - **Conhecimentos Gerais:** as questões são de outros municípios, então os roteiros ensinam o conceito e a estratégia, sem decorar fatos locais (ver o aviso em [roteiros-06](roteiros-06-conhecimentos-gerais.md)). Se quiser vídeos sobre um município específico, eles entram num lote à parte, com fontes oficiais.
-- **VA-048 (aumentos sucessivos):** as 7 questões apontam hoje para `aumento-e-desconto-v2`. Quando o VA-048 sair, a migração do lote troca o slug delas.
+- **VA-048 (aumentos sucessivos):** no ar; a migração 0018 trocou as 7 questões de `aumento-e-desconto-v2` para `aumentos-sucessivos`.
 - **Itens ⚖️:** multas e pontos do CTB, percentuais do PNAE, números do Censo e da PNAB mudam. Conferir no lote, antes de gravar.
 - **VA-099 (grampos):** a numeração dos grampos varia entre fabricantes. Confirmar a referência usada.
 - **Versões no ar:** recomprimidas no padrão do §4 (migração 0017): 1,5 e 1,8 MB. Os arquivos antigos seguem na VPS até nenhuma sessão aberta apontar para eles.
@@ -205,56 +205,56 @@ O lote exato de cada vídeo está no índice (§9).
 
 | VA | Título | Slug | Questões | Lote | Situação | Roteiro |
 |---|---|---|---:|---:|---|---|
-| VA-001 | Interpretação: o que o texto NÃO diz | `interpretacao-o-que-o-texto-nao-diz` | 59 | 1 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-002 | Conectivos: o sentido de cada um | `conectivos-relacoes-de-sentido` | 57 | 1 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-003 | Advérbios e as circunstâncias | `adverbios-circunstancias` | 56 | 1 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-004 | Divisão silábica e contagem de sílabas | `divisao-silabica` | 53 | 1 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-005 | Dígrafo × encontro consonantal | `digrafo-encontro-consonantal` | 51 | 1 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-006 | Termos da oração: sujeito, objeto e predicativo | `termos-da-oracao` | 40 | 1 | em revisão | [01-portugues](roteiros-01-portugues.md) |
+| VA-001 | Interpretação: o que o texto NÃO diz | `interpretacao-o-que-o-texto-nao-diz` | 59 | 1 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-002 | Conectivos: o sentido de cada um | `conectivos-relacoes-de-sentido` | 57 | 1 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-003 | Advérbios e as circunstâncias | `adverbios-circunstancias` | 56 | 1 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-004 | Divisão silábica e contagem de sílabas | `divisao-silabica` | 53 | 1 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-005 | Dígrafo × encontro consonantal | `digrafo-encontro-consonantal` | 51 | 1 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-006 | Termos da oração: sujeito, objeto e predicativo | `termos-da-oracao` | 40 | 1 | no ar | [01-portugues](roteiros-01-portugues.md) |
 | VA-007 | Proparoxítonas: todas levam acento | `proparoxitonas-v2` | 39 | 0 | no ar | [01-portugues](roteiros-01-portugues.md) |
-| VA-008 | Classes de palavras: como descobrir a classe | `classes-de-palavras` | 34 | 2 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-009 | Letras e sons: S com som de Z, C, G e H | `letras-e-sons` | 32 | 2 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-010 | Sinônimos e antônimos pelo contexto | `sinonimos-antonimos-contexto` | 27 | 2 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-011 | Crase: quando usar | `crase` | 24 | 2 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-012 | Tempos e modos verbais | `tempos-e-modos-verbais` | 23 | 2 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-013 | S final: plural ou parte da palavra? | `s-final-plural` | 21 | 2 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-014 | Adjunto adverbial e orações adverbiais | `adjunto-adverbial` | 20 | 2 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-015 | Vírgula: os usos que mais caem | `virgula` | 19 | 3 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-016 | Paroxítonas: as terminações que levam acento | `paroxitonas` | 18 | 3 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-017 | Orações substantivas: a função do "que" | `oracoes-substantivas` | 17 | 3 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-018 | Formação de palavras: prefixo, sufixo e derivação | `formacao-de-palavras` | 16 | 3 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-019 | Oxítonas, monossílabos e acento diferencial | `oxitonas-monossilabos` | 15 | 3 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-020 | Tema central e ideia principal | `tema-central-do-texto` | 12 | 3 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-021 | Referência: a quem o pronome se refere | `referencia-pronominal` | 12 | 3 | em revisão | [01-portugues](roteiros-01-portugues.md) |
-| VA-022 | Hiato, ditongo e tritongo | `hiato-ditongo-tritongo` | 9 | 4 | roteiro | [01-portugues](roteiros-01-portugues.md) |
-| VA-023 | Preposições e seus sentidos | `preposicoes` | 8 | 4 | roteiro | [01-portugues](roteiros-01-portugues.md) |
-| VA-024 | Concordância verbal e nominal | `concordancia` | 8 | 4 | roteiro | [01-portugues](roteiros-01-portugues.md) |
-| VA-025 | Tipos e gêneros textuais | `tipos-e-generos-textuais` | 7 | 4 | roteiro | [01-portugues](roteiros-01-portugues.md) |
-| VA-026 | Problemas de multiplicar e dividir (e quando arredondar) | `multiplicar-dividir-arredondar` | 64 | 1 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-027 | Preço, troco, lucro e parcelas | `preco-troco-lucro` | 44 | 1 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-028 | Porcentagem: a parte, o total e o que falta | `porcentagem-parte-total` | 40 | 1 | em revisão | [02-matematica](roteiros-02-matematica.md) |
+| VA-008 | Classes de palavras: como descobrir a classe | `classes-de-palavras` | 34 | 2 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-009 | Letras e sons: S com som de Z, C, G e H | `letras-e-sons` | 32 | 2 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-010 | Sinônimos e antônimos pelo contexto | `sinonimos-antonimos-contexto` | 27 | 2 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-011 | Crase: quando usar | `crase` | 24 | 2 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-012 | Tempos e modos verbais | `tempos-e-modos-verbais` | 23 | 2 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-013 | S final: plural ou parte da palavra? | `s-final-plural` | 21 | 2 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-014 | Adjunto adverbial e orações adverbiais | `adjunto-adverbial` | 20 | 2 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-015 | Vírgula: os usos que mais caem | `virgula` | 19 | 3 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-016 | Paroxítonas: as terminações que levam acento | `paroxitonas` | 18 | 3 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-017 | Orações substantivas: a função do "que" | `oracoes-substantivas` | 17 | 3 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-018 | Formação de palavras: prefixo, sufixo e derivação | `formacao-de-palavras` | 16 | 3 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-019 | Oxítonas, monossílabos e acento diferencial | `oxitonas-monossilabos` | 15 | 3 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-020 | Tema central e ideia principal | `tema-central-do-texto` | 12 | 3 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-021 | Referência: a quem o pronome se refere | `referencia-pronominal` | 12 | 3 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-022 | Hiato, ditongo e tritongo | `hiato-ditongo-tritongo` | 9 | 4 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-023 | Preposições e seus sentidos | `preposicoes` | 8 | 4 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-024 | Concordância verbal e nominal | `concordancia` | 8 | 4 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-025 | Tipos e gêneros textuais | `tipos-e-generos-textuais` | 7 | 4 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-026 | Problemas de multiplicar e dividir (e quando arredondar) | `multiplicar-dividir-arredondar` | 64 | 1 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-027 | Preço, troco, lucro e parcelas | `preco-troco-lucro` | 44 | 1 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-028 | Porcentagem: a parte, o total e o que falta | `porcentagem-parte-total` | 40 | 1 | no ar | [02-matematica](roteiros-02-matematica.md) |
 | VA-029 | Aumento e desconto percentual | `aumento-e-desconto-v2` | 38 | 0 | no ar | [02-matematica](roteiros-02-matematica.md) |
-| VA-030 | Conversão de unidades: quilo, litro e metro | `conversao-de-unidades` | 33 | 1 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-031 | Regra de três: simples, inversa e composta | `regra-de-tres` | 29 | 1 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-032 | Frações de uma quantidade | `fracoes-de-uma-quantidade` | 29 | 1 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-033 | Média simples e ponderada | `media-simples-ponderada` | 27 | 2 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-034 | Progressão aritmética e geométrica | `progressao-aritmetica-geometrica` | 25 | 2 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-035 | Horas, minutos e salário por hora | `horas-e-minutos` | 24 | 2 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-036 | Datas, idades e calendário | `datas-idades-calendario` | 22 | 2 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-037 | Áreas de figuras planas | `areas-figuras-planas` | 20 | 2 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-038 | Razão e divisão proporcional | `razao-divisao-proporcional` | 16 | 2 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-039 | Função do 1º grau: substituir e isolar o x | `funcao-primeiro-grau` | 16 | 3 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-040 | Tabela de frequência e quartis | `tabela-de-frequencia` | 16 | 3 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-041 | Custo fixo, custo variável e lucro | `custo-fixo-variavel-lucro` | 14 | 3 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-042 | Mediana e moda | `mediana-moda` | 14 | 3 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-043 | Volume e capacidade | `volume-capacidade` | 14 | 3 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-044 | Contagem: princípio multiplicativo e combinações | `contagem-principio-multiplicativo` | 13 | 3 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-045 | Números decimais no dia a dia | `numeros-decimais` | 11 | 3 | em revisão | [02-matematica](roteiros-02-matematica.md) |
-| VA-046 | Raciocínio lógico: códigos, pior caso e paridade | `raciocinio-logico` | 10 | 4 | roteiro | [02-matematica](roteiros-02-matematica.md) |
-| VA-047 | Equação do 2º grau e parábola | `equacao-segundo-grau` | 8 | 4 | roteiro | [02-matematica](roteiros-02-matematica.md) |
-| VA-048 | Aumentos e reduções sucessivos | `aumentos-sucessivos` | 7 | 4 | roteiro | [02-matematica](roteiros-02-matematica.md) |
-| VA-049 | Sequências que se repetem | `sequencias-repetitivas` | 7 | 4 | roteiro | [02-matematica](roteiros-02-matematica.md) |
-| VA-050 | Sistemas de equações | `sistemas-de-equacoes` | 5 | 4 | roteiro | [02-matematica](roteiros-02-matematica.md) |
+| VA-030 | Conversão de unidades: quilo, litro e metro | `conversao-de-unidades` | 33 | 1 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-031 | Regra de três: simples, inversa e composta | `regra-de-tres` | 29 | 1 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-032 | Frações de uma quantidade | `fracoes-de-uma-quantidade` | 29 | 1 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-033 | Média simples e ponderada | `media-simples-ponderada` | 27 | 2 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-034 | Progressão aritmética e geométrica | `progressao-aritmetica-geometrica` | 25 | 2 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-035 | Horas, minutos e salário por hora | `horas-e-minutos` | 24 | 2 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-036 | Datas, idades e calendário | `datas-idades-calendario` | 22 | 2 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-037 | Áreas de figuras planas | `areas-figuras-planas` | 20 | 2 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-038 | Razão e divisão proporcional | `razao-divisao-proporcional` | 16 | 2 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-039 | Função do 1º grau: substituir e isolar o x | `funcao-primeiro-grau` | 16 | 3 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-040 | Tabela de frequência e quartis | `tabela-de-frequencia` | 16 | 3 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-041 | Custo fixo, custo variável e lucro | `custo-fixo-variavel-lucro` | 14 | 3 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-042 | Mediana e moda | `mediana-moda` | 14 | 3 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-043 | Volume e capacidade | `volume-capacidade` | 14 | 3 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-044 | Contagem: princípio multiplicativo e combinações | `contagem-principio-multiplicativo` | 13 | 3 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-045 | Números decimais no dia a dia | `numeros-decimais` | 11 | 3 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-046 | Raciocínio lógico: códigos, pior caso e paridade | `raciocinio-logico` | 10 | 4 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-047 | Equação do 2º grau e parábola | `equacao-segundo-grau` | 8 | 4 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-048 | Aumentos e reduções sucessivos | `aumentos-sucessivos` | 7 | 4 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-049 | Sequências que se repetem | `sequencias-repetitivas` | 7 | 4 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-050 | Sistemas de equações | `sistemas-de-equacoes` | 5 | 4 | no ar | [02-matematica](roteiros-02-matematica.md) |
 | VA-051 | Teoria das três idades dos arquivos | `arquivo-tres-idades` | 23 | 5 | roteiro | [03-especificos-gestao-publica](roteiros-03-especificos-gestao-publica.md) |
 | VA-052 | Métodos de arquivamento | `metodos-de-arquivamento` | 15 | 5 | roteiro | [03-especificos-gestao-publica](roteiros-03-especificos-gestao-publica.md) |
 | VA-053 | Sistemas de distribuição de medicamentos no hospital | `distribuicao-de-medicamentos` | 19 | 9 | roteiro | [04-especificos-saude](roteiros-04-especificos-saude.md) |
