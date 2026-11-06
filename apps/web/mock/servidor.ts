@@ -307,6 +307,7 @@ function paraAluno(q: QuestaoMock, revisao = false, id = q.id): QuestaoParaAluno
       macete: null,
       atencao: null,
     },
+    videoaula: null,
     revisao,
   };
 }

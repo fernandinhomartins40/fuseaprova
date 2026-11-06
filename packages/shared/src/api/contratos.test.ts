@@ -211,6 +211,7 @@ describe('outros contratos', () => {
         texto: 'Crase é a fusão de **a + a**.',
         exemplos: ['Vou à feira.'],
       },
+      videoaula: null,
       revisao: false,
     };
     expect(AnotacaoEntrada.safeParse({ texto: '   ' }).success).toBe(false);

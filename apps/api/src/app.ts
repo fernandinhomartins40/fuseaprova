@@ -21,6 +21,7 @@ import {
   HEADER_SEGUNDO_PLANO,
   NOME_COOKIE_SESSAO,
   nomeDownloadApostila,
+  SlugVideoaula,
   VOLUMES_APOSTILA,
   erroApi,
   instalarMensagensPtBr,
@@ -247,6 +248,41 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
     } catch {
       throw new ErroHttp('nao_encontrado');
     }
+  });
+
+  // D41: videoaulas dos temas, com a mesma guarda das imagens. Aceita Range: o <video> do navegador
+  // pede o arquivo em pedaços para começar logo e para o aluno avançar ou voltar.
+  app.get<{ Params: { slug: string } }>('/api/videoaulas/:slug', async (req, reply) => {
+    const u = req.usuario;
+    if (!u) throw new ErroHttp('nao_autenticado');
+    if (podeGerirConteudo(u.papel)) exigirConteudo(u);
+    else if (!podeEstudar(u.papel)) throw new ErroHttp('proibido');
+    else if (!temAcessoAoEstudo(u, deps.relogio.agora())) throw new ErroHttp('sem_acesso');
+    const slug = req.params.slug;
+    if (!SlugVideoaula.safeParse(slug).success) throw new ErroHttp('nao_encontrado');
+    const caminho = join(config.arquivosDir, 'videoaulas', `${slug}.mp4`);
+    let tamanho: number;
+    try {
+      tamanho = (await stat(caminho)).size;
+    } catch {
+      throw new ErroHttp('nao_encontrado', 'Esta videoaula ainda não está disponível.');
+    }
+    reply.header('Content-Type', 'video/mp4').header('Accept-Ranges', 'bytes').header('Cache-Control', 'private, max-age=86400');
+    const faixa = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range ?? '');
+    if (!faixa || (faixa[1] === '' && faixa[2] === '')) {
+      return reply.header('Content-Length', String(tamanho)).send(createReadStream(caminho));
+    }
+    // "bytes=-N" pede os N últimos bytes.
+    const inicio = faixa[1] === '' ? Math.max(0, tamanho - Number(faixa[2])) : Number(faixa[1]);
+    const fim = faixa[1] !== '' && faixa[2] !== '' ? Math.min(Number(faixa[2]), tamanho - 1) : tamanho - 1;
+    if (inicio > fim || inicio >= tamanho) {
+      return reply.status(416).header('Content-Range', `bytes */${tamanho}`).send();
+    }
+    return reply
+      .status(206)
+      .header('Content-Range', `bytes ${inicio}-${fim}/${tamanho}`)
+      .header('Content-Length', String(fim - inicio + 1))
+      .send(createReadStream(caminho, { start: inicio, end: fim }));
   });
 
   // D34: as apostilas em PDF, para o aluno que comprou. Stream (cada volume tem ~45 MB) e cada

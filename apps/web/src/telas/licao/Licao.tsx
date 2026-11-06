@@ -21,12 +21,14 @@ import {
   ErroTela,
   FolhaFeedback,
   GrupoAlternativas,
+  IconeCheio,
   IconeTraco,
   Imagem,
   Markdown,
   Modal,
   Pagina,
   useToast,
+  VideoAula,
 } from '../../ui';
 import { TRAVA_CONTINUAR_MS } from '../../ui/FolhaFeedback';
 import { EditorAnotacao } from '../anotacoes/EditorAnotacao';
@@ -86,6 +88,7 @@ function TelaLicao({ modo }: { modo: ModoLicao }) {
   const [resposta, setResposta] = useState<RespostaExibida | null>(null);
   const [verificando, setVerificando] = useState(false);
   const [aulaAberta, setAulaAberta] = useState(false);
+  const [videoAberto, setVideoAberto] = useState(false);
   const [sairAberto, setSairAberto] = useState(false);
   const [reportAberto, setReportAberto] = useState(false);
   const [fim, setFim] = useState<FimSessao | null>(null);
@@ -360,6 +363,8 @@ function TelaLicao({ modo }: { modo: ModoLicao }) {
 
   if (!questao) return <Carregando />;
   const aula = questao.aula;
+  // D41: o vídeo vem do servidor; o pacote offline antigo não traz o campo.
+  const videoaula = sx.modo === 'online' ? (questao.videoaula ?? null) : null;
 
   return (
     <Pagina comRodapeFixo className={s.pagina}>
@@ -404,6 +409,23 @@ function TelaLicao({ modo }: { modo: ModoLicao }) {
         </div>
       </div>
 
+      {videoaula ? (
+        <button
+          type="button"
+          className={[s.entendaTema, s.videoaula].join(' ')}
+          onClick={() => setVideoAberto(true)}
+        >
+          <span className={s.videoaulaPlay} aria-hidden="true">
+            <IconeCheio nome="play" tamanho={18} />
+          </span>
+          <span className={s.entendaTextos}>
+            <span className={s.videoaulaTitulo}>Assista à videoaula do tema</span>
+            <span className={s.entendaSub}>Menos de 1 minuto, sem dar a resposta</span>
+          </span>
+          <IconeTraco nome="chevron" tamanho={20} />
+        </button>
+      ) : null}
+
       {aula && !resposta ? (
         <button type="button" className={s.entendaTema} onClick={() => setAulaAberta(true)}>
           <Imagem nome="icone-dica" tamanho={30} />
@@ -421,7 +443,7 @@ function TelaLicao({ modo }: { modo: ModoLicao }) {
         correcao={resposta ? { gabarito: resposta.gabarito, marcada: selecionada! } : null}
         onSelecionar={(l) => !resposta && setSelecionada(l)}
         onConfirmar={resposta ? continuar : verificar}
-        atalhosGlobais={!sairAberto && !reportAberto && !aulaAberta}
+        atalhosGlobais={!sairAberto && !reportAberto && !aulaAberta && !videoAberto}
         rotulo="Alternativas da questão"
       />
 
@@ -491,6 +513,21 @@ function TelaLicao({ modo }: { modo: ModoLicao }) {
               "Entenda o tema" da correção.
             </p>
           </div>
+        </Modal>
+      ) : null}
+      {videoaula ? (
+        <Modal
+          aberto={videoAberto}
+          titulo="Videoaula"
+          onFechar={() => setVideoAberto(false)}
+          formato="folha"
+          rodape={
+            <Botao3D data-autofoco onClick={() => setVideoAberto(false)}>
+              VOLTAR PARA A QUESTÃO
+            </Botao3D>
+          }
+        >
+          <VideoAula slug={videoaula} />
         </Modal>
       ) : null}
       <ReportarProblema

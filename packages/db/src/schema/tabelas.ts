@@ -449,6 +449,8 @@ export const questoes = pgTable(
     dicaBolso: text('dica_bolso'),
     /** extra (D28): mini-aula "Entenda o tema". Sem ela, a API monta uma com a dica do assunto. */
     aula: jsonb('aula').$type<AulaJson>(),
+    /** extra (D41): videoaula do tema (slug do MP4 em ARQUIVOS_DIR/videoaulas). */
+    videoaula: text('videoaula'),
     status: statusQuestaoEnum('status').notNull().default('rascunho'),
     anuladaMotivo: text('anulada_motivo'),
     versao: integer('versao').notNull().default(1),

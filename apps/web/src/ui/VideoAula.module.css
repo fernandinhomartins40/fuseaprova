@@ -1,0 +1,29 @@
+/* Vídeo vertical 9:16, do tamanho que couber na folha sem rolar. */
+.moldura {
+  display: flex;
+  justify-content: center;
+}
+.video,
+.carregando {
+  width: min(100%, calc(62dvh * 9 / 16));
+  aspect-ratio: 9 / 16;
+  border-radius: var(--fa-r-lg);
+  background: #000;
+}
+.video {
+  display: block;
+}
+.carregando {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+}
+.aviso {
+  font-weight: 700;
+  color: var(--fa-ink-2);
+  text-align: center;
+  padding: 16px 8px;
+}

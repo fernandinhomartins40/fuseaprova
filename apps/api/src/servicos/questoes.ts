@@ -99,6 +99,7 @@ export async function carregarQuestoes(
         alternativas: r.q.alternativas,
         temDica: Boolean(dica),
         aula: aulaDaQuestao(r.q, r.a),
+        videoaula: r.q.videoaula,
         revisao: opcoes.revisao?.has(r.q.id) ?? false,
       },
       gabarito: r.q.gabarito ?? r.q.alternativas[0]?.letra ?? 'A',

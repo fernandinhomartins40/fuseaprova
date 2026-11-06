@@ -17,3 +17,4 @@ export const aoVoltarAoApp = soNoApp;
 export const compartilharArquivo = soNoApp;
 export const compartilharAgenda = soNoApp;
 export const carregarImagem = soNoApp;
+export const carregarVideo = soNoApp;

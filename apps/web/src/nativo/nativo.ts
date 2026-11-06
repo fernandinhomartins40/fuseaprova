@@ -203,6 +203,19 @@ export async function compartilharAgenda(nome: string, ics: string): Promise<voi
 
 const cacheImagens = new Map<string, Promise<string>>();
 
+/**
+ * D41: videoaula do servidor (exige a sessão) como blob URL, pelo HTTP nativo. Sem cache: cada vídeo
+ * tem uns 4 MB e quem chama libera a URL ao fechar.
+ */
+export async function carregarVideo(caminho: string): Promise<string> {
+  const r = await CapacitorHttp.get({ url: urlDoServidor(caminho), responseType: 'blob' });
+  if (r.status !== 200 || typeof r.data !== 'string') throw new Error(`video ${r.status}`);
+  const binario = atob(r.data);
+  const bytes = new Uint8Array(binario.length);
+  for (let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i);
+  return URL.createObjectURL(new Blob([bytes], { type: 'video/mp4' }));
+}
+
 /** Imagem do servidor (exige a sessão) como data URL, pelo HTTP nativo. */
 export function carregarImagem(caminho: string): Promise<string> {
   const url = urlDoServidor(caminho);

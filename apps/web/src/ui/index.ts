@@ -35,3 +35,4 @@ export {
 } from './Layout';
 export { Markdown } from './Markdown';
 export { AulaTema } from './AulaTema';
+export { VideoAula } from './VideoAula';

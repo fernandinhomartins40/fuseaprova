@@ -259,6 +259,12 @@ export const AulaQuestao = z.object({
 });
 export type AulaQuestao = z.infer<typeof AulaQuestao>;
 
+/** D41: nome do arquivo da videoaula, sem a extensão (`ARQUIVOS_DIR/videoaulas/<slug>.mp4`). */
+export const SlugVideoaula = z
+  .string()
+  .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/)
+  .max(60);
+
 /**
  * Questão como o aluno a vê ANTES de responder. Nunca inclui gabarito, explicação ou a pista
  * paga; a mini-aula (`aula`) não entrega a resposta e vai junto.
@@ -281,6 +287,8 @@ export const QuestaoParaAluno = z.object({
   temDica: z.boolean(),
   /** Mini-aula "Entenda o tema" (da questão ou, sem ela, montada com a dica do assunto). */
   aula: AulaQuestao.nullable(),
+  /** D41: videoaula do tema (slug; o MP4 sai em `/api/videoaulas/:slug`). O app antigo ignora. */
+  videoaula: SlugVideoaula.nullable(),
   /** Veio da fila de revisão vencida. */
   revisao: z.boolean(),
 });
