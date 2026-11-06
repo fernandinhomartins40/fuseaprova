@@ -25,7 +25,7 @@ A origem dos temas está em [docs/conteudo/videos-temas.md](../conteudo/videos-t
 
 - **Sem venda:** sem gancho, sem chamada e sem "link na bio". A aula começa explicando e termina com o resumo e "Volte para a questão".
 - **Sem a Capi:** só a logo pequena e translúcida no canto (`ModoVideoaula`).
-- **Até 60 s:** de 3 a 5 cenas, mais o resumo.
+- **Cerca de 60 s:** de 3 a 5 cenas, mais o resumo. No lote 1, os vídeos ficaram entre 45 e 65 s.
 - **Não resolve questão real:** os exemplos são próprios e a aula não entrega a resposta de nenhuma questão do banco.
 - **D27:** sem o nome da banca, da prefeitura ou do cargo na tela.
 - **Voz:** Matheus (ElevenLabs), semente 29, `speed` 1,06, `stability` 0,4 e `style` 0,6, iguais às duas que estão no ar.
@@ -63,8 +63,7 @@ As duas primeiras aulas tiveram cenas escritas à mão (`src/aula1`, `src/aula2`
 | `conta` | linhas de conta que aparecem com a fala | `Conta`, `useConta` |
 | `barra` | barra de porcentagem ou de partes | `BarraPercentual` |
 | `silabas` | palavras em sílabas, com tônica e contagem | `Silabas` |
-| `tabela` | 2 ou 3 colunas (natureza × pontos × multa) | nova, simples |
-| `linha-tempo` | datas e etapas em sequência | nova, simples |
+| `tabela`, `linha-tempo` | ainda não existem; criar no lote que precisar (VA-080, VA-122) | novas, simples |
 | `resumo` | o fecho padrão | `CenaFechoAula` |
 
 **Roteiro em JSON** (`roteiros/<slug>.json`): as falas no formato que `narracao.py` já lê, mais um bloco `cenas` com o tipo e os dados de cada cena:
@@ -83,7 +82,7 @@ As duas primeiras aulas tiveram cenas escritas à mão (`src/aula1`, `src/aula2`
 }
 ```
 
-**Ferramentas a criar** (no projeto Remotion, `marketing/stories-palmital`):
+**Ferramentas** (prontas, no projeto Remotion `marketing/stories-palmital`; a pronúncia de siglas e frações fica no campo `pronuncia` e os números vão por extenso em `scripts/fala.py`). Telas de cada lote em `roteiros/cenas/lote-NN.json`:
 
 1. `scripts/roteiro-md.py VA-NNN`: lê a seção do `.md` e gera o `roteiros/<slug>.json` com as falas e o fecho. O bloco `cenas` é preenchido na produção, seguindo as notas `_tela:_`.
 2. `src/videoaula/`: componente que monta o vídeo a partir do JSON, e uma composição registrada por slug em `Raiz.tsx`, a partir da lista de JSONs.
@@ -108,14 +107,14 @@ Medido no vídeo de proparoxítonas, com 44 s:
 ```
 ffmpeg -i <final>.mp4 -s 720x1280 -sws_flags lanczos -r 24 \
   -c:v libx264 -preset veryslow -tune animation -crf 30 -maxrate 900k -bufsize 1800k \
-  -pix_fmt yuv420p -c:a aac -b:a 64k -ac 1 -movflags +faststart <slug>.mp4
+  -pix_fmt yuv420p -af "pan=mono|c0=0.5*c0+0.5*c1" -c:a aac -b:a 64k -movflags +faststart <slug>.mp4
 ```
 
 - **`-tune animation`:** é o ajuste do x264 para cores chapadas e animação, o estilo destes vídeos.
 - **`-maxrate`:** limita os picos, para o vídeo não engasgar no 4G.
 - **Áudio:** voz em mono a 64 kbps basta.
 - **`+faststart`:** começa a tocar antes de baixar tudo.
-- **Fundo calmo:** as manchas que se movem e os pontos que rolam no fundo obrigam o codificador a gastar bits em todo quadro. Na videoaula, usar o gradiente parado e medir o ganho no primeiro lote. A expectativa é cair mais um pouco, mas é medição, não promessa.
+- **Fundo parado:** o modelo `src/videoaula` usa gradiente sem animação. Foi o maior ganho: com ele, o lote 1 ficou entre **0,7 e 0,9 MB** por vídeo (cerca de 110 kbps), contra 1,5 MB com o fundo animado.
 
 **O que fica de fora, e por quê:**
 
@@ -141,10 +140,10 @@ Hoje a API em Node lê o arquivo e o envia (`/api/videoaulas/:slug`). Funciona, 
 
 **Conta de recursos, com a versão escolhida:**
 
-- **Disco:** 133 vídeos × cerca de 1,6 MB ≈ **210 MB** na VPS. Os originais em 1080×1920 ficam só no computador de produção.
-- **Banda:** 1.000 visualizações por dia × 1,6 MB ≈ 1,6 GB por dia, ou cerca de 50 GB por mês. Confira a franquia mensal da VPS no painel da Hostinger.
+- **Disco:** 133 vídeos × cerca de 0,85 MB ≈ **115 MB** na VPS. Os originais em 1080×1920 ficam só no computador de produção.
+- **Banda:** 1.000 visualizações por dia × 0,85 MB ≈ 0,85 GB por dia, ou cerca de 25 GB por mês. Confira a franquia mensal da VPS no painel da Hostinger.
 - **CPU:** com X-Accel, quase zero: o nginx entrega o arquivo direto do disco, sem passar pelo Node.
-- **Limite de velocidade (opcional):** `limit_rate_after 1m; limit_rate 400k;` no `location` interno. O vídeo tem cerca de 250 kbps, então toca normal, e poucos alunos baixando ao mesmo tempo não seguram a saída da VPS.
+- **Limite de velocidade (opcional):** `limit_rate_after 1m; limit_rate 400k;` no `location` interno. O vídeo tem cerca de 110 kbps, então toca normal, e poucos alunos baixando ao mesmo tempo não seguram a saída da VPS.
 
 ## 5. Como publicar um lote
 
@@ -201,12 +200,12 @@ O lote exato de cada vídeo está no índice (§9).
 
 | VA | Título | Slug | Questões | Lote | Situação | Roteiro |
 |---|---|---|---:|---:|---|---|
-| VA-001 | Interpretação: o que o texto NÃO diz | `interpretacao-o-que-o-texto-nao-diz` | 59 | 1 | roteiro | [01-portugues](roteiros-01-portugues.md) |
-| VA-002 | Conectivos: o sentido de cada um | `conectivos-relacoes-de-sentido` | 57 | 1 | roteiro | [01-portugues](roteiros-01-portugues.md) |
-| VA-003 | Advérbios e as circunstâncias | `adverbios-circunstancias` | 56 | 1 | roteiro | [01-portugues](roteiros-01-portugues.md) |
-| VA-004 | Divisão silábica e contagem de sílabas | `divisao-silabica` | 53 | 1 | roteiro | [01-portugues](roteiros-01-portugues.md) |
-| VA-005 | Dígrafo × encontro consonantal | `digrafo-encontro-consonantal` | 51 | 1 | roteiro | [01-portugues](roteiros-01-portugues.md) |
-| VA-006 | Termos da oração: sujeito, objeto e predicativo | `termos-da-oracao` | 40 | 1 | roteiro | [01-portugues](roteiros-01-portugues.md) |
+| VA-001 | Interpretação: o que o texto NÃO diz | `interpretacao-o-que-o-texto-nao-diz` | 59 | 1 | em revisão | [01-portugues](roteiros-01-portugues.md) |
+| VA-002 | Conectivos: o sentido de cada um | `conectivos-relacoes-de-sentido` | 57 | 1 | em revisão | [01-portugues](roteiros-01-portugues.md) |
+| VA-003 | Advérbios e as circunstâncias | `adverbios-circunstancias` | 56 | 1 | em revisão | [01-portugues](roteiros-01-portugues.md) |
+| VA-004 | Divisão silábica e contagem de sílabas | `divisao-silabica` | 53 | 1 | em revisão | [01-portugues](roteiros-01-portugues.md) |
+| VA-005 | Dígrafo × encontro consonantal | `digrafo-encontro-consonantal` | 51 | 1 | em revisão | [01-portugues](roteiros-01-portugues.md) |
+| VA-006 | Termos da oração: sujeito, objeto e predicativo | `termos-da-oracao` | 40 | 1 | em revisão | [01-portugues](roteiros-01-portugues.md) |
 | VA-007 | Proparoxítonas: todas levam acento | `proparoxitonas-v2` | 39 | 0 | no ar | [01-portugues](roteiros-01-portugues.md) |
 | VA-008 | Classes de palavras: como descobrir a classe | `classes-de-palavras` | 34 | 2 | roteiro | [01-portugues](roteiros-01-portugues.md) |
 | VA-009 | Letras e sons: S com som de Z, C, G e H | `letras-e-sons` | 32 | 2 | roteiro | [01-portugues](roteiros-01-portugues.md) |
@@ -226,13 +225,13 @@ O lote exato de cada vídeo está no índice (§9).
 | VA-023 | Preposições e seus sentidos | `preposicoes` | 8 | 4 | roteiro | [01-portugues](roteiros-01-portugues.md) |
 | VA-024 | Concordância verbal e nominal | `concordancia` | 8 | 4 | roteiro | [01-portugues](roteiros-01-portugues.md) |
 | VA-025 | Tipos e gêneros textuais | `tipos-e-generos-textuais` | 7 | 4 | roteiro | [01-portugues](roteiros-01-portugues.md) |
-| VA-026 | Problemas de multiplicar e dividir (e quando arredondar) | `multiplicar-dividir-arredondar` | 64 | 1 | roteiro | [02-matematica](roteiros-02-matematica.md) |
-| VA-027 | Preço, troco, lucro e parcelas | `preco-troco-lucro` | 44 | 1 | roteiro | [02-matematica](roteiros-02-matematica.md) |
-| VA-028 | Porcentagem: a parte, o total e o que falta | `porcentagem-parte-total` | 40 | 1 | roteiro | [02-matematica](roteiros-02-matematica.md) |
+| VA-026 | Problemas de multiplicar e dividir (e quando arredondar) | `multiplicar-dividir-arredondar` | 64 | 1 | em revisão | [02-matematica](roteiros-02-matematica.md) |
+| VA-027 | Preço, troco, lucro e parcelas | `preco-troco-lucro` | 44 | 1 | em revisão | [02-matematica](roteiros-02-matematica.md) |
+| VA-028 | Porcentagem: a parte, o total e o que falta | `porcentagem-parte-total` | 40 | 1 | em revisão | [02-matematica](roteiros-02-matematica.md) |
 | VA-029 | Aumento e desconto percentual | `aumento-e-desconto-v2` | 38 | 0 | no ar | [02-matematica](roteiros-02-matematica.md) |
-| VA-030 | Conversão de unidades: quilo, litro e metro | `conversao-de-unidades` | 33 | 1 | roteiro | [02-matematica](roteiros-02-matematica.md) |
-| VA-031 | Regra de três: simples, inversa e composta | `regra-de-tres` | 29 | 1 | roteiro | [02-matematica](roteiros-02-matematica.md) |
-| VA-032 | Frações de uma quantidade | `fracoes-de-uma-quantidade` | 29 | 1 | roteiro | [02-matematica](roteiros-02-matematica.md) |
+| VA-030 | Conversão de unidades: quilo, litro e metro | `conversao-de-unidades` | 33 | 1 | em revisão | [02-matematica](roteiros-02-matematica.md) |
+| VA-031 | Regra de três: simples, inversa e composta | `regra-de-tres` | 29 | 1 | em revisão | [02-matematica](roteiros-02-matematica.md) |
+| VA-032 | Frações de uma quantidade | `fracoes-de-uma-quantidade` | 29 | 1 | em revisão | [02-matematica](roteiros-02-matematica.md) |
 | VA-033 | Média simples e ponderada | `media-simples-ponderada` | 27 | 2 | roteiro | [02-matematica](roteiros-02-matematica.md) |
 | VA-034 | Progressão aritmética e geométrica | `progressao-aritmetica-geometrica` | 25 | 2 | roteiro | [02-matematica](roteiros-02-matematica.md) |
 | VA-035 | Horas, minutos e salário por hora | `horas-e-minutos` | 24 | 2 | roteiro | [02-matematica](roteiros-02-matematica.md) |
