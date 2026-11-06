@@ -169,7 +169,7 @@ Em cada lote, a ordem importa: **primeiro o arquivo, depois o banco.** Se o banc
 O botão e o player já estão no código (D41), mas só aparecem no app depois de um **AAB novo**. Para gerar: GitHub → Actions → **App Android** → Run workflow; o `versionCode` sobe sozinho.
 
 - **Vídeos novos:** depois desse AAB, eles **não precisam** de outro AAB. O app lê `videoaula` da API.
-- **Cache do vídeo:** o cache no aparelho (§4) entra no mesmo AAB, se der tempo; senão, no seguinte.
+- **Cache do vídeo:** feito (06/11/2026): o app baixa uma vez e toca do cache do aparelho, a partir do AAB 1.2.1.
 
 ## 7. Ordem dos lotes
 

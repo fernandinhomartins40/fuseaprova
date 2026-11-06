@@ -5,6 +5,9 @@
  */
 export const EH_APP: boolean = __APP_NATIVO__;
 
+/** Disparado no botão voltar do Android. Um diálogo aberto cancela o evento e fecha. */
+export const EVENTO_VOLTAR = 'fuse:voltar';
+
 /** Origem da API: vazia no site (mesmo domínio); absoluta no app (os arquivos estão no aparelho). */
 export const ORIGEM_API: string = EH_APP
   ? (

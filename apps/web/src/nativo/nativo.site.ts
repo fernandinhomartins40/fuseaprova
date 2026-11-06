@@ -18,3 +18,4 @@ export const compartilharArquivo = soNoApp;
 export const compartilharAgenda = soNoApp;
 export const carregarImagem = soNoApp;
 export const carregarVideo = soNoApp;
+export const barraDeStatus = soNoApp;

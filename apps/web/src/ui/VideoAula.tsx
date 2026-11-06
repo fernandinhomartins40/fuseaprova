@@ -3,14 +3,23 @@ import { EH_APP } from '../nativo/plataforma';
 import s from './VideoAula.module.css';
 
 /**
- * D41: player da videoaula do tema. No site, o <video> toca direto de `/api/videoaulas/:slug`
- * (mesma origem, com o cookie da sessão e Range). No app nativo, o cookie não vai num <video> de
- * outra origem: o arquivo vem pelo HTTP nativo uma vez e toca do cache do aparelho.
+ * D41: player da videoaula do tema, para o `Modal` de formato 'tela': play, pause e linha do tempo
+ * são os controles do próprio <video>; o ✕ do Modal volta para a questão. No site, o <video> toca
+ * direto de `/api/videoaulas/:slug` (mesma origem, com o cookie da sessão e Range). No app nativo,
+ * o cookie não vai num <video> de outra origem: o arquivo vem pelo HTTP nativo uma vez e toca do
+ * cache do aparelho.
  */
 export function VideoAula({ slug }: { slug: string }) {
   const caminho = `/api/videoaulas/${slug}`;
   const [src, setSrc] = useState<string | null>(EH_APP ? null : caminho);
   const [falhou, setFalhou] = useState(false);
+
+  useEffect(() => {
+    if (!EH_APP) return;
+    const nativo = import('../nativo/nativo');
+    void nativo.then((n) => n.barraDeStatus(false));
+    return () => void nativo.then((n) => n.barraDeStatus(true));
+  }, []);
 
   useEffect(() => {
     if (!EH_APP) return;
@@ -41,7 +50,8 @@ export function VideoAula({ slug }: { slug: string }) {
           autoPlay
           playsInline
           preload="metadata"
-          controlsList="nodownload"
+          disablePictureInPicture
+          controlsList="nodownload nofullscreen"
           onError={() => setFalhou(true)}
           aria-label="Videoaula do tema"
         />

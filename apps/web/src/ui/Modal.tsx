@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Botao3D, type VarianteBotao } from './Botao3D';
 import { IconeTraco } from './IconeTraco';
+import { EVENTO_VOLTAR } from '../nativo/plataforma';
 import s from './Modal.module.css';
 
 export interface ModalProps {
@@ -9,8 +10,8 @@ export interface ModalProps {
   titulo: ReactNode;
   onFechar: () => void;
   children?: ReactNode;
-  /** 'centro' = diálogo; 'folha' = sobe de baixo. */
-  formato?: 'centro' | 'folha';
+  /** 'centro' = diálogo; 'folha' = sobe de baixo; 'tela' = tela inteira, fundo preto (videoaula). */
+  formato?: 'centro' | 'folha' | 'tela';
   /** Esconde o botão ✕ (decisão obrigatória). */
   semFechar?: boolean;
   /** Ilustração acima do título. */
@@ -65,11 +66,19 @@ export function Modal({
         ini.focus();
       }
     }
+    // Botão voltar do Android (`iniciarApp`): fecha o diálogo em vez de sair da tela.
+    function aoVoltar(e: Event) {
+      if (semFechar) return;
+      e.preventDefault();
+      fechar.current();
+    }
     document.addEventListener('keydown', aoTeclar);
+    window.addEventListener(EVENTO_VOLTAR, aoVoltar);
     const overflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', aoTeclar);
+      window.removeEventListener(EVENTO_VOLTAR, aoVoltar);
       document.body.style.overflow = overflow;
       anterior?.focus?.();
     };

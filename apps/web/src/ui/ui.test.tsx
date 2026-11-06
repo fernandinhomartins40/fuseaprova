@@ -5,11 +5,13 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import type { Letra } from '@fuse/shared';
 import { violacoesSerias } from '../test/axe';
+import { EVENTO_VOLTAR } from '../nativo/plataforma';
 import { TRAVA_CONTINUAR_MS } from './FolhaFeedback';
 import {
   BannerUnidade,
   BarraProgresso,
   Botao3D,
+  VideoAula,
   Campo,
   CamposNovaSenha,
   Capi,
@@ -214,7 +216,9 @@ describe('FolhaFeedback', () => {
     expect(screen.getByText('Explicação longa.')).toBeVisible();
 
     await userEvent.click(screen.getByRole('button', { name: 'Ver em tela cheia' }));
-    expect(screen.getByRole('region', { name: 'Resultado da resposta' }).className).toMatch(/cheia/);
+    expect(screen.getByRole('region', { name: 'Resultado da resposta' }).className).toMatch(
+      /cheia/,
+    );
     await userEvent.click(screen.getByRole('button', { name: 'Sair da tela cheia' }));
     expect(screen.getByRole('region', { name: 'Resultado da resposta' }).className).not.toMatch(
       /cheia/,
@@ -384,6 +388,23 @@ describe('Modal e Confirmacao', () => {
     expect(screen.getByRole('button', { name: 'Fechar' })).toHaveFocus();
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(fechar).toHaveBeenCalled();
+  });
+  it('videoaula em tela inteira: controles do vídeo, ✕ e voltar do Android fecham', () => {
+    const fechar = vi.fn();
+    render(
+      <Modal aberto titulo="Videoaula" onFechar={fechar} formato="tela">
+        <VideoAula slug="crase" />
+      </Modal>,
+    );
+    const video = screen.getByLabelText('Videoaula do tema');
+    expect(video).toHaveAttribute('controls');
+    expect(video).toHaveAttribute('src', '/api/videoaulas/crase');
+    fireEvent.click(screen.getByRole('button', { name: 'Fechar' }));
+    expect(fechar).toHaveBeenCalledTimes(1);
+    const voltar = new Event(EVENTO_VOLTAR, { cancelable: true });
+    window.dispatchEvent(voltar);
+    expect(voltar.defaultPrevented).toBe(true);
+    expect(fechar).toHaveBeenCalledTimes(2);
   });
   it('confirmação de sair com CONTINUAR ESTUDANDO e SAIR', async () => {
     const sair = vi.fn();

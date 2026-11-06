@@ -65,6 +65,7 @@ vi.mock('@capacitor/filesystem', () => ({
 }));
 vi.mock('@capacitor/share', () => ({ Share: {} }));
 vi.mock('@capacitor/splash-screen', () => ({ SplashScreen: {} }));
+vi.mock('@capacitor/status-bar', () => ({ StatusBar: {} }));
 vi.mock('@capacitor/core', () => ({
   Capacitor: {
     getPlatform: () => estado.plataforma,

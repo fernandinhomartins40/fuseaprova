@@ -520,12 +520,7 @@ function TelaLicao({ modo }: { modo: ModoLicao }) {
           aberto={videoAberto}
           titulo="Videoaula"
           onFechar={() => setVideoAberto(false)}
-          formato="folha"
-          rodape={
-            <Botao3D data-autofoco onClick={() => setVideoAberto(false)}>
-              VOLTAR PARA A QUESTÃO
-            </Botao3D>
-          }
+          formato="tela"
         >
           <VideoAula slug={videoaula} />
         </Modal>

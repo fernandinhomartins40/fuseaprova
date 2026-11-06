@@ -15,6 +15,7 @@ import { Directory, Encoding, Filesystem } from '@capacitor/filesystem';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Share } from '@capacitor/share';
 import { SplashScreen } from '@capacitor/splash-screen';
+import { StatusBar } from '@capacitor/status-bar';
 import type { LembretesResposta } from '@fuse/shared/api';
 import {
   CANAL_LEMBRETES,
@@ -22,7 +23,7 @@ import {
   paraNotificacoesLocais,
   rotaDaNotificacao,
 } from './notificacoes';
-import { urlDoServidor } from './plataforma';
+import { EVENTO_VOLTAR, urlDoServidor } from './plataforma';
 
 /** Telas em que o "voltar" do Android sai do app em vez de voltar no histórico. */
 const RAIZES = new Set([
@@ -38,6 +39,7 @@ const RAIZES = new Set([
 
 export async function iniciarApp(): Promise<void> {
   await App.addListener('backButton', ({ canGoBack }) => {
+    if (!window.dispatchEvent(new Event(EVENTO_VOLTAR, { cancelable: true }))) return;
     if (canGoBack && !RAIZES.has(window.location.pathname)) window.history.back();
     else void App.minimizeApp();
   });
@@ -224,6 +226,11 @@ export async function carregarVideo(caminho: string): Promise<string> {
   await Filesystem.rename({ from: parcial, to: path, directory });
   const { uri } = await Filesystem.getUri({ path, directory });
   return Capacitor.convertFileSrc(uri);
+}
+
+/** Esconde a barra de status enquanto a videoaula ocupa a tela inteira. */
+export function barraDeStatus(visivel: boolean): void {
+  void (visivel ? StatusBar.show() : StatusBar.hide()).catch(() => undefined);
 }
 
 /** Imagem do servidor (exige a sessão) como data URL, pelo HTTP nativo. */
