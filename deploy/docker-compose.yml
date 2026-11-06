@@ -146,6 +146,8 @@ services:
       PORT: "3000"
       # Caminho DENTRO do container (no host: /root/fuseaprova/arquivos).
       ARQUIVOS_DIR: /srv/fuse/arquivos
+      # D41: a API confere o acesso e o nginx entrega o vídeo.
+      VIDEOAULAS_X_ACCEL: "1"
       # D13: /super/sistema lê o ULTIMO_BACKUP (montado só para leitura).
       BACKUP_DIR: /srv/fuse/backups
     volumes:

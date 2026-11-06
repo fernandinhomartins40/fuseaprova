@@ -127,9 +127,9 @@ ffmpeg -i <final>.mp4 -s 720x1280 -sws_flags lanczos -r 24 \
 - **AV1 ou HEVC:** comprimem mais, mas o iPhone só toca AV1 nos modelos com decodificador próprio, então seria preciso guardar dois arquivos (AV1 e H.264), e codificar em AV1 é lento. Reavaliar só se a banda virar problema.
 - **Codificar na VPS:** proibido. Todo render e toda compressão acontecem no computador de produção. A VPS só guarda e entrega.
 
-**Entrega pelo nginx, não pelo Node** (passo de infraestrutura, lote 0):
+**Entrega pelo nginx, não pelo Node** (feito em 06/11/2026):
 
-Hoje a API em Node lê o arquivo e o envia (`/api/videoaulas/:slug`). Funciona, mas cada vídeo assistido ocupa o processo da API. O padrão da comunidade é o **X-Accel-Redirect**: a API só confere o acesso e responde com um cabeçalho, e o nginx entrega o arquivo direto do disco (`sendfile`), já com suporte a Range.
+Sem isso, a API em Node leria o arquivo e o enviaria (`/api/videoaulas/:slug`), e cada vídeo assistido ocuparia o processo da API. O padrão da comunidade é o **X-Accel-Redirect**: a API só confere o acesso e responde com um cabeçalho, e o nginx entrega o arquivo direto do disco (`sendfile`), já com suporte a Range.
 
 1. `deploy/docker-compose.yml`: montar só a pasta dos vídeos no nginx, em modo leitura (`/root/fuseaprova/arquivos/videoaulas:/srv/fuse/videoaulas:ro`). O nginx continua sem enxergar uploads, provas e apostilas.
 2. `infra/nginx/fuseaprova.conf`: criar `location /_videoaulas/ { internal; alias /srv/fuse/videoaulas/; types { video/mp4 mp4; } add_header Cache-Control "private, max-age=2592000"; }`. Com `internal`, ninguém acessa essa rota direto, só por meio da API.
