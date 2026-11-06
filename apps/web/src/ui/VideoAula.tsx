@@ -5,7 +5,7 @@ import s from './VideoAula.module.css';
 /**
  * D41: player da videoaula do tema. No site, o <video> toca direto de `/api/videoaulas/:slug`
  * (mesma origem, com o cookie da sessão e Range). No app nativo, o cookie não vai num <video> de
- * outra origem: o arquivo vem pelo HTTP nativo e toca como blob URL, liberada ao fechar.
+ * outra origem: o arquivo vem pelo HTTP nativo uma vez e toca do cache do aparelho.
  */
 export function VideoAula({ slug }: { slug: string }) {
   const caminho = `/api/videoaulas/${slug}`;
@@ -15,18 +15,12 @@ export function VideoAula({ slug }: { slug: string }) {
   useEffect(() => {
     if (!EH_APP) return;
     let vivo = true;
-    let url: string | null = null;
     import('../nativo/nativo')
       .then((n) => n.carregarVideo(caminho))
-      .then((u) => {
-        url = u;
-        if (vivo) setSrc(u);
-        else URL.revokeObjectURL(u);
-      })
+      .then((u) => vivo && setSrc(u))
       .catch(() => vivo && setFalhou(true));
     return () => {
       vivo = false;
-      if (url) URL.revokeObjectURL(url);
     };
   }, [caminho]);
 

@@ -12,6 +12,9 @@ const estado = vi.hoisted(() => ({
   pendentes: [] as { id: number }[],
   listeners: new Map<string, (a: unknown) => void>(),
   plataforma: 'android',
+  arquivos: new Set<string>(),
+  downloads: 0,
+  statusVideo: 200,
 }));
 
 vi.mock('@capacitor/local-notifications', () => ({
@@ -42,17 +45,43 @@ vi.mock('@capacitor/app', () => ({
     }),
   },
 }));
-vi.mock('@capacitor/filesystem', () => ({ Directory: {}, Encoding: {}, Filesystem: {} }));
+vi.mock('@capacitor/filesystem', () => ({
+  Directory: { Cache: 'CACHE' },
+  Encoding: {},
+  Filesystem: {
+    stat: vi.fn(async ({ path }: { path: string }) => {
+      if (!estado.arquivos.has(path)) throw new Error('não existe');
+      return { uri: `file:///${path}` };
+    }),
+    writeFile: vi.fn(async ({ path }: { path: string }) => {
+      estado.arquivos.add(path);
+    }),
+    rename: vi.fn(async ({ from, to }: { from: string; to: string }) => {
+      estado.arquivos.delete(from);
+      estado.arquivos.add(to);
+    }),
+    getUri: vi.fn(async ({ path }: { path: string }) => ({ uri: `file:///${path}` })),
+  },
+}));
 vi.mock('@capacitor/share', () => ({ Share: {} }));
 vi.mock('@capacitor/splash-screen', () => ({ SplashScreen: {} }));
 vi.mock('@capacitor/core', () => ({
-  Capacitor: { getPlatform: () => estado.plataforma },
-  CapacitorHttp: {},
+  Capacitor: {
+    getPlatform: () => estado.plataforma,
+    convertFileSrc: (uri: string) => uri.replace('file:///', 'https://localhost/_capacitor_file_/'),
+  },
+  CapacitorHttp: {
+    get: vi.fn(async () => {
+      estado.downloads++;
+      return { status: estado.statusVideo, data: 'AAAA', headers: {} };
+    }),
+  },
 }));
 
 const {
   aoTocarLembrete,
   aoVoltarAoApp,
+  carregarVideo,
   estadoPermissaoLembrete,
   pedirPermissaoLembrete,
   sincronizarLembretes,
@@ -212,5 +241,31 @@ describe('agendamento das notificações locais (D30)', () => {
     await aoVoltarAoApp(f);
     estado.listeners.get('resume')!({});
     expect(f).toHaveBeenCalledOnce();
+  });
+});
+
+describe('carregarVideo', () => {
+  const esperado = 'https://localhost/_capacitor_file_/videoaulas/crase.mp4';
+
+  beforeEach(() => {
+    estado.arquivos.clear();
+    estado.downloads = 0;
+    estado.statusVideo = 200;
+  });
+
+  it('baixa uma vez e depois toca do cache do aparelho', async () => {
+    expect(await carregarVideo('/api/videoaulas/crase')).toBe(esperado);
+    expect(await carregarVideo('/api/videoaulas/crase')).toBe(esperado);
+    expect(estado.downloads).toBe(1);
+    expect([...estado.arquivos]).toEqual(['videoaulas/crase.mp4']);
+  });
+
+  it('resposta de erro não grava nada, e a próxima tentativa baixa de novo', async () => {
+    estado.statusVideo = 402;
+    await expect(carregarVideo('/api/videoaulas/crase')).rejects.toThrow('video 402');
+    expect(estado.arquivos.size).toBe(0);
+    estado.statusVideo = 200;
+    expect(await carregarVideo('/api/videoaulas/crase')).toBe(esperado);
+    expect(estado.downloads).toBe(2);
   });
 });

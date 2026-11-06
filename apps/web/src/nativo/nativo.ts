@@ -204,16 +204,26 @@ export async function compartilharAgenda(nome: string, ics: string): Promise<voi
 const cacheImagens = new Map<string, Promise<string>>();
 
 /**
- * D41: videoaula do servidor (exige a sessão) como blob URL, pelo HTTP nativo. Sem cache: cada vídeo
- * tem uns 4 MB e quem chama libera a URL ao fechar.
+ * D41: videoaula do servidor (exige a sessão), baixada uma vez pelo HTTP nativo e guardada no cache
+ * do app, que o sistema limpa quando falta espaço. Vídeo novo tem slug novo, então o arquivo nunca
+ * fica velho. Grava com outro nome e renomeia: download interrompido não vira vídeo corrompido.
  */
 export async function carregarVideo(caminho: string): Promise<string> {
+  const path = `videoaulas/${caminho.split('/').pop()}.mp4`;
+  const directory = Directory.Cache;
+  try {
+    const { uri } = await Filesystem.stat({ path, directory });
+    return Capacitor.convertFileSrc(uri);
+  } catch {
+    /* ainda não baixado */
+  }
   const r = await CapacitorHttp.get({ url: urlDoServidor(caminho), responseType: 'blob' });
   if (r.status !== 200 || typeof r.data !== 'string') throw new Error(`video ${r.status}`);
-  const binario = atob(r.data);
-  const bytes = new Uint8Array(binario.length);
-  for (let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i);
-  return URL.createObjectURL(new Blob([bytes], { type: 'video/mp4' }));
+  const parcial = `${path}.parcial`;
+  await Filesystem.writeFile({ path: parcial, data: r.data, directory, recursive: true });
+  await Filesystem.rename({ from: parcial, to: path, directory });
+  const { uri } = await Filesystem.getUri({ path, directory });
+  return Capacitor.convertFileSrc(uri);
 }
 
 /** Imagem do servidor (exige a sessão) como data URL, pelo HTTP nativo. */
