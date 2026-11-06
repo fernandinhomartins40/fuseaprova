@@ -74,7 +74,7 @@ Formato: ver [PLANO.md](PLANO.md#formato-do-roteiro). Todos os números dos exem
 ---
 
 ## VA-029 · Aumento e desconto percentual ✅ produzida
-`aumento-e-desconto` · Porcentagem · 38 questões · lote 0 (no ar)
+`aumento-e-desconto-v2` · Porcentagem · 38 questões · lote 0 (no ar)
 
 Roteiro em `marketing/stories-palmital/roteiros/aula2.json` e `videoaula2.json`.
 
@@ -505,7 +505,7 @@ Roteiro em `marketing/stories-palmital/roteiros/aula2.json` e `videoaula2.json`.
 
 **Resumo:** "Seguidos: multiplica os fatores" · "Nunca some as porcentagens".
 
-> Hoje essas 7 questões apontam para `aumento-e-desconto` (migração 0016). Quando este vídeo sair, troque para `aumentos-sucessivos`.
+> Hoje essas 7 questões apontam para `aumento-e-desconto-v2` (migrações 0016 e 0017). Quando este vídeo sair, troque para `aumentos-sucessivos`.
 
 ---
 

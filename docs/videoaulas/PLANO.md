@@ -96,12 +96,12 @@ Medido no vídeo de proparoxítonas, com 44 s:
 
 | Versão | Resolução | Quadros | Tamanho |
 |---|---|---|---:|
-| Atual no ar (CRF 26) | 720×1280 | 30 fps | 3,4 MB |
+| Primeira versão (CRF 26) | 720×1280 | 30 fps | 3,4 MB |
 | CRF 28, `-tune animation` | 720×1280 | 30 fps | 2,0 MB |
 | **CRF 30, `-tune animation`** ✅ | **720×1280** | **24 fps** | **1,5 MB** |
 | CRF 28 | 540×960 | 24 fps | 1,3 MB |
 
-**Escolha: 720×1280, 24 fps, CRF 30.** O texto continua nítido no celular, e o arquivo cai 55% em relação ao que está no ar. A 540×960 economiza só mais 0,2 MB e deixa a letra miúda mais mole.
+**Escolha: 720×1280, 24 fps, CRF 30.** O texto continua nítido no celular, e o arquivo cai 55% em relação à primeira versão. A 540×960 economiza só mais 0,2 MB e deixa a letra miúda mais mole.
 
 **Comando de saída para o app** (substitui o de `scripts/render.py`):
 
@@ -192,10 +192,10 @@ O lote exato de cada vídeo está no índice (§9).
 ## 8. Pendências que dependem do dono
 
 - **Conhecimentos Gerais:** as questões são de outros municípios, então os roteiros ensinam o conceito e a estratégia, sem decorar fatos locais (ver o aviso em [roteiros-06](roteiros-06-conhecimentos-gerais.md)). Se quiser vídeos sobre um município específico, eles entram num lote à parte, com fontes oficiais.
-- **VA-048 (aumentos sucessivos):** as 7 questões apontam hoje para `aumento-e-desconto`. Quando o VA-048 sair, a migração do lote troca o slug delas.
+- **VA-048 (aumentos sucessivos):** as 7 questões apontam hoje para `aumento-e-desconto-v2`. Quando o VA-048 sair, a migração do lote troca o slug delas.
 - **Itens ⚖️:** multas e pontos do CTB, percentuais do PNAE, números do Censo e da PNAB mudam. Conferir no lote, antes de gravar.
 - **VA-099 (grampos):** a numeração dos grampos varia entre fabricantes. Confirmar a referência usada.
-- **Versões no ar:** as duas videoaulas no ar podem ser recomprimidas no padrão do §4 (de 3,4 e 4,2 MB para cerca de 1,5 e 1,9 MB), com slug `-v2`.
+- **Versões no ar:** recomprimidas no padrão do §4 (migração 0017): 1,5 e 1,8 MB. Os arquivos antigos seguem na VPS até nenhuma sessão aberta apontar para eles.
 
 ## 9. Índice das 133 videoaulas
 
@@ -207,7 +207,7 @@ O lote exato de cada vídeo está no índice (§9).
 | VA-004 | Divisão silábica e contagem de sílabas | `divisao-silabica` | 53 | 1 | roteiro | [01-portugues](roteiros-01-portugues.md) |
 | VA-005 | Dígrafo × encontro consonantal | `digrafo-encontro-consonantal` | 51 | 1 | roteiro | [01-portugues](roteiros-01-portugues.md) |
 | VA-006 | Termos da oração: sujeito, objeto e predicativo | `termos-da-oracao` | 40 | 1 | roteiro | [01-portugues](roteiros-01-portugues.md) |
-| VA-007 | Proparoxítonas: todas levam acento | `proparoxitonas` | 39 | 0 | no ar | [01-portugues](roteiros-01-portugues.md) |
+| VA-007 | Proparoxítonas: todas levam acento | `proparoxitonas-v2` | 39 | 0 | no ar | [01-portugues](roteiros-01-portugues.md) |
 | VA-008 | Classes de palavras: como descobrir a classe | `classes-de-palavras` | 34 | 2 | roteiro | [01-portugues](roteiros-01-portugues.md) |
 | VA-009 | Letras e sons: S com som de Z, C, G e H | `letras-e-sons` | 32 | 2 | roteiro | [01-portugues](roteiros-01-portugues.md) |
 | VA-010 | Sinônimos e antônimos pelo contexto | `sinonimos-antonimos-contexto` | 27 | 2 | roteiro | [01-portugues](roteiros-01-portugues.md) |
@@ -229,7 +229,7 @@ O lote exato de cada vídeo está no índice (§9).
 | VA-026 | Problemas de multiplicar e dividir (e quando arredondar) | `multiplicar-dividir-arredondar` | 64 | 1 | roteiro | [02-matematica](roteiros-02-matematica.md) |
 | VA-027 | Preço, troco, lucro e parcelas | `preco-troco-lucro` | 44 | 1 | roteiro | [02-matematica](roteiros-02-matematica.md) |
 | VA-028 | Porcentagem: a parte, o total e o que falta | `porcentagem-parte-total` | 40 | 1 | roteiro | [02-matematica](roteiros-02-matematica.md) |
-| VA-029 | Aumento e desconto percentual | `aumento-e-desconto` | 38 | 0 | no ar | [02-matematica](roteiros-02-matematica.md) |
+| VA-029 | Aumento e desconto percentual | `aumento-e-desconto-v2` | 38 | 0 | no ar | [02-matematica](roteiros-02-matematica.md) |
 | VA-030 | Conversão de unidades: quilo, litro e metro | `conversao-de-unidades` | 33 | 1 | roteiro | [02-matematica](roteiros-02-matematica.md) |
 | VA-031 | Regra de três: simples, inversa e composta | `regra-de-tres` | 29 | 1 | roteiro | [02-matematica](roteiros-02-matematica.md) |
 | VA-032 | Frações de uma quantidade | `fracoes-de-uma-quantidade` | 29 | 1 | roteiro | [02-matematica](roteiros-02-matematica.md) |

@@ -156,7 +156,7 @@ Regras de todas as aulas: ensinar o tema sem resolver nenhuma questão real, exe
 ---
 
 ## VA-007 · Proparoxítonas: todas levam acento ✅ produzida
-`proparoxitonas` · Acentuação gráfica · 39 questões · lote 0 (no ar)
+`proparoxitonas-v2` · Acentuação gráfica · 39 questões · lote 0 (no ar)
 
 Roteiro em `marketing/stories-palmital/roteiros/aula1.json` e `videoaula1.json`.
 

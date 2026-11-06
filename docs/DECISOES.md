@@ -425,3 +425,4 @@ O cadastro continua sem teste (D35). O dono libera, aluno por aluno, um teste de
 - **Tela:** botão roxo "Assista à videoaula do tema", acima do "Entenda o tema", e o vídeo abre numa folha com "VOLTAR PARA A QUESTÃO". Some no modo offline. A questão leva `videoaula` no contrato (`QuestaoParaAluno`); o app publicado ignora o campo novo.
 - **App nativo:** o cookie de sessão não vai num `<video>` de outra origem, então o app baixa o MP4 pelo HTTP nativo e toca como blob URL, liberada ao fechar (`carregarVideo`). Só aparece com um AAB novo.
 - **Fora por ora:** escolher a videoaula no editor de questões do painel.
+- **Padrão leve (migração 0017):** 720×1280, 24 fps, CRF 30, `-tune animation` e AAC mono 64 kbps: cerca de 1,5 MB por vídeo. Vídeo refeito ganha slug novo (`-v2`), para nenhum cache ficar com o arquivo antigo. Plano e roteiros em `docs/videoaulas/`.

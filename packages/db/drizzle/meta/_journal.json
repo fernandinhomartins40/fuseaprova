@@ -120,6 +120,13 @@
       "when": 1793923944008,
       "tag": "0016_videoaulas",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1793929034105,
+      "tag": "0017_videoaulas_v2",
+      "breakpoints": true
     }
   ]
 }
