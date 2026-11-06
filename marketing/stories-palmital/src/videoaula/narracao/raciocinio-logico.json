@@ -1,0 +1,42 @@
+{
+  "codigo": [
+    {
+      "arquivo": "audio/raciocinio-logico/voz-codigo-1.wav",
+      "segundos": 11.564,
+      "texto": "Em código, descubra a regra com um exemplo e aplique igual. Se A é 1, B é 2, então CASA vira 3, 1, 19, 1."
+    }
+  ],
+  "pior-caso": [
+    {
+      "arquivo": "audio/raciocinio-logico/voz-pior-caso-1.wav",
+      "segundos": 13.766,
+      "texto": "Pior caso: quantas meias tirar, no escuro, para garantir um par da mesma cor, com duas cores? Imagine o azar: uma de cada cor. A próxima forma o par. Resposta: 3."
+    }
+  ],
+  "paridade": [
+    {
+      "arquivo": "audio/raciocinio-logico/voz-paridade-1.wav",
+      "segundos": 6.961,
+      "texto": "Par mais par é par. Ímpar mais ímpar é par. Par mais ímpar é ímpar."
+    }
+  ],
+  "dica": [
+    {
+      "arquivo": "audio/raciocinio-logico/voz-dica-1.wav",
+      "segundos": 3.901,
+      "texto": "Sempre teste a regra num caso pequeno antes de responder."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/raciocinio-logico/voz-fecho-1.wav",
+      "segundos": 8.771,
+      "texto": "Resumindo: Código: ache a regra e repita. Pior caso: imagine o azar. Ímpar + ímpar = par."
+    },
+    {
+      "arquivo": "audio/raciocinio-logico/voz-fecho-2.wav",
+      "segundos": 1.219,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

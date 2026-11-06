@@ -1,0 +1,175 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-018",
+  "titulo": "Formação de palavras: prefixo, sufixo e derivação",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "radical": [
+      "Toda palavra tem um radical, o pedaço que guarda o sentido. 'Feliz' está em infeliz e felizmente."
+    ],
+    "derivacao": [
+      "Prefixo vem antes: infeliz. Sufixo vem depois: felizmente.",
+      "Parassíntese põe os dois ao mesmo tempo, e sem um deles a palavra não existe: entardecer."
+    ],
+    "composicao": [
+      "Composição junta dois radicais: guarda-chuva, por justaposição. Ou com perda de som: planalto, de plano e alto, por aglutinação."
+    ],
+    "pegadinha": [
+      "'Infelizmente' tem prefixo e sufixo, mas 'infeliz' e 'felizmente' existem sozinhas. Então não é parassíntese."
+    ],
+    "fecho": [
+      "Resumindo: Prefixo antes, sufixo depois. Os dois juntos e obrigatórios = parassíntese. Dois radicais = composição.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "radical": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Radical"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "O pedaço que / guarda o *sentido*",
+          "tamanho": 76
+        },
+        {
+          "tipo": "frase",
+          "texto": "in*feliz*",
+          "em": "infeliz",
+          "tamanho": 60
+        },
+        {
+          "tipo": "frase",
+          "texto": "*feliz*mente",
+          "em": "felizmente",
+          "tamanho": 60
+        }
+      ]
+    },
+    "derivacao": {
+      "blocos": [
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "Prefixo: antes",
+              "texto": "infeliz",
+              "fala": 0
+            },
+            {
+              "titulo": "Sufixo: depois",
+              "texto": "felizmente",
+              "fala": 0,
+              "em": "Sufixo"
+            },
+            {
+              "titulo": "Parassíntese: os dois juntos",
+              "texto": "en + tarde + cer",
+              "fala": 1
+            }
+          ]
+        },
+        {
+          "tipo": "comparacao",
+          "fala": 1,
+          "tamanho": 44,
+          "itens": [
+            {
+              "texto": "entarde",
+              "certo": false,
+              "em": "sem um deles"
+            },
+            {
+              "texto": "tardecer",
+              "certo": false,
+              "em": "não existe"
+            }
+          ]
+        }
+      ]
+    },
+    "composicao": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Composição: dois radicais"
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 46,
+          "itens": [
+            {
+              "titulo": "guarda-chuva",
+              "texto": "justaposição",
+              "em": "guarda-chuva"
+            },
+            {
+              "titulo": "planalto",
+              "texto": "aglutinação: plano + alto",
+              "em": "planalto"
+            }
+          ]
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "frase",
+          "texto": "infelizmente",
+          "tamanho": 64
+        },
+        {
+          "tipo": "comparacao",
+          "tamanho": 50,
+          "itens": [
+            {
+              "texto": "infeliz",
+              "certo": true,
+              "em": "'infeliz'"
+            },
+            {
+              "texto": "felizmente",
+              "certo": true,
+              "em": "'felizmente'"
+            }
+          ]
+        },
+        {
+          "tipo": "chip",
+          "texto": "Não é parassíntese",
+          "em": "Então",
+          "tamanho": 40
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Prefixo antes, sufixo depois",
+        "Os dois juntos e obrigatórios = parassíntese",
+        "Dois radicais = composição"
+      ]
+    }
+  }
+}

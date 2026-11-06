@@ -1,0 +1,153 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-031",
+  "titulo": "Regra de três: simples, inversa e composta",
+  "materia": "matematica",
+  "pronuncia": {
+    "3 está para 24 assim como 5 está para x. Multiplique cruzado: 3x igual a 120, x igual a 40.": "três está para vinte e quatro assim como cinco está para xis. Multiplique cruzado: três xis igual a cento e vinte, xis igual a quarenta."
+  },
+  "falas": {
+    "simples": [
+      "Regra de três compara duas grandezas. 3 quilos custam 24 reais. Quanto custam 5 quilos?",
+      "Monte: 3 está para 24 assim como 5 está para x. Multiplique cruzado: 3x igual a 120, x igual a 40."
+    ],
+    "direta-inversa": [
+      "Pergunte: se uma aumenta, a outra aumenta? Então é direta.",
+      "Se uma aumenta e a outra diminui, é inversa. Mais pedreiros, menos dias."
+    ],
+    "inversa": [
+      "4 pedreiros fazem o muro em 6 dias. Com 8 pedreiros: na inversa, multiplica reto. 4 vezes 6 é 24; 24 dividido por 8, 3 dias."
+    ],
+    "composta": [
+      "Na composta, com três grandezas, compare cada uma com a que você procura, separadamente, e só depois junte."
+    ],
+    "fecho": [
+      "Resumindo: Direta: cruza. Inversa: multiplica reto. Pergunte: aumenta junto ou ao contrário.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "simples": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Regra de três"
+        },
+        {
+          "tipo": "frase",
+          "texto": "3 kg → R$ 24",
+          "em": "3 quilos"
+        },
+        {
+          "tipo": "frase",
+          "texto": "5 kg → *x*",
+          "em": "Quanto custam"
+        },
+        {
+          "tipo": "conta",
+          "texto": "3x = 5 × 24",
+          "fala": 1,
+          "em": "Multiplique"
+        },
+        {
+          "tipo": "conta",
+          "texto": "x = 40",
+          "fala": 1,
+          "em": "x igual a 40",
+          "destaque": true
+        }
+      ]
+    },
+    "direta-inversa": {
+      "blocos": [
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 50,
+          "itens": [
+            {
+              "titulo": "Direta: ↑ e ↑",
+              "texto": "uma aumenta, a outra aumenta",
+              "em": 0
+            },
+            {
+              "titulo": "Inversa: ↑ e ↓",
+              "texto": "mais pedreiros, menos dias",
+              "fala": 1
+            }
+          ]
+        }
+      ]
+    },
+    "inversa": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Inversa: multiplica reto"
+        },
+        {
+          "tipo": "frase",
+          "texto": "4 pedreiros → 6 dias",
+          "em": "4 pedreiros"
+        },
+        {
+          "tipo": "frase",
+          "texto": "8 pedreiros → *x*",
+          "em": "Com 8"
+        },
+        {
+          "tipo": "conta",
+          "texto": "4 × 6 = 8 × x",
+          "em": "multiplica reto"
+        },
+        {
+          "tipo": "conta",
+          "texto": "x = 3 dias",
+          "em": "24 dividido",
+          "destaque": true
+        }
+      ]
+    },
+    "composta": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Composta"
+        },
+        {
+          "tipo": "passos",
+          "itens": [
+            {
+              "titulo": "Compare cada grandeza com a que procura",
+              "em": "compare"
+            },
+            {
+              "titulo": "Veja se é direta ou inversa",
+              "em": "separadamente"
+            },
+            {
+              "titulo": "Só depois junte tudo",
+              "em": "só depois"
+            }
+          ]
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Direta: cruza",
+        "Inversa: multiplica reto",
+        "Pergunte: aumenta junto ou ao contrário?"
+      ]
+    }
+  }
+}

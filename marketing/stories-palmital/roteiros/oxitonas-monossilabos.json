@@ -1,0 +1,185 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-019",
+  "titulo": "Oxítonas, monossílabos e acento diferencial",
+  "materia": "portugues",
+  "pronuncia": {
+    "em A, E ou O, seguidos ou não de S, e em EM e ENS": "em a, é ou ó, seguidos ou não de ésse, e em em e ens",
+    "em I ou U": "em i ou u",
+    "Oxítona: A, E, O, EM, ENS": "Oxítona: a, é, ó, em, ens",
+    "pôde/pode, pôr/por, têm/vêm": "pôde e pode, pôr e por, têm e vêm"
+  },
+  "falas": {
+    "oxitonas": [
+      "Oxítona tem a força na última sílaba. Leva acento quando termina em A, E ou O, seguidos ou não de S, e em EM e ENS: sofá, café, avô, também, parabéns."
+    ],
+    "monossilabos": [
+      "O monossílabo tônico segue a mesma ideia: pá, pé, pó, mês, nós."
+    ],
+    "diferencial": [
+      "Depois do Acordo Ortográfico, poucos acentos diferenciais sobraram: pôde, no passado, e pode, no presente; pôr, o verbo, e por, a preposição.",
+      "E têm e vêm, no plural, com acento: eles têm, eles vêm."
+    ],
+    "pegadinha": [
+      "Oxítona terminada em I ou U não leva acento: tatu, caqui. Só leva se for hiato: Piauí, baú."
+    ],
+    "fecho": [
+      "Resumindo: Oxítona: A, E, O, EM, ENS. pôde/pode, pôr/por, têm/vêm.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "oxitonas": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Oxítona: força na última"
+        },
+        {
+          "tipo": "cartoes",
+          "colunas": 2,
+          "fonteTitulo": 42,
+          "itens": [
+            {
+              "titulo": "A(S)",
+              "texto": "sofá",
+              "em": "sofá"
+            },
+            {
+              "titulo": "E(S)",
+              "texto": "café",
+              "em": "café"
+            },
+            {
+              "titulo": "O(S)",
+              "texto": "avô",
+              "em": "avô"
+            },
+            {
+              "titulo": "EM",
+              "texto": "também",
+              "em": "também"
+            },
+            {
+              "titulo": "ENS",
+              "texto": "parabéns",
+              "em": "parabéns"
+            }
+          ]
+        }
+      ]
+    },
+    "monossilabos": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Monossílabo tônico"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Segue a *mesma* ideia",
+          "tamanho": 70
+        },
+        {
+          "tipo": "cartoes",
+          "colunas": 3,
+          "fonteTitulo": 50,
+          "itens": [
+            {
+              "titulo": "pá",
+              "em": "pá"
+            },
+            {
+              "titulo": "pé",
+              "em": "pé"
+            },
+            {
+              "titulo": "pó",
+              "em": "pó"
+            },
+            {
+              "titulo": "mês",
+              "em": "mês"
+            },
+            {
+              "titulo": "nós",
+              "em": "nós"
+            }
+          ]
+        }
+      ]
+    },
+    "diferencial": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Acento diferencial"
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 42,
+          "itens": [
+            {
+              "titulo": "pôde · pode",
+              "texto": "passado · presente",
+              "em": "pôde"
+            },
+            {
+              "titulo": "pôr · por",
+              "texto": "verbo · preposição",
+              "em": "pôr"
+            },
+            {
+              "titulo": "têm · vêm",
+              "texto": "eles, no plural",
+              "fala": 1
+            }
+          ]
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "tatu · caqui",
+              "texto": "em I ou U: sem acento",
+              "em": "tatu"
+            },
+            {
+              "titulo": "Piauí · baú",
+              "texto": "hiato: com acento",
+              "em": "Só leva"
+            }
+          ]
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Oxítona: A, E, O, EM, ENS",
+        "pôde/pode, pôr/por, têm/vêm"
+      ]
+    }
+  }
+}

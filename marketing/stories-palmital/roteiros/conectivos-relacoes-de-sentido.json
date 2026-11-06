@@ -1,0 +1,149 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-002",
+  "titulo": "Conectivos: o sentido de cada um",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "ideia": [
+      "Conectivo é a palavra que liga as ideias. E cada um tem um sentido."
+    ],
+    "familias": [
+      "Oposição: mas, porém, contudo, todavia.",
+      "Conclusão: portanto, logo, por isso.",
+      "Causa: porque, pois, já que.",
+      "Condição: se, caso, desde que.",
+      "Finalidade: para que, a fim de que."
+    ],
+    "concessao": [
+      "E a concessão: embora, mesmo que, ainda que. Ela admite um obstáculo que não impede o fato.",
+      "Embora chovesse, fomos à praia."
+    ],
+    "troca": [
+      "Para trocar um conectivo, troque por outro da mesma família. 'Mas' vira 'porém'. Nunca 'portanto'."
+    ],
+    "fecho": [
+      "Resumindo: Mesma família = mesmo sentido. Embora = concessão. Portanto = conclusão.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "ideia": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Conectivos"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "A palavra que / *liga* as ideias"
+        },
+        {
+          "tipo": "frase",
+          "texto": "Estudei, *mas* não passei.",
+          "em": "E cada um"
+        }
+      ]
+    },
+    "familias": {
+      "blocos": [
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "Oposição",
+              "texto": "mas, porém, contudo, todavia",
+              "fala": 0
+            },
+            {
+              "titulo": "Conclusão",
+              "texto": "portanto, logo, por isso",
+              "fala": 1
+            },
+            {
+              "titulo": "Causa",
+              "texto": "porque, pois, já que",
+              "fala": 2
+            },
+            {
+              "titulo": "Condição",
+              "texto": "se, caso, desde que",
+              "fala": 3
+            },
+            {
+              "titulo": "Finalidade",
+              "texto": "para que, a fim de que",
+              "fala": 4
+            }
+          ]
+        }
+      ]
+    },
+    "concessao": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Concessão"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "embora, mesmo que, / ainda que",
+          "em": 0.15,
+          "tamanho": 76
+        },
+        {
+          "tipo": "chip",
+          "texto": "Obstáculo que não impede",
+          "em": "Ela admite",
+          "tamanho": 38
+        },
+        {
+          "tipo": "frase",
+          "texto": "*Embora* chovesse, fomos à praia.",
+          "fala": 1
+        }
+      ]
+    },
+    "troca": {
+      "blocos": [
+        {
+          "tipo": "palavras",
+          "texto": "Troque pela / *mesma* *família*"
+        },
+        {
+          "tipo": "comparacao",
+          "itens": [
+            {
+              "texto": "mas → porém",
+              "certo": true,
+              "em": "'Mas' vira"
+            },
+            {
+              "texto": "mas → portanto",
+              "certo": false,
+              "em": "Nunca"
+            }
+          ]
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Mesma família = mesmo sentido",
+        "Embora = concessão",
+        "Portanto = conclusão"
+      ]
+    }
+  }
+}

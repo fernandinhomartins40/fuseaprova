@@ -1,0 +1,42 @@
+{
+  "vezes-10": [
+    {
+      "arquivo": "audio/numeros-decimais/voz-vezes-10-1.wav",
+      "segundos": 9.472,
+      "texto": "Multiplicar por 10, 100 ou 1.000 anda a vírgula para a direita: 3,25 vezes 100, 325."
+    }
+  ],
+  "dividir-10": [
+    {
+      "arquivo": "audio/numeros-decimais/voz-dividir-10-1.wav",
+      "segundos": 7.254,
+      "texto": "Dividir anda a vírgula para a esquerda: 45 dividido por 1.000, 0,045."
+    }
+  ],
+  "multiplicar": [
+    {
+      "arquivo": "audio/numeros-decimais/voz-multiplicar-1.wav",
+      "segundos": 14.645,
+      "texto": "Multiplique decimais como se fossem inteiros e depois conte as casas: 1,2 vezes 0,3. 12 vezes 3, 36. Duas casas: 0,36."
+    }
+  ],
+  "dinheiro": [
+    {
+      "arquivo": "audio/numeros-decimais/voz-dinheiro-1.wav",
+      "segundos": 6.814,
+      "texto": "No preço, use centavos: 2,35 vezes 4 é 9,40."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/numeros-decimais/voz-fecho-1.wav",
+      "segundos": 8.279,
+      "texto": "Resumindo: × 10: vírgula para a direita. ÷ 10: para a esquerda. Conte as casas no fim."
+    },
+    {
+      "arquivo": "audio/numeros-decimais/voz-fecho-2.wav",
+      "segundos": 1.248,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-008",
+  "titulo": "Classes de palavras: como descobrir a classe",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "ideia": [
+      "A mesma palavra muda de classe conforme o papel na frase. Então olhe a frase, e não a palavra sozinha."
+    ],
+    "testes": [
+      "Substantivo aceita artigo: o jantar.",
+      "Adjetivo dá qualidade a um substantivo: casa bonita.",
+      "Verbo muda com o tempo: janto, jantei, jantarei.",
+      "Advérbio acompanha o verbo: jantou cedo."
+    ],
+    "numeral": [
+      "Numeral indica quantidade ou ordem: dois, segundo, dobro, metade."
+    ],
+    "pegadinha": [
+      "'Bonito' em 'cantou bonito' é advérbio, porque diz como cantou."
+    ],
+    "fecho": [
+      "Resumindo: Classe depende do papel na frase. Aceita artigo? Substantivo. Acompanha verbo? Advérbio.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "ideia": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Classes de palavras"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "A classe depende / do *papel* *na* *frase*",
+          "tamanho": 76
+        },
+        {
+          "tipo": "frase",
+          "legenda": "Substantivo",
+          "texto": "O *jantar* estava ótimo.",
+          "em": "conforme"
+        },
+        {
+          "tipo": "frase",
+          "legenda": "Verbo",
+          "texto": "Vamos *jantar*.",
+          "em": "Então"
+        }
+      ]
+    },
+    "testes": {
+      "blocos": [
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "Substantivo",
+              "texto": "aceita artigo: o jantar",
+              "fala": 0
+            },
+            {
+              "titulo": "Adjetivo",
+              "texto": "dá qualidade: casa bonita",
+              "fala": 1
+            },
+            {
+              "titulo": "Verbo",
+              "texto": "muda com o tempo: janto, jantei",
+              "fala": 2
+            },
+            {
+              "titulo": "Advérbio",
+              "texto": "acompanha o verbo: jantou cedo",
+              "fala": 3
+            }
+          ]
+        }
+      ]
+    },
+    "numeral": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Numeral"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*Quantidade* / ou *ordem*"
+        },
+        {
+          "tipo": "cartoes",
+          "colunas": 2,
+          "fonteTitulo": 46,
+          "itens": [
+            {
+              "titulo": "dois",
+              "em": "dois"
+            },
+            {
+              "titulo": "segundo",
+              "em": "segundo"
+            },
+            {
+              "titulo": "dobro",
+              "em": "dobro"
+            },
+            {
+              "titulo": "metade",
+              "em": "metade"
+            }
+          ]
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "frase",
+          "texto": "Cantou *bonito*.",
+          "em": "'Bonito'",
+          "tamanho": 64
+        },
+        {
+          "tipo": "chip",
+          "texto": "Diz como cantou: advérbio",
+          "em": "porque",
+          "tamanho": 38
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Classe depende do papel na frase",
+        "Aceita artigo? Substantivo",
+        "Acompanha verbo? Advérbio"
+      ]
+    }
+  }
+}

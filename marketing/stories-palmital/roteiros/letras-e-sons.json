@@ -1,0 +1,165 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-009",
+  "titulo": "Letras e sons: S com som de Z, C, G e H",
+  "materia": "portugues",
+  "pronuncia": {
+    "S entre": "ésse entre",
+    "tem som de Z": "tem som de zê",
+    "soa S": "soa ésse",
+    "C e G": "cê e gê",
+    "soa J": "soa jota",
+    "de E e I": "de é e i",
+    "de A, O e U": "de a, ó e u",
+    "O H no": "O agá no",
+    "X com som de Z": "xis com som de zê",
+    "vogais = Z": "vogais é zê",
+    "H inicial": "agá inicial"
+  },
+  "falas": {
+    "s": [
+      "O S entre duas vogais tem som de Z: casa, mesa.",
+      "No começo da palavra ou depois de consoante, soa S: sapo, pensar."
+    ],
+    "c-g": [
+      "C e G mudam antes de E e I. 'Cebola' soa S, 'gelo' soa J.",
+      "Antes de A, O e U, soam forte: casa, gato."
+    ],
+    "h": [
+      "O H no começo da palavra não tem som: hora, hoje."
+    ],
+    "pegadinha": [
+      "Letra não é som. 'Exame' tem X com som de Z. Sempre fale a palavra em voz alta."
+    ],
+    "fecho": [
+      "Resumindo: S entre vogais = Z. C e G mudam antes de E e I. H inicial é mudo.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "s": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "A letra S"
+        },
+        {
+          "tipo": "frase",
+          "legenda": "Entre vogais: som de Z",
+          "texto": "ca*s*a, me*s*a",
+          "tamanho": 64
+        },
+        {
+          "tipo": "frase",
+          "legenda": "No começo ou após consoante: som de S",
+          "texto": "*s*apo, pen*s*ar",
+          "fala": 1,
+          "tamanho": 64
+        }
+      ]
+    },
+    "c-g": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "C e G"
+        },
+        {
+          "tipo": "cartoes",
+          "colunas": 2,
+          "fonteTitulo": 42,
+          "itens": [
+            {
+              "titulo": "C + a, o, u",
+              "texto": "casa: som de K",
+              "fala": 1,
+              "em": "casa"
+            },
+            {
+              "titulo": "C + e, i",
+              "texto": "cebola: som de S",
+              "fala": 0,
+              "em": "'Cebola'"
+            },
+            {
+              "titulo": "G + a, o, u",
+              "texto": "gato: som forte",
+              "fala": 1,
+              "em": "gato"
+            },
+            {
+              "titulo": "G + e, i",
+              "texto": "gelo: som de J",
+              "fala": 0,
+              "em": "'gelo'"
+            }
+          ]
+        }
+      ]
+    },
+    "h": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "A letra H"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "No começo, / *não* *tem* *som*"
+        },
+        {
+          "tipo": "frase",
+          "texto": "~H~ora, ~h~oje",
+          "em": "hora",
+          "tamanho": 68
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Letra *não* é som"
+        },
+        {
+          "tipo": "frase",
+          "legenda": "X com som de Z",
+          "texto": "e*x*ame",
+          "em": "'Exame'",
+          "tamanho": 68
+        },
+        {
+          "tipo": "chip",
+          "texto": "Fale em voz alta",
+          "em": "Sempre",
+          "fundo": "verde",
+          "tamanho": 38
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "S entre vogais = Z",
+        "C e G mudam antes de E e I",
+        "H inicial é mudo"
+      ]
+    }
+  }
+}

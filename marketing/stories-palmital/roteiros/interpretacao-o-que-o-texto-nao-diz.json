@@ -1,0 +1,135 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-001",
+  "titulo": "Interpretação: o que o texto NÃO diz",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "regra": [
+      "Na pergunta 'assinale a incorreta', a resposta é a frase que o texto não sustenta.",
+      "Não vale o que você acha: vale só o que está escrito."
+    ],
+    "troca": [
+      "A banca muda um detalhe: um número, um 'sempre' no lugar de 'às vezes', um 'todos' no lugar de 'alguns'."
+    ],
+    "metodo": [
+      "Faça assim: leia a alternativa, volte ao trecho e compare palavra por palavra.",
+      "Se uma palavra não bate, a frase está errada."
+    ],
+    "pegadinha": [
+      "Cuidado com a frase verdadeira no mundo, mas que o texto não disse. Ela também está errada."
+    ],
+    "fecho": [
+      "Resumindo: Só vale o texto. Compare palavra por palavra. Desconfie de sempre, nunca, todos.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "regra": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Interpretação de texto"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "A resposta é a frase / que o texto / *não* *sustenta*",
+          "em": 0.3
+        },
+        {
+          "tipo": "chip",
+          "texto": "Só vale o texto",
+          "fala": 1,
+          "icone": "icone-alvo",
+          "tamanho": 40
+        }
+      ]
+    },
+    "troca": {
+      "blocos": [
+        {
+          "tipo": "palavras",
+          "texto": "A banca muda *um* *detalhe*"
+        },
+        {
+          "tipo": "frase",
+          "legenda": "No texto",
+          "texto": "*Alguns* moradores reclamaram.",
+          "em": "um número"
+        },
+        {
+          "tipo": "frase",
+          "legenda": "Na alternativa",
+          "texto": "~Todos~ os moradores reclamaram.",
+          "em": "um 'todos'"
+        }
+      ]
+    },
+    "metodo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Faça assim"
+        },
+        {
+          "tipo": "passos",
+          "itens": [
+            {
+              "titulo": "Leia a alternativa",
+              "em": "leia"
+            },
+            {
+              "titulo": "Volte ao trecho",
+              "em": "volte"
+            },
+            {
+              "titulo": "Compare palavra por palavra",
+              "em": "compare"
+            }
+          ]
+        },
+        {
+          "tipo": "chip",
+          "texto": "Uma palavra não bate? Está errada",
+          "fala": 1,
+          "fundo": "coral",
+          "tamanho": 36
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Verdade no mundo / não é o mesmo que / *estar* *no* *texto*",
+          "em": 0.25,
+          "tamanho": 80
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Só vale o texto",
+        "Compare palavra por palavra",
+        "Desconfie de sempre, nunca, todos"
+      ]
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "de": [
+    {
+      "arquivo": "audio/porcentagem-parte-total/voz-de-1.wav",
+      "segundos": 10.444,
+      "texto": "Porcentagem de um valor: transforme em decimal e multiplique. 30% de 200: 0,3 vezes 200, dá 60."
+    }
+  ],
+  "quanto-representa": [
+    {
+      "arquivo": "audio/porcentagem-parte-total/voz-quanto-representa-1.wav",
+      "segundos": 15.84,
+      "texto": "Que porcentagem a parte representa? Divida a parte pelo total. 45 de 180: 45 dividido por 180, 0,25, ou seja, 25%."
+    }
+  ],
+  "achar-total": [
+    {
+      "arquivo": "audio/porcentagem-parte-total/voz-achar-total-1.wav",
+      "segundos": 10.049,
+      "texto": "Achar o total: 40% são 60 pessoas. Divida 60 por 0,4: o total é 150."
+    }
+  ],
+  "complemento": [
+    {
+      "arquivo": "audio/porcentagem-parte-total/voz-complemento-1.wav",
+      "segundos": 7.549,
+      "texto": "E o que falta: se 35% já votaram, faltam 100 menos 35, 65%."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/porcentagem-parte-total/voz-fecho-1.wav",
+      "segundos": 9.924,
+      "texto": "Resumindo: De = multiplica. Quanto representa = divide. Falta = 100% − parte."
+    },
+    {
+      "arquivo": "audio/porcentagem-parte-total/voz-fecho-2.wav",
+      "segundos": 1.431,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

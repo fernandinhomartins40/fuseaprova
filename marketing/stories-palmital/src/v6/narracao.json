@@ -1,0 +1,94 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v6/voz-gancho-1.wav",
+      "segundos": 2.67,
+      "texto": "Estude agora para o concurso da Prefeitura de Palmital!"
+    },
+    {
+      "arquivo": "audio/v6/voz-gancho-2.wav",
+      "segundos": 1.533,
+      "texto": "Vou te mostrar como é simples."
+    }
+  ],
+  "fau": [
+    {
+      "arquivo": "audio/v6/voz-fau-1.wav",
+      "segundos": 2.682,
+      "texto": "Quem organiza o concurso de Palmital é a banca FAU."
+    },
+    {
+      "arquivo": "audio/v6/voz-fau-2.wav",
+      "segundos": 4.863,
+      "texto": "E o jeito mais certeiro de estudar é treinar com as questões das provas antigas dela."
+    },
+    {
+      "arquivo": "audio/v6/voz-fau-3.wav",
+      "segundos": 3.652,
+      "texto": "Assim você chega na prova já conhecendo o jeito que a banca pergunta."
+    }
+  ],
+  "passos": [
+    {
+      "arquivo": "audio/v6/voz-passos-1.wav",
+      "segundos": 3.342,
+      "texto": "Passo um: crie sua conta e escolha o seu cargo."
+    },
+    {
+      "arquivo": "audio/v6/voz-passos-2.wav",
+      "segundos": 3.261,
+      "texto": "Passo dois: abra a trilha e toque na lição do dia."
+    },
+    {
+      "arquivo": "audio/v6/voz-passos-3.wav",
+      "segundos": 4.229,
+      "texto": "Passo três: responda as questões. A explicação aparece na hora."
+    },
+    {
+      "arquivo": "audio/v6/voz-passos-4.wav",
+      "segundos": 4.261,
+      "texto": "Passo quatro: o que você errar volta na revisão, até aprender."
+    },
+    {
+      "arquivo": "audio/v6/voz-passos-5.wav",
+      "segundos": 2.821,
+      "texto": "E pra se testar, tem simulado igualzinho à prova."
+    }
+  ],
+  "rotina": [
+    {
+      "arquivo": "audio/v6/voz-rotina-1.wav",
+      "segundos": 2.3,
+      "texto": "Quinze minutos por dia já fazem diferença."
+    },
+    {
+      "arquivo": "audio/v6/voz-rotina-2.wav",
+      "segundos": 2.527,
+      "texto": "No ônibus, no intervalo, antes de dormir."
+    }
+  ],
+  "antes": [
+    {
+      "arquivo": "audio/v6/voz-antes-1.wav",
+      "segundos": 1.592,
+      "texto": "E o edital ainda nem saiu!"
+    },
+    {
+      "arquivo": "audio/v6/voz-antes-2.wav",
+      "segundos": 2.664,
+      "texto": "Quem começa agora chega na prova muito na frente."
+    }
+  ],
+  "chamada": [
+    {
+      "arquivo": "audio/v6/voz-chamada-1.wav",
+      "segundos": 3.563,
+      "texto": "Então não espera o edital: estuda agora pro concurso de Palmital!"
+    },
+    {
+      "arquivo": "audio/v6/voz-chamada-2.wav",
+      "segundos": 0.911,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

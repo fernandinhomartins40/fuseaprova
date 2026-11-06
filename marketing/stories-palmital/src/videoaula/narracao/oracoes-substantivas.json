@@ -1,0 +1,52 @@
+{
+  "truque": [
+    {
+      "arquivo": "audio/oracoes-substantivas/voz-truque-1.wav",
+      "segundos": 7.31,
+      "texto": "Oração substantiva faz o papel de um substantivo. O truque é trocar a oração inteira por 'isso'."
+    }
+  ],
+  "funcoes": [
+    {
+      "arquivo": "audio/oracoes-substantivas/voz-funcoes-1.wav",
+      "segundos": 6.19,
+      "texto": "'É importante que você venha': isso é importante. Isso é o sujeito: oração subjetiva."
+    },
+    {
+      "arquivo": "audio/oracoes-substantivas/voz-funcoes-2.wav",
+      "segundos": 6.153,
+      "texto": "'Espero que você venha': espero isso. Objeto direto: objetiva direta."
+    },
+    {
+      "arquivo": "audio/oracoes-substantivas/voz-funcoes-3.wav",
+      "segundos": 6.19,
+      "texto": "'Gosto de que me ouçam': gosto disso. Objeto indireto: objetiva indireta."
+    }
+  ],
+  "predicativa": [
+    {
+      "arquivo": "audio/oracoes-substantivas/voz-predicativa-1.wav",
+      "segundos": 6.826,
+      "texto": "'O problema é que ninguém leu': o problema é isso. Depois do verbo ser, é predicativa."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/oracoes-substantivas/voz-pegadinha-1.wav",
+      "segundos": 7.521,
+      "texto": "Se o 'que' retoma um nome, como em 'o livro que li', ele é pronome relativo, e a oração é adjetiva."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/oracoes-substantivas/voz-fecho-1.wav",
+      "segundos": 7.055,
+      "texto": "Resumindo: Troque por 'isso'. Depois de 'é'? Predicativa. 'Que' retomando nome = adjetiva."
+    },
+    {
+      "arquivo": "audio/oracoes-substantivas/voz-fecho-2.wav",
+      "segundos": 1.531,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

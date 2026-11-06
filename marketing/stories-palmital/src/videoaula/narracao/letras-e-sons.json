@@ -1,0 +1,52 @@
+{
+  "s": [
+    {
+      "arquivo": "audio/letras-e-sons/voz-s-1.wav",
+      "segundos": 3.787,
+      "texto": "O S entre duas vogais tem som de Z: casa, mesa."
+    },
+    {
+      "arquivo": "audio/letras-e-sons/voz-s-2.wav",
+      "segundos": 6.058,
+      "texto": "No começo da palavra ou depois de consoante, soa S: sapo, pensar."
+    }
+  ],
+  "c-g": [
+    {
+      "arquivo": "audio/letras-e-sons/voz-c-g-1.wav",
+      "segundos": 6.589,
+      "texto": "C e G mudam antes de E e I. 'Cebola' soa S, 'gelo' soa J."
+    },
+    {
+      "arquivo": "audio/letras-e-sons/voz-c-g-2.wav",
+      "segundos": 4.676,
+      "texto": "Antes de A, O e U, soam forte: casa, gato."
+    }
+  ],
+  "h": [
+    {
+      "arquivo": "audio/letras-e-sons/voz-h-1.wav",
+      "segundos": 4.323,
+      "texto": "O H no começo da palavra não tem som: hora, hoje."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/letras-e-sons/voz-pegadinha-1.wav",
+      "segundos": 6.628,
+      "texto": "Letra não é som. 'Exame' tem X com som de Z. Sempre fale a palavra em voz alta."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/letras-e-sons/voz-fecho-1.wav",
+      "segundos": 7.71,
+      "texto": "Resumindo: S entre vogais = Z. C e G mudam antes de E e I. H inicial é mudo."
+    },
+    {
+      "arquivo": "audio/letras-e-sons/voz-fecho-2.wav",
+      "segundos": 1.286,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "enumeracao": [
+    {
+      "arquivo": "audio/virgula/voz-enumeracao-1.wav",
+      "segundos": 4.711,
+      "texto": "Vírgula separa itens de uma lista: comprei arroz, feijão e óleo."
+    }
+  ],
+  "aposto-vocativo": [
+    {
+      "arquivo": "audio/virgula/voz-aposto-vocativo-1.wav",
+      "segundos": 3.781,
+      "texto": "Aposto explica um termo: Ana, a diretora, chegou."
+    },
+    {
+      "arquivo": "audio/virgula/voz-aposto-vocativo-2.wav",
+      "segundos": 2.796,
+      "texto": "Vocativo chama alguém: Maria, venha cá."
+    }
+  ],
+  "deslocado": [
+    {
+      "arquivo": "audio/virgula/voz-deslocado-1.wav",
+      "segundos": 6.071,
+      "texto": "Adjunto adverbial no começo da frase costuma levar vírgula: No fim do dia, saímos."
+    }
+  ],
+  "proibida": [
+    {
+      "arquivo": "audio/virgula/voz-proibida-1.wav",
+      "segundos": 4.381,
+      "texto": "E a regra de ouro: não se separa o sujeito do verbo com vírgula."
+    },
+    {
+      "arquivo": "audio/virgula/voz-proibida-2.wav",
+      "segundos": 2.497,
+      "texto": "'Os alunos, estudaram' está errado."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/virgula/voz-fecho-1.wav",
+      "segundos": 7.246,
+      "texto": "Resumindo: Lista, aposto, vocativo e deslocado levam vírgula. Sujeito e verbo, nunca."
+    },
+    {
+      "arquivo": "audio/virgula/voz-fecho-2.wav",
+      "segundos": 1.231,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

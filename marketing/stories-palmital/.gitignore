@@ -1,0 +1,7 @@
+node_modules/
+out/
+.venv-voz/
+# Áudio gerado (247 MB) e telas copiadas de design/png: ficam fora do git.
+public/audio/
+public/telas/
+__pycache__/

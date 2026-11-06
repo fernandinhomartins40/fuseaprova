@@ -1,0 +1,52 @@
+{
+  "tempos": [
+    {
+      "arquivo": "audio/tempos-e-modos-verbais/voz-tempos-1.wav",
+      "segundos": 7.578,
+      "texto": "Presente: eu estudo. Pretérito, o passado: eu estudei. Futuro: eu estudarei."
+    }
+  ],
+  "preteritos": [
+    {
+      "arquivo": "audio/tempos-e-modos-verbais/voz-preteritos-1.wav",
+      "segundos": 7.931,
+      "texto": "O passado tem três: perfeito, 'estudei'; imperfeito, 'estudava'; e mais-que-perfeito, 'estudara'."
+    }
+  ],
+  "modos": [
+    {
+      "arquivo": "audio/tempos-e-modos-verbais/voz-modos-1.wav",
+      "segundos": 2.437,
+      "texto": "Indicativo é certeza: eu estudo."
+    },
+    {
+      "arquivo": "audio/tempos-e-modos-verbais/voz-modos-2.wav",
+      "segundos": 4.674,
+      "texto": "Subjuntivo é dúvida ou desejo: que eu estude, se eu estudasse."
+    },
+    {
+      "arquivo": "audio/tempos-e-modos-verbais/voz-modos-3.wav",
+      "segundos": 3.175,
+      "texto": "Imperativo é ordem ou pedido: estude!"
+    }
+  ],
+  "formas-nominais": [
+    {
+      "arquivo": "audio/tempos-e-modos-verbais/voz-formas-nominais-1.wav",
+      "segundos": 7.181,
+      "texto": "E as formas nominais: infinitivo 'estudar', gerúndio 'estudando' e particípio 'estudado'."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/tempos-e-modos-verbais/voz-fecho-1.wav",
+      "segundos": 8.104,
+      "texto": "Resumindo: -va = imperfeito. -ra = mais-que-perfeito. que / se = subjuntivo."
+    },
+    {
+      "arquivo": "audio/tempos-e-modos-verbais/voz-fecho-2.wav",
+      "segundos": 1.247,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

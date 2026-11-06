@@ -1,0 +1,42 @@
+{
+  "ideia": [
+    {
+      "arquivo": "audio/adjunto-adverbial/voz-ideia-1.wav",
+      "segundos": 7.541,
+      "texto": "Adjunto adverbial é o pedaço da frase que dá uma circunstância: quando, onde, como, por quê."
+    }
+  ],
+  "circunstancias": [
+    {
+      "arquivo": "audio/adjunto-adverbial/voz-circunstancias-1.wav",
+      "segundos": 9.92,
+      "texto": "À noite: tempo. No parque: lugar. Com calma: modo. Por causa da chuva: causa. Para passar: finalidade."
+    }
+  ],
+  "oracoes": [
+    {
+      "arquivo": "audio/adjunto-adverbial/voz-oracoes-1.wav",
+      "segundos": 10.995,
+      "texto": "Quando é uma oração inteira, ela segue o conectivo. 'Porque choveu': causa. 'Se chover': condição. 'Embora chova': concessão."
+    }
+  ],
+  "predicativo": [
+    {
+      "arquivo": "audio/adjunto-adverbial/voz-predicativo-1.wav",
+      "segundos": 8.402,
+      "texto": "Cuidado: 'chegou cansado' dá uma qualidade do sujeito. É predicativo, e não adjunto adverbial."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/adjunto-adverbial/voz-fecho-1.wav",
+      "segundos": 7.586,
+      "texto": "Resumindo: Pergunte quando, onde, como, por quê. Na oração, o conectivo dá a pista."
+    },
+    {
+      "arquivo": "audio/adjunto-adverbial/voz-fecho-2.wav",
+      "segundos": 1.377,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

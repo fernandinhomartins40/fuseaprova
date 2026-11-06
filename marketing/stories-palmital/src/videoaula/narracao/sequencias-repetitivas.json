@@ -1,0 +1,42 @@
+{
+  "ciclo": [
+    {
+      "arquivo": "audio/sequencias-repetitivas/voz-ciclo-1.wav",
+      "segundos": 4.909,
+      "texto": "Na sequência A, B, C, A, B, C, o bloco de 3 letras se repete."
+    }
+  ],
+  "resto": [
+    {
+      "arquivo": "audio/sequencias-repetitivas/voz-resto-1.wav",
+      "segundos": 9.986,
+      "texto": "Para achar a letra 100, divida 100 pelo tamanho do bloco: 100 dividido por 3 dá resto 1. Resto 1 é a primeira do bloco: A."
+    }
+  ],
+  "resto-zero": [
+    {
+      "arquivo": "audio/sequencias-repetitivas/voz-resto-zero-1.wav",
+      "segundos": 5.755,
+      "texto": "Resto zero significa a última do bloco: a posição 99 é C."
+    }
+  ],
+  "palavras": [
+    {
+      "arquivo": "audio/sequencias-repetitivas/voz-palavras-1.wav",
+      "segundos": 6.219,
+      "texto": "Vale para palavras, símbolos e dias: conte o tamanho do ciclo e use o resto."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/sequencias-repetitivas/voz-fecho-1.wav",
+      "segundos": 6.525,
+      "texto": "Resumindo: Ache o tamanho do ciclo. Use o resto. Resto 0 = último do bloco."
+    },
+    {
+      "arquivo": "audio/sequencias-repetitivas/voz-fecho-2.wav",
+      "segundos": 1.337,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

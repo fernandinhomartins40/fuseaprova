@@ -1,0 +1,42 @@
+{
+  "ditongo": [
+    {
+      "arquivo": "audio/hiato-ditongo-tritongo/voz-ditongo-1.wav",
+      "segundos": 7.508,
+      "texto": "Ditongo: duas vogais na mesma sílaba. Pai, cau-le, can-ção."
+    }
+  ],
+  "hiato": [
+    {
+      "arquivo": "audio/hiato-ditongo-tritongo/voz-hiato-1.wav",
+      "segundos": 9.87,
+      "texto": "Hiato: duas vogais em sílabas diferentes. Sa-ú-de, po-e-ta, ra-iz."
+    }
+  ],
+  "tritongo": [
+    {
+      "arquivo": "audio/hiato-ditongo-tritongo/voz-tritongo-1.wav",
+      "segundos": 7.255,
+      "texto": "Tritongo: três vogais juntas na mesma sílaba. Pa-ra-guai, U-ru-guai."
+    }
+  ],
+  "acento": [
+    {
+      "arquivo": "audio/hiato-ditongo-tritongo/voz-acento-1.wav",
+      "segundos": 6.961,
+      "texto": "O I e o U do hiato, sozinhos na sílaba, levam acento: saúde, baú, país."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/hiato-ditongo-tritongo/voz-fecho-1.wav",
+      "segundos": 7.132,
+      "texto": "Resumindo: Ditongo junta. Hiato separa. Tritongo: três vogais numa sílaba."
+    },
+    {
+      "arquivo": "audio/hiato-ditongo-tritongo/voz-fecho-2.wav",
+      "segundos": 1.341,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

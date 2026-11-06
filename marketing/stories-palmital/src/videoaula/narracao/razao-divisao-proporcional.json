@@ -1,0 +1,47 @@
+{
+  "razao": [
+    {
+      "arquivo": "audio/razao-divisao-proporcional/voz-razao-1.wav",
+      "segundos": 7.351,
+      "texto": "Razão é uma divisão que compara. 1 a cada 5 alunos usa óculos: a razão é 1 para 5."
+    }
+  ],
+  "partes": [
+    {
+      "arquivo": "audio/razao-divisao-proporcional/voz-partes-1.wav",
+      "segundos": 12.501,
+      "texto": "Dividir 600 reais entre duas pessoas na razão 2 para 3: some as partes, 5. Cada parte vale 600 dividido por 5, 120."
+    },
+    {
+      "arquivo": "audio/razao-divisao-proporcional/voz-partes-2.wav",
+      "segundos": 7.217,
+      "texto": "Uma leva 2 partes, 240. A outra leva 3 partes, 360."
+    }
+  ],
+  "investimento": [
+    {
+      "arquivo": "audio/razao-divisao-proporcional/voz-investimento-1.wav",
+      "segundos": 7.451,
+      "texto": "Lucro dividido pelo que cada um investiu é a mesma ideia: quem pôs mais, recebe mais, na mesma proporção."
+    }
+  ],
+  "concorrencia": [
+    {
+      "arquivo": "audio/razao-divisao-proporcional/voz-concorrencia-1.wav",
+      "segundos": 7.572,
+      "texto": "Candidatos por vaga também é razão: 900 inscritos para 30 vagas, 30 candidatos por vaga."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/razao-divisao-proporcional/voz-fecho-1.wav",
+      "segundos": 7.683,
+      "texto": "Resumindo: Some as partes. Ache o valor de 1 parte. Multiplique por quantas partes cada um tem."
+    },
+    {
+      "arquivo": "audio/razao-divisao-proporcional/voz-fecho-2.wav",
+      "segundos": 1.422,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

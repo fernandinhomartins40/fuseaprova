@@ -1,0 +1,52 @@
+{
+  "regra": [
+    {
+      "arquivo": "audio/interpretacao-o-que-o-texto-nao-diz/voz-regra-1.wav",
+      "segundos": 5.81,
+      "texto": "Na pergunta 'assinale a incorreta', a resposta é a frase que o texto não sustenta."
+    },
+    {
+      "arquivo": "audio/interpretacao-o-que-o-texto-nao-diz/voz-regra-2.wav",
+      "segundos": 3.628,
+      "texto": "Não vale o que você acha: vale só o que está escrito."
+    }
+  ],
+  "troca": [
+    {
+      "arquivo": "audio/interpretacao-o-que-o-texto-nao-diz/voz-troca-1.wav",
+      "segundos": 8.947,
+      "texto": "A banca muda um detalhe: um número, um 'sempre' no lugar de 'às vezes', um 'todos' no lugar de 'alguns'."
+    }
+  ],
+  "metodo": [
+    {
+      "arquivo": "audio/interpretacao-o-que-o-texto-nao-diz/voz-metodo-1.wav",
+      "segundos": 6.385,
+      "texto": "Faça assim: leia a alternativa, volte ao trecho e compare palavra por palavra."
+    },
+    {
+      "arquivo": "audio/interpretacao-o-que-o-texto-nao-diz/voz-metodo-2.wav",
+      "segundos": 2.959,
+      "texto": "Se uma palavra não bate, a frase está errada."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/interpretacao-o-que-o-texto-nao-diz/voz-pegadinha-1.wav",
+      "segundos": 6.325,
+      "texto": "Cuidado com a frase verdadeira no mundo, mas que o texto não disse. Ela também está errada."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/interpretacao-o-que-o-texto-nao-diz/voz-fecho-1.wav",
+      "segundos": 8.449,
+      "texto": "Resumindo: Só vale o texto. Compare palavra por palavra. Desconfie de sempre, nunca, todos."
+    },
+    {
+      "arquivo": "audio/interpretacao-o-que-o-texto-nao-diz/voz-fecho-2.wav",
+      "segundos": 1.222,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

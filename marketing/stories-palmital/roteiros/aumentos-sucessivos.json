@@ -1,0 +1,134 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-048",
+  "titulo": "Aumentos e reduções sucessivos",
+  "materia": "matematica",
+  "pronuncia": {
+    "1,1 vezes 1,1, 1,21.": "um vírgula um vezes um vírgula um, dá um vírgula vinte e um.",
+    "0,9 vezes 0,9, 0,81.": "zero vírgula nove vezes zero vírgula nove, dá zero vírgula oitenta e um."
+  },
+  "falas": {
+    "fatores": [
+      "Aumento de 10% é vezes 1,1. Desconto de 20% é vezes 0,8."
+    ],
+    "seguidos": [
+      "Dois aumentos seguidos de 10% não dão 20%: 1,1 vezes 1,1, 1,21. Aumento total de 21%."
+    ],
+    "reducoes": [
+      "Duas reduções de 10%: 0,9 vezes 0,9, 0,81. Redução total de 19%."
+    ],
+    "ano-a-ano": [
+      "Perde 5% ao ano por 3 anos: 0,95 elevado a 3. Cada ano multiplica de novo."
+    ],
+    "fecho": [
+      "Resumindo: Seguidos: multiplica os fatores. Nunca some as porcentagens.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "fatores": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Fatores"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Troque por / *um* *fator*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "+10% → × 1,1",
+          "em": "Aumento"
+        },
+        {
+          "tipo": "conta",
+          "texto": "−20% → × 0,8",
+          "em": "Desconto"
+        }
+      ]
+    },
+    "seguidos": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Dois aumentos de 10%"
+        },
+        {
+          "tipo": "conta",
+          "texto": "100 → 110 → 121",
+          "em": "não dão"
+        },
+        {
+          "tipo": "comparacao",
+          "itens": [
+            {
+              "texto": "+20%",
+              "certo": false,
+              "em": "não dão"
+            },
+            {
+              "texto": "+21%",
+              "certo": true,
+              "em": "Aumento total"
+            }
+          ]
+        }
+      ]
+    },
+    "reducoes": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Duas reduções de 10%"
+        },
+        {
+          "tipo": "conta",
+          "texto": "100 → 90 → 81",
+          "em": "0,9 vezes"
+        },
+        {
+          "tipo": "conta",
+          "texto": "Redução total: 19%",
+          "em": "Redução total",
+          "destaque": true
+        }
+      ]
+    },
+    "ano-a-ano": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Ano a ano"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Perde *5%* / ao ano, por 3 anos",
+          "tamanho": 72
+        },
+        {
+          "tipo": "conta",
+          "texto": "0,95 × 0,95 × 0,95",
+          "em": "0,95",
+          "destaque": true
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Seguidos: multiplica os fatores",
+        "Nunca some as porcentagens"
+      ]
+    }
+  }
+}

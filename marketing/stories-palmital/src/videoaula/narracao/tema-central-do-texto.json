@@ -1,0 +1,47 @@
+{
+  "ideia": [
+    {
+      "arquivo": "audio/tema-central-do-texto/voz-ideia-1.wav",
+      "segundos": 5.775,
+      "texto": "O tema central é o assunto que liga o texto inteiro, e não um detalhe de um parágrafo."
+    }
+  ],
+  "tamanho": [
+    {
+      "arquivo": "audio/tema-central-do-texto/voz-tamanho-1.wav",
+      "segundos": 3.718,
+      "texto": "A alternativa certa não é ampla demais nem estreita demais."
+    },
+    {
+      "arquivo": "audio/tema-central-do-texto/voz-tamanho-2.wav",
+      "segundos": 7.982,
+      "texto": "'Saúde' é amplo demais. 'O horário da farmácia' é estreito demais. 'A falta de remédios no posto' é o tema."
+    }
+  ],
+  "noticia": [
+    {
+      "arquivo": "audio/tema-central-do-texto/voz-noticia-1.wav",
+      "segundos": 6.089,
+      "texto": "Em notícia, o tema é o fato principal, e costuma estar no título e no primeiro parágrafo."
+    }
+  ],
+  "tese": [
+    {
+      "arquivo": "audio/tema-central-do-texto/voz-tese-1.wav",
+      "segundos": 5.992,
+      "texto": "Em texto de opinião, procure a tese: a ideia que o autor defende e tenta provar."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/tema-central-do-texto/voz-fecho-1.wav",
+      "segundos": 6.177,
+      "texto": "Resumindo: O fio que liga tudo. Nem amplo, nem estreito. Opinião = tese."
+    },
+    {
+      "arquivo": "audio/tema-central-do-texto/voz-fecho-2.wav",
+      "segundos": 1.435,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

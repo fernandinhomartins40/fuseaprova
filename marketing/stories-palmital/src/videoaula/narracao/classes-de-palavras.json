@@ -1,0 +1,57 @@
+{
+  "ideia": [
+    {
+      "arquivo": "audio/classes-de-palavras/voz-ideia-1.wav",
+      "segundos": 7.012,
+      "texto": "A mesma palavra muda de classe conforme o papel na frase. Então olhe a frase, e não a palavra sozinha."
+    }
+  ],
+  "testes": [
+    {
+      "arquivo": "audio/classes-de-palavras/voz-testes-1.wav",
+      "segundos": 3.051,
+      "texto": "Substantivo aceita artigo: o jantar."
+    },
+    {
+      "arquivo": "audio/classes-de-palavras/voz-testes-2.wav",
+      "segundos": 5.285,
+      "texto": "Adjetivo dá qualidade a um substantivo: casa bonita."
+    },
+    {
+      "arquivo": "audio/classes-de-palavras/voz-testes-3.wav",
+      "segundos": 4.411,
+      "texto": "Verbo muda com o tempo: janto, jantei, jantarei."
+    },
+    {
+      "arquivo": "audio/classes-de-palavras/voz-testes-4.wav",
+      "segundos": 3.332,
+      "texto": "Advérbio acompanha o verbo: jantou cedo."
+    }
+  ],
+  "numeral": [
+    {
+      "arquivo": "audio/classes-de-palavras/voz-numeral-1.wav",
+      "segundos": 6.451,
+      "texto": "Numeral indica quantidade ou ordem: dois, segundo, dobro, metade."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/classes-de-palavras/voz-pegadinha-1.wav",
+      "segundos": 4.591,
+      "texto": "'Bonito' em 'cantou bonito' é advérbio, porque diz como cantou."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/classes-de-palavras/voz-fecho-1.wav",
+      "segundos": 7.98,
+      "texto": "Resumindo: Classe depende do papel na frase. Aceita artigo? Substantivo. Acompanha verbo? Advérbio."
+    },
+    {
+      "arquivo": "audio/classes-de-palavras/voz-fecho-2.wav",
+      "segundos": 1.4,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v1/voz-gancho-1.wav",
+      "segundos": 2.614,
+      "texto": "Você quer trabalhar na Prefeitura de Palmital?!"
+    }
+  ],
+  "edital": [
+    {
+      "arquivo": "audio/v1/voz-edital-1.wav",
+      "segundos": 1.643,
+      "texto": "O edital do concurso ainda não foi publicado."
+    },
+    {
+      "arquivo": "audio/v1/voz-edital-2.wav",
+      "segundos": 7.232,
+      "texto": "E esse é o melhor momento para começar. Quando o edital sai, o tempo fica curto. Quem se prepara antes chega na prova com vantagem."
+    }
+  ],
+  "solucao": [
+    {
+      "arquivo": "audio/v1/voz-solucao-1.wav",
+      "segundos": 3.051,
+      "texto": "E você não precisa de apostila enorme, nem de passar horas na cadeira."
+    },
+    {
+      "arquivo": "audio/v1/voz-solucao-2.wav",
+      "segundos": 3.949,
+      "texto": "Com o Fuse Aprova, você estuda pelo celular, quinze minutos por dia, onde estiver."
+    }
+  ],
+  "vitrine": [
+    {
+      "arquivo": "audio/v1/voz-vitrine-1.wav",
+      "segundos": 2.879,
+      "texto": "O conteúdo vem organizado, passo a passo."
+    },
+    {
+      "arquivo": "audio/v1/voz-vitrine-2.wav",
+      "segundos": 3.06,
+      "texto": "As questões seguem o estilo da banca FAU, com a explicação na hora."
+    },
+    {
+      "arquivo": "audio/v1/voz-vitrine-3.wav",
+      "segundos": 1.674,
+      "texto": "Você cria o hábito de estudar todo dia."
+    },
+    {
+      "arquivo": "audio/v1/voz-vitrine-4.wav",
+      "segundos": 1.689,
+      "texto": "O que você errou volta para revisar."
+    },
+    {
+      "arquivo": "audio/v1/voz-vitrine-5.wav",
+      "segundos": 1.561,
+      "texto": "Os simulados são no formato da prova."
+    },
+    {
+      "arquivo": "audio/v1/voz-vitrine-6.wav",
+      "segundos": 2.519,
+      "texto": "E você acompanha sua evolução com quem também estuda em Palmital."
+    }
+  ],
+  "adapta": [
+    {
+      "arquivo": "audio/v1/voz-adapta-1.wav",
+      "segundos": 1.259,
+      "texto": "E quando o edital for publicado?"
+    },
+    {
+      "arquivo": "audio/v1/voz-adapta-2.wav",
+      "segundos": 5.646,
+      "texto": "O aplicativo se ajusta a ele: o seu cargo, as matérias cobradas e os simulados, tudo no formato oficial."
+    },
+    {
+      "arquivo": "audio/v1/voz-adapta-3.wav",
+      "segundos": 1.054,
+      "texto": "Sem nenhum custo a mais!"
+    }
+  ],
+  "oferta": [
+    {
+      "arquivo": "audio/v1/voz-oferta-1.wav",
+      "segundos": 2.753,
+      "texto": "O acesso completo custa trezentos e noventa e sete reais."
+    },
+    {
+      "arquivo": "audio/v1/voz-oferta-2.wav",
+      "segundos": 5.207,
+      "texto": "Mas olha só: no lançamento, sai por cento e noventa e sete, à vista no Pix!"
+    },
+    {
+      "arquivo": "audio/v1/voz-oferta-3.wav",
+      "segundos": 1.182,
+      "texto": "E vale até o dia da prova."
+    }
+  ],
+  "chamada": [
+    {
+      "arquivo": "audio/v1/voz-chamada-1.wav",
+      "segundos": 1.414,
+      "texto": "Quem começa hoje sai na frente!"
+    },
+    {
+      "arquivo": "audio/v1/voz-chamada-2.wav",
+      "segundos": 2.81,
+      "texto": "Acesse o link na bio e garanta o seu acesso ao Fuse Aprova!"
+    }
+  ]
+}

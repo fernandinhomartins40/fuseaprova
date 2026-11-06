@@ -1,0 +1,44 @@
+{
+  "voz": "4za2kOXGgUd57HRSQ1fn",
+  "nomeVoz": "Lendário",
+  "semente": 9,
+  "ajustes": {
+    "stability": 0.36,
+    "similarity_boost": 0.78,
+    "style": 0.75,
+    "use_speaker_boost": true,
+    "speed": 1.15
+  },
+  "falas": {
+    "gancho": [
+      "Quer passar no concurso da Prefeitura de Palmital?",
+      "Então faz essa conta comigo."
+    ],
+    "conta": [
+      "Quinze minutos por dia.",
+      "Em um mês, são sete horas e meia de estudo.",
+      "Em seis meses, mais de quarenta e cinco horas."
+    ],
+    "contraste": [
+      "Agora pensa: quem espera o edital sair começa do zero, com pouco tempo e muita matéria.",
+      "Quem começa hoje chega na prova com meses de treino."
+    ],
+    "metodo": [
+      "E o Fuse Aprova transforma esses minutos em treino de verdade:",
+      "questões no estilo da FAU,",
+      "revisão do que você errou",
+      "e simulados no formato da prova."
+    ],
+    "edital": [
+      "Quando o edital de Palmital sair, o app se ajusta ao seu cargo, sem custo adicional."
+    ],
+    "oferta": [
+      "O acesso completo, de trezentos e noventa e sete…",
+      "sai por cento e noventa e sete reais no lançamento. À vista no Pix."
+    ],
+    "chamada": [
+      "Sua vaga na Prefeitura de Palmital: a conta fecha a seu favor.",
+      "Link na bio."
+    ]
+  }
+}

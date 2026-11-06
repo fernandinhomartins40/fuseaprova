@@ -1,0 +1,52 @@
+{
+  "digrafo": [
+    {
+      "arquivo": "audio/digrafo-encontro-consonantal/voz-digrafo-1.wav",
+      "segundos": 2.805,
+      "texto": "Dígrafo são duas letras que fazem um som só."
+    },
+    {
+      "arquivo": "audio/digrafo-encontro-consonantal/voz-digrafo-2.wav",
+      "segundos": 13.439,
+      "texto": "CH, LH, NH, RR, SS, QU e GU antes de E e I, SC, SÇ, XC e as vogais com M ou N: am, en, in, om, un."
+    }
+  ],
+  "encontro": [
+    {
+      "arquivo": "audio/digrafo-encontro-consonantal/voz-encontro-1.wav",
+      "segundos": 5.221,
+      "texto": "Encontro consonantal são duas consoantes juntas, e cada uma tem o seu som."
+    },
+    {
+      "arquivo": "audio/digrafo-encontro-consonantal/voz-encontro-2.wav",
+      "segundos": 9.247,
+      "texto": "BR, CL, PR, TR, GL: braço, claro, prato."
+    }
+  ],
+  "contar": [
+    {
+      "arquivo": "audio/digrafo-encontro-consonantal/voz-contar-1.wav",
+      "segundos": 7.379,
+      "texto": "Para não errar, fale a palavra devagar e conte os sons. Se duas letras viram um som, é dígrafo."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/digrafo-encontro-consonantal/voz-pegadinha-1.wav",
+      "segundos": 7.517,
+      "texto": "Cuidado: em 'aguentar' e 'quando', o U soa. Então GU e QU ali não são dígrafos."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/digrafo-encontro-consonantal/voz-fecho-1.wav",
+      "segundos": 10.86,
+      "texto": "Resumindo: Dígrafo: 2 letras, 1 som. Encontro: 2 letras, 2 sons. U que soa não forma dígrafo."
+    },
+    {
+      "arquivo": "audio/digrafo-encontro-consonantal/voz-fecho-2.wav",
+      "segundos": 1.262,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

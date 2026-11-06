@@ -1,0 +1,156 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-023",
+  "titulo": "Preposições e seus sentidos",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "lista": [
+      "Preposições: a, ante, após, até, com, contra, de, desde, em, entre, para, perante, por, sem, sob, sobre, trás."
+    ],
+    "sentidos": [
+      "A mesma preposição muda de sentido. 'Copo de vidro': matéria. 'Saiu de casa': origem. 'Morreu de frio': causa."
+    ],
+    "outras": [
+      "Com: companhia ou instrumento. Sem: falta. Para: finalidade ou direção. Sob: embaixo. Sobre: em cima ou assunto."
+    ],
+    "pegadinha": [
+      "'Sob' e 'sobre' confundem: sob a mesa é embaixo dela, sobre a mesa é em cima."
+    ],
+    "fecho": [
+      "Resumindo: O sentido vem da frase. Sob = embaixo, sobre = em cima.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "lista": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Preposições"
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "a, ante, após, até, com, contra",
+              "em": "a, ante"
+            },
+            {
+              "titulo": "de, desde, em, entre, para, perante",
+              "em": "de, desde"
+            },
+            {
+              "titulo": "por, sem, sob, sobre, trás",
+              "em": "por, sem"
+            }
+          ]
+        }
+      ]
+    },
+    "sentidos": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "O sentido muda"
+        },
+        {
+          "tipo": "frase",
+          "legenda": "Matéria",
+          "texto": "Copo *de* vidro",
+          "em": "'Copo",
+          "tamanho": 50
+        },
+        {
+          "tipo": "frase",
+          "legenda": "Origem",
+          "texto": "Saiu *de* casa",
+          "em": "'Saiu",
+          "tamanho": 50
+        },
+        {
+          "tipo": "frase",
+          "legenda": "Causa",
+          "texto": "Morreu *de* frio",
+          "em": "'Morreu",
+          "tamanho": 50
+        }
+      ]
+    },
+    "outras": {
+      "blocos": [
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "Com",
+              "texto": "companhia ou instrumento",
+              "em": "Com:"
+            },
+            {
+              "titulo": "Sem",
+              "texto": "falta",
+              "em": "Sem:"
+            },
+            {
+              "titulo": "Para",
+              "texto": "finalidade ou direção",
+              "em": "Para:"
+            },
+            {
+              "titulo": "Sob",
+              "texto": "embaixo",
+              "em": "Sob:"
+            },
+            {
+              "titulo": "Sobre",
+              "texto": "em cima ou assunto",
+              "em": "Sobre:"
+            }
+          ]
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "frase",
+          "legenda": "Embaixo",
+          "texto": "*Sob* a mesa",
+          "em": "sob a mesa"
+        },
+        {
+          "tipo": "frase",
+          "legenda": "Em cima",
+          "texto": "*Sobre* a mesa",
+          "em": "sobre a mesa"
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "O sentido vem da frase",
+        "Sob = embaixo, sobre = em cima"
+      ]
+    }
+  }
+}

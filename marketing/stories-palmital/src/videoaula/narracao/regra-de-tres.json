@@ -1,0 +1,52 @@
+{
+  "simples": [
+    {
+      "arquivo": "audio/regra-de-tres/voz-simples-1.wav",
+      "segundos": 8.476,
+      "texto": "Regra de três compara duas grandezas. 3 quilos custam 24 reais. Quanto custam 5 quilos?"
+    },
+    {
+      "arquivo": "audio/regra-de-tres/voz-simples-2.wav",
+      "segundos": 10.658,
+      "texto": "Monte: 3 está para 24 assim como 5 está para x. Multiplique cruzado: 3x igual a 120, x igual a 40."
+    }
+  ],
+  "direta-inversa": [
+    {
+      "arquivo": "audio/regra-de-tres/voz-direta-inversa-1.wav",
+      "segundos": 5.404,
+      "texto": "Pergunte: se uma aumenta, a outra aumenta? Então é direta."
+    },
+    {
+      "arquivo": "audio/regra-de-tres/voz-direta-inversa-2.wav",
+      "segundos": 5.01,
+      "texto": "Se uma aumenta e a outra diminui, é inversa. Mais pedreiros, menos dias."
+    }
+  ],
+  "inversa": [
+    {
+      "arquivo": "audio/regra-de-tres/voz-inversa-1.wav",
+      "segundos": 13.251,
+      "texto": "4 pedreiros fazem o muro em 6 dias. Com 8 pedreiros: na inversa, multiplica reto. 4 vezes 6 é 24; 24 dividido por 8, 3 dias."
+    }
+  ],
+  "composta": [
+    {
+      "arquivo": "audio/regra-de-tres/voz-composta-1.wav",
+      "segundos": 8.099,
+      "texto": "Na composta, com três grandezas, compare cada uma com a que você procura, separadamente, e só depois junte."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/regra-de-tres/voz-fecho-1.wav",
+      "segundos": 8.963,
+      "texto": "Resumindo: Direta: cruza. Inversa: multiplica reto. Pergunte: aumenta junto ou ao contrário."
+    },
+    {
+      "arquivo": "audio/regra-de-tres/voz-fecho-2.wav",
+      "segundos": 1.336,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

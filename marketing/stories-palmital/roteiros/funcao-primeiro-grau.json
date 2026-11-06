@@ -1,0 +1,146 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-039",
+  "titulo": "Função do 1º grau: substituir e isolar o x",
+  "materia": "matematica",
+  "pronuncia": {
+    "f(x)": "éfe de xis",
+    "f(4)": "éfe de quatro",
+    "3x": "três xis",
+    "o x": "o xis",
+    "x igual": "xis igual",
+    "Achar x": "Achar xis"
+  },
+  "falas": {
+    "substituir": [
+      "f(x) igual a 3x mais 5. Quanto vale f(4)? Troque o x por 4: 12 mais 5, 17."
+    ],
+    "isolar": [
+      "Agora o contrário: quando f(x) vale 26? 3x mais 5 igual a 26. Passe o 5 subtraindo: 3x igual a 21. Passe o 3 dividindo: x igual a 7."
+    ],
+    "sinais": [
+      "Ao mudar de lado, a operação inverte: soma vira subtração, multiplicação vira divisão."
+    ],
+    "conferir": [
+      "Confira sempre: 3 vezes 7 mais 5 dá 26. Bateu."
+    ],
+    "fecho": [
+      "Resumindo: Achar f(x): substitui. Achar x: isola. Mudou de lado, inverte.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "substituir": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Substituir"
+        },
+        {
+          "tipo": "conta",
+          "texto": "f(x) = 3x + 5"
+        },
+        {
+          "tipo": "frase",
+          "texto": "Quanto vale *f(4)*?",
+          "em": "Quanto vale",
+          "tamanho": 46
+        },
+        {
+          "tipo": "conta",
+          "texto": "3 × 4 + 5 = 17",
+          "em": "Troque",
+          "destaque": true
+        }
+      ]
+    },
+    "isolar": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Isolar"
+        },
+        {
+          "tipo": "conta",
+          "texto": "3x + 5 = 26",
+          "em": "3x mais"
+        },
+        {
+          "tipo": "conta",
+          "texto": "3x = 26 − 5 = 21",
+          "em": "Passe o 5"
+        },
+        {
+          "tipo": "conta",
+          "texto": "x = 21 ÷ 3 = 7",
+          "em": "Passe o 3",
+          "destaque": true
+        }
+      ]
+    },
+    "sinais": {
+      "blocos": [
+        {
+          "tipo": "palavras",
+          "texto": "Mudou de lado, / *inverte*"
+        },
+        {
+          "tipo": "cartoes",
+          "colunas": 2,
+          "fonteTitulo": 42,
+          "itens": [
+            {
+              "titulo": "Soma",
+              "texto": "vira subtração",
+              "em": "soma"
+            },
+            {
+              "titulo": "Multiplicação",
+              "texto": "vira divisão",
+              "em": "multiplicação"
+            }
+          ]
+        }
+      ]
+    },
+    "conferir": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Confira sempre"
+        },
+        {
+          "tipo": "conta",
+          "texto": "3 × 7 + 5 = 26",
+          "em": "3 vezes",
+          "destaque": true
+        },
+        {
+          "tipo": "chip",
+          "texto": "Bateu!",
+          "em": "Bateu",
+          "fundo": "verde",
+          "icone": "icone-acerto",
+          "tamanho": 44
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Achar f(x): substitui",
+        "Achar x: isola",
+        "Mudou de lado, inverte"
+      ]
+    }
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-036",
+  "titulo": "Datas, idades e calendário",
+  "materia": "matematica",
+  "pronuncia": {},
+  "falas": {
+    "idade": [
+      "Idade é o ano atual menos o ano de nascimento, se a pessoa já fez aniversário no ano.",
+      "Nasceu em 1990: em 2026, completa 36 anos."
+    ],
+    "periodos": [
+      "Quantos bimestres em 3 anos? Um ano tem 6 bimestres: 3 vezes 6, 18."
+    ],
+    "dia-da-semana": [
+      "Dia da semana: a semana se repete a cada 7 dias. Hoje é segunda. Daqui a 30 dias? 30 dividido por 7 dá resto 2. Segunda mais 2: quarta."
+    ],
+    "intervalos": [
+      "Evento a cada 4 anos, começando em 2016: 2016, 2020, 2024, 2028. Some sempre 4."
+    ],
+    "fecho": [
+      "Resumindo: Idade = ano atual − nascimento. Dia da semana: resto ÷ 7.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "idade": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Idade"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Ano atual / *menos* o nascimento",
+          "tamanho": 76
+        },
+        {
+          "tipo": "chip",
+          "texto": "Se já fez aniversário no ano",
+          "em": "se a pessoa",
+          "tamanho": 36
+        },
+        {
+          "tipo": "conta",
+          "texto": "2026 − 1990 = 36",
+          "fala": 1,
+          "destaque": true
+        }
+      ]
+    },
+    "periodos": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Um ano tem"
+        },
+        {
+          "tipo": "cartoes",
+          "colunas": 2,
+          "fonteTitulo": 42,
+          "itens": [
+            {
+              "titulo": "12 meses"
+            },
+            {
+              "titulo": "6 bimestres"
+            },
+            {
+              "titulo": "4 trimestres"
+            },
+            {
+              "titulo": "2 semestres"
+            }
+          ]
+        },
+        {
+          "tipo": "conta",
+          "texto": "3 × 6 = 18 bimestres",
+          "em": "3 vezes",
+          "destaque": true
+        }
+      ]
+    },
+    "dia-da-semana": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Dia da semana"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Repete a cada *7* dias",
+          "tamanho": 70
+        },
+        {
+          "tipo": "conta",
+          "texto": "30 ÷ 7 = 4, resto 2",
+          "em": "30 dividido"
+        },
+        {
+          "tipo": "conta",
+          "texto": "segunda + 2 = quarta",
+          "em": "Segunda mais",
+          "destaque": true
+        }
+      ]
+    },
+    "intervalos": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "A cada 4 anos"
+        },
+        {
+          "tipo": "conta",
+          "texto": "2016, 2020, 2024, 2028",
+          "em": "2016, 2020"
+        },
+        {
+          "tipo": "chip",
+          "texto": "Some sempre 4",
+          "em": "Some",
+          "tamanho": 44
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Idade = ano atual − nascimento",
+        "Dia da semana: resto ÷ 7"
+      ]
+    }
+  }
+}

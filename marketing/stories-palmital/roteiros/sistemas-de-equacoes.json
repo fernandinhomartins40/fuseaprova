@@ -1,0 +1,146 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-050",
+  "titulo": "Sistemas de equações",
+  "materia": "matematica",
+  "pronuncia": {
+    "Chame de x e y: x mais y igual a 50, e 20x mais 30y igual a 1.200.": "Chame de xis e ípsilon: xis mais ípsilon igual a cinquenta, e vinte xis mais trinta ípsilon igual a mil e duzentos."
+  },
+  "falas": {
+    "montar": [
+      "Ingressos de 20 e 30 reais. Venderam 50 ingressos e arrecadaram 1.200. Chame de x e y: x mais y igual a 50, e 20x mais 30y igual a 1.200."
+    ],
+    "suposicao": [
+      "Truque da suposição: se todos fossem de 20, dariam 1.000. Faltam 200. Cada ingresso de 30 acrescenta 10. Então são 20 de 30 reais e 30 de 20."
+    ],
+    "conferir": [
+      "Confira: 30 vezes 20, 600, mais 20 vezes 30, 600. Total: 1.200."
+    ],
+    "soma": [
+      "Também dá para somar as equações quando uma letra some ao somar."
+    ],
+    "fecho": [
+      "Resumindo: Duas incógnitas, duas equações. Suposição: e se todos fossem iguais.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "montar": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Monte as equações"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "50 ingressos / *R$* *1.200*",
+          "tamanho": 72
+        },
+        {
+          "tipo": "conta",
+          "texto": "x + y = 50",
+          "em": "x mais y"
+        },
+        {
+          "tipo": "conta",
+          "texto": "20x + 30y = 1.200",
+          "em": "20x mais",
+          "destaque": true
+        }
+      ]
+    },
+    "suposicao": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Truque da suposição"
+        },
+        {
+          "tipo": "conta",
+          "texto": "50 × 20 = 1.000",
+          "em": "se todos"
+        },
+        {
+          "tipo": "conta",
+          "texto": "Faltam 200",
+          "em": "Faltam"
+        },
+        {
+          "tipo": "conta",
+          "texto": "200 ÷ 10 = 20",
+          "em": "Cada ingresso"
+        },
+        {
+          "tipo": "conta",
+          "texto": "20 de R$ 30 e 30 de R$ 20",
+          "em": "Então",
+          "destaque": true,
+          "tamanho": 54
+        }
+      ]
+    },
+    "conferir": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Confira"
+        },
+        {
+          "tipo": "conta",
+          "texto": "30 × 20 = 600",
+          "em": "30 vezes"
+        },
+        {
+          "tipo": "conta",
+          "texto": "20 × 30 = 600",
+          "em": "20 vezes"
+        },
+        {
+          "tipo": "conta",
+          "texto": "Total: 1.200",
+          "em": "Total",
+          "destaque": true
+        }
+      ]
+    },
+    "soma": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Somando"
+        },
+        {
+          "tipo": "conta",
+          "texto": "x + y = 50"
+        },
+        {
+          "tipo": "conta",
+          "texto": "x − y = 10",
+          "em": "as equações"
+        },
+        {
+          "tipo": "conta",
+          "texto": "2x = 60",
+          "em": "uma letra some",
+          "destaque": true
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Duas incógnitas, duas equações",
+        "Suposição: e se todos fossem iguais?"
+      ]
+    }
+  }
+}

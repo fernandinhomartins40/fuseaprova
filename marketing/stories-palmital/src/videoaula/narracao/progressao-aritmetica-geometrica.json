@@ -1,0 +1,42 @@
+{
+  "pa": [
+    {
+      "arquivo": "audio/progressao-aritmetica-geometrica/voz-pa-1.wav",
+      "segundos": 9.364,
+      "texto": "Na PA, soma-se sempre o mesmo valor, a razão. 3, 7, 11, 15: razão 4."
+    }
+  ],
+  "termo": [
+    {
+      "arquivo": "audio/progressao-aritmetica-geometrica/voz-termo-1.wav",
+      "segundos": 11.1,
+      "texto": "Para o termo 20, não escreva todos: comece no primeiro e some a razão 19 vezes. 3 mais 19 vezes 4, 79."
+    }
+  ],
+  "pg": [
+    {
+      "arquivo": "audio/progressao-aritmetica-geometrica/voz-pg-1.wav",
+      "segundos": 8.925,
+      "texto": "Na PG, multiplica-se sempre pelo mesmo valor. 2, 6, 18, 54: razão 3."
+    }
+  ],
+  "diferencas": [
+    {
+      "arquivo": "audio/progressao-aritmetica-geometrica/voz-diferencas-1.wav",
+      "segundos": 15.488,
+      "texto": "Se as diferenças crescem, olhe as diferenças: 1, 2, 4, 7, 11. Elas são 1, 2, 3, 4. O próximo é 11 mais 5, 16."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/progressao-aritmetica-geometrica/voz-fecho-1.wav",
+      "segundos": 11.902,
+      "texto": "Resumindo: PA soma, PG multiplica. Termo n = primeiro + (n − 1) × razão. Travou? Olhe as diferenças."
+    },
+    {
+      "arquivo": "audio/progressao-aritmetica-geometrica/voz-fecho-2.wav",
+      "segundos": 1.467,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

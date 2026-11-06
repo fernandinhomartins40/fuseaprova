@@ -1,0 +1,47 @@
+{
+  "idade": [
+    {
+      "arquivo": "audio/datas-idades-calendario/voz-idade-1.wav",
+      "segundos": 5.318,
+      "texto": "Idade é o ano atual menos o ano de nascimento, se a pessoa já fez aniversário no ano."
+    },
+    {
+      "arquivo": "audio/datas-idades-calendario/voz-idade-2.wav",
+      "segundos": 6.715,
+      "texto": "Nasceu em 1990: em 2026, completa 36 anos."
+    }
+  ],
+  "periodos": [
+    {
+      "arquivo": "audio/datas-idades-calendario/voz-periodos-1.wav",
+      "segundos": 8.024,
+      "texto": "Quantos bimestres em 3 anos? Um ano tem 6 bimestres: 3 vezes 6, 18."
+    }
+  ],
+  "dia-da-semana": [
+    {
+      "arquivo": "audio/datas-idades-calendario/voz-dia-da-semana-1.wav",
+      "segundos": 13.957,
+      "texto": "Dia da semana: a semana se repete a cada 7 dias. Hoje é segunda. Daqui a 30 dias? 30 dividido por 7 dá resto 2. Segunda mais 2: quarta."
+    }
+  ],
+  "intervalos": [
+    {
+      "arquivo": "audio/datas-idades-calendario/voz-intervalos-1.wav",
+      "segundos": 12.968,
+      "texto": "Evento a cada 4 anos, começando em 2016: 2016, 2020, 2024, 2028. Some sempre 4."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/datas-idades-calendario/voz-fecho-1.wav",
+      "segundos": 6.487,
+      "texto": "Resumindo: Idade = ano atual − nascimento. Dia da semana: resto ÷ 7."
+    },
+    {
+      "arquivo": "audio/datas-idades-calendario/voz-fecho-2.wav",
+      "segundos": 1.636,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "ideia": [
+    {
+      "arquivo": "audio/referencia-pronominal/voz-ideia-1.wav",
+      "segundos": 6.917,
+      "texto": "Pronomes como ele, ela, o, a, lhe, dele e isso retomam algo que já apareceu."
+    }
+  ],
+  "metodo": [
+    {
+      "arquivo": "audio/referencia-pronominal/voz-metodo-1.wav",
+      "segundos": 6.947,
+      "texto": "Para descobrir, troque o pronome pelo candidato e leia a frase. O que fizer sentido é o referente."
+    }
+  ],
+  "concordancia": [
+    {
+      "arquivo": "audio/referencia-pronominal/voz-concordancia-1.wav",
+      "segundos": 5.707,
+      "texto": "Use o gênero e o número como pista: 'ela' só retoma uma palavra feminina no singular."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/referencia-pronominal/voz-pegadinha-1.wav",
+      "segundos": 5.179,
+      "texto": "'Isso' e 'isto' podem retomar uma ideia inteira, e não só uma palavra."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/referencia-pronominal/voz-fecho-1.wav",
+      "segundos": 6.503,
+      "texto": "Resumindo: Troque o pronome pelo candidato. Gênero e número ajudam. 'Isso' retoma ideias."
+    },
+    {
+      "arquivo": "audio/referencia-pronominal/voz-fecho-2.wav",
+      "segundos": 1.389,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

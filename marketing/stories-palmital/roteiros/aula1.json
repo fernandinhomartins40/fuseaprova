@@ -1,0 +1,43 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "falas": {
+    "gancho": [
+      "Proparoxítona: a regra de acento mais fácil do português!",
+      "Em menos de um minuto, você nunca mais erra."
+    ],
+    "tonica": [
+      "Toda palavra tem uma sílaba mais forte: a sílaba tônica.",
+      "Na proparoxítona, ela é a antepenúltima. A terceira, contando do fim."
+    ],
+    "exemplos": [
+      "Olha só: lâmpada.",
+      "Médico.",
+      "Matemática."
+    ],
+    "regra": [
+      "E a regra é uma só: toda proparoxítona leva acento.",
+      "Sem nenhuma exceção!"
+    ],
+    "pegadinha": [
+      "Agora, cuidado com a pegadinha: rubrica.",
+      "A sílaba forte é bri. Então ela não é proparoxítona e não tem acento."
+    ],
+    "macete": [
+      "O macete: conte três sílabas do fim.",
+      "Se a força cair ali, pode colocar o acento sem medo."
+    ],
+    "chamada": [
+      "Quer treinar com questões de concurso? Tem mais de dez mil no Fuse Aprova.",
+      "O link tá na bio."
+    ]
+  }
+}

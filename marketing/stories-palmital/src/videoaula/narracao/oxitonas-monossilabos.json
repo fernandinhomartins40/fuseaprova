@@ -1,0 +1,47 @@
+{
+  "oxitonas": [
+    {
+      "arquivo": "audio/oxitonas-monossilabos/voz-oxitonas-1.wav",
+      "segundos": 15.272,
+      "texto": "Oxítona tem a força na última sílaba. Leva acento quando termina em A, E ou O, seguidos ou não de S, e em EM e ENS: sofá, café, avô, também, parabéns."
+    }
+  ],
+  "monossilabos": [
+    {
+      "arquivo": "audio/oxitonas-monossilabos/voz-monossilabos-1.wav",
+      "segundos": 8.042,
+      "texto": "O monossílabo tônico segue a mesma ideia: pá, pé, pó, mês, nós."
+    }
+  ],
+  "diferencial": [
+    {
+      "arquivo": "audio/oxitonas-monossilabos/voz-diferencial-1.wav",
+      "segundos": 10.692,
+      "texto": "Depois do Acordo Ortográfico, poucos acentos diferenciais sobraram: pôde, no passado, e pode, no presente; pôr, o verbo, e por, a preposição."
+    },
+    {
+      "arquivo": "audio/oxitonas-monossilabos/voz-diferencial-2.wav",
+      "segundos": 4.57,
+      "texto": "E têm e vêm, no plural, com acento: eles têm, eles vêm."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/oxitonas-monossilabos/voz-pegadinha-1.wav",
+      "segundos": 9.653,
+      "texto": "Oxítona terminada em I ou U não leva acento: tatu, caqui. Só leva se for hiato: Piauí, baú."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/oxitonas-monossilabos/voz-fecho-1.wav",
+      "segundos": 8.315,
+      "texto": "Resumindo: Oxítona: A, E, O, EM, ENS. pôde/pode, pôr/por, têm/vêm."
+    },
+    {
+      "arquivo": "audio/oxitonas-monossilabos/voz-fecho-2.wav",
+      "segundos": 1.166,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

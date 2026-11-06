@@ -1,0 +1,130 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-006",
+  "titulo": "Termos da oração: sujeito, objeto e predicativo",
+  "materia": "portugues",
+  "pronuncia": {
+    "Ser/estar + qualidade = predicativo": "Ser ou estar mais qualidade é predicativo",
+    "Quem? = sujeito": "Quem é o sujeito",
+    "O quê? = objeto direto": "O quê é o objeto direto",
+    "De quê? A quem? = objeto indireto": "De quê, ou a quem, é o objeto indireto"
+  },
+  "falas": {
+    "sujeito": [
+      "Sujeito é de quem se fala. Pergunte ao verbo: quem?",
+      "'Os alunos estudaram.' Quem estudou? Os alunos."
+    ],
+    "objetos": [
+      "Objeto completa o verbo. Sem preposição, é objeto direto: 'comprou pão'.",
+      "Com preposição, é objeto indireto: 'gosta de música'."
+    ],
+    "predicativo": [
+      "Com verbo de ligação (ser, estar, ficar, parecer), o que vem depois é predicativo: uma qualidade do sujeito.",
+      "'A sala está limpa.' Limpa é predicativo."
+    ],
+    "pegadinha": [
+      "Sujeito pode vir depois do verbo: 'Chegaram as provas.' Quem chegou? As provas."
+    ],
+    "fecho": [
+      "Resumindo: Quem? = sujeito. O quê? = objeto direto. De quê? A quem? = objeto indireto. Ser/estar + qualidade = predicativo.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "sujeito": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Sujeito"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "De quem se fala: / *quem?*",
+          "tamanho": 80
+        },
+        {
+          "tipo": "frase",
+          "texto": "*Os alunos* estudaram.",
+          "fala": 1
+        }
+      ]
+    },
+    "objetos": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Objeto"
+        },
+        {
+          "tipo": "frase",
+          "legenda": "Sem preposição: direto",
+          "texto": "Comprou *pão*.",
+          "em": "Sem preposição"
+        },
+        {
+          "tipo": "frase",
+          "legenda": "Com preposição: indireto",
+          "texto": "Gosta *de música*.",
+          "fala": 1
+        }
+      ]
+    },
+    "predicativo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Predicativo"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "ser, estar, ficar, / parecer + *qualidade*",
+          "tamanho": 72
+        },
+        {
+          "tipo": "frase",
+          "texto": "A sala está *limpa*.",
+          "fala": 1
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "palavras",
+          "texto": "O sujeito pode vir / *depois* *do* *verbo*",
+          "tamanho": 76
+        },
+        {
+          "tipo": "frase",
+          "texto": "Chegaram *as provas*.",
+          "em": "'Chegaram"
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Quem? = sujeito",
+        "O quê? = objeto direto",
+        "De quê? A quem? = objeto indireto",
+        "Ser/estar + qualidade = predicativo"
+      ]
+    }
+  }
+}

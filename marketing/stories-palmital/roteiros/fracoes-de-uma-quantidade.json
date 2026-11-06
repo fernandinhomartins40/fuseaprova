@@ -1,0 +1,163 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-032",
+  "titulo": "Frações de uma quantidade",
+  "materia": "matematica",
+  "pronuncia": {
+    "Para achar 3/4 de 80": "Para achar três quartos de oitenta",
+    "Se 2/5 já foram, sobram 3/5.": "Se dois quintos já foram, sobram três quintos.",
+    "1/2 de 3/5 é 3/10.": "metade de três quintos é três décimos.",
+    "se 1/3 são 25 pessoas": "se um terço são vinte e cinco pessoas",
+    "'De' entre frações = multiplica": "De, entre frações: multiplica",
+    "Sobra = 1 − fração": "A sobra é um menos a fração"
+  },
+  "falas": {
+    "regra": [
+      "Para achar 3/4 de 80, divida pelo de baixo e multiplique pelo de cima: 80 dividido por 4, 20, vezes 3, 60."
+    ],
+    "resto": [
+      "Se 2/5 já foram, sobram 3/5. A fração do resto é 1 menos a parte."
+    ],
+    "fracao-da-fracao": [
+      "Metade do que sobrou: multiplique as frações. 1/2 de 3/5 é 3/10."
+    ],
+    "total": [
+      "Voltar ao total: se 1/3 são 25 pessoas, o total é 25 vezes 3, 75."
+    ],
+    "fecho": [
+      "Resumindo: Divide pelo de baixo, multiplica pelo de cima. Sobra = 1 − fração. 'De' entre frações = multiplica.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "regra": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "3/4 de 80"
+        },
+        {
+          "tipo": "barra",
+          "em": "divida",
+          "partes": [
+            {
+              "pct": 25,
+              "cor": "#15803D",
+              "rotulo": "20"
+            },
+            {
+              "pct": 25,
+              "cor": "#15803D",
+              "rotulo": "20"
+            },
+            {
+              "pct": 25,
+              "cor": "#15803D",
+              "rotulo": "20"
+            },
+            {
+              "pct": 25,
+              "cor": "#94A3B8",
+              "rotulo": "20"
+            }
+          ]
+        },
+        {
+          "tipo": "conta",
+          "texto": "80 ÷ 4 = 20",
+          "em": "80 dividido"
+        },
+        {
+          "tipo": "conta",
+          "texto": "20 × 3 = 60",
+          "em": "vezes 3",
+          "destaque": true
+        }
+      ]
+    },
+    "resto": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "O que sobra"
+        },
+        {
+          "tipo": "barra",
+          "em": 0,
+          "partes": [
+            {
+              "pct": 40,
+              "cor": "#94A3B8",
+              "rotulo": "2/5 foram"
+            },
+            {
+              "pct": 60,
+              "cor": "#15803D",
+              "rotulo": "sobram 3/5"
+            }
+          ]
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Sobra = 1 − *parte*",
+          "em": "A fração do resto",
+          "tamanho": 76
+        }
+      ]
+    },
+    "fracao-da-fracao": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Fração da fração"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "\"De\" entre frações: / *multiplica*",
+          "tamanho": 76
+        },
+        {
+          "tipo": "conta",
+          "texto": "1/2 × 3/5 = 3/10",
+          "em": "1/2 de"
+        }
+      ]
+    },
+    "total": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Voltar ao total"
+        },
+        {
+          "tipo": "frase",
+          "texto": "*1/3* são 25 pessoas",
+          "em": 0.1
+        },
+        {
+          "tipo": "conta",
+          "texto": "25 × 3 = 75",
+          "em": "o total",
+          "destaque": true
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Divide pelo de baixo, multiplica pelo de cima",
+        "Sobra = 1 − fração",
+        "'De' entre frações = multiplica"
+      ]
+    }
+  }
+}

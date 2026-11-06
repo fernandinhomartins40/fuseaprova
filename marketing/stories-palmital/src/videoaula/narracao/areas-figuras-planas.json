@@ -1,0 +1,42 @@
+{
+  "retangulo": [
+    {
+      "arquivo": "audio/areas-figuras-planas/voz-retangulo-1.wav",
+      "segundos": 8.439,
+      "texto": "Retângulo e quadrado: base vezes altura. Um terreno de 12 por 30 metros tem 360 metros quadrados."
+    }
+  ],
+  "triangulo": [
+    {
+      "arquivo": "audio/areas-figuras-planas/voz-triangulo-1.wav",
+      "segundos": 4.249,
+      "texto": "Triângulo: base vezes altura, dividido por 2."
+    }
+  ],
+  "circulo": [
+    {
+      "arquivo": "audio/areas-figuras-planas/voz-circulo-1.wav",
+      "segundos": 7.467,
+      "texto": "Círculo: pi vezes o raio ao quadrado. Dobrou o raio? A área fica 4 vezes maior."
+    }
+  ],
+  "problema": [
+    {
+      "arquivo": "audio/areas-figuras-planas/voz-problema-1.wav",
+      "segundos": 10.217,
+      "texto": "Piso de 60 reais o metro quadrado num quarto de 3 por 4: a área é 12, e 12 vezes 60 dá 720 reais."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/areas-figuras-planas/voz-fecho-1.wav",
+      "segundos": 13.484,
+      "texto": "Resumindo: Retângulo: b × h. Triângulo: b × h ÷ 2. Círculo: π × r²."
+    },
+    {
+      "arquivo": "audio/areas-figuras-planas/voz-fecho-2.wav",
+      "segundos": 1.446,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

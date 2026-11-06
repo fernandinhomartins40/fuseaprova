@@ -1,0 +1,42 @@
+{
+  "volume": [
+    {
+      "arquivo": "audio/volume-capacidade/voz-volume-1.wav",
+      "segundos": 4.638,
+      "texto": "Volume de uma caixa: comprimento vezes largura vezes altura."
+    }
+  ],
+  "litros": [
+    {
+      "arquivo": "audio/volume-capacidade/voz-litros-1.wav",
+      "segundos": 4.813,
+      "texto": "1 metro cúbico tem 1.000 litros. 1 decímetro cúbico é 1 litro."
+    }
+  ],
+  "exemplo": [
+    {
+      "arquivo": "audio/volume-capacidade/voz-exemplo-1.wav",
+      "segundos": 7.072,
+      "texto": "Piscina de 5 por 3 por 1,2 metros: 18 metros cúbicos, ou 18.000 litros."
+    }
+  ],
+  "ao-contrario": [
+    {
+      "arquivo": "audio/volume-capacidade/voz-ao-contrario-1.wav",
+      "segundos": 10.715,
+      "texto": "Achar a altura: volume dividido pela área da base. 24 metros cúbicos numa base de 8 metros quadrados: altura de 3 metros."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/volume-capacidade/voz-fecho-1.wav",
+      "segundos": 10.565,
+      "texto": "Resumindo: V = c × l × h. 1 m³ = 1.000 L. Altura = volume ÷ base."
+    },
+    {
+      "arquivo": "audio/volume-capacidade/voz-fecho-2.wav",
+      "segundos": 1.641,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

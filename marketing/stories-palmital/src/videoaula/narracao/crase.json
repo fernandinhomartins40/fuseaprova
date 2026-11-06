@@ -1,0 +1,57 @@
+{
+  "soma": [
+    {
+      "arquivo": "audio/crase/voz-soma-1.wav",
+      "segundos": 3.688,
+      "texto": "Crase é a preposição 'a' somada ao artigo 'a'."
+    },
+    {
+      "arquivo": "audio/crase/voz-soma-2.wav",
+      "segundos": 3.239,
+      "texto": "Vou a + a farmácia = vou à farmácia."
+    }
+  ],
+  "teste": [
+    {
+      "arquivo": "audio/crase/voz-teste-1.wav",
+      "segundos": 5.63,
+      "texto": "Truque: troque por uma palavra masculina. Se virar 'ao', tem crase."
+    },
+    {
+      "arquivo": "audio/crase/voz-teste-2.wav",
+      "segundos": 2.562,
+      "texto": "Vou ao mercado, então vou à farmácia."
+    }
+  ],
+  "nunca": [
+    {
+      "arquivo": "audio/crase/voz-nunca-1.wav",
+      "segundos": 5.735,
+      "texto": "Não tem crase antes de palavra masculina, de verbo e de pronome como 'ela' e 'esta'."
+    },
+    {
+      "arquivo": "audio/crase/voz-nunca-2.wav",
+      "segundos": 2.671,
+      "texto": "Andar a pé, começou a chover, falei a ela."
+    }
+  ],
+  "locucoes": [
+    {
+      "arquivo": "audio/crase/voz-locucoes-1.wav",
+      "segundos": 7.809,
+      "texto": "Nas expressões femininas de tempo e modo, tem crase: às vezes, à noite, às pressas, à vontade."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/crase/voz-fecho-1.wav",
+      "segundos": 8.443,
+      "texto": "Resumindo: a + a = à. Virou 'ao'? Tem crase. Masculino, verbo e pronome: sem crase."
+    },
+    {
+      "arquivo": "audio/crase/voz-fecho-2.wav",
+      "segundos": 1.333,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

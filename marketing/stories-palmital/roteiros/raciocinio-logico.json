@@ -1,0 +1,143 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-046",
+  "titulo": "Raciocínio lógico: códigos, pior caso e paridade",
+  "materia": "matematica",
+  "pronuncia": {
+    "Se A é 1, B é 2, então CASA vira 3, 1, 19, 1.": "Se á é um, bê é dois, então a palavra casa vira três, um, dezenove, um."
+  },
+  "falas": {
+    "codigo": [
+      "Em código, descubra a regra com um exemplo e aplique igual. Se A é 1, B é 2, então CASA vira 3, 1, 19, 1."
+    ],
+    "pior-caso": [
+      "Pior caso: quantas meias tirar, no escuro, para garantir um par da mesma cor, com duas cores? Imagine o azar: uma de cada cor. A próxima forma o par. Resposta: 3."
+    ],
+    "paridade": [
+      "Par mais par é par. Ímpar mais ímpar é par. Par mais ímpar é ímpar."
+    ],
+    "dica": [
+      "Sempre teste a regra num caso pequeno antes de responder."
+    ],
+    "fecho": [
+      "Resumindo: Código: ache a regra e repita. Pior caso: imagine o azar. Ímpar + ímpar = par.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "codigo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Código"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Ache a *regra* / e repita"
+        },
+        {
+          "tipo": "conta",
+          "texto": "A = 1 · B = 2 · C = 3",
+          "em": "Se A"
+        },
+        {
+          "tipo": "conta",
+          "texto": "CASA → 3, 1, 19, 1",
+          "em": "CASA",
+          "destaque": true
+        }
+      ]
+    },
+    "pior-caso": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Pior caso"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Garantir um *par* / com 2 cores",
+          "tamanho": 72
+        },
+        {
+          "tipo": "passos",
+          "itens": [
+            {
+              "titulo": "Uma meia azul",
+              "em": "Imagine"
+            },
+            {
+              "titulo": "Uma meia preta",
+              "em": "uma de cada"
+            },
+            {
+              "titulo": "A próxima forma o par",
+              "em": "A próxima"
+            }
+          ]
+        },
+        {
+          "tipo": "conta",
+          "texto": "Resposta: 3 meias",
+          "em": "Resposta",
+          "destaque": true
+        }
+      ]
+    },
+    "paridade": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Par ou ímpar"
+        },
+        {
+          "tipo": "conta",
+          "texto": "par + par = par",
+          "em": "Par mais par"
+        },
+        {
+          "tipo": "conta",
+          "texto": "ímpar + ímpar = par",
+          "em": "Ímpar mais ímpar",
+          "destaque": true
+        },
+        {
+          "tipo": "conta",
+          "texto": "par + ímpar = ímpar",
+          "em": "Par mais ímpar"
+        }
+      ]
+    },
+    "dica": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Dica",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Teste a regra / num caso *pequeno*"
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Código: ache a regra e repita",
+        "Pior caso: imagine o azar",
+        "Ímpar + ímpar = par"
+      ]
+    }
+  }
+}

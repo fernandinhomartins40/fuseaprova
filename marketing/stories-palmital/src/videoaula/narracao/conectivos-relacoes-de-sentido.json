@@ -1,0 +1,67 @@
+{
+  "ideia": [
+    {
+      "arquivo": "audio/conectivos-relacoes-de-sentido/voz-ideia-1.wav",
+      "segundos": 4.456,
+      "texto": "Conectivo é a palavra que liga as ideias. E cada um tem um sentido."
+    }
+  ],
+  "familias": [
+    {
+      "arquivo": "audio/conectivos-relacoes-de-sentido/voz-familias-1.wav",
+      "segundos": 3.684,
+      "texto": "Oposição: mas, porém, contudo, todavia."
+    },
+    {
+      "arquivo": "audio/conectivos-relacoes-de-sentido/voz-familias-2.wav",
+      "segundos": 3.771,
+      "texto": "Conclusão: portanto, logo, por isso."
+    },
+    {
+      "arquivo": "audio/conectivos-relacoes-de-sentido/voz-familias-3.wav",
+      "segundos": 2.529,
+      "texto": "Causa: porque, pois, já que."
+    },
+    {
+      "arquivo": "audio/conectivos-relacoes-de-sentido/voz-familias-4.wav",
+      "segundos": 3.241,
+      "texto": "Condição: se, caso, desde que."
+    },
+    {
+      "arquivo": "audio/conectivos-relacoes-de-sentido/voz-familias-5.wav",
+      "segundos": 2.905,
+      "texto": "Finalidade: para que, a fim de que."
+    }
+  ],
+  "concessao": [
+    {
+      "arquivo": "audio/conectivos-relacoes-de-sentido/voz-concessao-1.wav",
+      "segundos": 6.779,
+      "texto": "E a concessão: embora, mesmo que, ainda que. Ela admite um obstáculo que não impede o fato."
+    },
+    {
+      "arquivo": "audio/conectivos-relacoes-de-sentido/voz-concessao-2.wav",
+      "segundos": 1.97,
+      "texto": "Embora chovesse, fomos à praia."
+    }
+  ],
+  "troca": [
+    {
+      "arquivo": "audio/conectivos-relacoes-de-sentido/voz-troca-1.wav",
+      "segundos": 6.35,
+      "texto": "Para trocar um conectivo, troque por outro da mesma família. 'Mas' vira 'porém'. Nunca 'portanto'."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/conectivos-relacoes-de-sentido/voz-fecho-1.wav",
+      "segundos": 6.903,
+      "texto": "Resumindo: Mesma família = mesmo sentido. Embora = concessão. Portanto = conclusão."
+    },
+    {
+      "arquivo": "audio/conectivos-relacoes-de-sentido/voz-fecho-2.wav",
+      "segundos": 1.412,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

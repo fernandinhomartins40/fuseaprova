@@ -1,0 +1,116 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-015",
+  "titulo": "Vírgula: os usos que mais caem",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "enumeracao": [
+      "Vírgula separa itens de uma lista: comprei arroz, feijão e óleo."
+    ],
+    "aposto-vocativo": [
+      "Aposto explica um termo: Ana, a diretora, chegou.",
+      "Vocativo chama alguém: Maria, venha cá."
+    ],
+    "deslocado": [
+      "Adjunto adverbial no começo da frase costuma levar vírgula: No fim do dia, saímos."
+    ],
+    "proibida": [
+      "E a regra de ouro: não se separa o sujeito do verbo com vírgula.",
+      "'Os alunos, estudaram' está errado."
+    ],
+    "fecho": [
+      "Resumindo: Lista, aposto, vocativo e deslocado levam vírgula. Sujeito e verbo, nunca.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "enumeracao": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Vírgula em lista"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Separa os *itens*"
+        },
+        {
+          "tipo": "frase",
+          "texto": "Comprei arroz*,* feijão e óleo.",
+          "em": "comprei"
+        }
+      ]
+    },
+    "aposto-vocativo": {
+      "blocos": [
+        {
+          "tipo": "frase",
+          "legenda": "Aposto: explica",
+          "texto": "Ana*, a diretora,* chegou.",
+          "tamanho": 50
+        },
+        {
+          "tipo": "frase",
+          "legenda": "Vocativo: chama",
+          "texto": "*Maria,* venha cá.",
+          "fala": 1,
+          "tamanho": 50
+        }
+      ]
+    },
+    "deslocado": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Adjunto no começo"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Costuma levar / *vírgula*"
+        },
+        {
+          "tipo": "frase",
+          "texto": "*No fim do dia,* saímos.",
+          "em": "No fim"
+        }
+      ]
+    },
+    "proibida": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Regra de ouro",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Sujeito e verbo: / *nunca*"
+        },
+        {
+          "tipo": "frase",
+          "texto": "Os alunos~,~ estudaram.",
+          "fala": 1
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Lista, aposto, vocativo e deslocado levam vírgula",
+        "Sujeito e verbo, nunca"
+      ]
+    }
+  }
+}

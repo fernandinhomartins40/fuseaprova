@@ -1,0 +1,149 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-030",
+  "titulo": "Conversão de unidades: quilo, litro e metro",
+  "materia": "matematica",
+  "pronuncia": {
+    "kg, L e km: × 1.000": "Quilo, litro e quilômetro: vezes mil"
+  },
+  "falas": {
+    "mil": [
+      "Um quilo tem 1.000 gramas. Um litro tem 1.000 mililitros. Um quilômetro tem 1.000 metros."
+    ],
+    "direcao": [
+      "Da unidade maior para a menor, multiplica. Da menor para a maior, divide.",
+      "2,5 quilos são 2.500 gramas. 750 mililitros são 0,75 litro."
+    ],
+    "metro": [
+      "No metro há passos de 10: 1 metro tem 100 centímetros e 1.000 milímetros."
+    ],
+    "tonelada": [
+      "E a tonelada: 1 tonelada tem 1.000 quilos. 3 toneladas em sacas de 50 quilos: 3.000 dividido por 50, 60 sacas."
+    ],
+    "fecho": [
+      "Resumindo: Maior para menor: multiplica. kg, L e km: × 1.000. Iguale as unidades antes de calcular.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "mil": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "A regra dos mil"
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 56,
+          "itens": [
+            {
+              "titulo": "1 kg = 1.000 g",
+              "em": "Um quilo"
+            },
+            {
+              "titulo": "1 L = 1.000 mL",
+              "em": "Um litro"
+            },
+            {
+              "titulo": "1 km = 1.000 m",
+              "em": "Um quilômetro"
+            }
+          ]
+        }
+      ]
+    },
+    "direcao": {
+      "blocos": [
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 50,
+          "itens": [
+            {
+              "titulo": "Maior → menor: multiplica",
+              "em": "Da unidade maior"
+            },
+            {
+              "titulo": "Menor → maior: divide",
+              "em": "Da menor"
+            }
+          ]
+        },
+        {
+          "tipo": "conta",
+          "texto": "2,5 kg = 2.500 g",
+          "fala": 1,
+          "tamanho": 62
+        },
+        {
+          "tipo": "conta",
+          "texto": "750 mL = 0,75 L",
+          "fala": 1,
+          "em": "750",
+          "tamanho": 62
+        }
+      ]
+    },
+    "metro": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "No metro"
+        },
+        {
+          "tipo": "conta",
+          "texto": "1 m = 100 cm",
+          "em": "1 metro"
+        },
+        {
+          "tipo": "conta",
+          "texto": "1 m = 1.000 mm",
+          "em": "1.000 milímetros"
+        }
+      ]
+    },
+    "tonelada": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Tonelada"
+        },
+        {
+          "tipo": "conta",
+          "texto": "1 t = 1.000 kg",
+          "em": "1 tonelada",
+          "tamanho": 62
+        },
+        {
+          "tipo": "conta",
+          "texto": "3 t = 3.000 kg",
+          "em": "3 toneladas",
+          "tamanho": 62
+        },
+        {
+          "tipo": "conta",
+          "texto": "3.000 ÷ 50 = 60 sacas",
+          "em": "3.000 dividido",
+          "destaque": true,
+          "tamanho": 62
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Maior para menor: multiplica",
+        "kg, L e km: × 1.000",
+        "Iguale as unidades antes de calcular"
+      ]
+    }
+  }
+}

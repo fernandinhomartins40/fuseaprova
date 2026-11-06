@@ -1,0 +1,42 @@
+{
+  "multiplicativo": [
+    {
+      "arquivo": "audio/contagem-principio-multiplicativo/voz-multiplicativo-1.wav",
+      "segundos": 8.22,
+      "texto": "Se há escolhas em sequência, multiplique as opções de cada etapa. 3 camisas e 4 calças: 12 combinações."
+    }
+  ],
+  "senha": [
+    {
+      "arquivo": "audio/contagem-principio-multiplicativo/voz-senha-1.wav",
+      "segundos": 8.127,
+      "texto": "Senha de 4 dígitos com repetição: 10 vezes 10 vezes 10 vezes 10, 10.000 senhas."
+    }
+  ],
+  "sem-repetir": [
+    {
+      "arquivo": "audio/contagem-principio-multiplicativo/voz-sem-repetir-1.wav",
+      "segundos": 6.746,
+      "texto": "Sem repetir algarismos: 10 vezes 9 vezes 8 vezes 7, 5.040."
+    }
+  ],
+  "combinacao": [
+    {
+      "arquivo": "audio/contagem-principio-multiplicativo/voz-combinacao-1.wav",
+      "segundos": 11.086,
+      "texto": "Quando a ordem não importa, como formar duplas, divida pelas repetições. 5 pessoas formam 5 vezes 4 dividido por 2, 10 duplas."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/contagem-principio-multiplicativo/voz-fecho-1.wav",
+      "segundos": 8.765,
+      "texto": "Resumindo: Etapas: multiplica. Sem repetir: diminui 1 a cada casa. Ordem não importa: divide."
+    },
+    {
+      "arquivo": "audio/contagem-principio-multiplicativo/voz-fecho-2.wav",
+      "segundos": 1.465,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

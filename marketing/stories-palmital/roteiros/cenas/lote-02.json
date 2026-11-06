@@ -1,0 +1,448 @@
+{
+  "classes-de-palavras": {
+    "materia": "portugues",
+    "cenas": {
+      "ideia": { "blocos": [
+        { "tipo": "rotulo", "texto": "Classes de palavras" },
+        { "tipo": "palavras", "texto": "A classe depende / do *papel* *na* *frase*", "tamanho": 76 },
+        { "tipo": "frase", "legenda": "Substantivo", "texto": "O *jantar* estava ótimo.", "em": "conforme" },
+        { "tipo": "frase", "legenda": "Verbo", "texto": "Vamos *jantar*.", "em": "Então" }
+      ] },
+      "testes": { "blocos": [
+        { "tipo": "cartoes", "fonteTitulo": 44, "itens": [
+          { "titulo": "Substantivo", "texto": "aceita artigo: o jantar", "fala": 0 },
+          { "titulo": "Adjetivo", "texto": "dá qualidade: casa bonita", "fala": 1 },
+          { "titulo": "Verbo", "texto": "muda com o tempo: janto, jantei", "fala": 2 },
+          { "titulo": "Advérbio", "texto": "acompanha o verbo: jantou cedo", "fala": 3 }
+        ] }
+      ] },
+      "numeral": { "blocos": [
+        { "tipo": "rotulo", "texto": "Numeral" },
+        { "tipo": "palavras", "texto": "*Quantidade* / ou *ordem*" },
+        { "tipo": "cartoes", "colunas": 2, "fonteTitulo": 46, "itens": [
+          { "titulo": "dois", "em": "dois" },
+          { "titulo": "segundo", "em": "segundo" },
+          { "titulo": "dobro", "em": "dobro" },
+          { "titulo": "metade", "em": "metade" }
+        ] }
+      ] },
+      "pegadinha": { "blocos": [
+        { "tipo": "chip", "texto": "Pegadinha!", "fundo": "coral", "icone": "icone-alvo", "tamanho": 40 },
+        { "tipo": "frase", "texto": "Cantou *bonito*.", "em": "'Bonito'", "tamanho": 64 },
+        { "tipo": "chip", "texto": "Diz como cantou: advérbio", "em": "porque", "tamanho": 38 }
+      ] }
+    }
+  },
+  "letras-e-sons": {
+    "materia": "portugues",
+    "pronuncia": {
+      "S entre": "ésse entre", "tem som de Z": "tem som de zê", "soa S": "soa ésse", "C e G": "cê e gê", "soa J": "soa jota",
+      "de E e I": "de é e i", "de A, O e U": "de a, ó e u", "O H no": "O agá no", "X com som de Z": "xis com som de zê",
+      "vogais = Z": "vogais é zê", "H inicial": "agá inicial"
+    },
+    "cenas": {
+      "s": { "blocos": [
+        { "tipo": "rotulo", "texto": "A letra S" },
+        { "tipo": "frase", "legenda": "Entre vogais: som de Z", "texto": "ca*s*a, me*s*a", "tamanho": 64 },
+        { "tipo": "frase", "legenda": "No começo ou após consoante: som de S", "texto": "*s*apo, pen*s*ar", "fala": 1, "tamanho": 64 }
+      ] },
+      "c-g": { "blocos": [
+        { "tipo": "rotulo", "texto": "C e G" },
+        { "tipo": "cartoes", "colunas": 2, "fonteTitulo": 42, "itens": [
+          { "titulo": "C + a, o, u", "texto": "casa: som de K", "fala": 1, "em": "casa" },
+          { "titulo": "C + e, i", "texto": "cebola: som de S", "fala": 0, "em": "'Cebola'" },
+          { "titulo": "G + a, o, u", "texto": "gato: som forte", "fala": 1, "em": "gato" },
+          { "titulo": "G + e, i", "texto": "gelo: som de J", "fala": 0, "em": "'gelo'" }
+        ] }
+      ] },
+      "h": { "blocos": [
+        { "tipo": "rotulo", "texto": "A letra H" },
+        { "tipo": "palavras", "texto": "No começo, / *não* *tem* *som*" },
+        { "tipo": "frase", "texto": "~H~ora, ~h~oje", "em": "hora", "tamanho": 68 }
+      ] },
+      "pegadinha": { "blocos": [
+        { "tipo": "chip", "texto": "Pegadinha!", "fundo": "coral", "icone": "icone-alvo", "tamanho": 40 },
+        { "tipo": "palavras", "texto": "Letra *não* é som" },
+        { "tipo": "frase", "legenda": "X com som de Z", "texto": "e*x*ame", "em": "'Exame'", "tamanho": 68 },
+        { "tipo": "chip", "texto": "Fale em voz alta", "em": "Sempre", "fundo": "verde", "tamanho": 38 }
+      ] }
+    }
+  },
+  "sinonimos-antonimos-contexto": {
+    "materia": "portugues",
+    "cenas": {
+      "contexto": { "blocos": [
+        { "tipo": "rotulo", "texto": "Sinônimos" },
+        { "tipo": "palavras", "texto": "Vale o sentido / *daquela* *frase*" },
+        { "tipo": "frase", "texto": "Ele *levantou* a questão.", "fala": 1 },
+        { "tipo": "frase", "texto": "Ele *levantou* a caixa.", "fala": 1, "em": "diferente" }
+      ] },
+      "troca": { "blocos": [
+        { "tipo": "rotulo", "texto": "Teste da troca" },
+        { "tipo": "frase", "texto": "Levantou a questão", "tamanho": 50 },
+        { "tipo": "comparacao", "fala": 1, "tamanho": 46, "itens": [
+          { "texto": "apresentou a questão", "certo": true, "em": "Se o sentido" },
+          { "texto": "ergueu a questão", "certo": false, "em": "continua" }
+        ] }
+      ] },
+      "antonimo": { "blocos": [
+        { "tipo": "rotulo", "texto": "Antônimo" },
+        { "tipo": "palavras", "texto": "A frase diz / o *contrário*" },
+        { "tipo": "frase", "texto": "Chegou *cedo*.", "em": "'chegou", "tamanho": 60 },
+        { "tipo": "frase", "texto": "Chegou *tarde*.", "em": "vira", "tamanho": 60 }
+      ] },
+      "sentido-figurado": { "blocos": [
+        { "tipo": "chip", "texto": "Sentido figurado", "fundo": "coral", "tamanho": 40 },
+        { "tipo": "frase", "texto": "Coração de *pedra*", "em": "'coração", "tamanho": 64 },
+        { "tipo": "chip", "texto": "Alguém insensível", "em": "fala de alguém", "tamanho": 40 }
+      ] }
+    }
+  },
+  "crase": {
+    "materia": "portugues",
+    "pronuncia": {
+      "Vou a + a farmácia = vou à farmácia.": "Vou a, mais a farmácia: vou à farmácia.",
+      "a + a = à": "a mais a é igual a crase"
+    },
+    "cenas": {
+      "soma": { "blocos": [
+        { "tipo": "rotulo", "texto": "Crase" },
+        { "tipo": "palavras", "texto": "Preposição / + *artigo*" },
+        { "tipo": "conta", "texto": "a + a = à", "em": 0.5, "destaque": true, "tamanho": 80 },
+        { "tipo": "frase", "texto": "Vou *à* farmácia.", "fala": 1, "tamanho": 60 }
+      ] },
+      "teste": { "blocos": [
+        { "tipo": "rotulo", "texto": "O truque" },
+        { "tipo": "palavras", "texto": "Troque por palavra / *masculina*", "tamanho": 76 },
+        { "tipo": "chip", "texto": "Virou \"ao\"? Tem crase", "em": "Se virar", "tamanho": 38 },
+        { "tipo": "frase", "texto": "Vou *ao* mercado.", "fala": 1, "tamanho": 56 },
+        { "tipo": "frase", "texto": "Vou *à* farmácia.", "fala": 1, "em": "então", "tamanho": 56 }
+      ] },
+      "nunca": { "blocos": [
+        { "tipo": "rotulo", "texto": "Sem crase" },
+        { "tipo": "cartoes", "fonteTitulo": 46, "itens": [
+          { "titulo": "andar a pé", "texto": "palavra masculina", "fala": 1, "em": "Andar" },
+          { "titulo": "começou a chover", "texto": "verbo", "fala": 1, "em": "começou" },
+          { "titulo": "falei a ela", "texto": "pronome", "fala": 1, "em": "falei" }
+        ] }
+      ] },
+      "locucoes": { "blocos": [
+        { "tipo": "rotulo", "texto": "Com crase" },
+        { "tipo": "palavras", "texto": "Expressões de / *tempo* e *modo*" },
+        { "tipo": "cartoes", "colunas": 2, "fonteTitulo": 46, "itens": [
+          { "titulo": "às vezes", "em": "às vezes" },
+          { "titulo": "à noite", "em": "à noite" },
+          { "titulo": "às pressas", "em": "às pressas" },
+          { "titulo": "à vontade", "em": "à vontade" }
+        ] }
+      ] }
+    }
+  },
+  "tempos-e-modos-verbais": {
+    "materia": "portugues",
+    "pronuncia": {
+      "-va = imperfeito": "Final vá: imperfeito",
+      "-ra = mais-que-perfeito": "Final rá: mais-que-perfeito",
+      "que / se = subjuntivo": "Que ou se: subjuntivo"
+    },
+    "cenas": {
+      "tempos": { "blocos": [
+        { "tipo": "rotulo", "texto": "Os tempos" },
+        { "tipo": "cartoes", "itens": [
+          { "titulo": "Presente", "texto": "eu estudo", "em": "Presente" },
+          { "titulo": "Pretérito", "texto": "eu estudei", "em": "Pretérito" },
+          { "titulo": "Futuro", "texto": "eu estudarei", "em": "Futuro" }
+        ] }
+      ] },
+      "preteritos": { "blocos": [
+        { "tipo": "rotulo", "texto": "Três passados" },
+        { "tipo": "cartoes", "fonteTitulo": 44, "itens": [
+          { "titulo": "Perfeito", "texto": "estudei: terminou", "em": "perfeito" },
+          { "titulo": "Imperfeito", "texto": "estudava: repetia", "em": "imperfeito" },
+          { "titulo": "Mais-que-perfeito", "texto": "estudara: antes de outro passado", "em": "mais-que-perfeito" }
+        ] }
+      ] },
+      "modos": { "blocos": [
+        { "tipo": "rotulo", "texto": "Os modos" },
+        { "tipo": "cartoes", "fonteTitulo": 44, "itens": [
+          { "titulo": "Indicativo", "texto": "certeza: eu estudo", "fala": 0 },
+          { "titulo": "Subjuntivo", "texto": "dúvida ou desejo: que eu estude", "fala": 1 },
+          { "titulo": "Imperativo", "texto": "ordem ou pedido: estude!", "fala": 2 }
+        ] }
+      ] },
+      "formas-nominais": { "blocos": [
+        { "tipo": "rotulo", "texto": "Formas nominais" },
+        { "tipo": "cartoes", "fonteTitulo": 46, "itens": [
+          { "titulo": "estudar", "texto": "infinitivo: -r", "em": "infinitivo" },
+          { "titulo": "estudando", "texto": "gerúndio: -ndo", "em": "gerúndio" },
+          { "titulo": "estudado", "texto": "particípio: -do", "em": "particípio" }
+        ] }
+      ] }
+    }
+  },
+  "s-final-plural": {
+    "materia": "portugues",
+    "pronuncia": { "o S": "o ésse" },
+    "cenas": {
+      "teste": { "blocos": [
+        { "tipo": "rotulo", "texto": "O teste" },
+        { "tipo": "palavras", "texto": "Tire o S. / Sobrou *palavra*?" },
+        { "tipo": "conta", "texto": "casas = casa + S", "fala": 1, "destaque": true }
+      ] },
+      "parte": { "blocos": [
+        { "tipo": "palavras", "texto": "Aqui o S / faz *parte*" },
+        { "tipo": "cartoes", "colunas": 3, "fonteTitulo": 40, "itens": [
+          { "titulo": "lápis", "em": "Lápis" },
+          { "titulo": "ônibus", "em": "ônibus" },
+          { "titulo": "vírus", "em": "vírus" }
+        ] },
+        { "tipo": "comparacao", "itens": [ { "texto": "lápi", "certo": false, "em": "sem o S" } ] }
+      ] },
+      "contexto": { "blocos": [
+        { "tipo": "rotulo", "texto": "Olhe o artigo" },
+        { "tipo": "cartoes", "colunas": 2, "fonteTitulo": 50, "itens": [
+          { "titulo": "o lápis", "texto": "singular", "em": "'o lápis'" },
+          { "titulo": "os lápis", "texto": "plural", "em": "'os lápis'" }
+        ] },
+        { "tipo": "palavras", "texto": "A palavra é a *mesma*", "em": "A palavra é", "tamanho": 70 }
+      ] },
+      "pegadinha": { "blocos": [
+        { "tipo": "chip", "texto": "Pegadinha!", "fundo": "coral", "icone": "icone-alvo", "tamanho": 40 },
+        { "tipo": "cartoes", "colunas": 3, "fonteTitulo": 44, "itens": [
+          { "titulo": "mas", "em": "'mas'" },
+          { "titulo": "mais", "em": "'mais'" },
+          { "titulo": "pires", "em": "aqui" }
+        ] },
+        { "tipo": "palavras", "texto": "Esse S / *não* é plural", "em": "aqui" }
+      ] }
+    }
+  },
+  "adjunto-adverbial": {
+    "materia": "portugues",
+    "cenas": {
+      "ideia": { "blocos": [
+        { "tipo": "rotulo", "texto": "Adjunto adverbial" },
+        { "tipo": "palavras", "texto": "Dá a *circunstância*", "tamanho": 70 },
+        { "tipo": "frase", "texto": "Saímos *à noite* *pela porta dos fundos*.", "em": "quando" },
+        { "tipo": "chip", "texto": "quando · onde · como · por quê", "em": "quando", "tamanho": 34 }
+      ] },
+      "circunstancias": { "blocos": [
+        { "tipo": "cartoes", "colunas": 2, "fonteTitulo": 40, "itens": [
+          { "titulo": "Tempo", "texto": "à noite", "em": "À noite" },
+          { "titulo": "Lugar", "texto": "no parque", "em": "No parque" },
+          { "titulo": "Modo", "texto": "com calma", "em": "Com calma" },
+          { "titulo": "Causa", "texto": "por causa da chuva", "em": "Por causa" },
+          { "titulo": "Finalidade", "texto": "para passar", "em": "Para passar" }
+        ] }
+      ] },
+      "oracoes": { "blocos": [
+        { "tipo": "rotulo", "texto": "Oração adverbial" },
+        { "tipo": "palavras", "texto": "Siga o *conectivo*", "tamanho": 76 },
+        { "tipo": "cartoes", "fonteTitulo": 44, "itens": [
+          { "titulo": "Causa", "texto": "porque choveu", "em": "'Porque" },
+          { "titulo": "Condição", "texto": "se chover", "em": "'Se" },
+          { "titulo": "Concessão", "texto": "embora chova", "em": "'Embora" }
+        ] }
+      ] },
+      "predicativo": { "blocos": [
+        { "tipo": "chip", "texto": "Cuidado!", "fundo": "coral", "icone": "icone-alvo", "tamanho": 40 },
+        { "tipo": "frase", "texto": "Chegou *cansado*.", "em": "'chegou", "tamanho": 64 },
+        { "tipo": "chip", "texto": "Qualidade do sujeito: predicativo", "em": "É predicativo", "tamanho": 32 }
+      ] }
+    }
+  },
+  "media-simples-ponderada": {
+    "materia": "matematica",
+    "cenas": {
+      "simples": { "blocos": [
+        { "tipo": "rotulo", "texto": "Média simples" },
+        { "tipo": "palavras", "texto": "Some e divida / pela *quantidade*", "tamanho": 76 },
+        { "tipo": "conta", "texto": "(6 + 7 + 8) ÷ 3 = 7", "em": "Notas", "destaque": true }
+      ] },
+      "ponderada": { "blocos": [
+        { "tipo": "rotulo", "texto": "Média ponderada" },
+        { "tipo": "passos", "itens": [
+          { "titulo": "Nota × peso", "em": "Multiplique" },
+          { "titulo": "Some tudo", "em": "some" },
+          { "titulo": "Divida pela soma dos pesos", "em": "divida" }
+        ] },
+        { "tipo": "conta", "texto": "(8 × 2 + 5 × 1) ÷ (2 + 1) = 7", "fala": 1, "em": 0.3, "destaque": true }
+      ] },
+      "falta": { "blocos": [
+        { "tipo": "rotulo", "texto": "Quanto falta?" },
+        { "tipo": "conta", "texto": "7 × 4 = 28", "em": "Média 7" },
+        { "tipo": "conta", "texto": "6 + 7 + 8 = 21", "em": "Se já" },
+        { "tipo": "conta", "texto": "28 − 21 = 7", "em": "falta tirar", "destaque": true }
+      ] },
+      "propriedade": { "blocos": [
+        { "tipo": "palavras", "texto": "A média fica / *entre* o menor e o maior", "tamanho": 70 },
+        { "tipo": "cartoes", "colunas": 3, "fonteTitulo": 60, "em": 0.3, "itens": [
+          { "titulo": "6", "texto": "menor" },
+          { "titulo": "7", "texto": "média" },
+          { "titulo": "8", "texto": "maior" }
+        ] },
+        { "tipo": "chip", "texto": "Saiu disso? Refaça a conta", "em": "Se o resultado", "fundo": "coral", "tamanho": 38 }
+      ] }
+    }
+  },
+  "progressao-aritmetica-geometrica": {
+    "materia": "matematica",
+    "pronuncia": {
+      "Termo n = primeiro + (n − 1) × razão": "Termo éne é o primeiro, mais éne menos um, vezes a razão",
+      "PA": "pê á", "PG": "pê gê"
+    },
+    "cenas": {
+      "pa": { "blocos": [
+        { "tipo": "rotulo", "texto": "PA: progressão aritmética" },
+        { "tipo": "palavras", "texto": "*Soma* sempre / o mesmo valor", "tamanho": 76 },
+        { "tipo": "conta", "texto": "3, 7, 11, 15", "em": "3, 7", "tamanho": 76 },
+        { "tipo": "chip", "texto": "razão +4", "em": "razão 4", "tamanho": 44 }
+      ] },
+      "termo": { "blocos": [
+        { "tipo": "rotulo", "texto": "Termo 20" },
+        { "tipo": "palavras", "texto": "Não escreva / *todos*" },
+        { "tipo": "conta", "texto": "a20 = 3 + 19 × 4", "em": "comece" },
+        { "tipo": "conta", "texto": "a20 = 79", "em": "79", "destaque": true }
+      ] },
+      "pg": { "blocos": [
+        { "tipo": "rotulo", "texto": "PG: progressão geométrica" },
+        { "tipo": "palavras", "texto": "*Multiplica* sempre / pelo mesmo valor", "tamanho": 72 },
+        { "tipo": "conta", "texto": "2, 6, 18, 54", "em": "2, 6", "tamanho": 76 },
+        { "tipo": "chip", "texto": "razão ×3", "em": "razão 3", "tamanho": 44 }
+      ] },
+      "diferencas": { "blocos": [
+        { "tipo": "rotulo", "texto": "Olhe as diferenças" },
+        { "tipo": "conta", "texto": "1, 2, 4, 7, 11", "em": "1, 2, 4", "tamanho": 76 },
+        { "tipo": "chip", "texto": "diferenças: 1, 2, 3, 4", "em": "Elas são", "tamanho": 40 },
+        { "tipo": "conta", "texto": "11 + 5 = 16", "em": "O próximo", "destaque": true }
+      ] }
+    }
+  },
+  "horas-e-minutos": {
+    "materia": "matematica",
+    "pronuncia": {
+      "2h50": "duas e cinquenta", "1h20": "uma e vinte", "4h10": "quatro e dez",
+      "8h40": "oito e quarenta", "12h15": "doze e quinze", "até 9h": "até as nove", "De 9h a": "Das nove às",
+      "3h35": "três horas e trinta e cinco",
+      "0,5 h = 30 min": "Meia hora são trinta minutos", "1 h = 60 min": "Uma hora são sessenta minutos"
+    },
+    "cenas": {
+      "base-60": { "blocos": [
+        { "tipo": "rotulo", "texto": "Hora não é decimal" },
+        { "tipo": "palavras", "texto": "1 hora = *60* *minutos*", "tamanho": 70 },
+        { "tipo": "conta", "texto": "2h50 + 1h20", "fala": 1 },
+        { "tipo": "conta", "texto": "3 h 70 min", "fala": 1, "em": "3 horas" },
+        { "tipo": "conta", "texto": "4h10", "fala": 1, "em": "que são", "destaque": true }
+      ] },
+      "decimal": { "blocos": [
+        { "tipo": "rotulo", "texto": "Hora com vírgula" },
+        { "tipo": "comparacao", "tamanho": 56, "itens": [
+          { "texto": "1,5 h = 1h50", "certo": false, "em": "não é" },
+          { "texto": "1,5 h = 1h30", "certo": true, "em": "é uma hora e meia" }
+        ] },
+        { "tipo": "conta", "texto": "0,25 h = 15 min", "fala": 1, "destaque": true }
+      ] },
+      "duracao": { "blocos": [
+        { "tipo": "rotulo", "texto": "Das 8h40 às 12h15" },
+        { "tipo": "conta", "texto": "até 9h: 20 min", "em": "Conte" },
+        { "tipo": "conta", "texto": "de 9h a 12h15: 3h15", "em": "De 9h" },
+        { "tipo": "conta", "texto": "Total: 3h35", "em": "Total", "destaque": true }
+      ] },
+      "salario": { "blocos": [
+        { "tipo": "rotulo", "texto": "Ganho por hora" },
+        { "tipo": "palavras", "texto": "*R$* *18* por hora, / 7,5 horas por dia", "tamanho": 72 },
+        { "tipo": "conta", "texto": "18 × 7,5 = 135", "em": "18 vezes", "destaque": true },
+        { "tipo": "chip", "texto": "R$ 135 por dia", "em": "135 reais", "tamanho": 44 }
+      ] }
+    }
+  },
+  "datas-idades-calendario": {
+    "materia": "matematica",
+    "cenas": {
+      "idade": { "blocos": [
+        { "tipo": "rotulo", "texto": "Idade" },
+        { "tipo": "palavras", "texto": "Ano atual / *menos* o nascimento", "tamanho": 76 },
+        { "tipo": "chip", "texto": "Se já fez aniversário no ano", "em": "se a pessoa", "tamanho": 36 },
+        { "tipo": "conta", "texto": "2026 − 1990 = 36", "fala": 1, "destaque": true }
+      ] },
+      "periodos": { "blocos": [
+        { "tipo": "rotulo", "texto": "Um ano tem" },
+        { "tipo": "cartoes", "colunas": 2, "fonteTitulo": 42, "itens": [
+          { "titulo": "12 meses" },
+          { "titulo": "6 bimestres" },
+          { "titulo": "4 trimestres" },
+          { "titulo": "2 semestres" }
+        ] },
+        { "tipo": "conta", "texto": "3 × 6 = 18 bimestres", "em": "3 vezes", "destaque": true }
+      ] },
+      "dia-da-semana": { "blocos": [
+        { "tipo": "rotulo", "texto": "Dia da semana" },
+        { "tipo": "palavras", "texto": "Repete a cada *7* dias", "tamanho": 70 },
+        { "tipo": "conta", "texto": "30 ÷ 7 = 4, resto 2", "em": "30 dividido" },
+        { "tipo": "conta", "texto": "segunda + 2 = quarta", "em": "Segunda mais", "destaque": true }
+      ] },
+      "intervalos": { "blocos": [
+        { "tipo": "rotulo", "texto": "A cada 4 anos" },
+        { "tipo": "conta", "texto": "2016, 2020, 2024, 2028", "em": "2016, 2020" },
+        { "tipo": "chip", "texto": "Some sempre 4", "em": "Some", "tamanho": 44 }
+      ] }
+    }
+  },
+  "areas-figuras-planas": {
+    "materia": "matematica",
+    "pronuncia": { "b × h ÷ 2": "base vezes altura, dividido por dois", "b × h": "base vezes altura", "π × r²": "pi vezes raio ao quadrado" },
+    "cenas": {
+      "retangulo": { "blocos": [
+        { "tipo": "rotulo", "texto": "Retângulo e quadrado" },
+        { "tipo": "palavras", "texto": "*Base* × *altura*" },
+        { "tipo": "conta", "texto": "12 × 30 = 360 m²", "em": "Um terreno", "destaque": true }
+      ] },
+      "triangulo": { "blocos": [
+        { "tipo": "rotulo", "texto": "Triângulo" },
+        { "tipo": "palavras", "texto": "Base × altura, / *dividido* *por* *2*" },
+        { "tipo": "conta", "texto": "b × h ÷ 2", "em": 0.3, "destaque": true }
+      ] },
+      "circulo": { "blocos": [
+        { "tipo": "rotulo", "texto": "Círculo" },
+        { "tipo": "conta", "texto": "π × r²", "destaque": true, "tamanho": 90 },
+        { "tipo": "chip", "texto": "Dobrou o raio? Área 4 vezes maior", "em": "Dobrou", "tamanho": 32 }
+      ] },
+      "problema": { "blocos": [
+        { "tipo": "rotulo", "texto": "Na prática" },
+        { "tipo": "frase", "texto": "Piso a *R$ 60* o m², quarto de 3 × 4 m", "tamanho": 46 },
+        { "tipo": "conta", "texto": "3 × 4 = 12 m²", "em": "a área" },
+        { "tipo": "conta", "texto": "12 × 60 = R$ 720", "em": "12 vezes", "destaque": true }
+      ] }
+    }
+  },
+  "razao-divisao-proporcional": {
+    "materia": "matematica",
+    "cenas": {
+      "razao": { "blocos": [
+        { "tipo": "rotulo", "texto": "Razão" },
+        { "tipo": "palavras", "texto": "Divisão / que *compara*" },
+        { "tipo": "frase", "texto": "*1* a cada *5* alunos usa óculos.", "em": "1 a cada" },
+        { "tipo": "chip", "texto": "razão: 1 para 5", "em": "a razão", "tamanho": 44 }
+      ] },
+      "partes": { "blocos": [
+        { "tipo": "rotulo", "texto": "R$ 600 na razão 2 para 3" },
+        { "tipo": "conta", "texto": "2 + 3 = 5 partes", "em": "some as partes" },
+        { "tipo": "conta", "texto": "600 ÷ 5 = 120", "em": "Cada parte" },
+        { "tipo": "barra", "fala": 1, "partes": [
+          { "pct": 40, "cor": "#15803D", "rotulo": "240" },
+          { "pct": 60, "cor": "#FFC233", "tinta": "#2D2F36", "rotulo": "360" }
+        ] }
+      ] },
+      "investimento": { "blocos": [
+        { "tipo": "rotulo", "texto": "Lucro entre sócios" },
+        { "tipo": "palavras", "texto": "Quem pôs *mais*, / recebe *mais*", "em": "quem pôs" },
+        { "tipo": "chip", "texto": "Na mesma proporção", "em": "na mesma", "tamanho": 44 }
+      ] },
+      "concorrencia": { "blocos": [
+        { "tipo": "rotulo", "texto": "Candidatos por vaga" },
+        { "tipo": "conta", "texto": "900 ÷ 30 = 30", "em": "900", "destaque": true },
+        { "tipo": "chip", "texto": "30 candidatos por vaga", "em": "30 candidatos", "tamanho": 44 }
+      ] }
+    }
+  }
+}

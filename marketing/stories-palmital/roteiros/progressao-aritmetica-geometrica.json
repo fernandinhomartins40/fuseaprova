@@ -1,0 +1,147 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-034",
+  "titulo": "Progressão aritmética e geométrica",
+  "materia": "matematica",
+  "pronuncia": {
+    "Termo n = primeiro + (n − 1) × razão": "Termo éne é o primeiro, mais éne menos um, vezes a razão",
+    "PA": "pê á",
+    "PG": "pê gê"
+  },
+  "falas": {
+    "pa": [
+      "Na PA, soma-se sempre o mesmo valor, a razão. 3, 7, 11, 15: razão 4."
+    ],
+    "termo": [
+      "Para o termo 20, não escreva todos: comece no primeiro e some a razão 19 vezes. 3 mais 19 vezes 4, 79."
+    ],
+    "pg": [
+      "Na PG, multiplica-se sempre pelo mesmo valor. 2, 6, 18, 54: razão 3."
+    ],
+    "diferencas": [
+      "Se as diferenças crescem, olhe as diferenças: 1, 2, 4, 7, 11. Elas são 1, 2, 3, 4. O próximo é 11 mais 5, 16."
+    ],
+    "fecho": [
+      "Resumindo: PA soma, PG multiplica. Termo n = primeiro + (n − 1) × razão. Travou? Olhe as diferenças.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "pa": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "PA: progressão aritmética"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*Soma* sempre / o mesmo valor",
+          "tamanho": 76
+        },
+        {
+          "tipo": "conta",
+          "texto": "3, 7, 11, 15",
+          "em": "3, 7",
+          "tamanho": 76
+        },
+        {
+          "tipo": "chip",
+          "texto": "razão +4",
+          "em": "razão 4",
+          "tamanho": 44
+        }
+      ]
+    },
+    "termo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Termo 20"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Não escreva / *todos*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "a20 = 3 + 19 × 4",
+          "em": "comece"
+        },
+        {
+          "tipo": "conta",
+          "texto": "a20 = 79",
+          "em": "79",
+          "destaque": true
+        }
+      ]
+    },
+    "pg": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "PG: progressão geométrica"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*Multiplica* sempre / pelo mesmo valor",
+          "tamanho": 72
+        },
+        {
+          "tipo": "conta",
+          "texto": "2, 6, 18, 54",
+          "em": "2, 6",
+          "tamanho": 76
+        },
+        {
+          "tipo": "chip",
+          "texto": "razão ×3",
+          "em": "razão 3",
+          "tamanho": 44
+        }
+      ]
+    },
+    "diferencas": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Olhe as diferenças"
+        },
+        {
+          "tipo": "conta",
+          "texto": "1, 2, 4, 7, 11",
+          "em": "1, 2, 4",
+          "tamanho": 76
+        },
+        {
+          "tipo": "chip",
+          "texto": "diferenças: 1, 2, 3, 4",
+          "em": "Elas são",
+          "tamanho": 40
+        },
+        {
+          "tipo": "conta",
+          "texto": "11 + 5 = 16",
+          "em": "O próximo",
+          "destaque": true
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "PA soma, PG multiplica",
+        "Termo n = primeiro + (n − 1) × razão",
+        "Travou? Olhe as diferenças"
+      ]
+    }
+  }
+}

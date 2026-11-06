@@ -1,0 +1,47 @@
+{
+  "voz": "33B4UnXyTNbgLmdEDh5P",
+  "nomeVoz": "Keren",
+  "semente": 21,
+  "ajustes": {
+    "stability": 0.3,
+    "similarity_boost": 0.75,
+    "style": 0.9,
+    "use_speaker_boost": true,
+    "speed": 1.2
+  },
+  "falas": {
+    "gancho": [
+      "Você quer trabalhar na Prefeitura de Palmital?!"
+    ],
+    "edital": [
+      "O edital do concurso ainda não foi publicado.",
+      "E esse é o melhor momento para começar. Quando o edital sai, o tempo fica curto. Quem se prepara antes chega na prova com vantagem."
+    ],
+    "solucao": [
+      "E você não precisa de apostila enorme, nem de passar horas na cadeira.",
+      "Com o Fuse Aprova, você estuda pelo celular, quinze minutos por dia, onde estiver."
+    ],
+    "vitrine": [
+      "O conteúdo vem organizado, passo a passo.",
+      "As questões seguem o estilo da banca FAU, com a explicação na hora.",
+      "Você cria o hábito de estudar todo dia.",
+      "O que você errou volta para revisar.",
+      "Os simulados são no formato da prova.",
+      "E você acompanha sua evolução com quem também estuda em Palmital."
+    ],
+    "adapta": [
+      "E quando o edital for publicado?",
+      "O aplicativo se ajusta a ele: o seu cargo, as matérias cobradas e os simulados, tudo no formato oficial.",
+      "Sem nenhum custo a mais!"
+    ],
+    "oferta": [
+      "O acesso completo custa trezentos e noventa e sete reais.",
+      "Mas olha só: no lançamento, sai por cento e noventa e sete, à vista no Pix!",
+      "E vale até o dia da prova."
+    ],
+    "chamada": [
+      "Quem começa hoje sai na frente!",
+      "Acesse o link na bio e garanta o seu acesso ao Fuse Aprova!"
+    ]
+  }
+}

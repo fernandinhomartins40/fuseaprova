@@ -1,0 +1,129 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-043",
+  "titulo": "Volume e capacidade",
+  "materia": "matematica",
+  "pronuncia": {
+    "V = c × l × h": "Volume é comprimento vezes largura vezes altura",
+    "1 m³ = 1.000 L": "Um metro cúbico são mil litros"
+  },
+  "falas": {
+    "volume": [
+      "Volume de uma caixa: comprimento vezes largura vezes altura."
+    ],
+    "litros": [
+      "1 metro cúbico tem 1.000 litros. 1 decímetro cúbico é 1 litro."
+    ],
+    "exemplo": [
+      "Piscina de 5 por 3 por 1,2 metros: 18 metros cúbicos, ou 18.000 litros."
+    ],
+    "ao-contrario": [
+      "Achar a altura: volume dividido pela área da base. 24 metros cúbicos numa base de 8 metros quadrados: altura de 3 metros."
+    ],
+    "fecho": [
+      "Resumindo: V = c × l × h. 1 m³ = 1.000 L. Altura = volume ÷ base.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "volume": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Volume da caixa"
+        },
+        {
+          "tipo": "passos",
+          "itens": [
+            {
+              "titulo": "Comprimento",
+              "em": "comprimento"
+            },
+            {
+              "titulo": "× largura",
+              "em": "largura"
+            },
+            {
+              "titulo": "× altura",
+              "em": "altura"
+            }
+          ]
+        }
+      ]
+    },
+    "litros": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Para litros"
+        },
+        {
+          "tipo": "conta",
+          "texto": "1 m³ = 1.000 L",
+          "destaque": true
+        },
+        {
+          "tipo": "conta",
+          "texto": "1 dm³ = 1 L",
+          "em": "1 decímetro",
+          "destaque": true
+        }
+      ]
+    },
+    "exemplo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Piscina"
+        },
+        {
+          "tipo": "conta",
+          "texto": "5 × 3 × 1,2 = 18 m³",
+          "em": "5 por"
+        },
+        {
+          "tipo": "conta",
+          "texto": "18 m³ = 18.000 L",
+          "em": "18.000",
+          "destaque": true
+        }
+      ]
+    },
+    "ao-contrario": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Achar a altura"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Volume ÷ *área* *da* *base*",
+          "tamanho": 72
+        },
+        {
+          "tipo": "conta",
+          "texto": "24 ÷ 8 = 3 m",
+          "em": "24 metros",
+          "destaque": true
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "V = c × l × h",
+        "1 m³ = 1.000 L",
+        "Altura = volume ÷ base"
+      ]
+    }
+  }
+}

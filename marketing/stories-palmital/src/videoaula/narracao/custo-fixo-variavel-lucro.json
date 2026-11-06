@@ -1,0 +1,42 @@
+{
+  "custo": [
+    {
+      "arquivo": "audio/custo-fixo-variavel-lucro/voz-custo-1.wav",
+      "segundos": 10.253,
+      "texto": "Custo tem uma parte fixa e uma que cresce com a quantidade. Aluguel de 2.000 e 5 reais por peça: C igual a 2.000 mais 5x."
+    }
+  ],
+  "receita-lucro": [
+    {
+      "arquivo": "audio/custo-fixo-variavel-lucro/voz-receita-lucro-1.wav",
+      "segundos": 10.206,
+      "texto": "Receita é o preço vezes a quantidade: vendendo a 15, R igual a 15x. Lucro é receita menos custo."
+    }
+  ],
+  "equilibrio": [
+    {
+      "arquivo": "audio/custo-fixo-variavel-lucro/voz-equilibrio-1.wav",
+      "segundos": 8.106,
+      "texto": "Ponto de equilíbrio: lucro zero. 10x menos 2.000 igual a zero, x igual a 200 peças."
+    }
+  ],
+  "salario": [
+    {
+      "arquivo": "audio/custo-fixo-variavel-lucro/voz-salario-1.wav",
+      "segundos": 6.569,
+      "texto": "Salário fixo mais comissão é a mesma ideia: 1.500 mais 3% das vendas."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/custo-fixo-variavel-lucro/voz-fecho-1.wav",
+      "segundos": 8.633,
+      "texto": "Resumindo: Custo = fixo + variável × x. Lucro = receita − custo. Equilíbrio: lucro zero."
+    },
+    {
+      "arquivo": "audio/custo-fixo-variavel-lucro/voz-fecho-2.wav",
+      "segundos": 1.459,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

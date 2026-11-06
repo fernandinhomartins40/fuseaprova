@@ -1,0 +1,162 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-005",
+  "titulo": "Dígrafo × encontro consonantal",
+  "materia": "portugues",
+  "pronuncia": {
+    "CH, LH, NH, RR, SS, QU e GU antes de E e I, SC, SÇ, XC e as vogais com M ou N: am, en, in, om, un.": "cê agá, ele agá, ene agá, erre erre, esse esse, quê u e gê u antes de é e i, esse cê, esse cê cedilha, xis cê e as vogais com eme ou ene.",
+    "BR, CL, PR, TR, GL:": "bê erre, cê ele, pê erre, tê erre, gê ele:",
+    "GU e QU": "gê u e quê u",
+    "o U soa": "o u soa"
+  },
+  "falas": {
+    "digrafo": [
+      "Dígrafo são duas letras que fazem um som só.",
+      "CH, LH, NH, RR, SS, QU e GU antes de E e I, SC, SÇ, XC e as vogais com M ou N: am, en, in, om, un."
+    ],
+    "encontro": [
+      "Encontro consonantal são duas consoantes juntas, e cada uma tem o seu som.",
+      "BR, CL, PR, TR, GL: braço, claro, prato."
+    ],
+    "contar": [
+      "Para não errar, fale a palavra devagar e conte os sons. Se duas letras viram um som, é dígrafo."
+    ],
+    "pegadinha": [
+      "Cuidado: em 'aguentar' e 'quando', o U soa. Então GU e QU ali não são dígrafos."
+    ],
+    "fecho": [
+      "Resumindo: Dígrafo: 2 letras, 1 som. Encontro: 2 letras, 2 sons. U que soa não forma dígrafo.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "digrafo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Dígrafo"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*2* letras, *1* som"
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "chu",
+            "va"
+          ],
+          "forte": 0,
+          "forteEm": 0.6,
+          "em": 0.2,
+          "tamanho": 96
+        },
+        {
+          "tipo": "frase",
+          "texto": "CH · LH · NH · RR · SS · QU · GU · SC · SÇ · XC · am · en · in · om · un",
+          "fala": 1,
+          "tamanho": 44
+        }
+      ]
+    },
+    "encontro": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Encontro consonantal"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*2* letras, *2* sons"
+        },
+        {
+          "tipo": "frase",
+          "texto": "BR · CL · PR · TR · GL",
+          "fala": 1,
+          "tamanho": 56
+        },
+        {
+          "tipo": "frase",
+          "texto": "*br*aço · *cl*aro · *pr*ato",
+          "fala": 1,
+          "em": "braço",
+          "tamanho": 56
+        }
+      ]
+    },
+    "contar": {
+      "blocos": [
+        {
+          "tipo": "palavras",
+          "texto": "Fale devagar e / *conte* *os* *sons*",
+          "tamanho": 80
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 50,
+          "itens": [
+            {
+              "titulo": "carro",
+              "texto": "5 letras, 4 sons → dígrafo",
+              "em": "conte os sons"
+            },
+            {
+              "titulo": "prato",
+              "texto": "5 letras, 5 sons → encontro",
+              "em": "Se duas letras"
+            }
+          ]
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Se o *U* soa, / não é dígrafo",
+          "em": 0.1,
+          "tamanho": 80
+        },
+        {
+          "tipo": "comparacao",
+          "itens": [
+            {
+              "texto": "guerra: dígrafo",
+              "certo": true,
+              "em": 0.2
+            },
+            {
+              "texto": "aguentar: dígrafo",
+              "certo": false,
+              "em": "'aguentar'"
+            }
+          ]
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Dígrafo: 2 letras, 1 som",
+        "Encontro: 2 letras, 2 sons",
+        "U que soa não forma dígrafo"
+      ]
+    }
+  }
+}

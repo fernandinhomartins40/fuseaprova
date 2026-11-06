@@ -1,0 +1,1307 @@
+{
+  "interpretacao-o-que-o-texto-nao-diz": {
+    "materia": "portugues",
+    "cenas": {
+      "regra": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Interpretação de texto"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "A resposta é a frase / que o texto / *não* *sustenta*",
+            "em": 0.3
+          },
+          {
+            "tipo": "chip",
+            "texto": "Só vale o texto",
+            "fala": 1,
+            "icone": "icone-alvo",
+            "tamanho": 40
+          }
+        ]
+      },
+      "troca": {
+        "blocos": [
+          {
+            "tipo": "palavras",
+            "texto": "A banca muda *um* *detalhe*"
+          },
+          {
+            "tipo": "frase",
+            "legenda": "No texto",
+            "texto": "*Alguns* moradores reclamaram.",
+            "em": "um número"
+          },
+          {
+            "tipo": "frase",
+            "legenda": "Na alternativa",
+            "texto": "~Todos~ os moradores reclamaram.",
+            "em": "um 'todos'"
+          }
+        ]
+      },
+      "metodo": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Faça assim"
+          },
+          {
+            "tipo": "passos",
+            "itens": [
+              {
+                "titulo": "Leia a alternativa",
+                "em": "leia"
+              },
+              {
+                "titulo": "Volte ao trecho",
+                "em": "volte"
+              },
+              {
+                "titulo": "Compare palavra por palavra",
+                "em": "compare"
+              }
+            ]
+          },
+          {
+            "tipo": "chip",
+            "texto": "Uma palavra não bate? Está errada",
+            "fala": 1,
+            "fundo": "coral",
+            "tamanho": 36
+          }
+        ]
+      },
+      "pegadinha": {
+        "blocos": [
+          {
+            "tipo": "chip",
+            "texto": "Pegadinha!",
+            "fundo": "coral",
+            "icone": "icone-alvo",
+            "tamanho": 40
+          },
+          {
+            "tipo": "palavras",
+            "texto": "Verdade no mundo / não é o mesmo que / *estar* *no* *texto*",
+            "em": 0.25,
+            "tamanho": 80
+          }
+        ]
+      }
+    }
+  },
+  "conectivos-relacoes-de-sentido": {
+    "materia": "portugues",
+    "cenas": {
+      "ideia": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Conectivos"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "A palavra que / *liga* as ideias"
+          },
+          {
+            "tipo": "frase",
+            "texto": "Estudei, *mas* não passei.",
+            "em": "E cada um"
+          }
+        ]
+      },
+      "familias": {
+        "blocos": [
+          {
+            "tipo": "cartoes",
+            "fonteTitulo": 44,
+            "itens": [
+              {
+                "titulo": "Oposição",
+                "texto": "mas, porém, contudo, todavia",
+                "fala": 0
+              },
+              {
+                "titulo": "Conclusão",
+                "texto": "portanto, logo, por isso",
+                "fala": 1
+              },
+              {
+                "titulo": "Causa",
+                "texto": "porque, pois, já que",
+                "fala": 2
+              },
+              {
+                "titulo": "Condição",
+                "texto": "se, caso, desde que",
+                "fala": 3
+              },
+              {
+                "titulo": "Finalidade",
+                "texto": "para que, a fim de que",
+                "fala": 4
+              }
+            ]
+          }
+        ]
+      },
+      "concessao": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Concessão"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "embora, mesmo que, / ainda que",
+            "em": 0.15,
+            "tamanho": 76
+          },
+          {
+            "tipo": "chip",
+            "texto": "Obstáculo que não impede",
+            "em": "Ela admite",
+            "tamanho": 38
+          },
+          {
+            "tipo": "frase",
+            "texto": "*Embora* chovesse, fomos à praia.",
+            "fala": 1
+          }
+        ]
+      },
+      "troca": {
+        "blocos": [
+          {
+            "tipo": "palavras",
+            "texto": "Troque pela / *mesma* *família*"
+          },
+          {
+            "tipo": "comparacao",
+            "itens": [
+              {
+                "texto": "mas → porém",
+                "certo": true,
+                "em": "'Mas' vira"
+              },
+              {
+                "texto": "mas → portanto",
+                "certo": false,
+                "em": "Nunca"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "adverbios-circunstancias": {
+    "materia": "portugues",
+    "cenas": {
+      "ideia": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Advérbio"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "Diz *como*, *quando*, / *onde* ou *quanto*",
+            "tamanho": 80
+          },
+          {
+            "tipo": "frase",
+            "texto": "Ela chegou *ontem*.",
+            "em": 0.6
+          }
+        ]
+      },
+      "tipos": {
+        "blocos": [
+          {
+            "tipo": "cartoes",
+            "fonteTitulo": 44,
+            "itens": [
+              {
+                "titulo": "Tempo",
+                "texto": "ontem, hoje, cedo, já",
+                "fala": 0
+              },
+              {
+                "titulo": "Lugar",
+                "texto": "aqui, lá, longe, perto",
+                "fala": 1
+              },
+              {
+                "titulo": "Modo",
+                "texto": "bem, mal, depressa, -mente",
+                "fala": 2
+              },
+              {
+                "titulo": "Intensidade",
+                "texto": "muito, pouco, bastante, tão",
+                "fala": 3
+              },
+              {
+                "titulo": "Afirmação, negação, dúvida",
+                "texto": "sim, não, talvez",
+                "fala": 4
+              }
+            ]
+          }
+        ]
+      },
+      "teste": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "O truque"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "Faça a pergunta / *ao* *verbo*"
+          },
+          {
+            "tipo": "frase",
+            "texto": "Chegou *cedo*.",
+            "em": "'Chegou cedo'"
+          },
+          {
+            "tipo": "cartoes",
+            "itens": [
+              {
+                "titulo": "Chegou quando? Cedo → tempo",
+                "em": "chegou quando"
+              }
+            ],
+            "fonteTitulo": 46
+          }
+        ]
+      },
+      "pegadinha": {
+        "blocos": [
+          {
+            "tipo": "chip",
+            "texto": "Pegadinha!",
+            "fundo": "coral",
+            "icone": "icone-alvo",
+            "tamanho": 40
+          },
+          {
+            "tipo": "cartoes",
+            "fonteTitulo": 48,
+            "itens": [
+              {
+                "titulo": "muito cansado",
+                "texto": "advérbio de intensidade",
+                "em": "'muito cansado'"
+              },
+              {
+                "titulo": "muitos livros",
+                "texto": "pronome: acompanha o substantivo",
+                "em": "'muitos livros'"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "divisao-silabica": {
+    "materia": "portugues",
+    "pronuncia": {
+      "RR, SS, SC, SÇ e XC": "erre erre, esse esse, esse cê, esse cê cedilha e xis cê",
+      "Car-ro, pás-sa-ro, nas-cer, ex-ce-ção.": "Car, ro. Pás, sa, ro. Nas, cer. Ex, ce, ção.",
+      "CH, LH, NH, QU e GU": "cê agá, ele agá, ene agá, quê u e gê u",
+      "Fi-lho, chu-va, quei-jo.": "Fi, lho. Chu, va. Quei, jo.",
+      "BR, PL e TR": "bê erre, pê ele e tê erre",
+      "li-vro, pla-no.": "li, vro. Pla, no.",
+      "sa-ú-de, po-e-ta": "sa, ú, de. Po, e, ta",
+      "cau-le": "cau, le",
+      "ca-sa": "ca, sa",
+      "RR, SS, SC, XC separam": "erre erre, esse esse, esse cê e xis cê separam",
+      "CH, LH, NH, QU, GU não separam": "cê agá, ele agá, ene agá, quê u e gê u não separam"
+    },
+    "cenas": {
+      "regra-base": {
+        "blocos": [
+          {
+            "tipo": "palavras",
+            "texto": "Toda sílaba tem / *uma* *vogal*"
+          },
+          {
+            "tipo": "silabas",
+            "silabas": [
+              "es",
+              "co",
+              "la"
+            ],
+            "forte": -1,
+            "em": 0.6,
+            "tamanho": 100
+          }
+        ]
+      },
+      "separam": {
+        "blocos": [
+          {
+            "tipo": "chip",
+            "texto": "Separam: RR, SS, SC, SÇ, XC",
+            "tamanho": 40
+          },
+          {
+            "tipo": "silabas",
+            "silabas": [
+              "car",
+              "ro"
+            ],
+            "forte": -1,
+            "em": "Car-ro",
+            "tamanho": 80
+          },
+          {
+            "tipo": "silabas",
+            "silabas": [
+              "pás",
+              "sa",
+              "ro"
+            ],
+            "forte": -1,
+            "em": "pás-sa-ro",
+            "tamanho": 80
+          },
+          {
+            "tipo": "silabas",
+            "silabas": [
+              "ex",
+              "ce",
+              "ção"
+            ],
+            "forte": -1,
+            "em": "ex-ce-ção",
+            "tamanho": 80
+          }
+        ]
+      },
+      "nao-separam": {
+        "blocos": [
+          {
+            "tipo": "chip",
+            "texto": "Não separam: CH, LH, NH, QU, GU",
+            "tamanho": 38
+          },
+          {
+            "tipo": "silabas",
+            "silabas": [
+              "fi",
+              "lho"
+            ],
+            "forte": -1,
+            "em": "Fi-lho",
+            "tamanho": 80
+          },
+          {
+            "tipo": "silabas",
+            "silabas": [
+              "quei",
+              "jo"
+            ],
+            "forte": -1,
+            "em": "quei-jo",
+            "tamanho": 80
+          },
+          {
+            "tipo": "chip",
+            "texto": "BR, PL, TR ficam juntos",
+            "fala": 1,
+            "tamanho": 38
+          },
+          {
+            "tipo": "silabas",
+            "silabas": [
+              "li",
+              "vro"
+            ],
+            "forte": -1,
+            "fala": 1,
+            "em": "li-vro",
+            "tamanho": 80
+          }
+        ]
+      },
+      "hiato": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Hiato separa"
+          },
+          {
+            "tipo": "silabas",
+            "silabas": [
+              "sa",
+              "ú",
+              "de"
+            ],
+            "forte": 1,
+            "forteEm": "sa-ú-de",
+            "em": 0,
+            "tamanho": 96
+          },
+          {
+            "tipo": "rotulo",
+            "texto": "Ditongo fica junto",
+            "em": "No ditongo"
+          },
+          {
+            "tipo": "silabas",
+            "silabas": [
+              "cau",
+              "le"
+            ],
+            "forte": 0,
+            "forteEm": "cau-le",
+            "em": "No ditongo",
+            "tamanho": 96
+          }
+        ]
+      }
+    }
+  },
+  "digrafo-encontro-consonantal": {
+    "materia": "portugues",
+    "pronuncia": {
+      "CH, LH, NH, RR, SS, QU e GU antes de E e I, SC, SÇ, XC e as vogais com M ou N: am, en, in, om, un.": "cê agá, ele agá, ene agá, erre erre, esse esse, quê u e gê u antes de é e i, esse cê, esse cê cedilha, xis cê e as vogais com eme ou ene.",
+      "BR, CL, PR, TR, GL:": "bê erre, cê ele, pê erre, tê erre, gê ele:",
+      "GU e QU": "gê u e quê u",
+      "o U soa": "o u soa"
+    },
+    "cenas": {
+      "digrafo": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Dígrafo"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "*2* letras, *1* som"
+          },
+          {
+            "tipo": "silabas",
+            "silabas": [
+              "chu",
+              "va"
+            ],
+            "forte": 0,
+            "forteEm": 0.6,
+            "em": 0.2,
+            "tamanho": 96
+          },
+          {
+            "tipo": "frase",
+            "texto": "CH · LH · NH · RR · SS · QU · GU · SC · SÇ · XC · am · en · in · om · un",
+            "fala": 1,
+            "tamanho": 44
+          }
+        ]
+      },
+      "encontro": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Encontro consonantal"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "*2* letras, *2* sons"
+          },
+          {
+            "tipo": "frase",
+            "texto": "BR · CL · PR · TR · GL",
+            "fala": 1,
+            "tamanho": 56
+          },
+          {
+            "tipo": "frase",
+            "texto": "*br*aço · *cl*aro · *pr*ato",
+            "fala": 1,
+            "em": "braço",
+            "tamanho": 56
+          }
+        ]
+      },
+      "contar": {
+        "blocos": [
+          {
+            "tipo": "palavras",
+            "texto": "Fale devagar e / *conte* *os* *sons*",
+            "tamanho": 80
+          },
+          {
+            "tipo": "cartoes",
+            "fonteTitulo": 50,
+            "itens": [
+              {
+                "titulo": "carro",
+                "texto": "5 letras, 4 sons → dígrafo",
+                "em": "conte os sons"
+              },
+              {
+                "titulo": "prato",
+                "texto": "5 letras, 5 sons → encontro",
+                "em": "Se duas letras"
+              }
+            ]
+          }
+        ]
+      },
+      "pegadinha": {
+        "blocos": [
+          {
+            "tipo": "chip",
+            "texto": "Pegadinha!",
+            "fundo": "coral",
+            "icone": "icone-alvo",
+            "tamanho": 40
+          },
+          {
+            "tipo": "palavras",
+            "texto": "Se o *U* soa, / não é dígrafo",
+            "em": 0.1,
+            "tamanho": 80
+          },
+          {
+            "tipo": "comparacao",
+            "itens": [
+              {
+                "texto": "guerra: dígrafo",
+                "certo": true,
+                "em": 0.2
+              },
+              {
+                "texto": "aguentar: dígrafo",
+                "certo": false,
+                "em": "'aguentar'"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "termos-da-oracao": {
+    "materia": "portugues",
+    "pronuncia": {
+      "Ser/estar + qualidade = predicativo": "Ser ou estar mais qualidade é predicativo",
+      "Quem? = sujeito": "Quem é o sujeito",
+      "O quê? = objeto direto": "O quê é o objeto direto",
+      "De quê? A quem? = objeto indireto": "De quê, ou a quem, é o objeto indireto"
+    },
+    "cenas": {
+      "sujeito": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Sujeito"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "De quem se fala: / *quem?*",
+            "tamanho": 80
+          },
+          {
+            "tipo": "frase",
+            "texto": "*Os alunos* estudaram.",
+            "fala": 1
+          }
+        ]
+      },
+      "objetos": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Objeto"
+          },
+          {
+            "tipo": "frase",
+            "legenda": "Sem preposição: direto",
+            "texto": "Comprou *pão*.",
+            "em": "Sem preposição"
+          },
+          {
+            "tipo": "frase",
+            "legenda": "Com preposição: indireto",
+            "texto": "Gosta *de música*.",
+            "fala": 1
+          }
+        ]
+      },
+      "predicativo": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Predicativo"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "ser, estar, ficar, / parecer + *qualidade*",
+            "tamanho": 72
+          },
+          {
+            "tipo": "frase",
+            "texto": "A sala está *limpa*.",
+            "fala": 1
+          }
+        ]
+      },
+      "pegadinha": {
+        "blocos": [
+          {
+            "tipo": "chip",
+            "texto": "Pegadinha!",
+            "fundo": "coral",
+            "icone": "icone-alvo",
+            "tamanho": 40
+          },
+          {
+            "tipo": "palavras",
+            "texto": "O sujeito pode vir / *depois* *do* *verbo*",
+            "tamanho": 76
+          },
+          {
+            "tipo": "frase",
+            "texto": "Chegaram *as provas*.",
+            "em": "'Chegaram"
+          }
+        ]
+      }
+    }
+  },
+  "multiplicar-dividir-arredondar": {
+    "materia": "matematica",
+    "pronuncia": {
+      "dá 4 e sobram 2. Essas 2 também": "dá quatro e sobram duas. Essas duas também"
+    },
+    "cenas": {
+      "multiplicar": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "De um para vários"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "*Multiplica*"
+          },
+          {
+            "tipo": "conta",
+            "texto": "3 pães × 20 pessoas = 60",
+            "fala": 1,
+            "em": "3 vezes"
+          }
+        ]
+      },
+      "dividir": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Do total para as partes"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "*Divide*"
+          },
+          {
+            "tipo": "conta",
+            "texto": "120 cadeiras ÷ 8 = 15",
+            "fala": 1,
+            "em": "120 dividido",
+            "tamanho": 62
+          }
+        ]
+      },
+      "arredondar": {
+        "blocos": [
+          {
+            "tipo": "palavras",
+            "texto": "E se *não* for / exata?",
+            "tamanho": 80
+          },
+          {
+            "tipo": "conta",
+            "texto": "50 ÷ 12 = 4 e sobram 2",
+            "fala": 1,
+            "em": "50 dividido",
+            "tamanho": 62
+          },
+          {
+            "tipo": "conta",
+            "texto": "São 5 vans",
+            "fala": 1,
+            "em": "então são",
+            "destaque": true
+          }
+        ]
+      },
+      "para-baixo": {
+        "blocos": [
+          {
+            "tipo": "cartoes",
+            "fonteTitulo": 46,
+            "itens": [
+              {
+                "titulo": "Precisa caber todo mundo?",
+                "texto": "arredonda para cima",
+                "em": 0
+              },
+              {
+                "titulo": "Quantas caixas cheias?",
+                "texto": "fica com a parte inteira",
+                "em": "quantas caixas"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "preco-troco-lucro": {
+    "materia": "matematica",
+    "pronuncia": {
+      "um real e cinquenta": "um real e cinquenta",
+      "Pagou 50, gastou 37,40: o troco é 12,60.": "Pagou cinquenta, gastou trinta e sete e quarenta: o troco é doze e sessenta."
+    },
+    "cenas": {
+      "preco-unitario": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Preço unitário"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "Total ÷ *quantidade*",
+            "tamanho": 80
+          },
+          {
+            "tipo": "conta",
+            "texto": "R$ 18 ÷ 12 = R$ 1,50",
+            "em": "18 dividido",
+            "tamanho": 66
+          }
+        ]
+      },
+      "troco": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Troco"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "Pagou − *custou*",
+            "tamanho": 80
+          },
+          {
+            "tipo": "conta",
+            "texto": "50,00 − 37,40 = 12,60",
+            "em": "Pagou 50",
+            "tamanho": 66
+          }
+        ]
+      },
+      "lucro": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Lucro"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "Receita − *custo*",
+            "tamanho": 80
+          },
+          {
+            "tipo": "conta",
+            "texto": "90 − 65 = 25",
+            "em": "Vendeu"
+          }
+        ]
+      },
+      "parcelas": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Parcelamento"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "Entrada + *parcelas*",
+            "tamanho": 80
+          },
+          {
+            "tipo": "conta",
+            "texto": "100 + 6 × 80 = 580",
+            "em": "entrada de 100"
+          }
+        ]
+      }
+    }
+  },
+  "porcentagem-parte-total": {
+    "materia": "matematica",
+    "cenas": {
+      "de": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Porcentagem de um valor"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "Vira decimal / e *multiplica*",
+            "tamanho": 80
+          },
+          {
+            "tipo": "conta",
+            "texto": "30% = 0,3",
+            "em": "30%"
+          },
+          {
+            "tipo": "conta",
+            "texto": "0,3 × 200 = 60",
+            "em": "0,3 vezes"
+          }
+        ]
+      },
+      "quanto-representa": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Quanto a parte representa"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "Parte ÷ *total*",
+            "tamanho": 80
+          },
+          {
+            "tipo": "conta",
+            "texto": "45 ÷ 180 = 0,25",
+            "em": "45 de 180"
+          },
+          {
+            "tipo": "conta",
+            "texto": "25%",
+            "em": "ou seja",
+            "destaque": true
+          }
+        ]
+      },
+      "achar-total": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Achar o total"
+          },
+          {
+            "tipo": "frase",
+            "texto": "*40%* são 60 pessoas",
+            "em": "40%"
+          },
+          {
+            "tipo": "conta",
+            "texto": "60 ÷ 0,4 = 150",
+            "em": "Divida"
+          }
+        ]
+      },
+      "complemento": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "O que falta"
+          },
+          {
+            "tipo": "barra",
+            "em": 0.1,
+            "partes": [
+              {
+                "pct": 35,
+                "cor": "#15803D",
+                "rotulo": "35%"
+              },
+              {
+                "pct": 65,
+                "cor": "#FFC233",
+                "tinta": "#2D2F36",
+                "rotulo": "faltam 65%"
+              }
+            ]
+          },
+          {
+            "tipo": "conta",
+            "texto": "100 − 35 = 65",
+            "em": "faltam"
+          }
+        ]
+      }
+    },
+    "pronuncia": {
+      "De = multiplica": "Porcentagem de um valor: multiplica",
+      "Quanto representa = divide": "Quanto representa: divide",
+      "Falta = 100% − parte": "O que falta: cem por cento menos a parte"
+    }
+  },
+  "conversao-de-unidades": {
+    "materia": "matematica",
+    "pronuncia": {
+      "kg, L e km: × 1.000": "Quilo, litro e quilômetro: vezes mil"
+    },
+    "cenas": {
+      "mil": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "A regra dos mil"
+          },
+          {
+            "tipo": "cartoes",
+            "fonteTitulo": 56,
+            "itens": [
+              {
+                "titulo": "1 kg = 1.000 g",
+                "em": "Um quilo"
+              },
+              {
+                "titulo": "1 L = 1.000 mL",
+                "em": "Um litro"
+              },
+              {
+                "titulo": "1 km = 1.000 m",
+                "em": "Um quilômetro"
+              }
+            ]
+          }
+        ]
+      },
+      "direcao": {
+        "blocos": [
+          {
+            "tipo": "cartoes",
+            "fonteTitulo": 50,
+            "itens": [
+              {
+                "titulo": "Maior → menor: multiplica",
+                "em": "Da unidade maior"
+              },
+              {
+                "titulo": "Menor → maior: divide",
+                "em": "Da menor"
+              }
+            ]
+          },
+          {
+            "tipo": "conta",
+            "texto": "2,5 kg = 2.500 g",
+            "fala": 1,
+            "tamanho": 62
+          },
+          {
+            "tipo": "conta",
+            "texto": "750 mL = 0,75 L",
+            "fala": 1,
+            "em": "750",
+            "tamanho": 62
+          }
+        ]
+      },
+      "metro": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "No metro"
+          },
+          {
+            "tipo": "conta",
+            "texto": "1 m = 100 cm",
+            "em": "1 metro"
+          },
+          {
+            "tipo": "conta",
+            "texto": "1 m = 1.000 mm",
+            "em": "1.000 milímetros"
+          }
+        ]
+      },
+      "tonelada": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Tonelada"
+          },
+          {
+            "tipo": "conta",
+            "texto": "1 t = 1.000 kg",
+            "em": "1 tonelada",
+            "tamanho": 62
+          },
+          {
+            "tipo": "conta",
+            "texto": "3 t = 3.000 kg",
+            "em": "3 toneladas",
+            "tamanho": 62
+          },
+          {
+            "tipo": "conta",
+            "texto": "3.000 ÷ 50 = 60 sacas",
+            "em": "3.000 dividido",
+            "destaque": true,
+            "tamanho": 62
+          }
+        ]
+      }
+    }
+  },
+  "regra-de-tres": {
+    "materia": "matematica",
+    "pronuncia": {
+      "3 está para 24 assim como 5 está para x. Multiplique cruzado: 3x igual a 120, x igual a 40.": "três está para vinte e quatro assim como cinco está para xis. Multiplique cruzado: três xis igual a cento e vinte, xis igual a quarenta."
+    },
+    "cenas": {
+      "simples": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Regra de três"
+          },
+          {
+            "tipo": "frase",
+            "texto": "3 kg → R$ 24",
+            "em": "3 quilos"
+          },
+          {
+            "tipo": "frase",
+            "texto": "5 kg → *x*",
+            "em": "Quanto custam"
+          },
+          {
+            "tipo": "conta",
+            "texto": "3x = 5 × 24",
+            "fala": 1,
+            "em": "Multiplique"
+          },
+          {
+            "tipo": "conta",
+            "texto": "x = 40",
+            "fala": 1,
+            "em": "x igual a 40",
+            "destaque": true
+          }
+        ]
+      },
+      "direta-inversa": {
+        "blocos": [
+          {
+            "tipo": "cartoes",
+            "fonteTitulo": 50,
+            "itens": [
+              {
+                "titulo": "Direta: ↑ e ↑",
+                "texto": "uma aumenta, a outra aumenta",
+                "em": 0
+              },
+              {
+                "titulo": "Inversa: ↑ e ↓",
+                "texto": "mais pedreiros, menos dias",
+                "fala": 1
+              }
+            ]
+          }
+        ]
+      },
+      "inversa": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Inversa: multiplica reto"
+          },
+          {
+            "tipo": "frase",
+            "texto": "4 pedreiros → 6 dias",
+            "em": "4 pedreiros"
+          },
+          {
+            "tipo": "frase",
+            "texto": "8 pedreiros → *x*",
+            "em": "Com 8"
+          },
+          {
+            "tipo": "conta",
+            "texto": "4 × 6 = 8 × x",
+            "em": "multiplica reto"
+          },
+          {
+            "tipo": "conta",
+            "texto": "x = 3 dias",
+            "em": "24 dividido",
+            "destaque": true
+          }
+        ]
+      },
+      "composta": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Composta"
+          },
+          {
+            "tipo": "passos",
+            "itens": [
+              {
+                "titulo": "Compare cada grandeza com a que procura",
+                "em": "compare"
+              },
+              {
+                "titulo": "Veja se é direta ou inversa",
+                "em": "separadamente"
+              },
+              {
+                "titulo": "Só depois junte tudo",
+                "em": "só depois"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "fracoes-de-uma-quantidade": {
+    "materia": "matematica",
+    "pronuncia": {
+      "Para achar 3/4 de 80": "Para achar três quartos de oitenta",
+      "Se 2/5 já foram, sobram 3/5.": "Se dois quintos já foram, sobram três quintos.",
+      "1/2 de 3/5 é 3/10.": "metade de três quintos é três décimos.",
+      "se 1/3 são 25 pessoas": "se um terço são vinte e cinco pessoas",
+      "'De' entre frações = multiplica": "De, entre frações: multiplica",
+      "Sobra = 1 − fração": "A sobra é um menos a fração"
+    },
+    "cenas": {
+      "regra": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "3/4 de 80"
+          },
+          {
+            "tipo": "barra",
+            "em": "divida",
+            "partes": [
+              {
+                "pct": 25,
+                "cor": "#15803D",
+                "rotulo": "20"
+              },
+              {
+                "pct": 25,
+                "cor": "#15803D",
+                "rotulo": "20"
+              },
+              {
+                "pct": 25,
+                "cor": "#15803D",
+                "rotulo": "20"
+              },
+              {
+                "pct": 25,
+                "cor": "#94A3B8",
+                "rotulo": "20"
+              }
+            ]
+          },
+          {
+            "tipo": "conta",
+            "texto": "80 ÷ 4 = 20",
+            "em": "80 dividido"
+          },
+          {
+            "tipo": "conta",
+            "texto": "20 × 3 = 60",
+            "em": "vezes 3",
+            "destaque": true
+          }
+        ]
+      },
+      "resto": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "O que sobra"
+          },
+          {
+            "tipo": "barra",
+            "em": 0,
+            "partes": [
+              {
+                "pct": 40,
+                "cor": "#94A3B8",
+                "rotulo": "2/5 foram"
+              },
+              {
+                "pct": 60,
+                "cor": "#15803D",
+                "rotulo": "sobram 3/5"
+              }
+            ]
+          },
+          {
+            "tipo": "palavras",
+            "texto": "Sobra = 1 − *parte*",
+            "em": "A fração do resto",
+            "tamanho": 76
+          }
+        ]
+      },
+      "fracao-da-fracao": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Fração da fração"
+          },
+          {
+            "tipo": "palavras",
+            "texto": "\"De\" entre frações: / *multiplica*",
+            "tamanho": 76
+          },
+          {
+            "tipo": "conta",
+            "texto": "1/2 × 3/5 = 3/10",
+            "em": "1/2 de"
+          }
+        ]
+      },
+      "total": {
+        "blocos": [
+          {
+            "tipo": "rotulo",
+            "texto": "Voltar ao total"
+          },
+          {
+            "tipo": "frase",
+            "texto": "*1/3* são 25 pessoas",
+            "em": 0.1
+          },
+          {
+            "tipo": "conta",
+            "texto": "25 × 3 = 75",
+            "em": "o total",
+            "destaque": true
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "falas": {
+    "gancho": [
+      "Aumento e desconto em porcentagem: o atalho que resolve tudo numa conta só!"
+    ],
+    "porcento": [
+      "Por cento quer dizer: de cada cem.",
+      "Vinte por cento é vinte de cada cem. Ou zero vírgula dois."
+    ],
+    "desconto": [
+      "Um tênis custa cento e cinquenta reais, com vinte por cento de desconto.",
+      "Se eu tiro vinte por cento, sobram oitenta. Então é só multiplicar por zero vírgula oito.",
+      "Cento e cinquenta vezes zero vírgula oito: cento e vinte reais!"
+    ],
+    "aumento": [
+      "No aumento, é o contrário.",
+      "Aumentou dez por cento? Fica com cento e dez por cento. Multiplica por um vírgula um."
+    ],
+    "pegadinha": [
+      "E a pegadinha: aumentar dez por cento e depois tirar dez por cento volta ao preço de antes?",
+      "Não! Cem vira cento e dez. E cento e dez, menos dez por cento, dá noventa e nove."
+    ],
+    "chamada": [
+      "Quer treinar com questões de concurso? Tem mais de dez mil no Fuse Aprova.",
+      "O link tá na bio."
+    ]
+  }
+}

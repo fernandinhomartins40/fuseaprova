@@ -1,0 +1,169 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-016",
+  "titulo": "Paroxítonas: as terminações que levam acento",
+  "materia": "portugues",
+  "pronuncia": {
+    "em L, N, R, X ou PS": "em ele, ene, erre, xis ou pê ésse",
+    "Em UM e UNS, I e IS, US, Ã e ÃO": "Em um e uns, i e is, us, ã e ão",
+    "em A, E, O, EM ou ENS": "em a, é, ó, em ou ens",
+    "L, N, R, X, PS, I, US, UM, Ã, ÃO, ditongo": "ele, ene, erre, xis, pê ésse, i, us, um, ã, ão e ditongo"
+  },
+  "falas": {
+    "ideia": [
+      "Paroxítona tem a força na penúltima sílaba. A maioria das palavras é assim e não leva acento: casa, mesa."
+    ],
+    "terminacoes": [
+      "Leva acento quando termina em L, N, R, X ou PS: fácil, hífen, açúcar, tórax, bíceps.",
+      "Em UM e UNS, I e IS, US, Ã e ÃO: álbum, táxi, vírus, órfã, órgão."
+    ],
+    "ditongo": [
+      "E em ditongo no fim: história, série, água."
+    ],
+    "pegadinha": [
+      "Terminou em A, E, O, EM ou ENS? Não leva acento: item, jovem, hifens."
+    ],
+    "fecho": [
+      "Resumindo: Paroxítona comum não tem acento. Decore as terminações: L, N, R, X, PS, I, US, UM, Ã, ÃO, ditongo.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "ideia": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Paroxítona"
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "ca",
+            "sa"
+          ],
+          "forte": 0,
+          "em": "penúltima",
+          "forteEm": "penúltima"
+        },
+        {
+          "tipo": "chip",
+          "texto": "A maioria não leva acento",
+          "em": "A maioria",
+          "tamanho": 38
+        }
+      ]
+    },
+    "terminacoes": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Leva acento em"
+        },
+        {
+          "tipo": "cartoes",
+          "colunas": 2,
+          "fonteTitulo": 34,
+          "itens": [
+            {
+              "titulo": "L · N · R",
+              "texto": "fácil, hífen, açúcar",
+              "fala": 0
+            },
+            {
+              "titulo": "X · PS",
+              "texto": "tórax, bíceps",
+              "fala": 0,
+              "em": "tórax"
+            },
+            {
+              "titulo": "UM · UNS",
+              "texto": "álbum",
+              "fala": 1
+            },
+            {
+              "titulo": "I · IS",
+              "texto": "táxi",
+              "fala": 1,
+              "em": "táxi"
+            },
+            {
+              "titulo": "US",
+              "texto": "vírus",
+              "fala": 1,
+              "em": "vírus"
+            },
+            {
+              "titulo": "Ã · ÃO",
+              "texto": "órfã, órgão",
+              "fala": 1,
+              "em": "órfã"
+            }
+          ]
+        }
+      ]
+    },
+    "ditongo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Ditongo no fim"
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "his",
+            "tó",
+            "ria"
+          ],
+          "forte": 1,
+          "em": "história"
+        },
+        {
+          "tipo": "chip",
+          "texto": "história · série · água",
+          "em": "série",
+          "tamanho": 40
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "palavras",
+          "texto": "A, E, O, EM, ENS: / *sem* *acento*",
+          "tamanho": 76
+        },
+        {
+          "tipo": "chip",
+          "texto": "item · jovem · hifens",
+          "em": "item",
+          "fundo": "verde",
+          "tamanho": 40
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Paroxítona comum não tem acento",
+        "Decore as terminações: L, N, R, X, PS, I, US, UM, Ã, ÃO, ditongo"
+      ]
+    }
+  }
+}

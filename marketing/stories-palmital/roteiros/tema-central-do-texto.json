@@ -1,0 +1,139 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-020",
+  "titulo": "Tema central e ideia principal",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "ideia": [
+      "O tema central é o assunto que liga o texto inteiro, e não um detalhe de um parágrafo."
+    ],
+    "tamanho": [
+      "A alternativa certa não é ampla demais nem estreita demais.",
+      "'Saúde' é amplo demais. 'O horário da farmácia' é estreito demais. 'A falta de remédios no posto' é o tema."
+    ],
+    "noticia": [
+      "Em notícia, o tema é o fato principal, e costuma estar no título e no primeiro parágrafo."
+    ],
+    "tese": [
+      "Em texto de opinião, procure a tese: a ideia que o autor defende e tenta provar."
+    ],
+    "fecho": [
+      "Resumindo: O fio que liga tudo. Nem amplo, nem estreito. Opinião = tese.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "ideia": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Tema central"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "O assunto que / *liga* o texto inteiro",
+          "tamanho": 72
+        },
+        {
+          "tipo": "chip",
+          "texto": "Não é um detalhe",
+          "em": "e não",
+          "fundo": "coral",
+          "tamanho": 40
+        }
+      ]
+    },
+    "tamanho": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Nem amplo, nem estreito"
+        },
+        {
+          "tipo": "comparacao",
+          "fala": 1,
+          "tamanho": 46,
+          "itens": [
+            {
+              "texto": "Saúde",
+              "certo": false,
+              "em": "amplo"
+            },
+            {
+              "texto": "O horário da farmácia",
+              "certo": false,
+              "em": "'O horário"
+            },
+            {
+              "texto": "A falta de remédios no posto",
+              "certo": true,
+              "em": "'A falta"
+            }
+          ]
+        }
+      ]
+    },
+    "noticia": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Em notícia"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "O *fato* principal"
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "No título",
+              "em": "no título"
+            },
+            {
+              "titulo": "No primeiro parágrafo",
+              "em": "primeiro parágrafo"
+            }
+          ]
+        }
+      ]
+    },
+    "tese": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Em texto de opinião"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Procure a *tese*"
+        },
+        {
+          "tipo": "frase",
+          "texto": "A ideia que o autor *defende*",
+          "em": "a ideia",
+          "tamanho": 50
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "O fio que liga tudo",
+        "Nem amplo, nem estreito",
+        "Opinião = tese"
+      ]
+    }
+  }
+}

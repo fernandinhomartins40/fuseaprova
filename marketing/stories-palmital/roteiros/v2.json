@@ -1,0 +1,40 @@
+{
+  "voz": "7lu3ze7orhWaNeSPowWx",
+  "nomeVoz": "Lucas",
+  "semente": 5,
+  "ajustes": {
+    "stability": 0.36,
+    "similarity_boost": 0.78,
+    "style": 0.75,
+    "use_speaker_boost": true,
+    "speed": 1.15
+  },
+  "falas": {
+    "gancho": [
+      "Você trabalha o dia inteiro e acha que não sobra tempo para estudar para o concurso da Prefeitura de Palmital?"
+    ],
+    "rotina": [
+      "De manhã, no café: uma lição rapidinha.",
+      "Na hora do almoço: revisa o que errou.",
+      "À noite, antes de dormir: mais umas questões."
+    ],
+    "soma": [
+      "Pronto. Quinze minutos no dia, sem mudar a sua rotina."
+    ],
+    "habito": [
+      "E o app te ajuda a manter o ritmo, com ofensiva, meta do dia e lembrete."
+    ],
+    "edital": [
+      "O edital da Prefeitura de Palmital ainda não saiu.",
+      "Quando sair, o app se ajusta ao seu cargo e ao conteúdo cobrado, sem pagar nada a mais."
+    ],
+    "oferta": [
+      "No lançamento, o acesso completo sai de trezentos e noventa e sete…",
+      "por cento e noventa e sete reais, à vista no Pix."
+    ],
+    "chamada": [
+      "Quinze minutos por dia podem te levar para a Prefeitura de Palmital.",
+      "O link está na bio. Começa hoje!"
+    ]
+  }
+}

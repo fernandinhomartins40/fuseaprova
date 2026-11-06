@@ -1,0 +1,167 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-035",
+  "titulo": "Horas, minutos e salário por hora",
+  "materia": "matematica",
+  "pronuncia": {
+    "2h50": "duas e cinquenta",
+    "1h20": "uma e vinte",
+    "4h10": "quatro e dez",
+    "8h40": "oito e quarenta",
+    "12h15": "doze e quinze",
+    "até 9h": "até as nove",
+    "De 9h a": "Das nove às",
+    "3h35": "três horas e trinta e cinco",
+    "0,5 h = 30 min": "Meia hora são trinta minutos",
+    "1 h = 60 min": "Uma hora são sessenta minutos"
+  },
+  "falas": {
+    "base-60": [
+      "Hora não é decimal: 1 hora tem 60 minutos. Some minutos com minutos e, passou de 60, vire uma hora.",
+      "2h50 mais 1h20: 3 horas e 70 minutos, que são 4h10."
+    ],
+    "decimal": [
+      "1,5 hora não é uma hora e cinquenta minutos: é uma hora e meia, 90 minutos.",
+      "0,25 hora são 15 minutos."
+    ],
+    "duracao": [
+      "Duração entre dois horários: das 8h40 às 12h15. Conte até 9h, são 20 minutos. De 9h a 12h15, 3 horas e 15. Total: 3h35."
+    ],
+    "salario": [
+      "Ganho por hora: 18 reais por hora, 7,5 horas por dia. 18 vezes 7,5, 135 reais por dia."
+    ],
+    "fecho": [
+      "Resumindo: 1 h = 60 min. 0,5 h = 30 min. Conte até a hora cheia.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "base-60": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Hora não é decimal"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "1 hora = *60* *minutos*",
+          "tamanho": 70
+        },
+        {
+          "tipo": "conta",
+          "texto": "2h50 + 1h20",
+          "fala": 1
+        },
+        {
+          "tipo": "conta",
+          "texto": "3 h 70 min",
+          "fala": 1,
+          "em": "3 horas"
+        },
+        {
+          "tipo": "conta",
+          "texto": "4h10",
+          "fala": 1,
+          "em": "que são",
+          "destaque": true
+        }
+      ]
+    },
+    "decimal": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Hora com vírgula"
+        },
+        {
+          "tipo": "comparacao",
+          "tamanho": 56,
+          "itens": [
+            {
+              "texto": "1,5 h = 1h50",
+              "certo": false,
+              "em": "não é"
+            },
+            {
+              "texto": "1,5 h = 1h30",
+              "certo": true,
+              "em": "é uma hora e meia"
+            }
+          ]
+        },
+        {
+          "tipo": "conta",
+          "texto": "0,25 h = 15 min",
+          "fala": 1,
+          "destaque": true
+        }
+      ]
+    },
+    "duracao": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Das 8h40 às 12h15"
+        },
+        {
+          "tipo": "conta",
+          "texto": "até 9h: 20 min",
+          "em": "Conte"
+        },
+        {
+          "tipo": "conta",
+          "texto": "de 9h a 12h15: 3h15",
+          "em": "De 9h"
+        },
+        {
+          "tipo": "conta",
+          "texto": "Total: 3h35",
+          "em": "Total",
+          "destaque": true
+        }
+      ]
+    },
+    "salario": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Ganho por hora"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*R$* *18* por hora, / 7,5 horas por dia",
+          "tamanho": 72
+        },
+        {
+          "tipo": "conta",
+          "texto": "18 × 7,5 = 135",
+          "em": "18 vezes",
+          "destaque": true
+        },
+        {
+          "tipo": "chip",
+          "texto": "R$ 135 por dia",
+          "em": "135 reais",
+          "tamanho": 44
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "1 h = 60 min",
+        "0,5 h = 30 min",
+        "Conte até a hora cheia"
+      ]
+    }
+  }
+}

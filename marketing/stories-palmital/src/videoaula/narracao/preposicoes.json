@@ -1,0 +1,42 @@
+{
+  "lista": [
+    {
+      "arquivo": "audio/preposicoes/voz-lista-1.wav",
+      "segundos": 13.663,
+      "texto": "Preposições: a, ante, após, até, com, contra, de, desde, em, entre, para, perante, por, sem, sob, sobre, trás."
+    }
+  ],
+  "sentidos": [
+    {
+      "arquivo": "audio/preposicoes/voz-sentidos-1.wav",
+      "segundos": 10.521,
+      "texto": "A mesma preposição muda de sentido. 'Copo de vidro': matéria. 'Saiu de casa': origem. 'Morreu de frio': causa."
+    }
+  ],
+  "outras": [
+    {
+      "arquivo": "audio/preposicoes/voz-outras-1.wav",
+      "segundos": 12.235,
+      "texto": "Com: companhia ou instrumento. Sem: falta. Para: finalidade ou direção. Sob: embaixo. Sobre: em cima ou assunto."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/preposicoes/voz-pegadinha-1.wav",
+      "segundos": 7.11,
+      "texto": "'Sob' e 'sobre' confundem: sob a mesa é embaixo dela, sobre a mesa é em cima."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/preposicoes/voz-fecho-1.wav",
+      "segundos": 5.173,
+      "texto": "Resumindo: O sentido vem da frase. Sob = embaixo, sobre = em cima."
+    },
+    {
+      "arquivo": "audio/preposicoes/voz-fecho-2.wav",
+      "segundos": 1.403,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

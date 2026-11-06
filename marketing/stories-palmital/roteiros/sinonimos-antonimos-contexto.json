@@ -1,0 +1,145 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-010",
+  "titulo": "Sinônimos e antônimos pelo contexto",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "contexto": [
+      "A palavra tem vários sentidos. O que vale é o sentido daquela frase.",
+      "'Ele levantou a questão' é diferente de 'ele levantou a caixa'."
+    ],
+    "troca": [
+      "Teste da troca: ponha a alternativa no lugar da palavra e leia a frase inteira.",
+      "Se o sentido continua igual, é o sinônimo certo."
+    ],
+    "antonimo": [
+      "No antônimo, a frase tem que passar a dizer o contrário: 'chegou cedo' vira 'chegou tarde'."
+    ],
+    "sentido-figurado": [
+      "Fique atento ao sentido figurado: 'coração de pedra' não fala de pedra, fala de alguém insensível."
+    ],
+    "fecho": [
+      "Resumindo: O contexto manda. Troque e releia. Antônimo inverte a frase.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "contexto": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Sinônimos"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Vale o sentido / *daquela* *frase*"
+        },
+        {
+          "tipo": "frase",
+          "texto": "Ele *levantou* a questão.",
+          "fala": 1
+        },
+        {
+          "tipo": "frase",
+          "texto": "Ele *levantou* a caixa.",
+          "fala": 1,
+          "em": "diferente"
+        }
+      ]
+    },
+    "troca": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Teste da troca"
+        },
+        {
+          "tipo": "frase",
+          "texto": "Levantou a questão",
+          "tamanho": 50
+        },
+        {
+          "tipo": "comparacao",
+          "fala": 1,
+          "tamanho": 46,
+          "itens": [
+            {
+              "texto": "apresentou a questão",
+              "certo": true,
+              "em": "Se o sentido"
+            },
+            {
+              "texto": "ergueu a questão",
+              "certo": false,
+              "em": "continua"
+            }
+          ]
+        }
+      ]
+    },
+    "antonimo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Antônimo"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "A frase diz / o *contrário*"
+        },
+        {
+          "tipo": "frase",
+          "texto": "Chegou *cedo*.",
+          "em": "'chegou",
+          "tamanho": 60
+        },
+        {
+          "tipo": "frase",
+          "texto": "Chegou *tarde*.",
+          "em": "vira",
+          "tamanho": 60
+        }
+      ]
+    },
+    "sentido-figurado": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Sentido figurado",
+          "fundo": "coral",
+          "tamanho": 40
+        },
+        {
+          "tipo": "frase",
+          "texto": "Coração de *pedra*",
+          "em": "'coração",
+          "tamanho": 64
+        },
+        {
+          "tipo": "chip",
+          "texto": "Alguém insensível",
+          "em": "fala de alguém",
+          "tamanho": 40
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "O contexto manda",
+        "Troque e releia",
+        "Antônimo inverte a frase"
+      ]
+    }
+  }
+}

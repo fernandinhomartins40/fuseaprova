@@ -1,0 +1,42 @@
+{
+  "fatores": [
+    {
+      "arquivo": "audio/aumentos-sucessivos/voz-fatores-1.wav",
+      "segundos": 7.459,
+      "texto": "Aumento de 10% é vezes 1,1. Desconto de 20% é vezes 0,8."
+    }
+  ],
+  "seguidos": [
+    {
+      "arquivo": "audio/aumentos-sucessivos/voz-seguidos-1.wav",
+      "segundos": 13.227,
+      "texto": "Dois aumentos seguidos de 10% não dão 20%: 1,1 vezes 1,1, 1,21. Aumento total de 21%."
+    }
+  ],
+  "reducoes": [
+    {
+      "arquivo": "audio/aumentos-sucessivos/voz-reducoes-1.wav",
+      "segundos": 11.382,
+      "texto": "Duas reduções de 10%: 0,9 vezes 0,9, 0,81. Redução total de 19%."
+    }
+  ],
+  "ano-a-ano": [
+    {
+      "arquivo": "audio/aumentos-sucessivos/voz-ano-a-ano-1.wav",
+      "segundos": 8.979,
+      "texto": "Perde 5% ao ano por 3 anos: 0,95 elevado a 3. Cada ano multiplica de novo."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/aumentos-sucessivos/voz-fecho-1.wav",
+      "segundos": 5.66,
+      "texto": "Resumindo: Seguidos: multiplica os fatores. Nunca some as porcentagens."
+    },
+    {
+      "arquivo": "audio/aumentos-sucessivos/voz-fecho-2.wav",
+      "segundos": 1.378,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

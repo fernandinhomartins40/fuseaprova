@@ -1,0 +1,122 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-045",
+  "titulo": "Números decimais no dia a dia",
+  "materia": "matematica",
+  "pronuncia": {},
+  "falas": {
+    "vezes-10": [
+      "Multiplicar por 10, 100 ou 1.000 anda a vírgula para a direita: 3,25 vezes 100, 325."
+    ],
+    "dividir-10": [
+      "Dividir anda a vírgula para a esquerda: 45 dividido por 1.000, 0,045."
+    ],
+    "multiplicar": [
+      "Multiplique decimais como se fossem inteiros e depois conte as casas: 1,2 vezes 0,3. 12 vezes 3, 36. Duas casas: 0,36."
+    ],
+    "dinheiro": [
+      "No preço, use centavos: 2,35 vezes 4 é 9,40."
+    ],
+    "fecho": [
+      "Resumindo: × 10: vírgula para a direita. ÷ 10: para a esquerda. Conte as casas no fim.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "vezes-10": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Multiplicar por 10, 100, 1.000"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Vírgula para a / *direita*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "3,25 × 100 = 325",
+          "em": "3,25",
+          "destaque": true
+        }
+      ]
+    },
+    "dividir-10": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Dividir"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Vírgula para a / *esquerda*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "45 ÷ 1.000 = 0,045",
+          "em": "45",
+          "destaque": true
+        }
+      ]
+    },
+    "multiplicar": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Multiplicar decimais"
+        },
+        {
+          "tipo": "conta",
+          "texto": "1,2 × 0,3",
+          "em": "1,2"
+        },
+        {
+          "tipo": "conta",
+          "texto": "12 × 3 = 36",
+          "em": "12 vezes"
+        },
+        {
+          "tipo": "conta",
+          "texto": "2 casas: 0,36",
+          "em": "Duas casas",
+          "destaque": true
+        }
+      ]
+    },
+    "dinheiro": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "No preço"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Use *centavos*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "2,35 × 4 = 9,40",
+          "em": "2,35",
+          "destaque": true
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "× 10: vírgula para a direita",
+        "÷ 10: para a esquerda",
+        "Conte as casas no fim"
+      ]
+    }
+  }
+}

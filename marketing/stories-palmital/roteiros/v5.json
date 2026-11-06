@@ -1,0 +1,40 @@
+{
+  "voz": "ORgG8rwdAiMYRug8RJwR",
+  "nomeVoz": "Ana Alice",
+  "semente": 17,
+  "ajustes": {
+    "stability": 0.36,
+    "similarity_boost": 0.78,
+    "style": 0.7,
+    "use_speaker_boost": true,
+    "speed": 1.12
+  },
+  "falas": {
+    "gancho": [
+      "Quer estudar para o concurso da Prefeitura de Palmital?",
+      "Então fica comigo até o final!"
+    ],
+    "antes": [
+      "O edital ainda não saiu…",
+      "e é justamente agora que você sai na frente."
+    ],
+    "app": [
+      "No Fuse Aprova, você estuda pelo celular, com uma trilha pronta, passo a passo.",
+      "São questões no estilo da banca FAU, com explicação na hora.",
+      "O que você errar volta na revisão, até aprender de vez.",
+      "E tem simulado igualzinho à prova, pra chegar confiante."
+    ],
+    "edital": [
+      "Quando o edital de Palmital sair, o app se ajusta ao seu cargo.",
+      "E isso sem pagar nada a mais."
+    ],
+    "oferta": [
+      "No lançamento, o acesso completo sai por cento e noventa e sete reais.",
+      "À vista no Pix, pagamento único."
+    ],
+    "chamada": [
+      "Quer estudar para Palmital do jeito certo?",
+      "Toca no link da bio e começa hoje!"
+    ]
+  }
+}

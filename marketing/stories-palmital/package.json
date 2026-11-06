@@ -1,0 +1,20 @@
+{
+  "name": "fuse-aprova-stories-palmital",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "audio": "python scripts/narracao.py",
+    "render": "python scripts/render.py"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.539",
+    "@remotion/transitions": "4.0.539",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.539"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.31",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-037",
+  "titulo": "Áreas de figuras planas",
+  "materia": "matematica",
+  "pronuncia": {
+    "b × h ÷ 2": "base vezes altura, dividido por dois",
+    "b × h": "base vezes altura",
+    "π × r²": "pi vezes raio ao quadrado"
+  },
+  "falas": {
+    "retangulo": [
+      "Retângulo e quadrado: base vezes altura. Um terreno de 12 por 30 metros tem 360 metros quadrados."
+    ],
+    "triangulo": [
+      "Triângulo: base vezes altura, dividido por 2."
+    ],
+    "circulo": [
+      "Círculo: pi vezes o raio ao quadrado. Dobrou o raio? A área fica 4 vezes maior."
+    ],
+    "problema": [
+      "Piso de 60 reais o metro quadrado num quarto de 3 por 4: a área é 12, e 12 vezes 60 dá 720 reais."
+    ],
+    "fecho": [
+      "Resumindo: Retângulo: b × h. Triângulo: b × h ÷ 2. Círculo: π × r².",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "retangulo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Retângulo e quadrado"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*Base* × *altura*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "12 × 30 = 360 m²",
+          "em": "Um terreno",
+          "destaque": true
+        }
+      ]
+    },
+    "triangulo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Triângulo"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Base × altura, / *dividido* *por* *2*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "b × h ÷ 2",
+          "em": 0.3,
+          "destaque": true
+        }
+      ]
+    },
+    "circulo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Círculo"
+        },
+        {
+          "tipo": "conta",
+          "texto": "π × r²",
+          "destaque": true,
+          "tamanho": 90
+        },
+        {
+          "tipo": "chip",
+          "texto": "Dobrou o raio? Área 4 vezes maior",
+          "em": "Dobrou",
+          "tamanho": 32
+        }
+      ]
+    },
+    "problema": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Na prática"
+        },
+        {
+          "tipo": "frase",
+          "texto": "Piso a *R$ 60* o m², quarto de 3 × 4 m",
+          "tamanho": 46
+        },
+        {
+          "tipo": "conta",
+          "texto": "3 × 4 = 12 m²",
+          "em": "a área"
+        },
+        {
+          "tipo": "conta",
+          "texto": "12 × 60 = R$ 720",
+          "em": "12 vezes",
+          "destaque": true
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Retângulo: b × h",
+        "Triângulo: b × h ÷ 2",
+        "Círculo: π × r²"
+      ]
+    }
+  }
+}

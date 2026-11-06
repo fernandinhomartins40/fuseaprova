@@ -1,0 +1,154 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-003",
+  "titulo": "Advérbios e as circunstâncias",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "ideia": [
+      "Advérbio é a palavra que diz como, quando, onde ou quanto algo acontece."
+    ],
+    "tipos": [
+      "Tempo: ontem, hoje, cedo, já.",
+      "Lugar: aqui, lá, longe, perto.",
+      "Modo: bem, mal, depressa, e quase todos os terminados em 'mente'.",
+      "Intensidade: muito, pouco, bastante, tão.",
+      "Afirmação, negação e dúvida: sim, não, talvez."
+    ],
+    "teste": [
+      "O truque é fazer a pergunta ao verbo. 'Chegou cedo': chegou quando? Cedo. Então é tempo."
+    ],
+    "pegadinha": [
+      "'Muito' pode mudar de classe: 'muito cansado' é intensidade, mas 'muitos livros' é pronome, porque acompanha o substantivo."
+    ],
+    "fecho": [
+      "Resumindo: Pergunte ao verbo: como, quando, onde, quanto. -mente costuma ser modo.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "ideia": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Advérbio"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Diz *como*, *quando*, / *onde* ou *quanto*",
+          "tamanho": 80
+        },
+        {
+          "tipo": "frase",
+          "texto": "Ela chegou *ontem*.",
+          "em": 0.6
+        }
+      ]
+    },
+    "tipos": {
+      "blocos": [
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "Tempo",
+              "texto": "ontem, hoje, cedo, já",
+              "fala": 0
+            },
+            {
+              "titulo": "Lugar",
+              "texto": "aqui, lá, longe, perto",
+              "fala": 1
+            },
+            {
+              "titulo": "Modo",
+              "texto": "bem, mal, depressa, -mente",
+              "fala": 2
+            },
+            {
+              "titulo": "Intensidade",
+              "texto": "muito, pouco, bastante, tão",
+              "fala": 3
+            },
+            {
+              "titulo": "Afirmação, negação, dúvida",
+              "texto": "sim, não, talvez",
+              "fala": 4
+            }
+          ]
+        }
+      ]
+    },
+    "teste": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "O truque"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Faça a pergunta / *ao* *verbo*"
+        },
+        {
+          "tipo": "frase",
+          "texto": "Chegou *cedo*.",
+          "em": "'Chegou cedo'"
+        },
+        {
+          "tipo": "cartoes",
+          "itens": [
+            {
+              "titulo": "Chegou quando? Cedo → tempo",
+              "em": "chegou quando"
+            }
+          ],
+          "fonteTitulo": 46
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 48,
+          "itens": [
+            {
+              "titulo": "muito cansado",
+              "texto": "advérbio de intensidade",
+              "em": "'muito cansado'"
+            },
+            {
+              "titulo": "muitos livros",
+              "texto": "pronome: acompanha o substantivo",
+              "em": "'muitos livros'"
+            }
+          ]
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Pergunte ao verbo: como, quando, onde, quanto",
+        "-mente costuma ser modo"
+      ]
+    }
+  }
+}

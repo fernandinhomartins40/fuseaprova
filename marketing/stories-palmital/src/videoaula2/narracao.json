@@ -1,0 +1,14 @@
+{
+  "fecho": [
+    {
+      "arquivo": "audio/videoaula2/voz-fecho-1.wav",
+      "segundos": 6.071,
+      "texto": "Resumindo: no desconto, multiplica pelo que sobra. No aumento, por um mais a taxa."
+    },
+    {
+      "arquivo": "audio/videoaula2/voz-fecho-2.wav",
+      "segundos": 2.25,
+      "texto": "Agora volta pra questão e faz a conta!"
+    }
+  ]
+}

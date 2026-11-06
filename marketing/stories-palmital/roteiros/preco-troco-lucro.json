@@ -1,0 +1,121 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-027",
+  "titulo": "Preço, troco, lucro e parcelas",
+  "materia": "matematica",
+  "pronuncia": {
+    "um real e cinquenta": "um real e cinquenta",
+    "Pagou 50, gastou 37,40: o troco é 12,60.": "Pagou cinquenta, gastou trinta e sete e quarenta: o troco é doze e sessenta."
+  },
+  "falas": {
+    "preco-unitario": [
+      "Preço unitário é o total dividido pela quantidade. Uma dúzia por 18 reais: 18 dividido por 12, um real e cinquenta cada."
+    ],
+    "troco": [
+      "Troco é o que você pagou menos o que custou. Pagou 50, gastou 37,40: o troco é 12,60."
+    ],
+    "lucro": [
+      "Lucro é a receita menos o custo. Vendeu por 90 o que custou 65: o lucro é 25."
+    ],
+    "parcelas": [
+      "No parcelamento, some a entrada com todas as parcelas: entrada de 100 e mais 6 de 80 dá 100 mais 480, 580 reais."
+    ],
+    "fecho": [
+      "Resumindo: Unitário = total ÷ quantidade. Lucro = receita − custo. Parcelado = entrada + parcelas.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "preco-unitario": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Preço unitário"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Total ÷ *quantidade*",
+          "tamanho": 80
+        },
+        {
+          "tipo": "conta",
+          "texto": "R$ 18 ÷ 12 = R$ 1,50",
+          "em": "18 dividido",
+          "tamanho": 66
+        }
+      ]
+    },
+    "troco": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Troco"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Pagou − *custou*",
+          "tamanho": 80
+        },
+        {
+          "tipo": "conta",
+          "texto": "50,00 − 37,40 = 12,60",
+          "em": "Pagou 50",
+          "tamanho": 66
+        }
+      ]
+    },
+    "lucro": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Lucro"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Receita − *custo*",
+          "tamanho": 80
+        },
+        {
+          "tipo": "conta",
+          "texto": "90 − 65 = 25",
+          "em": "Vendeu"
+        }
+      ]
+    },
+    "parcelas": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Parcelamento"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Entrada + *parcelas*",
+          "tamanho": 80
+        },
+        {
+          "tipo": "conta",
+          "texto": "100 + 6 × 80 = 580",
+          "em": "entrada de 100"
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Unitário = total ÷ quantidade",
+        "Lucro = receita − custo",
+        "Parcelado = entrada + parcelas"
+      ]
+    }
+  }
+}

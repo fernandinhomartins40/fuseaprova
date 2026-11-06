@@ -1,0 +1,199 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-004",
+  "titulo": "Divisão silábica e contagem de sílabas",
+  "materia": "portugues",
+  "pronuncia": {
+    "RR, SS, SC, SÇ e XC": "erre erre, esse esse, esse cê, esse cê cedilha e xis cê",
+    "Car-ro, pás-sa-ro, nas-cer, ex-ce-ção.": "Car, ro. Pás, sa, ro. Nas, cer. Ex, ce, ção.",
+    "CH, LH, NH, QU e GU": "cê agá, ele agá, ene agá, quê u e gê u",
+    "Fi-lho, chu-va, quei-jo.": "Fi, lho. Chu, va. Quei, jo.",
+    "BR, PL e TR": "bê erre, pê ele e tê erre",
+    "li-vro, pla-no.": "li, vro. Pla, no.",
+    "sa-ú-de, po-e-ta": "sa, ú, de. Po, e, ta",
+    "cau-le": "cau, le",
+    "ca-sa": "ca, sa",
+    "RR, SS, SC, XC separam": "erre erre, esse esse, esse cê e xis cê separam",
+    "CH, LH, NH, QU, GU não separam": "cê agá, ele agá, ene agá, quê u e gê u não separam"
+  },
+  "falas": {
+    "regra-base": [
+      "Toda sílaba tem uma vogal. Então conte as vogais que soam separadas."
+    ],
+    "separam": [
+      "Separam: RR, SS, SC, SÇ e XC. Car-ro, pás-sa-ro, nas-cer, ex-ce-ção."
+    ],
+    "nao-separam": [
+      "Não separam: CH, LH, NH, QU e GU. Fi-lho, chu-va, quei-jo.",
+      "Encontros como BR, PL e TR ficam juntos: li-vro, pla-no."
+    ],
+    "hiato": [
+      "No hiato, as vogais ficam em sílabas diferentes: sa-ú-de, po-e-ta. No ditongo, ficam juntas: cau-le."
+    ],
+    "fecho": [
+      "Resumindo: RR, SS, SC, XC separam. CH, LH, NH, QU, GU não separam. Hiato separa, ditongo junta.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "regra-base": {
+      "blocos": [
+        {
+          "tipo": "palavras",
+          "texto": "Toda sílaba tem / *uma* *vogal*"
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "es",
+            "co",
+            "la"
+          ],
+          "forte": -1,
+          "em": 0.6,
+          "tamanho": 100
+        }
+      ]
+    },
+    "separam": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Separam: RR, SS, SC, SÇ, XC",
+          "tamanho": 40
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "car",
+            "ro"
+          ],
+          "forte": -1,
+          "em": "Car-ro",
+          "tamanho": 80
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "pás",
+            "sa",
+            "ro"
+          ],
+          "forte": -1,
+          "em": "pás-sa-ro",
+          "tamanho": 80
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "ex",
+            "ce",
+            "ção"
+          ],
+          "forte": -1,
+          "em": "ex-ce-ção",
+          "tamanho": 80
+        }
+      ]
+    },
+    "nao-separam": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Não separam: CH, LH, NH, QU, GU",
+          "tamanho": 38
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "fi",
+            "lho"
+          ],
+          "forte": -1,
+          "em": "Fi-lho",
+          "tamanho": 80
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "quei",
+            "jo"
+          ],
+          "forte": -1,
+          "em": "quei-jo",
+          "tamanho": 80
+        },
+        {
+          "tipo": "chip",
+          "texto": "BR, PL, TR ficam juntos",
+          "fala": 1,
+          "tamanho": 38
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "li",
+            "vro"
+          ],
+          "forte": -1,
+          "fala": 1,
+          "em": "li-vro",
+          "tamanho": 80
+        }
+      ]
+    },
+    "hiato": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Hiato separa"
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "sa",
+            "ú",
+            "de"
+          ],
+          "forte": 1,
+          "forteEm": "sa-ú-de",
+          "em": 0,
+          "tamanho": 96
+        },
+        {
+          "tipo": "rotulo",
+          "texto": "Ditongo fica junto",
+          "em": "No ditongo"
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "cau",
+            "le"
+          ],
+          "forte": 0,
+          "forteEm": "cau-le",
+          "em": "No ditongo",
+          "tamanho": 96
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "RR, SS, SC, XC separam",
+        "CH, LH, NH, QU, GU não separam",
+        "Hiato separa, ditongo junta"
+      ]
+    }
+  }
+}

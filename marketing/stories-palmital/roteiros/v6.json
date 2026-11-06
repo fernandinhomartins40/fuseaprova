@@ -1,0 +1,42 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.36,
+    "similarity_boost": 0.78,
+    "style": 0.75,
+    "use_speaker_boost": true,
+    "speed": 1.12
+  },
+  "falas": {
+    "gancho": [
+      "Estude agora para o concurso da Prefeitura de Palmital!",
+      "Vou te mostrar como é simples."
+    ],
+    "fau": [
+      "Quem organiza o concurso de Palmital é a banca FAU.",
+      "E o jeito mais certeiro de estudar é treinar com as questões das provas antigas dela.",
+      "Assim você chega na prova já conhecendo o jeito que a banca pergunta."
+    ],
+    "passos": [
+      "Passo um: crie sua conta e escolha o seu cargo.",
+      "Passo dois: abra a trilha e toque na lição do dia.",
+      "Passo três: responda as questões. A explicação aparece na hora.",
+      "Passo quatro: o que você errar volta na revisão, até aprender.",
+      "E pra se testar, tem simulado igualzinho à prova."
+    ],
+    "rotina": [
+      "Quinze minutos por dia já fazem diferença.",
+      "No ônibus, no intervalo, antes de dormir."
+    ],
+    "antes": [
+      "E o edital ainda nem saiu!",
+      "Quem começa agora chega na prova muito na frente."
+    ],
+    "chamada": [
+      "Então não espera o edital: estuda agora pro concurso de Palmital!",
+      "O link tá na bio."
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "ideia": [
+    {
+      "arquivo": "audio/adverbios-circunstancias/voz-ideia-1.wav",
+      "segundos": 6.15,
+      "texto": "Advérbio é a palavra que diz como, quando, onde ou quanto algo acontece."
+    }
+  ],
+  "tipos": [
+    {
+      "arquivo": "audio/adverbios-circunstancias/voz-tipos-1.wav",
+      "segundos": 3.75,
+      "texto": "Tempo: ontem, hoje, cedo, já."
+    },
+    {
+      "arquivo": "audio/adverbios-circunstancias/voz-tipos-2.wav",
+      "segundos": 4.111,
+      "texto": "Lugar: aqui, lá, longe, perto."
+    },
+    {
+      "arquivo": "audio/adverbios-circunstancias/voz-tipos-3.wav",
+      "segundos": 5.74,
+      "texto": "Modo: bem, mal, depressa, e quase todos os terminados em 'mente'."
+    },
+    {
+      "arquivo": "audio/adverbios-circunstancias/voz-tipos-4.wav",
+      "segundos": 3.63,
+      "texto": "Intensidade: muito, pouco, bastante, tão."
+    },
+    {
+      "arquivo": "audio/adverbios-circunstancias/voz-tipos-5.wav",
+      "segundos": 4.71,
+      "texto": "Afirmação, negação e dúvida: sim, não, talvez."
+    }
+  ],
+  "teste": [
+    {
+      "arquivo": "audio/adverbios-circunstancias/voz-teste-1.wav",
+      "segundos": 7.232,
+      "texto": "O truque é fazer a pergunta ao verbo. 'Chegou cedo': chegou quando? Cedo. Então é tempo."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/adverbios-circunstancias/voz-pegadinha-1.wav",
+      "segundos": 9.452,
+      "texto": "'Muito' pode mudar de classe: 'muito cansado' é intensidade, mas 'muitos livros' é pronome, porque acompanha o substantivo."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/adverbios-circunstancias/voz-fecho-1.wav",
+      "segundos": 8.02,
+      "texto": "Resumindo: Pergunte ao verbo: como, quando, onde, quanto. -mente costuma ser modo."
+    },
+    {
+      "arquivo": "audio/adverbios-circunstancias/voz-fecho-2.wav",
+      "segundos": 1.67,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

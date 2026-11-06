@@ -1,0 +1,52 @@
+{
+  "contexto": [
+    {
+      "arquivo": "audio/sinonimos-antonimos-contexto/voz-contexto-1.wav",
+      "segundos": 4.539,
+      "texto": "A palavra tem vários sentidos. O que vale é o sentido daquela frase."
+    },
+    {
+      "arquivo": "audio/sinonimos-antonimos-contexto/voz-contexto-2.wav",
+      "segundos": 3.447,
+      "texto": "'Ele levantou a questão' é diferente de 'ele levantou a caixa'."
+    }
+  ],
+  "troca": [
+    {
+      "arquivo": "audio/sinonimos-antonimos-contexto/voz-troca-1.wav",
+      "segundos": 5.967,
+      "texto": "Teste da troca: ponha a alternativa no lugar da palavra e leia a frase inteira."
+    },
+    {
+      "arquivo": "audio/sinonimos-antonimos-contexto/voz-troca-2.wav",
+      "segundos": 3.356,
+      "texto": "Se o sentido continua igual, é o sinônimo certo."
+    }
+  ],
+  "antonimo": [
+    {
+      "arquivo": "audio/sinonimos-antonimos-contexto/voz-antonimo-1.wav",
+      "segundos": 6.366,
+      "texto": "No antônimo, a frase tem que passar a dizer o contrário: 'chegou cedo' vira 'chegou tarde'."
+    }
+  ],
+  "sentido-figurado": [
+    {
+      "arquivo": "audio/sinonimos-antonimos-contexto/voz-sentido-figurado-1.wav",
+      "segundos": 6.776,
+      "texto": "Fique atento ao sentido figurado: 'coração de pedra' não fala de pedra, fala de alguém insensível."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/sinonimos-antonimos-contexto/voz-fecho-1.wav",
+      "segundos": 6.342,
+      "texto": "Resumindo: O contexto manda. Troque e releia. Antônimo inverte a frase."
+    },
+    {
+      "arquivo": "audio/sinonimos-antonimos-contexto/voz-fecho-2.wav",
+      "segundos": 1.514,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

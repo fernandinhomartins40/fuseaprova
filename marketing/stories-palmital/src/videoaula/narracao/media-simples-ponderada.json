@@ -1,0 +1,47 @@
+{
+  "simples": [
+    {
+      "arquivo": "audio/media-simples-ponderada/voz-simples-1.wav",
+      "segundos": 10.06,
+      "texto": "Média simples: some tudo e divida pela quantidade. Notas 6, 7 e 8: 21 dividido por 3, média 7."
+    }
+  ],
+  "ponderada": [
+    {
+      "arquivo": "audio/media-simples-ponderada/voz-ponderada-1.wav",
+      "segundos": 8.306,
+      "texto": "Na ponderada, cada valor tem um peso. Multiplique cada nota pelo seu peso, some e divida pela soma dos pesos."
+    },
+    {
+      "arquivo": "audio/media-simples-ponderada/voz-ponderada-2.wav",
+      "segundos": 10.219,
+      "texto": "Prova 8 com peso 2 e trabalho 5 com peso 1: 16 mais 5, 21, dividido por 3, média 7."
+    }
+  ],
+  "falta": [
+    {
+      "arquivo": "audio/media-simples-ponderada/voz-falta-1.wav",
+      "segundos": 10.473,
+      "texto": "Quanto falta para a média? Média 7 em 4 provas exige 28 pontos ao todo. Se já tem 6, 7 e 8, que somam 21, falta tirar 7."
+    }
+  ],
+  "propriedade": [
+    {
+      "arquivo": "audio/media-simples-ponderada/voz-propriedade-1.wav",
+      "segundos": 7.685,
+      "texto": "A média sempre fica entre o menor e o maior valor. Se o resultado saiu fora disso, refaça a conta."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/media-simples-ponderada/voz-fecho-1.wav",
+      "segundos": 10.419,
+      "texto": "Resumindo: Simples: soma ÷ quantidade. Ponderada: peso multiplica. Total exigido = média × quantidade."
+    },
+    {
+      "arquivo": "audio/media-simples-ponderada/voz-fecho-2.wav",
+      "segundos": 1.588,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

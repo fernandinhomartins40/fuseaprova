@@ -1,0 +1,74 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/aula2/voz-gancho-1.wav",
+      "segundos": 4.794,
+      "texto": "Aumento e desconto em porcentagem: o atalho que resolve tudo numa conta só!"
+    }
+  ],
+  "porcento": [
+    {
+      "arquivo": "audio/aula2/voz-porcento-1.wav",
+      "segundos": 3.38,
+      "texto": "Por cento quer dizer: de cada cem."
+    },
+    {
+      "arquivo": "audio/aula2/voz-porcento-2.wav",
+      "segundos": 4.693,
+      "texto": "Vinte por cento é vinte de cada cem. Ou zero vírgula dois."
+    }
+  ],
+  "desconto": [
+    {
+      "arquivo": "audio/aula2/voz-desconto-1.wav",
+      "segundos": 4.017,
+      "texto": "Um tênis custa cento e cinquenta reais, com vinte por cento de desconto."
+    },
+    {
+      "arquivo": "audio/aula2/voz-desconto-2.wav",
+      "segundos": 6.594,
+      "texto": "Se eu tiro vinte por cento, sobram oitenta. Então é só multiplicar por zero vírgula oito."
+    },
+    {
+      "arquivo": "audio/aula2/voz-desconto-3.wav",
+      "segundos": 5.201,
+      "texto": "Cento e cinquenta vezes zero vírgula oito: cento e vinte reais!"
+    }
+  ],
+  "aumento": [
+    {
+      "arquivo": "audio/aula2/voz-aumento-1.wav",
+      "segundos": 1.603,
+      "texto": "No aumento, é o contrário."
+    },
+    {
+      "arquivo": "audio/aula2/voz-aumento-2.wav",
+      "segundos": 6.702,
+      "texto": "Aumentou dez por cento? Fica com cento e dez por cento. Multiplica por um vírgula um."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/aula2/voz-pegadinha-1.wav",
+      "segundos": 7.105,
+      "texto": "E a pegadinha: aumentar dez por cento e depois tirar dez por cento volta ao preço de antes?"
+    },
+    {
+      "arquivo": "audio/aula2/voz-pegadinha-2.wav",
+      "segundos": 6.231,
+      "texto": "Não! Cem vira cento e dez. E cento e dez, menos dez por cento, dá noventa e nove."
+    }
+  ],
+  "chamada": [
+    {
+      "arquivo": "audio/aula2/voz-chamada-1.wav",
+      "segundos": 4.347,
+      "texto": "Quer treinar com questões de concurso? Tem mais de dez mil no Fuse Aprova."
+    },
+    {
+      "arquivo": "audio/aula2/voz-chamada-2.wav",
+      "segundos": 1.07,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "verbal": [
+    {
+      "arquivo": "audio/concordancia/voz-verbal-1.wav",
+      "segundos": 4.961,
+      "texto": "O verbo concorda com o sujeito: o aluno estuda, os alunos estudam."
+    }
+  ],
+  "depois": [
+    {
+      "arquivo": "audio/concordancia/voz-depois-1.wav",
+      "segundos": 7.925,
+      "texto": "Ache o sujeito mesmo quando vem depois do verbo: 'Faltam três dias.' O que falta? Três dias. Plural."
+    }
+  ],
+  "haver": [
+    {
+      "arquivo": "audio/concordancia/voz-haver-1.wav",
+      "segundos": 5.922,
+      "texto": "'Haver' no sentido de existir não vai para o plural: há muitas vagas, havia problemas."
+    }
+  ],
+  "nominal": [
+    {
+      "arquivo": "audio/concordancia/voz-nominal-1.wav",
+      "segundos": 6.66,
+      "texto": "Na concordância nominal, artigo e adjetivo acompanham o substantivo: as provas difíceis."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/concordancia/voz-fecho-1.wav",
+      "segundos": 6.274,
+      "texto": "Resumindo: Ache o sujeito, mesmo depois do verbo. Haver = existir fica no singular."
+    },
+    {
+      "arquivo": "audio/concordancia/voz-fecho-2.wav",
+      "segundos": 1.501,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v2/voz-gancho-1.wav",
+      "segundos": 4.087,
+      "texto": "Você trabalha o dia inteiro e acha que não sobra tempo para estudar para o concurso da Prefeitura de Palmital?"
+    }
+  ],
+  "rotina": [
+    {
+      "arquivo": "audio/v2/voz-rotina-1.wav",
+      "segundos": 2.09,
+      "texto": "De manhã, no café: uma lição rapidinha."
+    },
+    {
+      "arquivo": "audio/v2/voz-rotina-2.wav",
+      "segundos": 1.532,
+      "texto": "Na hora do almoço: revisa o que errou."
+    },
+    {
+      "arquivo": "audio/v2/voz-rotina-3.wav",
+      "segundos": 1.837,
+      "texto": "À noite, antes de dormir: mais umas questões."
+    }
+  ],
+  "soma": [
+    {
+      "arquivo": "audio/v2/voz-soma-1.wav",
+      "segundos": 2.448,
+      "texto": "Pronto. Quinze minutos no dia, sem mudar a sua rotina."
+    }
+  ],
+  "habito": [
+    {
+      "arquivo": "audio/v2/voz-habito-1.wav",
+      "segundos": 3.327,
+      "texto": "E o app te ajuda a manter o ritmo, com ofensiva, meta do dia e lembrete."
+    }
+  ],
+  "edital": [
+    {
+      "arquivo": "audio/v2/voz-edital-1.wav",
+      "segundos": 1.854,
+      "texto": "O edital da Prefeitura de Palmital ainda não saiu."
+    },
+    {
+      "arquivo": "audio/v2/voz-edital-2.wav",
+      "segundos": 3.755,
+      "texto": "Quando sair, o app se ajusta ao seu cargo e ao conteúdo cobrado, sem pagar nada a mais."
+    }
+  ],
+  "oferta": [
+    {
+      "arquivo": "audio/v2/voz-oferta-1.wav",
+      "segundos": 2.777,
+      "texto": "No lançamento, o acesso completo sai de trezentos e noventa e sete…"
+    },
+    {
+      "arquivo": "audio/v2/voz-oferta-2.wav",
+      "segundos": 2.32,
+      "texto": "por cento e noventa e sete reais, à vista no Pix."
+    }
+  ],
+  "chamada": [
+    {
+      "arquivo": "audio/v2/voz-chamada-1.wav",
+      "segundos": 2.593,
+      "texto": "Quinze minutos por dia podem te levar para a Prefeitura de Palmital."
+    },
+    {
+      "arquivo": "audio/v2/voz-chamada-2.wav",
+      "segundos": 1.569,
+      "texto": "O link está na bio. Começa hoje!"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/aula1/voz-gancho-1.wav",
+      "segundos": 4.501,
+      "texto": "Proparoxítona: a regra de acento mais fácil do português!"
+    },
+    {
+      "arquivo": "audio/aula1/voz-gancho-2.wav",
+      "segundos": 2.71,
+      "texto": "Em menos de um minuto, você nunca mais erra."
+    }
+  ],
+  "tonica": [
+    {
+      "arquivo": "audio/aula1/voz-tonica-1.wav",
+      "segundos": 3.904,
+      "texto": "Toda palavra tem uma sílaba mais forte: a sílaba tônica."
+    },
+    {
+      "arquivo": "audio/aula1/voz-tonica-2.wav",
+      "segundos": 5.873,
+      "texto": "Na proparoxítona, ela é a antepenúltima. A terceira, contando do fim."
+    }
+  ],
+  "exemplos": [
+    {
+      "arquivo": "audio/aula1/voz-exemplos-1.wav",
+      "segundos": 2.405,
+      "texto": "Olha só: lâmpada."
+    },
+    {
+      "arquivo": "audio/aula1/voz-exemplos-2.wav",
+      "segundos": 0.929,
+      "texto": "Médico."
+    },
+    {
+      "arquivo": "audio/aula1/voz-exemplos-3.wav",
+      "segundos": 0.93,
+      "texto": "Matemática."
+    }
+  ],
+  "regra": [
+    {
+      "arquivo": "audio/aula1/voz-regra-1.wav",
+      "segundos": 4.686,
+      "texto": "E a regra é uma só: toda proparoxítona leva acento."
+    },
+    {
+      "arquivo": "audio/aula1/voz-regra-2.wav",
+      "segundos": 1.386,
+      "texto": "Sem nenhuma exceção!"
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/aula1/voz-pegadinha-1.wav",
+      "segundos": 2.631,
+      "texto": "Agora, cuidado com a pegadinha: rubrica."
+    },
+    {
+      "arquivo": "audio/aula1/voz-pegadinha-2.wav",
+      "segundos": 4.668,
+      "texto": "A sílaba forte é bri. Então ela não é proparoxítona e não tem acento."
+    }
+  ],
+  "macete": [
+    {
+      "arquivo": "audio/aula1/voz-macete-1.wav",
+      "segundos": 2.449,
+      "texto": "O macete: conte três sílabas do fim."
+    },
+    {
+      "arquivo": "audio/aula1/voz-macete-2.wav",
+      "segundos": 3.285,
+      "texto": "Se a força cair ali, pode colocar o acento sem medo."
+    }
+  ],
+  "chamada": [
+    {
+      "arquivo": "audio/aula1/voz-chamada-1.wav",
+      "segundos": 4.487,
+      "texto": "Quer treinar com questões de concurso? Tem mais de dez mil no Fuse Aprova."
+    },
+    {
+      "arquivo": "audio/aula1/voz-chamada-2.wav",
+      "segundos": 1.063,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

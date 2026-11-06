@@ -1,0 +1,174 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-011",
+  "titulo": "Crase: quando usar",
+  "materia": "portugues",
+  "pronuncia": {
+    "Vou a + a farmácia = vou à farmácia.": "Vou a, mais a farmácia: vou à farmácia.",
+    "a + a = à": "a mais a é igual a crase"
+  },
+  "falas": {
+    "soma": [
+      "Crase é a preposição 'a' somada ao artigo 'a'.",
+      "Vou a + a farmácia = vou à farmácia."
+    ],
+    "teste": [
+      "Truque: troque por uma palavra masculina. Se virar 'ao', tem crase.",
+      "Vou ao mercado, então vou à farmácia."
+    ],
+    "nunca": [
+      "Não tem crase antes de palavra masculina, de verbo e de pronome como 'ela' e 'esta'.",
+      "Andar a pé, começou a chover, falei a ela."
+    ],
+    "locucoes": [
+      "Nas expressões femininas de tempo e modo, tem crase: às vezes, à noite, às pressas, à vontade."
+    ],
+    "fecho": [
+      "Resumindo: a + a = à. Virou 'ao'? Tem crase. Masculino, verbo e pronome: sem crase.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "soma": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Crase"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Preposição / + *artigo*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "a + a = à",
+          "em": 0.5,
+          "destaque": true,
+          "tamanho": 80
+        },
+        {
+          "tipo": "frase",
+          "texto": "Vou *à* farmácia.",
+          "fala": 1,
+          "tamanho": 60
+        }
+      ]
+    },
+    "teste": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "O truque"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Troque por palavra / *masculina*",
+          "tamanho": 76
+        },
+        {
+          "tipo": "chip",
+          "texto": "Virou \"ao\"? Tem crase",
+          "em": "Se virar",
+          "tamanho": 38
+        },
+        {
+          "tipo": "frase",
+          "texto": "Vou *ao* mercado.",
+          "fala": 1,
+          "tamanho": 56
+        },
+        {
+          "tipo": "frase",
+          "texto": "Vou *à* farmácia.",
+          "fala": 1,
+          "em": "então",
+          "tamanho": 56
+        }
+      ]
+    },
+    "nunca": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Sem crase"
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 46,
+          "itens": [
+            {
+              "titulo": "andar a pé",
+              "texto": "palavra masculina",
+              "fala": 1,
+              "em": "Andar"
+            },
+            {
+              "titulo": "começou a chover",
+              "texto": "verbo",
+              "fala": 1,
+              "em": "começou"
+            },
+            {
+              "titulo": "falei a ela",
+              "texto": "pronome",
+              "fala": 1,
+              "em": "falei"
+            }
+          ]
+        }
+      ]
+    },
+    "locucoes": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Com crase"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Expressões de / *tempo* e *modo*"
+        },
+        {
+          "tipo": "cartoes",
+          "colunas": 2,
+          "fonteTitulo": 46,
+          "itens": [
+            {
+              "titulo": "às vezes",
+              "em": "às vezes"
+            },
+            {
+              "titulo": "à noite",
+              "em": "à noite"
+            },
+            {
+              "titulo": "às pressas",
+              "em": "às pressas"
+            },
+            {
+              "titulo": "à vontade",
+              "em": "à vontade"
+            }
+          ]
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "a + a = à",
+        "Virou 'ao'? Tem crase",
+        "Masculino, verbo e pronome: sem crase"
+      ]
+    }
+  }
+}

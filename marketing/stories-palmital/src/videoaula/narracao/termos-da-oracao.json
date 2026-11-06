@@ -1,0 +1,57 @@
+{
+  "sujeito": [
+    {
+      "arquivo": "audio/termos-da-oracao/voz-sujeito-1.wav",
+      "segundos": 4.103,
+      "texto": "Sujeito é de quem se fala. Pergunte ao verbo: quem?"
+    },
+    {
+      "arquivo": "audio/termos-da-oracao/voz-sujeito-2.wav",
+      "segundos": 3.685,
+      "texto": "'Os alunos estudaram.' Quem estudou? Os alunos."
+    }
+  ],
+  "objetos": [
+    {
+      "arquivo": "audio/termos-da-oracao/voz-objetos-1.wav",
+      "segundos": 5.696,
+      "texto": "Objeto completa o verbo. Sem preposição, é objeto direto: 'comprou pão'."
+    },
+    {
+      "arquivo": "audio/termos-da-oracao/voz-objetos-2.wav",
+      "segundos": 4.204,
+      "texto": "Com preposição, é objeto indireto: 'gosta de música'."
+    }
+  ],
+  "predicativo": [
+    {
+      "arquivo": "audio/termos-da-oracao/voz-predicativo-1.wav",
+      "segundos": 9.136,
+      "texto": "Com verbo de ligação (ser, estar, ficar, parecer), o que vem depois é predicativo: uma qualidade do sujeito."
+    },
+    {
+      "arquivo": "audio/termos-da-oracao/voz-predicativo-2.wav",
+      "segundos": 3.381,
+      "texto": "'A sala está limpa.' Limpa é predicativo."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/termos-da-oracao/voz-pegadinha-1.wav",
+      "segundos": 6.39,
+      "texto": "Sujeito pode vir depois do verbo: 'Chegaram as provas.' Quem chegou? As provas."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/termos-da-oracao/voz-fecho-1.wav",
+      "segundos": 12.816,
+      "texto": "Resumindo: Quem? = sujeito. O quê? = objeto direto. De quê? A quem? = objeto indireto. Ser/estar + qualidade = predicativo."
+    },
+    {
+      "arquivo": "audio/termos-da-oracao/voz-fecho-2.wav",
+      "segundos": 1.447,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

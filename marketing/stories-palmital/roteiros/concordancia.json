@@ -1,0 +1,136 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-024",
+  "titulo": "Concordância verbal e nominal",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "verbal": [
+      "O verbo concorda com o sujeito: o aluno estuda, os alunos estudam."
+    ],
+    "depois": [
+      "Ache o sujeito mesmo quando vem depois do verbo: 'Faltam três dias.' O que falta? Três dias. Plural."
+    ],
+    "haver": [
+      "'Haver' no sentido de existir não vai para o plural: há muitas vagas, havia problemas."
+    ],
+    "nominal": [
+      "Na concordância nominal, artigo e adjetivo acompanham o substantivo: as provas difíceis."
+    ],
+    "fecho": [
+      "Resumindo: Ache o sujeito, mesmo depois do verbo. Haver = existir fica no singular.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "verbal": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Concordância verbal"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "O verbo segue / o *sujeito*"
+        },
+        {
+          "tipo": "frase",
+          "texto": "O aluno *estuda*.",
+          "em": "o aluno"
+        },
+        {
+          "tipo": "frase",
+          "texto": "Os alunos *estudam*.",
+          "em": "os alunos"
+        }
+      ]
+    },
+    "depois": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Sujeito depois do verbo"
+        },
+        {
+          "tipo": "frase",
+          "texto": "*Faltam* três dias.",
+          "em": "'Faltam"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "O que falta? / *Três* *dias*",
+          "em": "O que falta"
+        },
+        {
+          "tipo": "chip",
+          "texto": "Plural",
+          "em": "Plural",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        }
+      ]
+    },
+    "haver": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Haver = existir"
+        },
+        {
+          "tipo": "comparacao",
+          "itens": [
+            {
+              "texto": "hão muitas vagas",
+              "certo": false,
+              "em": "não vai"
+            },
+            {
+              "texto": "há muitas vagas",
+              "certo": true,
+              "em": "há muitas"
+            },
+            {
+              "texto": "havia problemas",
+              "certo": true,
+              "em": "havia"
+            }
+          ]
+        }
+      ]
+    },
+    "nominal": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Concordância nominal"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Artigo e adjetivo / *acompanham* / o substantivo",
+          "tamanho": 72
+        },
+        {
+          "tipo": "frase",
+          "texto": "*as* provas *difíceis*",
+          "em": "as provas"
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Ache o sujeito, mesmo depois do verbo",
+        "Haver = existir fica no singular"
+      ]
+    }
+  }
+}

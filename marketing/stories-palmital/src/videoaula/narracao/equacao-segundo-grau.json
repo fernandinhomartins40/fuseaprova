@@ -1,0 +1,42 @@
+{
+  "forma": [
+    {
+      "arquivo": "audio/equacao-segundo-grau/voz-forma-1.wav",
+      "segundos": 7.657,
+      "texto": "A equação do 2º grau tem x ao quadrado: x² menos 5x mais 6 igual a zero."
+    }
+  ],
+  "soma-produto": [
+    {
+      "arquivo": "audio/equacao-segundo-grau/voz-soma-produto-1.wav",
+      "segundos": 8.1,
+      "texto": "Quando a é 1, procure dois números com soma 5 e produto 6: 2 e 3. Essas são as raízes."
+    }
+  ],
+  "vertice": [
+    {
+      "arquivo": "audio/equacao-segundo-grau/voz-vertice-1.wav",
+      "segundos": 12.365,
+      "texto": "O vértice da parábola, o ponto de máximo ou de mínimo, está em x igual a menos b sobre 2a. Aqui: 5 sobre 2, 2,5."
+    }
+  ],
+  "concavidade": [
+    {
+      "arquivo": "audio/equacao-segundo-grau/voz-concavidade-1.wav",
+      "segundos": 8.062,
+      "texto": "Se a é positivo, a parábola abre para cima e tem mínimo. Se é negativo, abre para baixo e tem máximo."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/equacao-segundo-grau/voz-fecho-1.wav",
+      "segundos": 10.837,
+      "texto": "Resumindo: Soma = −b/a, produto = c/a. Vértice: x = −b ÷ 2a. a > 0 tem mínimo."
+    },
+    {
+      "arquivo": "audio/equacao-segundo-grau/voz-fecho-2.wav",
+      "segundos": 1.247,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

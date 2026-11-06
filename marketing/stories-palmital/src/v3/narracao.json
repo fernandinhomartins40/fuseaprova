@@ -1,0 +1,96 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v3/voz-gancho-1.wav",
+      "segundos": 2.121,
+      "texto": "Quer passar no concurso da Prefeitura de Palmital?"
+    },
+    {
+      "arquivo": "audio/v3/voz-gancho-2.wav",
+      "segundos": 1.135,
+      "texto": "Então faz essa conta comigo."
+    }
+  ],
+  "conta": [
+    {
+      "arquivo": "audio/v3/voz-conta-1.wav",
+      "segundos": 0.926,
+      "texto": "Quinze minutos por dia."
+    },
+    {
+      "arquivo": "audio/v3/voz-conta-2.wav",
+      "segundos": 2.079,
+      "texto": "Em um mês, são sete horas e meia de estudo."
+    },
+    {
+      "arquivo": "audio/v3/voz-conta-3.wav",
+      "segundos": 2.066,
+      "texto": "Em seis meses, mais de quarenta e cinco horas."
+    }
+  ],
+  "contraste": [
+    {
+      "arquivo": "audio/v3/voz-contraste-1.wav",
+      "segundos": 4.323,
+      "texto": "Agora pensa: quem espera o edital sair começa do zero, com pouco tempo e muita matéria."
+    },
+    {
+      "arquivo": "audio/v3/voz-contraste-2.wav",
+      "segundos": 2.855,
+      "texto": "Quem começa hoje chega na prova com meses de treino."
+    }
+  ],
+  "metodo": [
+    {
+      "arquivo": "audio/v3/voz-metodo-1.wav",
+      "segundos": 2.907,
+      "texto": "E o Fuse Aprova transforma esses minutos em treino de verdade:"
+    },
+    {
+      "arquivo": "audio/v3/voz-metodo-2.wav",
+      "segundos": 1.652,
+      "texto": "questões no estilo da FAU,"
+    },
+    {
+      "arquivo": "audio/v3/voz-metodo-3.wav",
+      "segundos": 1.161,
+      "texto": "revisão do que você errou"
+    },
+    {
+      "arquivo": "audio/v3/voz-metodo-4.wav",
+      "segundos": 1.578,
+      "texto": "e simulados no formato da prova."
+    }
+  ],
+  "edital": [
+    {
+      "arquivo": "audio/v3/voz-edital-1.wav",
+      "segundos": 4.353,
+      "texto": "Quando o edital de Palmital sair, o app se ajusta ao seu cargo, sem custo adicional."
+    }
+  ],
+  "oferta": [
+    {
+      "arquivo": "audio/v3/voz-oferta-1.wav",
+      "segundos": 2.877,
+      "texto": "O acesso completo, de trezentos e noventa e sete…"
+    },
+    {
+      "arquivo": "audio/v3/voz-oferta-2.wav",
+      "segundos": 4.128,
+      "texto": "sai por cento e noventa e sete reais no lançamento. À vista no Pix."
+    }
+  ],
+  "chamada": [
+    {
+      "arquivo": "audio/v3/voz-chamada-1.wav",
+      "segundos": 3.669,
+      "texto": "Sua vaga na Prefeitura de Palmital: a conta fecha a seu favor."
+    },
+    {
+      "arquivo": "audio/v3/voz-chamada-2.wav",
+      "segundos": 0.57,
+      "texto": "Link na bio."
+    }
+  ]
+}

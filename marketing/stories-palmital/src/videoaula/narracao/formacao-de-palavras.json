@@ -1,0 +1,47 @@
+{
+  "radical": [
+    {
+      "arquivo": "audio/formacao-de-palavras/voz-radical-1.wav",
+      "segundos": 7.66,
+      "texto": "Toda palavra tem um radical, o pedaço que guarda o sentido. 'Feliz' está em infeliz e felizmente."
+    }
+  ],
+  "derivacao": [
+    {
+      "arquivo": "audio/formacao-de-palavras/voz-derivacao-1.wav",
+      "segundos": 5.746,
+      "texto": "Prefixo vem antes: infeliz. Sufixo vem depois: felizmente."
+    },
+    {
+      "arquivo": "audio/formacao-de-palavras/voz-derivacao-2.wav",
+      "segundos": 6.302,
+      "texto": "Parassíntese põe os dois ao mesmo tempo, e sem um deles a palavra não existe: entardecer."
+    }
+  ],
+  "composicao": [
+    {
+      "arquivo": "audio/formacao-de-palavras/voz-composicao-1.wav",
+      "segundos": 10.58,
+      "texto": "Composição junta dois radicais: guarda-chuva, por justaposição. Ou com perda de som: planalto, de plano e alto, por aglutinação."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/formacao-de-palavras/voz-pegadinha-1.wav",
+      "segundos": 9.115,
+      "texto": "'Infelizmente' tem prefixo e sufixo, mas 'infeliz' e 'felizmente' existem sozinhas. Então não é parassíntese."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/formacao-de-palavras/voz-fecho-1.wav",
+      "segundos": 9.961,
+      "texto": "Resumindo: Prefixo antes, sufixo depois. Os dois juntos e obrigatórios = parassíntese. Dois radicais = composição."
+    },
+    {
+      "arquivo": "audio/formacao-de-palavras/voz-fecho-2.wav",
+      "segundos": 1.309,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

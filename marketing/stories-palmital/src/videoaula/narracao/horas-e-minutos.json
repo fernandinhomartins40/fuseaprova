@@ -1,0 +1,52 @@
+{
+  "base-60": [
+    {
+      "arquivo": "audio/horas-e-minutos/voz-base-60-1.wav",
+      "segundos": 8.206,
+      "texto": "Hora não é decimal: 1 hora tem 60 minutos. Some minutos com minutos e, passou de 60, vire uma hora."
+    },
+    {
+      "arquivo": "audio/horas-e-minutos/voz-base-60-2.wav",
+      "segundos": 6.966,
+      "texto": "2h50 mais 1h20: 3 horas e 70 minutos, que são 4h10."
+    }
+  ],
+  "decimal": [
+    {
+      "arquivo": "audio/horas-e-minutos/voz-decimal-1.wav",
+      "segundos": 7.384,
+      "texto": "1,5 hora não é uma hora e cinquenta minutos: é uma hora e meia, 90 minutos."
+    },
+    {
+      "arquivo": "audio/horas-e-minutos/voz-decimal-2.wav",
+      "segundos": 3.517,
+      "texto": "0,25 hora são 15 minutos."
+    }
+  ],
+  "duracao": [
+    {
+      "arquivo": "audio/horas-e-minutos/voz-duracao-1.wav",
+      "segundos": 14.814,
+      "texto": "Duração entre dois horários: das 8h40 às 12h15. Conte até 9h, são 20 minutos. De 9h a 12h15, 3 horas e 15. Total: 3h35."
+    }
+  ],
+  "salario": [
+    {
+      "arquivo": "audio/horas-e-minutos/voz-salario-1.wav",
+      "segundos": 11.672,
+      "texto": "Ganho por hora: 18 reais por hora, 7,5 horas por dia. 18 vezes 7,5, 135 reais por dia."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/horas-e-minutos/voz-fecho-1.wav",
+      "segundos": 7.504,
+      "texto": "Resumindo: 1 h = 60 min. 0,5 h = 30 min. Conte até a hora cheia."
+    },
+    {
+      "arquivo": "audio/horas-e-minutos/voz-fecho-2.wav",
+      "segundos": 1.252,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

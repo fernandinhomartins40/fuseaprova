@@ -1,0 +1,47 @@
+{
+  "ideia": [
+    {
+      "arquivo": "audio/paroxitonas/voz-ideia-1.wav",
+      "segundos": 9.484,
+      "texto": "Paroxítona tem a força na penúltima sílaba. A maioria das palavras é assim e não leva acento: casa, mesa."
+    }
+  ],
+  "terminacoes": [
+    {
+      "arquivo": "audio/paroxitonas/voz-terminacoes-1.wav",
+      "segundos": 9.779,
+      "texto": "Leva acento quando termina em L, N, R, X ou PS: fácil, hífen, açúcar, tórax, bíceps."
+    },
+    {
+      "arquivo": "audio/paroxitonas/voz-terminacoes-2.wav",
+      "segundos": 8.41,
+      "texto": "Em UM e UNS, I e IS, US, Ã e ÃO: álbum, táxi, vírus, órfã, órgão."
+    }
+  ],
+  "ditongo": [
+    {
+      "arquivo": "audio/paroxitonas/voz-ditongo-1.wav",
+      "segundos": 3.969,
+      "texto": "E em ditongo no fim: história, série, água."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/paroxitonas/voz-pegadinha-1.wav",
+      "segundos": 7.225,
+      "texto": "Terminou em A, E, O, EM ou ENS? Não leva acento: item, jovem, hifens."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/paroxitonas/voz-fecho-1.wav",
+      "segundos": 14.153,
+      "texto": "Resumindo: Paroxítona comum não tem acento. Decore as terminações: L, N, R, X, PS, I, US, UM, Ã, ÃO, ditongo."
+    },
+    {
+      "arquivo": "audio/paroxitonas/voz-fecho-2.wav",
+      "segundos": 1.237,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

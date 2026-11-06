@@ -1,0 +1,156 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-033",
+  "titulo": "Média simples e ponderada",
+  "materia": "matematica",
+  "pronuncia": {},
+  "falas": {
+    "simples": [
+      "Média simples: some tudo e divida pela quantidade. Notas 6, 7 e 8: 21 dividido por 3, média 7."
+    ],
+    "ponderada": [
+      "Na ponderada, cada valor tem um peso. Multiplique cada nota pelo seu peso, some e divida pela soma dos pesos.",
+      "Prova 8 com peso 2 e trabalho 5 com peso 1: 16 mais 5, 21, dividido por 3, média 7."
+    ],
+    "falta": [
+      "Quanto falta para a média? Média 7 em 4 provas exige 28 pontos ao todo. Se já tem 6, 7 e 8, que somam 21, falta tirar 7."
+    ],
+    "propriedade": [
+      "A média sempre fica entre o menor e o maior valor. Se o resultado saiu fora disso, refaça a conta."
+    ],
+    "fecho": [
+      "Resumindo: Simples: soma ÷ quantidade. Ponderada: peso multiplica. Total exigido = média × quantidade.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "simples": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Média simples"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Some e divida / pela *quantidade*",
+          "tamanho": 76
+        },
+        {
+          "tipo": "conta",
+          "texto": "(6 + 7 + 8) ÷ 3 = 7",
+          "em": "Notas",
+          "destaque": true
+        }
+      ]
+    },
+    "ponderada": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Média ponderada"
+        },
+        {
+          "tipo": "passos",
+          "itens": [
+            {
+              "titulo": "Nota × peso",
+              "em": "Multiplique"
+            },
+            {
+              "titulo": "Some tudo",
+              "em": "some"
+            },
+            {
+              "titulo": "Divida pela soma dos pesos",
+              "em": "divida"
+            }
+          ]
+        },
+        {
+          "tipo": "conta",
+          "texto": "(8 × 2 + 5 × 1) ÷ (2 + 1) = 7",
+          "fala": 1,
+          "em": 0.3,
+          "destaque": true
+        }
+      ]
+    },
+    "falta": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Quanto falta?"
+        },
+        {
+          "tipo": "conta",
+          "texto": "7 × 4 = 28",
+          "em": "Média 7"
+        },
+        {
+          "tipo": "conta",
+          "texto": "6 + 7 + 8 = 21",
+          "em": "Se já"
+        },
+        {
+          "tipo": "conta",
+          "texto": "28 − 21 = 7",
+          "em": "falta tirar",
+          "destaque": true
+        }
+      ]
+    },
+    "propriedade": {
+      "blocos": [
+        {
+          "tipo": "palavras",
+          "texto": "A média fica / *entre* o menor e o maior",
+          "tamanho": 70
+        },
+        {
+          "tipo": "cartoes",
+          "colunas": 3,
+          "fonteTitulo": 60,
+          "em": 0.3,
+          "itens": [
+            {
+              "titulo": "6",
+              "texto": "menor"
+            },
+            {
+              "titulo": "7",
+              "texto": "média"
+            },
+            {
+              "titulo": "8",
+              "texto": "maior"
+            }
+          ]
+        },
+        {
+          "tipo": "chip",
+          "texto": "Saiu disso? Refaça a conta",
+          "em": "Se o resultado",
+          "fundo": "coral",
+          "tamanho": 38
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Simples: soma ÷ quantidade",
+        "Ponderada: peso multiplica",
+        "Total exigido = média × quantidade"
+      ]
+    }
+  }
+}

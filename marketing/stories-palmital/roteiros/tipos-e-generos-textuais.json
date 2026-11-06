@@ -1,0 +1,153 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-025",
+  "titulo": "Tipos e gêneros textuais",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "diferenca": [
+      "Tipo textual é o jeito de organizar o texto. Gênero é o formato que usamos no dia a dia."
+    ],
+    "tipos": [
+      "Narração conta fatos com personagens e tempo. Descrição mostra como algo é. Dissertação defende uma ideia. Injunção dá instruções. Exposição explica."
+    ],
+    "generos": [
+      "Gêneros são notícia, receita, crônica, bula, carta e e-mail. Uma receita é um gênero do tipo injuntivo."
+    ],
+    "pegadinha": [
+      "A crônica costuma narrar um fato do dia a dia com tom leve. Ela é gênero; a narração é o tipo."
+    ],
+    "fecho": [
+      "Resumindo: Tipo = modo. Gênero = formato. Um gênero pode misturar tipos.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "diferenca": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "A diferença"
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 50,
+          "itens": [
+            {
+              "titulo": "Tipo = como",
+              "texto": "o jeito de organizar",
+              "em": "Tipo"
+            },
+            {
+              "titulo": "Gênero = o quê",
+              "texto": "o formato do dia a dia",
+              "em": "Gênero"
+            }
+          ]
+        }
+      ]
+    },
+    "tipos": {
+      "blocos": [
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "Narração",
+              "texto": "conta fatos",
+              "em": "Narração"
+            },
+            {
+              "titulo": "Descrição",
+              "texto": "mostra como é",
+              "em": "Descrição"
+            },
+            {
+              "titulo": "Dissertação",
+              "texto": "defende uma ideia",
+              "em": "Dissertação"
+            },
+            {
+              "titulo": "Injunção",
+              "texto": "dá instruções",
+              "em": "Injunção"
+            },
+            {
+              "titulo": "Exposição",
+              "texto": "explica",
+              "em": "Exposição"
+            }
+          ]
+        }
+      ]
+    },
+    "generos": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Gêneros"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "notícia, receita, crônica, / bula, carta, e-mail",
+          "tamanho": 62
+        },
+        {
+          "tipo": "conta",
+          "texto": "receita → injunção",
+          "em": "Uma receita",
+          "destaque": true
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Fato do dia a dia, / com tom *leve*"
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 48,
+          "itens": [
+            {
+              "titulo": "Crônica",
+              "texto": "é gênero",
+              "em": "Ela é"
+            },
+            {
+              "titulo": "Narração",
+              "texto": "é tipo",
+              "em": "a narração"
+            }
+          ]
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Tipo = modo",
+        "Gênero = formato",
+        "Um gênero pode misturar tipos"
+      ]
+    }
+  }
+}

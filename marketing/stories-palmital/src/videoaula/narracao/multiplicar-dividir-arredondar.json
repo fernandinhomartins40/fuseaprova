@@ -1,0 +1,57 @@
+{
+  "multiplicar": [
+    {
+      "arquivo": "audio/multiplicar-dividir-arredondar/voz-multiplicar-1.wav",
+      "segundos": 3.971,
+      "texto": "Quando você tem o valor de um e quer o de vários, multiplica."
+    },
+    {
+      "arquivo": "audio/multiplicar-dividir-arredondar/voz-multiplicar-2.wav",
+      "segundos": 7.107,
+      "texto": "Cada pessoa come 3 pães. Para 20 pessoas: 3 vezes 20, 60 pães."
+    }
+  ],
+  "dividir": [
+    {
+      "arquivo": "audio/multiplicar-dividir-arredondar/voz-dividir-1.wav",
+      "segundos": 4.895,
+      "texto": "Quando tem o total e quer saber quanto cabe em cada parte, divide."
+    },
+    {
+      "arquivo": "audio/multiplicar-dividir-arredondar/voz-dividir-2.wav",
+      "segundos": 7.017,
+      "texto": "120 cadeiras em 8 fileiras iguais: 120 dividido por 8, 15 por fileira."
+    }
+  ],
+  "arredondar": [
+    {
+      "arquivo": "audio/multiplicar-dividir-arredondar/voz-arredondar-1.wav",
+      "segundos": 4.439,
+      "texto": "E se a divisão não for exata? Pense no que a pergunta pede."
+    },
+    {
+      "arquivo": "audio/multiplicar-dividir-arredondar/voz-arredondar-2.wav",
+      "segundos": 11.709,
+      "texto": "50 pessoas em vans de 12 lugares: 50 dividido por 12 dá 4 e sobram 2. Essas 2 também precisam ir, então são 5 vans."
+    }
+  ],
+  "para-baixo": [
+    {
+      "arquivo": "audio/multiplicar-dividir-arredondar/voz-para-baixo-1.wav",
+      "segundos": 6.704,
+      "texto": "Mas se a pergunta for quantas caixas cheias dá para fechar, você fica com a parte inteira, sem arredondar."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/multiplicar-dividir-arredondar/voz-fecho-1.wav",
+      "segundos": 9.087,
+      "texto": "Resumindo: Um para vários: multiplica. Total em partes: divide. Sobrou gente? Arredonda para cima."
+    },
+    {
+      "arquivo": "audio/multiplicar-dividir-arredondar/voz-fecho-2.wav",
+      "segundos": 1.239,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

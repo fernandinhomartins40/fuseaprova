@@ -1,0 +1,134 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-041",
+  "titulo": "Custo fixo, custo variável e lucro",
+  "materia": "matematica",
+  "pronuncia": {
+    "C igual a 2.000 mais 5x": "cê igual a dois mil mais cinco xis",
+    "R igual a 15x": "érre igual a quinze xis",
+    "10x menos 2.000": "dez xis menos dois mil",
+    "x igual a 200": "xis igual a 200",
+    "variável × x": "variável vezes xis"
+  },
+  "falas": {
+    "custo": [
+      "Custo tem uma parte fixa e uma que cresce com a quantidade. Aluguel de 2.000 e 5 reais por peça: C igual a 2.000 mais 5x."
+    ],
+    "receita-lucro": [
+      "Receita é o preço vezes a quantidade: vendendo a 15, R igual a 15x. Lucro é receita menos custo."
+    ],
+    "equilibrio": [
+      "Ponto de equilíbrio: lucro zero. 10x menos 2.000 igual a zero, x igual a 200 peças."
+    ],
+    "salario": [
+      "Salário fixo mais comissão é a mesma ideia: 1.500 mais 3% das vendas."
+    ],
+    "fecho": [
+      "Resumindo: Custo = fixo + variável × x. Lucro = receita − custo. Equilíbrio: lucro zero.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "custo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Custo"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Parte *fixa* / + parte *variável*",
+          "tamanho": 76
+        },
+        {
+          "tipo": "conta",
+          "texto": "C = 2.000 + 5x",
+          "em": "Aluguel",
+          "destaque": true
+        }
+      ]
+    },
+    "receita-lucro": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Receita e lucro"
+        },
+        {
+          "tipo": "conta",
+          "texto": "R = 15x",
+          "em": "vendendo"
+        },
+        {
+          "tipo": "conta",
+          "texto": "L = 15x − (2.000 + 5x)",
+          "em": "Lucro"
+        },
+        {
+          "tipo": "conta",
+          "texto": "L = 10x − 2.000",
+          "em": "receita menos",
+          "destaque": true
+        }
+      ]
+    },
+    "equilibrio": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Ponto de equilíbrio"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*Lucro* *zero*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "10x − 2.000 = 0",
+          "em": "10x"
+        },
+        {
+          "tipo": "conta",
+          "texto": "x = 200 peças",
+          "em": "x igual",
+          "destaque": true
+        }
+      ]
+    },
+    "salario": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Salário com comissão"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "A *mesma* ideia"
+        },
+        {
+          "tipo": "conta",
+          "texto": "S = 1.500 + 0,03 × vendas",
+          "em": "1.500",
+          "destaque": true
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Custo = fixo + variável × x",
+        "Lucro = receita − custo",
+        "Equilíbrio: lucro zero"
+      ]
+    }
+  }
+}

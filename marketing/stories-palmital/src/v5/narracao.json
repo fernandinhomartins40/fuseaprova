@@ -1,0 +1,84 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v5/voz-gancho-1.wav",
+      "segundos": 2.457,
+      "texto": "Quer estudar para o concurso da Prefeitura de Palmital?"
+    },
+    {
+      "arquivo": "audio/v5/voz-gancho-2.wav",
+      "segundos": 1.687,
+      "texto": "Então fica comigo até o final!"
+    }
+  ],
+  "antes": [
+    {
+      "arquivo": "audio/v5/voz-antes-1.wav",
+      "segundos": 1.471,
+      "texto": "O edital ainda não saiu…"
+    },
+    {
+      "arquivo": "audio/v5/voz-antes-2.wav",
+      "segundos": 2.934,
+      "texto": "e é justamente agora que você sai na frente."
+    }
+  ],
+  "app": [
+    {
+      "arquivo": "audio/v5/voz-app-1.wav",
+      "segundos": 5.495,
+      "texto": "No Fuse Aprova, você estuda pelo celular, com uma trilha pronta, passo a passo."
+    },
+    {
+      "arquivo": "audio/v5/voz-app-2.wav",
+      "segundos": 3.921,
+      "texto": "São questões no estilo da banca FAU, com explicação na hora."
+    },
+    {
+      "arquivo": "audio/v5/voz-app-3.wav",
+      "segundos": 3.325,
+      "texto": "O que você errar volta na revisão, até aprender de vez."
+    },
+    {
+      "arquivo": "audio/v5/voz-app-4.wav",
+      "segundos": 3.723,
+      "texto": "E tem simulado igualzinho à prova, pra chegar confiante."
+    }
+  ],
+  "edital": [
+    {
+      "arquivo": "audio/v5/voz-edital-1.wav",
+      "segundos": 3.8,
+      "texto": "Quando o edital de Palmital sair, o app se ajusta ao seu cargo."
+    },
+    {
+      "arquivo": "audio/v5/voz-edital-2.wav",
+      "segundos": 2.109,
+      "texto": "E isso sem pagar nada a mais."
+    }
+  ],
+  "oferta": [
+    {
+      "arquivo": "audio/v5/voz-oferta-1.wav",
+      "segundos": 4.217,
+      "texto": "No lançamento, o acesso completo sai por cento e noventa e sete reais."
+    },
+    {
+      "arquivo": "audio/v5/voz-oferta-2.wav",
+      "segundos": 2.596,
+      "texto": "À vista no Pix, pagamento único."
+    }
+  ],
+  "chamada": [
+    {
+      "arquivo": "audio/v5/voz-chamada-1.wav",
+      "segundos": 2.06,
+      "texto": "Quer estudar para Palmital do jeito certo?"
+    },
+    {
+      "arquivo": "audio/v5/voz-chamada-2.wav",
+      "segundos": 2.215,
+      "texto": "Toca no link da bio e começa hoje!"
+    }
+  ]
+}

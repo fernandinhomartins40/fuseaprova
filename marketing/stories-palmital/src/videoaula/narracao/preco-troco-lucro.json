@@ -1,0 +1,42 @@
+{
+  "preco-unitario": [
+    {
+      "arquivo": "audio/preco-troco-lucro/voz-preco-unitario-1.wav",
+      "segundos": 8.932,
+      "texto": "Preço unitário é o total dividido pela quantidade. Uma dúzia por 18 reais: 18 dividido por 12, um real e cinquenta cada."
+    }
+  ],
+  "troco": [
+    {
+      "arquivo": "audio/preco-troco-lucro/voz-troco-1.wav",
+      "segundos": 8.769,
+      "texto": "Troco é o que você pagou menos o que custou. Pagou 50, gastou 37,40: o troco é 12,60."
+    }
+  ],
+  "lucro": [
+    {
+      "arquivo": "audio/preco-troco-lucro/voz-lucro-1.wav",
+      "segundos": 7.794,
+      "texto": "Lucro é a receita menos o custo. Vendeu por 90 o que custou 65: o lucro é 25."
+    }
+  ],
+  "parcelas": [
+    {
+      "arquivo": "audio/preco-troco-lucro/voz-parcelas-1.wav",
+      "segundos": 12.044,
+      "texto": "No parcelamento, some a entrada com todas as parcelas: entrada de 100 e mais 6 de 80 dá 100 mais 480, 580 reais."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/preco-troco-lucro/voz-fecho-1.wav",
+      "segundos": 9.788,
+      "texto": "Resumindo: Unitário = total ÷ quantidade. Lucro = receita − custo. Parcelado = entrada + parcelas."
+    },
+    {
+      "arquivo": "audio/preco-troco-lucro/voz-fecho-2.wav",
+      "segundos": 1.205,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

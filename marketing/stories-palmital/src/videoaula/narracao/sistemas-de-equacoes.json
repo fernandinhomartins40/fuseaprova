@@ -1,0 +1,42 @@
+{
+  "montar": [
+    {
+      "arquivo": "audio/sistemas-de-equacoes/voz-montar-1.wav",
+      "segundos": 16.428,
+      "texto": "Ingressos de 20 e 30 reais. Venderam 50 ingressos e arrecadaram 1.200. Chame de x e y: x mais y igual a 50, e 20x mais 30y igual a 1.200."
+    }
+  ],
+  "suposicao": [
+    {
+      "arquivo": "audio/sistemas-de-equacoes/voz-suposicao-1.wav",
+      "segundos": 12.561,
+      "texto": "Truque da suposição: se todos fossem de 20, dariam 1.000. Faltam 200. Cada ingresso de 30 acrescenta 10. Então são 20 de 30 reais e 30 de 20."
+    }
+  ],
+  "conferir": [
+    {
+      "arquivo": "audio/sistemas-de-equacoes/voz-conferir-1.wav",
+      "segundos": 9.381,
+      "texto": "Confira: 30 vezes 20, 600, mais 20 vezes 30, 600. Total: 1.200."
+    }
+  ],
+  "soma": [
+    {
+      "arquivo": "audio/sistemas-de-equacoes/voz-soma-1.wav",
+      "segundos": 3.505,
+      "texto": "Também dá para somar as equações quando uma letra some ao somar."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/sistemas-de-equacoes/voz-fecho-1.wav",
+      "segundos": 6.627,
+      "texto": "Resumindo: Duas incógnitas, duas equações. Suposição: e se todos fossem iguais."
+    },
+    {
+      "arquivo": "audio/sistemas-de-equacoes/voz-fecho-2.wav",
+      "segundos": 1.52,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

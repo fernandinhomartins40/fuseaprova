@@ -1,0 +1,165 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-012",
+  "titulo": "Tempos e modos verbais",
+  "materia": "portugues",
+  "pronuncia": {
+    "-va = imperfeito": "Final vá: imperfeito",
+    "-ra = mais-que-perfeito": "Final rá: mais-que-perfeito",
+    "que / se = subjuntivo": "Que ou se: subjuntivo"
+  },
+  "falas": {
+    "tempos": [
+      "Presente: eu estudo. Pretérito, o passado: eu estudei. Futuro: eu estudarei."
+    ],
+    "preteritos": [
+      "O passado tem três: perfeito, 'estudei'; imperfeito, 'estudava'; e mais-que-perfeito, 'estudara'."
+    ],
+    "modos": [
+      "Indicativo é certeza: eu estudo.",
+      "Subjuntivo é dúvida ou desejo: que eu estude, se eu estudasse.",
+      "Imperativo é ordem ou pedido: estude!"
+    ],
+    "formas-nominais": [
+      "E as formas nominais: infinitivo 'estudar', gerúndio 'estudando' e particípio 'estudado'."
+    ],
+    "fecho": [
+      "Resumindo: -va = imperfeito. -ra = mais-que-perfeito. que / se = subjuntivo.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "tempos": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Os tempos"
+        },
+        {
+          "tipo": "cartoes",
+          "itens": [
+            {
+              "titulo": "Presente",
+              "texto": "eu estudo",
+              "em": "Presente"
+            },
+            {
+              "titulo": "Pretérito",
+              "texto": "eu estudei",
+              "em": "Pretérito"
+            },
+            {
+              "titulo": "Futuro",
+              "texto": "eu estudarei",
+              "em": "Futuro"
+            }
+          ]
+        }
+      ]
+    },
+    "preteritos": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Três passados"
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "Perfeito",
+              "texto": "estudei: terminou",
+              "em": "perfeito"
+            },
+            {
+              "titulo": "Imperfeito",
+              "texto": "estudava: repetia",
+              "em": "imperfeito"
+            },
+            {
+              "titulo": "Mais-que-perfeito",
+              "texto": "estudara: antes de outro passado",
+              "em": "mais-que-perfeito"
+            }
+          ]
+        }
+      ]
+    },
+    "modos": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Os modos"
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "Indicativo",
+              "texto": "certeza: eu estudo",
+              "fala": 0
+            },
+            {
+              "titulo": "Subjuntivo",
+              "texto": "dúvida ou desejo: que eu estude",
+              "fala": 1
+            },
+            {
+              "titulo": "Imperativo",
+              "texto": "ordem ou pedido: estude!",
+              "fala": 2
+            }
+          ]
+        }
+      ]
+    },
+    "formas-nominais": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Formas nominais"
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 46,
+          "itens": [
+            {
+              "titulo": "estudar",
+              "texto": "infinitivo: -r",
+              "em": "infinitivo"
+            },
+            {
+              "titulo": "estudando",
+              "texto": "gerúndio: -ndo",
+              "em": "gerúndio"
+            },
+            {
+              "titulo": "estudado",
+              "texto": "particípio: -do",
+              "em": "particípio"
+            }
+          ]
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "-va = imperfeito",
+        "-ra = mais-que-perfeito",
+        "que / se = subjuntivo"
+      ]
+    }
+  }
+}

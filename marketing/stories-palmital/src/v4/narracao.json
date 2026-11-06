@@ -1,0 +1,79 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v4/voz-gancho-1.wav",
+      "segundos": 6.453,
+      "texto": "Vai fazer o concurso da Prefeitura de Palmital? Então responde rapidinho: você acertaria essa questão no estilo da banca FAU?"
+    }
+  ],
+  "quiz": [
+    {
+      "arquivo": "audio/v4/voz-quiz-1.wav",
+      "segundos": 1.612,
+      "texto": "Qual frase usa a crase do jeito certo?"
+    },
+    {
+      "arquivo": "audio/v4/voz-quiz-2.wav",
+      "segundos": 1.858,
+      "texto": "Pensa rápido… três, dois, um!"
+    },
+    {
+      "arquivo": "audio/v4/voz-quiz-3.wav",
+      "segundos": 7.097,
+      "texto": "Letra B! Quem chega, chega a algum lugar: a mais a prefeitura vira à prefeitura. E hora exata também leva crase."
+    }
+  ],
+  "app": [
+    {
+      "arquivo": "audio/v4/voz-app-1.wav",
+      "segundos": 3.987,
+      "texto": "É assim que se treina no Fuse Aprova: questão no estilo da FAU e explicação na hora."
+    },
+    {
+      "arquivo": "audio/v4/voz-app-2.wav",
+      "segundos": 3.168,
+      "texto": "Errou? A questão volta na revisão até você pegar o jeito."
+    },
+    {
+      "arquivo": "audio/v4/voz-app-3.wav",
+      "segundos": 3.322,
+      "texto": "E ainda tem simulado no formato da prova e ranking com quem estuda em Palmital."
+    }
+  ],
+  "edital": [
+    {
+      "arquivo": "audio/v4/voz-edital-1.wav",
+      "segundos": 1.695,
+      "texto": "E o edital de Palmital ainda nem saiu!"
+    },
+    {
+      "arquivo": "audio/v4/voz-edital-2.wav",
+      "segundos": 3.309,
+      "texto": "Quando sair, o app se ajusta ao seu cargo, sem custo extra."
+    }
+  ],
+  "oferta": [
+    {
+      "arquivo": "audio/v4/voz-oferta-1.wav",
+      "segundos": 2.909,
+      "texto": "Acesso completo: de trezentos e noventa e sete…"
+    },
+    {
+      "arquivo": "audio/v4/voz-oferta-2.wav",
+      "segundos": 3.353,
+      "texto": "por cento e noventa e sete reais, à vista no Pix."
+    }
+  ],
+  "chamada": [
+    {
+      "arquivo": "audio/v4/voz-chamada-1.wav",
+      "segundos": 3.118,
+      "texto": "Acertou? Imagina treinando todo dia para a prova de Palmital!"
+    },
+    {
+      "arquivo": "audio/v4/voz-chamada-2.wav",
+      "segundos": 1.66,
+      "texto": "O link está na bio. Vem com a gente!"
+    }
+  ]
+}

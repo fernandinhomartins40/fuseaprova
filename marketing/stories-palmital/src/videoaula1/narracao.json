@@ -1,0 +1,14 @@
+{
+  "fecho": [
+    {
+      "arquivo": "audio/videoaula1/voz-fecho-1.wav",
+      "segundos": 4.56,
+      "texto": "Resumindo: se a força cai na terceira sílaba do fim, tem acento."
+    },
+    {
+      "arquivo": "audio/videoaula1/voz-fecho-2.wav",
+      "segundos": 2.28,
+      "texto": "Agora volta pra questão e usa a regra!"
+    }
+  ]
+}

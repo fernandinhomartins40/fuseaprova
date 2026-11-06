@@ -1,0 +1,18 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "falas": {
+    "fecho": [
+      "Resumindo: no desconto, multiplica pelo que sobra. No aumento, por um mais a taxa.",
+      "Agora volta pra questão e faz a conta!"
+    ]
+  }
+}

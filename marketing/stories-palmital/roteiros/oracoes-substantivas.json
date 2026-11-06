@@ -1,0 +1,143 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-017",
+  "titulo": "Orações substantivas: a função do \"que\"",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "truque": [
+      "Oração substantiva faz o papel de um substantivo. O truque é trocar a oração inteira por 'isso'."
+    ],
+    "funcoes": [
+      "'É importante que você venha': isso é importante. Isso é o sujeito: oração subjetiva.",
+      "'Espero que você venha': espero isso. Objeto direto: objetiva direta.",
+      "'Gosto de que me ouçam': gosto disso. Objeto indireto: objetiva indireta."
+    ],
+    "predicativa": [
+      "'O problema é que ninguém leu': o problema é isso. Depois do verbo ser, é predicativa."
+    ],
+    "pegadinha": [
+      "Se o 'que' retoma um nome, como em 'o livro que li', ele é pronome relativo, e a oração é adjetiva."
+    ],
+    "fecho": [
+      "Resumindo: Troque por 'isso'. Depois de 'é'? Predicativa. 'Que' retomando nome = adjetiva.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "truque": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Oração substantiva"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Troque tudo / por *isso*"
+        },
+        {
+          "tipo": "frase",
+          "texto": "Espero *que você venha*.",
+          "em": "O truque",
+          "tamanho": 50
+        },
+        {
+          "tipo": "frase",
+          "texto": "Espero *isso*.",
+          "em": "'isso'",
+          "tamanho": 50
+        }
+      ]
+    },
+    "funcoes": {
+      "blocos": [
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 40,
+          "itens": [
+            {
+              "titulo": "Isso é importante",
+              "texto": "sujeito: subjetiva",
+              "fala": 0
+            },
+            {
+              "titulo": "Espero isso",
+              "texto": "objeto direto: objetiva direta",
+              "fala": 1
+            },
+            {
+              "titulo": "Gosto disso",
+              "texto": "objeto indireto: objetiva indireta",
+              "fala": 2
+            }
+          ]
+        }
+      ]
+    },
+    "predicativa": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Depois do verbo ser"
+        },
+        {
+          "tipo": "frase",
+          "texto": "O problema *é* que ninguém leu.",
+          "tamanho": 50
+        },
+        {
+          "tipo": "frase",
+          "texto": "O problema *é* *isso*.",
+          "em": "o problema é isso",
+          "tamanho": 50
+        },
+        {
+          "tipo": "chip",
+          "texto": "Predicativa",
+          "em": "é predicativa",
+          "tamanho": 44
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "frase",
+          "texto": "O *livro* que li",
+          "em": "'o livro",
+          "tamanho": 60
+        },
+        {
+          "tipo": "chip",
+          "texto": "\"Que\" retoma o nome: adjetiva",
+          "em": "ele é pronome",
+          "tamanho": 34
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Troque por 'isso'",
+        "Depois de 'é'? Predicativa",
+        "'Que' retomando nome = adjetiva"
+      ]
+    }
+  }
+}

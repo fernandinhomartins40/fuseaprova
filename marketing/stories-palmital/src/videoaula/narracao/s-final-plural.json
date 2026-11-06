@@ -1,0 +1,47 @@
+{
+  "teste": [
+    {
+      "arquivo": "audio/s-final-plural/voz-teste-1.wav",
+      "segundos": 3.582,
+      "texto": "Tire o S e veja se a palavra continua existindo no singular."
+    },
+    {
+      "arquivo": "audio/s-final-plural/voz-teste-2.wav",
+      "segundos": 5.772,
+      "texto": "Casas: tiro o S, fica 'casa'. Então o S é plural."
+    }
+  ],
+  "parte": [
+    {
+      "arquivo": "audio/s-final-plural/voz-parte-1.wav",
+      "segundos": 7.657,
+      "texto": "Lápis, ônibus, vírus: sem o S, a palavra não existe. Aqui o S faz parte dela."
+    }
+  ],
+  "contexto": [
+    {
+      "arquivo": "audio/s-final-plural/voz-contexto-1.wav",
+      "segundos": 6.287,
+      "texto": "Olhe o artigo: 'o lápis' é singular, 'os lápis' é plural. A palavra é a mesma."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/s-final-plural/voz-pegadinha-1.wav",
+      "segundos": 4.963,
+      "texto": "Cuidado com 'mas' e 'mais': aqui o S não é plural de nada."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/s-final-plural/voz-fecho-1.wav",
+      "segundos": 6.389,
+      "texto": "Resumindo: Tirou o S e sobrou palavra? É plural. O artigo mostra o número."
+    },
+    {
+      "arquivo": "audio/s-final-plural/voz-fecho-2.wav",
+      "segundos": 1.242,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

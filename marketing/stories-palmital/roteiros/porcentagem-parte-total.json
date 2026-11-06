@@ -1,0 +1,143 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-028",
+  "titulo": "Porcentagem: a parte, o total e o que falta",
+  "materia": "matematica",
+  "pronuncia": {
+    "De = multiplica": "Porcentagem de um valor: multiplica",
+    "Quanto representa = divide": "Quanto representa: divide",
+    "Falta = 100% − parte": "O que falta: cem por cento menos a parte"
+  },
+  "falas": {
+    "de": [
+      "Porcentagem de um valor: transforme em decimal e multiplique. 30% de 200: 0,3 vezes 200, dá 60."
+    ],
+    "quanto-representa": [
+      "Que porcentagem a parte representa? Divida a parte pelo total. 45 de 180: 45 dividido por 180, 0,25, ou seja, 25%."
+    ],
+    "achar-total": [
+      "Achar o total: 40% são 60 pessoas. Divida 60 por 0,4: o total é 150."
+    ],
+    "complemento": [
+      "E o que falta: se 35% já votaram, faltam 100 menos 35, 65%."
+    ],
+    "fecho": [
+      "Resumindo: De = multiplica. Quanto representa = divide. Falta = 100% − parte.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "de": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Porcentagem de um valor"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Vira decimal / e *multiplica*",
+          "tamanho": 80
+        },
+        {
+          "tipo": "conta",
+          "texto": "30% = 0,3",
+          "em": "30%"
+        },
+        {
+          "tipo": "conta",
+          "texto": "0,3 × 200 = 60",
+          "em": "0,3 vezes"
+        }
+      ]
+    },
+    "quanto-representa": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Quanto a parte representa"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Parte ÷ *total*",
+          "tamanho": 80
+        },
+        {
+          "tipo": "conta",
+          "texto": "45 ÷ 180 = 0,25",
+          "em": "45 de 180"
+        },
+        {
+          "tipo": "conta",
+          "texto": "25%",
+          "em": "ou seja",
+          "destaque": true
+        }
+      ]
+    },
+    "achar-total": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Achar o total"
+        },
+        {
+          "tipo": "frase",
+          "texto": "*40%* são 60 pessoas",
+          "em": "40%"
+        },
+        {
+          "tipo": "conta",
+          "texto": "60 ÷ 0,4 = 150",
+          "em": "Divida"
+        }
+      ]
+    },
+    "complemento": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "O que falta"
+        },
+        {
+          "tipo": "barra",
+          "em": 0.1,
+          "partes": [
+            {
+              "pct": 35,
+              "cor": "#15803D",
+              "rotulo": "35%"
+            },
+            {
+              "pct": 65,
+              "cor": "#FFC233",
+              "tinta": "#2D2F36",
+              "rotulo": "faltam 65%"
+            }
+          ]
+        },
+        {
+          "tipo": "conta",
+          "texto": "100 − 35 = 65",
+          "em": "faltam"
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "De = multiplica",
+        "Quanto representa = divide",
+        "Falta = 100% − parte"
+      ]
+    }
+  }
+}

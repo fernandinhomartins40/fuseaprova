@@ -1,0 +1,167 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-013",
+  "titulo": "S final: plural ou parte da palavra?",
+  "materia": "portugues",
+  "pronuncia": {
+    "o S": "o ésse"
+  },
+  "falas": {
+    "teste": [
+      "Tire o S e veja se a palavra continua existindo no singular.",
+      "Casas: tiro o S, fica 'casa'. Então o S é plural."
+    ],
+    "parte": [
+      "Lápis, ônibus, vírus: sem o S, a palavra não existe. Aqui o S faz parte dela."
+    ],
+    "contexto": [
+      "Olhe o artigo: 'o lápis' é singular, 'os lápis' é plural. A palavra é a mesma."
+    ],
+    "pegadinha": [
+      "Cuidado com 'mas' e 'mais': aqui o S não é plural de nada."
+    ],
+    "fecho": [
+      "Resumindo: Tirou o S e sobrou palavra? É plural. O artigo mostra o número.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "teste": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "O teste"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Tire o S. / Sobrou *palavra*?"
+        },
+        {
+          "tipo": "conta",
+          "texto": "casas = casa + S",
+          "fala": 1,
+          "destaque": true
+        }
+      ]
+    },
+    "parte": {
+      "blocos": [
+        {
+          "tipo": "palavras",
+          "texto": "Aqui o S / faz *parte*"
+        },
+        {
+          "tipo": "cartoes",
+          "colunas": 3,
+          "fonteTitulo": 40,
+          "itens": [
+            {
+              "titulo": "lápis",
+              "em": "Lápis"
+            },
+            {
+              "titulo": "ônibus",
+              "em": "ônibus"
+            },
+            {
+              "titulo": "vírus",
+              "em": "vírus"
+            }
+          ]
+        },
+        {
+          "tipo": "comparacao",
+          "itens": [
+            {
+              "texto": "lápi",
+              "certo": false,
+              "em": "sem o S"
+            }
+          ]
+        }
+      ]
+    },
+    "contexto": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Olhe o artigo"
+        },
+        {
+          "tipo": "cartoes",
+          "colunas": 2,
+          "fonteTitulo": 50,
+          "itens": [
+            {
+              "titulo": "o lápis",
+              "texto": "singular",
+              "em": "'o lápis'"
+            },
+            {
+              "titulo": "os lápis",
+              "texto": "plural",
+              "em": "'os lápis'"
+            }
+          ]
+        },
+        {
+          "tipo": "palavras",
+          "texto": "A palavra é a *mesma*",
+          "em": "A palavra é",
+          "tamanho": 70
+        }
+      ]
+    },
+    "pegadinha": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Pegadinha!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "cartoes",
+          "colunas": 3,
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "mas",
+              "em": "'mas'"
+            },
+            {
+              "titulo": "mais",
+              "em": "'mais'"
+            },
+            {
+              "titulo": "pires",
+              "em": "aqui"
+            }
+          ]
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Esse S / *não* é plural",
+          "em": "aqui"
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Tirou o S e sobrou palavra? É plural",
+        "O artigo mostra o número"
+      ]
+    }
+  }
+}

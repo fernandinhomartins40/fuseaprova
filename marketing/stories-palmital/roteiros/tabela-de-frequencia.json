@@ -1,0 +1,151 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-040",
+  "titulo": "Tabela de frequência e quartis",
+  "materia": "matematica",
+  "pronuncia": {
+    "Q1 = 25%, Q2 = 50%, Q3 = 75%": "Primeiro quartil, 25%. Segundo, 50%. Terceiro, 75%"
+  },
+  "falas": {
+    "media-tabela": [
+      "Em tabela de frequência, cada valor aparece várias vezes. Multiplique o valor pela frequência, some e divida pelo total.",
+      "Idades 20 com 3 pessoas e 30 com 2: 60 mais 60, 120, dividido por 5, média 24."
+    ],
+    "classes": [
+      "Com faixas, use o ponto médio de cada faixa. De 10 a 20, o ponto médio é 15."
+    ],
+    "quartis": [
+      "Quartis dividem os dados em 4 partes iguais: até o primeiro quartil fica 25%, até a mediana 50% e até o terceiro quartil 75%."
+    ],
+    "desvio": [
+      "E o desvio padrão mede o quanto os valores se espalham em volta da média. Quanto maior, mais espalhados."
+    ],
+    "fecho": [
+      "Resumindo: Valor × frequência. Faixa: ponto médio. Q1 = 25%, Q2 = 50%, Q3 = 75%.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "media-tabela": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Média em tabela"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Valor × *frequência*",
+          "em": "Multiplique",
+          "tamanho": 76
+        },
+        {
+          "tipo": "conta",
+          "texto": "20 × 3 + 30 × 2 = 120",
+          "fala": 1,
+          "em": "60 mais"
+        },
+        {
+          "tipo": "conta",
+          "texto": "120 ÷ 5 = 24",
+          "fala": 1,
+          "em": "dividido",
+          "destaque": true
+        }
+      ]
+    },
+    "classes": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Com faixas"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Use o *ponto* *médio*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "De 10 a 20: ponto médio 15",
+          "em": "De 10",
+          "destaque": true
+        }
+      ]
+    },
+    "quartis": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Quartis"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*4* partes iguais"
+        },
+        {
+          "tipo": "barra",
+          "em": "até o primeiro",
+          "partes": [
+            {
+              "pct": 25,
+              "cor": "#15803D",
+              "rotulo": "25%"
+            },
+            {
+              "pct": 25,
+              "cor": "#FFC233",
+              "tinta": "#2D2F36",
+              "rotulo": "50%"
+            },
+            {
+              "pct": 25,
+              "cor": "#15803D",
+              "rotulo": "75%"
+            },
+            {
+              "pct": 25,
+              "cor": "#FFC233",
+              "tinta": "#2D2F36",
+              "rotulo": "100%"
+            }
+          ]
+        }
+      ]
+    },
+    "desvio": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Desvio padrão"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "O quanto os valores / se *espalham*",
+          "tamanho": 76
+        },
+        {
+          "tipo": "chip",
+          "texto": "Maior = mais espalhados",
+          "em": "Quanto maior",
+          "tamanho": 40
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Valor × frequência",
+        "Faixa: ponto médio",
+        "Q1 = 25%, Q2 = 50%, Q3 = 75%"
+      ]
+    }
+  }
+}

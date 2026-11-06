@@ -1,0 +1,47 @@
+{
+  "regra-base": [
+    {
+      "arquivo": "audio/divisao-silabica/voz-regra-base-1.wav",
+      "segundos": 5.178,
+      "texto": "Toda sílaba tem uma vogal. Então conte as vogais que soam separadas."
+    }
+  ],
+  "separam": [
+    {
+      "arquivo": "audio/divisao-silabica/voz-separam-1.wav",
+      "segundos": 14.441,
+      "texto": "Separam: RR, SS, SC, SÇ e XC. Car-ro, pás-sa-ro, nas-cer, ex-ce-ção."
+    }
+  ],
+  "nao-separam": [
+    {
+      "arquivo": "audio/divisao-silabica/voz-nao-separam-1.wav",
+      "segundos": 7.575,
+      "texto": "Não separam: CH, LH, NH, QU e GU. Fi-lho, chu-va, quei-jo."
+    },
+    {
+      "arquivo": "audio/divisao-silabica/voz-nao-separam-2.wav",
+      "segundos": 7.835,
+      "texto": "Encontros como BR, PL e TR ficam juntos: li-vro, pla-no."
+    }
+  ],
+  "hiato": [
+    {
+      "arquivo": "audio/divisao-silabica/voz-hiato-1.wav",
+      "segundos": 10.84,
+      "texto": "No hiato, as vogais ficam em sílabas diferentes: sa-ú-de, po-e-ta. No ditongo, ficam juntas: cau-le."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/divisao-silabica/voz-fecho-1.wav",
+      "segundos": 15.436,
+      "texto": "Resumindo: RR, SS, SC, XC separam. CH, LH, NH, QU, GU não separam. Hiato separa, ditongo junta."
+    },
+    {
+      "arquivo": "audio/divisao-silabica/voz-fecho-2.wav",
+      "segundos": 1.138,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

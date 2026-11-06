@@ -1,0 +1,149 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-022",
+  "titulo": "Hiato, ditongo e tritongo",
+  "materia": "portugues",
+  "pronuncia": {
+    "cau-le, can-ção": "cau, le. Can, ção",
+    "Sa-ú-de, po-e-ta, ra-iz.": "Sa, ú, de. Po, e, ta. Ra, iz.",
+    "Pa-ra-guai, U-ru-guai.": "Pa, ra, guai. U, ru, guai.",
+    "O I e o U do hiato": "O i e o u do hiato"
+  },
+  "falas": {
+    "ditongo": [
+      "Ditongo: duas vogais na mesma sílaba. Pai, cau-le, can-ção."
+    ],
+    "hiato": [
+      "Hiato: duas vogais em sílabas diferentes. Sa-ú-de, po-e-ta, ra-iz."
+    ],
+    "tritongo": [
+      "Tritongo: três vogais juntas na mesma sílaba. Pa-ra-guai, U-ru-guai."
+    ],
+    "acento": [
+      "O I e o U do hiato, sozinhos na sílaba, levam acento: saúde, baú, país."
+    ],
+    "fecho": [
+      "Resumindo: Ditongo junta. Hiato separa. Tritongo: três vogais numa sílaba.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "ditongo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Ditongo"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Duas vogais / na *mesma* sílaba"
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "pai"
+          ],
+          "forte": 0,
+          "em": "Pai",
+          "tamanho": 100
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "cau",
+            "le"
+          ],
+          "forte": 0,
+          "em": "cau-le",
+          "tamanho": 80
+        }
+      ]
+    },
+    "hiato": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Hiato"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Duas vogais / em sílabas *diferentes*",
+          "tamanho": 76
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "sa",
+            "ú",
+            "de"
+          ],
+          "forte": 1,
+          "em": "Sa-ú-de",
+          "tamanho": 90
+        }
+      ]
+    },
+    "tritongo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Tritongo"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*Três* vogais / na mesma sílaba"
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "Pa",
+            "ra",
+            "guai"
+          ],
+          "forte": 2,
+          "em": "Pa-ra-guai",
+          "tamanho": 80
+        }
+      ]
+    },
+    "acento": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Acento no hiato"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "I e U *sozinhos* / levam acento"
+        },
+        {
+          "tipo": "silabas",
+          "silabas": [
+            "pa",
+            "ís"
+          ],
+          "forte": 1,
+          "em": "país",
+          "tamanho": 100
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Ditongo junta",
+        "Hiato separa",
+        "Tritongo: três vogais numa sílaba"
+      ]
+    }
+  }
+}

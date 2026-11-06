@@ -1,0 +1,42 @@
+{
+  "ordenar": [
+    {
+      "arquivo": "audio/mediana-moda/voz-ordenar-1.wav",
+      "segundos": 4.827,
+      "texto": "Mediana é o valor do meio. Antes de tudo, coloque os números em ordem."
+    }
+  ],
+  "impar": [
+    {
+      "arquivo": "audio/mediana-moda/voz-impar-1.wav",
+      "segundos": 8.846,
+      "texto": "Quantidade ímpar: é o do meio. 3, 5, 8, 9, 12: mediana 8."
+    }
+  ],
+  "par": [
+    {
+      "arquivo": "audio/mediana-moda/voz-par-1.wav",
+      "segundos": 11.002,
+      "texto": "Quantidade par: média dos dois do meio. 2, 4, 6, 10: 4 mais 6, 10, dividido por 2, mediana 5."
+    }
+  ],
+  "moda": [
+    {
+      "arquivo": "audio/mediana-moda/voz-moda-1.wav",
+      "segundos": 6.316,
+      "texto": "Moda é o valor que mais se repete. Pode haver duas modas, e pode não haver nenhuma."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/mediana-moda/voz-fecho-1.wav",
+      "segundos": 7.565,
+      "texto": "Resumindo: Ordene primeiro. Par: média dos dois do meio. Moda: o que mais repete."
+    },
+    {
+      "arquivo": "audio/mediana-moda/voz-fecho-2.wav",
+      "segundos": 1.387,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "voz": "GDzHdQOi6jjf8zaXhCYD",
+  "nomeVoz": "Raquel",
+  "semente": 13,
+  "ajustes": {
+    "stability": 0.36,
+    "similarity_boost": 0.78,
+    "style": 0.75,
+    "use_speaker_boost": true,
+    "speed": 1.15
+  },
+  "falas": {
+    "gancho": [
+      "Vai fazer o concurso da Prefeitura de Palmital? Então responde rapidinho: você acertaria essa questão no estilo da banca FAU?"
+    ],
+    "quiz": [
+      "Qual frase usa a crase do jeito certo?",
+      "Pensa rápido… três, dois, um!",
+      "Letra B! Quem chega, chega a algum lugar: a mais a prefeitura vira à prefeitura. E hora exata também leva crase."
+    ],
+    "app": [
+      "É assim que se treina no Fuse Aprova: questão no estilo da FAU e explicação na hora.",
+      "Errou? A questão volta na revisão até você pegar o jeito.",
+      "E ainda tem simulado no formato da prova e ranking com quem estuda em Palmital."
+    ],
+    "edital": [
+      "E o edital de Palmital ainda nem saiu!",
+      "Quando sair, o app se ajusta ao seu cargo, sem custo extra."
+    ],
+    "oferta": [
+      "Acesso completo: de trezentos e noventa e sete…",
+      "por cento e noventa e sete reais, à vista no Pix."
+    ],
+    "chamada": [
+      "Acertou? Imagina treinando todo dia para a prova de Palmital!",
+      "O link está na bio. Vem com a gente!"
+    ]
+  }
+}

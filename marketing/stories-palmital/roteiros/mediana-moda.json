@@ -1,0 +1,120 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-042",
+  "titulo": "Mediana e moda",
+  "materia": "matematica",
+  "pronuncia": {},
+  "falas": {
+    "ordenar": [
+      "Mediana é o valor do meio. Antes de tudo, coloque os números em ordem."
+    ],
+    "impar": [
+      "Quantidade ímpar: é o do meio. 3, 5, 8, 9, 12: mediana 8."
+    ],
+    "par": [
+      "Quantidade par: média dos dois do meio. 2, 4, 6, 10: 4 mais 6, 10, dividido por 2, mediana 5."
+    ],
+    "moda": [
+      "Moda é o valor que mais se repete. Pode haver duas modas, e pode não haver nenhuma."
+    ],
+    "fecho": [
+      "Resumindo: Ordene primeiro. Par: média dos dois do meio. Moda: o que mais repete.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "ordenar": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Mediana"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "O valor *do* *meio*"
+        },
+        {
+          "tipo": "chip",
+          "texto": "Antes, coloque em ordem",
+          "em": "Antes",
+          "tamanho": 40
+        }
+      ]
+    },
+    "impar": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Quantidade ímpar"
+        },
+        {
+          "tipo": "frase",
+          "texto": "3, 5, *8*, 9, 12",
+          "em": "3, 5",
+          "tamanho": 68
+        },
+        {
+          "tipo": "chip",
+          "texto": "Mediana 8",
+          "em": "mediana",
+          "tamanho": 44
+        }
+      ]
+    },
+    "par": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Quantidade par"
+        },
+        {
+          "tipo": "frase",
+          "texto": "2, *4*, *6*, 10",
+          "em": "2, 4",
+          "tamanho": 68
+        },
+        {
+          "tipo": "conta",
+          "texto": "(4 + 6) ÷ 2 = 5",
+          "em": "4 mais",
+          "destaque": true
+        }
+      ]
+    },
+    "moda": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Moda"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "O que mais / se *repete*"
+        },
+        {
+          "tipo": "chip",
+          "texto": "Pode ter duas ou nenhuma",
+          "em": "Pode haver",
+          "tamanho": 40
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Ordene primeiro",
+        "Par: média dos dois do meio",
+        "Moda: o que mais repete"
+      ]
+    }
+  }
+}

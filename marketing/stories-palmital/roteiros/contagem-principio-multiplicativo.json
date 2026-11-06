@@ -1,0 +1,120 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-044",
+  "titulo": "Contagem: princípio multiplicativo e combinações",
+  "materia": "matematica",
+  "pronuncia": {},
+  "falas": {
+    "multiplicativo": [
+      "Se há escolhas em sequência, multiplique as opções de cada etapa. 3 camisas e 4 calças: 12 combinações."
+    ],
+    "senha": [
+      "Senha de 4 dígitos com repetição: 10 vezes 10 vezes 10 vezes 10, 10.000 senhas."
+    ],
+    "sem-repetir": [
+      "Sem repetir algarismos: 10 vezes 9 vezes 8 vezes 7, 5.040."
+    ],
+    "combinacao": [
+      "Quando a ordem não importa, como formar duplas, divida pelas repetições. 5 pessoas formam 5 vezes 4 dividido por 2, 10 duplas."
+    ],
+    "fecho": [
+      "Resumindo: Etapas: multiplica. Sem repetir: diminui 1 a cada casa. Ordem não importa: divide.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "multiplicativo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Escolhas em sequência"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*Multiplique* / as opções",
+          "tamanho": 76
+        },
+        {
+          "tipo": "conta",
+          "texto": "3 × 4 = 12",
+          "em": "3 camisas",
+          "destaque": true
+        }
+      ]
+    },
+    "senha": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Senha de 4 dígitos: repete"
+        },
+        {
+          "tipo": "conta",
+          "texto": "10 × 10 × 10 × 10",
+          "em": "10 vezes"
+        },
+        {
+          "tipo": "conta",
+          "texto": "10.000 senhas",
+          "em": "10.000",
+          "destaque": true
+        }
+      ]
+    },
+    "sem-repetir": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Sem repetir"
+        },
+        {
+          "tipo": "conta",
+          "texto": "10 × 9 × 8 × 7",
+          "em": "10 vezes"
+        },
+        {
+          "tipo": "conta",
+          "texto": "5.040",
+          "em": "5.040",
+          "destaque": true
+        }
+      ]
+    },
+    "combinacao": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "A ordem não importa"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Divida pelas / *repetições*",
+          "tamanho": 76
+        },
+        {
+          "tipo": "conta",
+          "texto": "(5 × 4) ÷ 2 = 10 duplas",
+          "em": "5 pessoas",
+          "destaque": true
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Etapas: multiplica",
+        "Sem repetir: diminui 1 a cada casa",
+        "Ordem não importa: divide"
+      ]
+    }
+  }
+}

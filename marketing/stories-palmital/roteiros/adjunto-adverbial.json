@@ -1,0 +1,160 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-014",
+  "titulo": "Adjunto adverbial e orações adverbiais",
+  "materia": "portugues",
+  "pronuncia": {},
+  "falas": {
+    "ideia": [
+      "Adjunto adverbial é o pedaço da frase que dá uma circunstância: quando, onde, como, por quê."
+    ],
+    "circunstancias": [
+      "À noite: tempo. No parque: lugar. Com calma: modo. Por causa da chuva: causa. Para passar: finalidade."
+    ],
+    "oracoes": [
+      "Quando é uma oração inteira, ela segue o conectivo. 'Porque choveu': causa. 'Se chover': condição. 'Embora chova': concessão."
+    ],
+    "predicativo": [
+      "Cuidado: 'chegou cansado' dá uma qualidade do sujeito. É predicativo, e não adjunto adverbial."
+    ],
+    "fecho": [
+      "Resumindo: Pergunte quando, onde, como, por quê. Na oração, o conectivo dá a pista.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "ideia": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Adjunto adverbial"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Dá a *circunstância*",
+          "tamanho": 70
+        },
+        {
+          "tipo": "frase",
+          "texto": "Saímos *à noite* *pela porta dos fundos*.",
+          "em": "quando"
+        },
+        {
+          "tipo": "chip",
+          "texto": "quando · onde · como · por quê",
+          "em": "quando",
+          "tamanho": 34
+        }
+      ]
+    },
+    "circunstancias": {
+      "blocos": [
+        {
+          "tipo": "cartoes",
+          "colunas": 2,
+          "fonteTitulo": 40,
+          "itens": [
+            {
+              "titulo": "Tempo",
+              "texto": "à noite",
+              "em": "À noite"
+            },
+            {
+              "titulo": "Lugar",
+              "texto": "no parque",
+              "em": "No parque"
+            },
+            {
+              "titulo": "Modo",
+              "texto": "com calma",
+              "em": "Com calma"
+            },
+            {
+              "titulo": "Causa",
+              "texto": "por causa da chuva",
+              "em": "Por causa"
+            },
+            {
+              "titulo": "Finalidade",
+              "texto": "para passar",
+              "em": "Para passar"
+            }
+          ]
+        }
+      ]
+    },
+    "oracoes": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Oração adverbial"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Siga o *conectivo*",
+          "tamanho": 76
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 44,
+          "itens": [
+            {
+              "titulo": "Causa",
+              "texto": "porque choveu",
+              "em": "'Porque"
+            },
+            {
+              "titulo": "Condição",
+              "texto": "se chover",
+              "em": "'Se"
+            },
+            {
+              "titulo": "Concessão",
+              "texto": "embora chova",
+              "em": "'Embora"
+            }
+          ]
+        }
+      ]
+    },
+    "predicativo": {
+      "blocos": [
+        {
+          "tipo": "chip",
+          "texto": "Cuidado!",
+          "fundo": "coral",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        },
+        {
+          "tipo": "frase",
+          "texto": "Chegou *cansado*.",
+          "em": "'chegou",
+          "tamanho": 64
+        },
+        {
+          "tipo": "chip",
+          "texto": "Qualidade do sujeito: predicativo",
+          "em": "É predicativo",
+          "tamanho": 32
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Pergunte quando, onde, como, por quê",
+        "Na oração, o conectivo dá a pista"
+      ]
+    }
+  }
+}

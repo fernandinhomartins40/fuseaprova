@@ -1,0 +1,42 @@
+{
+  "diferenca": [
+    {
+      "arquivo": "audio/tipos-e-generos-textuais/voz-diferenca-1.wav",
+      "segundos": 6.412,
+      "texto": "Tipo textual é o jeito de organizar o texto. Gênero é o formato que usamos no dia a dia."
+    }
+  ],
+  "tipos": [
+    {
+      "arquivo": "audio/tipos-e-generos-textuais/voz-tipos-1.wav",
+      "segundos": 11.911,
+      "texto": "Narração conta fatos com personagens e tempo. Descrição mostra como algo é. Dissertação defende uma ideia. Injunção dá instruções. Exposição explica."
+    }
+  ],
+  "generos": [
+    {
+      "arquivo": "audio/tipos-e-generos-textuais/voz-generos-1.wav",
+      "segundos": 8.855,
+      "texto": "Gêneros são notícia, receita, crônica, bula, carta e e-mail. Uma receita é um gênero do tipo injuntivo."
+    }
+  ],
+  "pegadinha": [
+    {
+      "arquivo": "audio/tipos-e-generos-textuais/voz-pegadinha-1.wav",
+      "segundos": 7.375,
+      "texto": "A crônica costuma narrar um fato do dia a dia com tom leve. Ela é gênero; a narração é o tipo."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/tipos-e-generos-textuais/voz-fecho-1.wav",
+      "segundos": 6.478,
+      "texto": "Resumindo: Tipo = modo. Gênero = formato. Um gênero pode misturar tipos."
+    },
+    {
+      "arquivo": "audio/tipos-e-generos-textuais/voz-fecho-2.wav",
+      "segundos": 1.551,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

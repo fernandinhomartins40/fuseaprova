@@ -1,0 +1,129 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-026",
+  "titulo": "Problemas de multiplicar e dividir (e quando arredondar)",
+  "materia": "matematica",
+  "pronuncia": {
+    "dá 4 e sobram 2. Essas 2 também": "dá quatro e sobram duas. Essas duas também"
+  },
+  "falas": {
+    "multiplicar": [
+      "Quando você tem o valor de um e quer o de vários, multiplica.",
+      "Cada pessoa come 3 pães. Para 20 pessoas: 3 vezes 20, 60 pães."
+    ],
+    "dividir": [
+      "Quando tem o total e quer saber quanto cabe em cada parte, divide.",
+      "120 cadeiras em 8 fileiras iguais: 120 dividido por 8, 15 por fileira."
+    ],
+    "arredondar": [
+      "E se a divisão não for exata? Pense no que a pergunta pede.",
+      "50 pessoas em vans de 12 lugares: 50 dividido por 12 dá 4 e sobram 2. Essas 2 também precisam ir, então são 5 vans."
+    ],
+    "para-baixo": [
+      "Mas se a pergunta for quantas caixas cheias dá para fechar, você fica com a parte inteira, sem arredondar."
+    ],
+    "fecho": [
+      "Resumindo: Um para vários: multiplica. Total em partes: divide. Sobrou gente? Arredonda para cima.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "multiplicar": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "De um para vários"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*Multiplica*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "3 pães × 20 pessoas = 60",
+          "fala": 1,
+          "em": "3 vezes"
+        }
+      ]
+    },
+    "dividir": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Do total para as partes"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "*Divide*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "120 cadeiras ÷ 8 = 15",
+          "fala": 1,
+          "em": "120 dividido",
+          "tamanho": 62
+        }
+      ]
+    },
+    "arredondar": {
+      "blocos": [
+        {
+          "tipo": "palavras",
+          "texto": "E se *não* for / exata?",
+          "tamanho": 80
+        },
+        {
+          "tipo": "conta",
+          "texto": "50 ÷ 12 = 4 e sobram 2",
+          "fala": 1,
+          "em": "50 dividido",
+          "tamanho": 62
+        },
+        {
+          "tipo": "conta",
+          "texto": "São 5 vans",
+          "fala": 1,
+          "em": "então são",
+          "destaque": true
+        }
+      ]
+    },
+    "para-baixo": {
+      "blocos": [
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 46,
+          "itens": [
+            {
+              "titulo": "Precisa caber todo mundo?",
+              "texto": "arredonda para cima",
+              "em": 0
+            },
+            {
+              "titulo": "Quantas caixas cheias?",
+              "texto": "fica com a parte inteira",
+              "em": "quantas caixas"
+            }
+          ]
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Um para vários: multiplica",
+        "Total em partes: divide",
+        "Sobrou gente? Arredonda para cima"
+      ]
+    }
+  }
+}

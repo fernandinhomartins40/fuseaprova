@@ -1,0 +1,47 @@
+{
+  "media-tabela": [
+    {
+      "arquivo": "audio/tabela-de-frequencia/voz-media-tabela-1.wav",
+      "segundos": 8.455,
+      "texto": "Em tabela de frequência, cada valor aparece várias vezes. Multiplique o valor pela frequência, some e divida pelo total."
+    },
+    {
+      "arquivo": "audio/tabela-de-frequencia/voz-media-tabela-2.wav",
+      "segundos": 10.495,
+      "texto": "Idades 20 com 3 pessoas e 30 com 2: 60 mais 60, 120, dividido por 5, média 24."
+    }
+  ],
+  "classes": [
+    {
+      "arquivo": "audio/tabela-de-frequencia/voz-classes-1.wav",
+      "segundos": 5.857,
+      "texto": "Com faixas, use o ponto médio de cada faixa. De 10 a 20, o ponto médio é 15."
+    }
+  ],
+  "quartis": [
+    {
+      "arquivo": "audio/tabela-de-frequencia/voz-quartis-1.wav",
+      "segundos": 12.011,
+      "texto": "Quartis dividem os dados em 4 partes iguais: até o primeiro quartil fica 25%, até a mediana 50% e até o terceiro quartil 75%."
+    }
+  ],
+  "desvio": [
+    {
+      "arquivo": "audio/tabela-de-frequencia/voz-desvio-1.wav",
+      "segundos": 8.221,
+      "texto": "E o desvio padrão mede o quanto os valores se espalham em volta da média. Quanto maior, mais espalhados."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/tabela-de-frequencia/voz-fecho-1.wav",
+      "segundos": 13.473,
+      "texto": "Resumindo: Valor × frequência. Faixa: ponto médio. Q1 = 25%, Q2 = 50%, Q3 = 75%."
+    },
+    {
+      "arquivo": "audio/tabela-de-frequencia/voz-fecho-2.wav",
+      "segundos": 1.413,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

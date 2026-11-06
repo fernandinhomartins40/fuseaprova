@@ -1,0 +1,130 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-049",
+  "titulo": "Sequências que se repetem",
+  "materia": "matematica",
+  "pronuncia": {
+    "A, B, C, A, B, C": "á, bê, cê, á, bê, cê",
+    "do bloco: A.": "do bloco: á.",
+    "99 é C": "99 é cê"
+  },
+  "falas": {
+    "ciclo": [
+      "Na sequência A, B, C, A, B, C, o bloco de 3 letras se repete."
+    ],
+    "resto": [
+      "Para achar a letra 100, divida 100 pelo tamanho do bloco: 100 dividido por 3 dá resto 1. Resto 1 é a primeira do bloco: A."
+    ],
+    "resto-zero": [
+      "Resto zero significa a última do bloco: a posição 99 é C."
+    ],
+    "palavras": [
+      "Vale para palavras, símbolos e dias: conte o tamanho do ciclo e use o resto."
+    ],
+    "fecho": [
+      "Resumindo: Ache o tamanho do ciclo. Use o resto. Resto 0 = último do bloco.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "ciclo": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Ciclo"
+        },
+        {
+          "tipo": "conta",
+          "texto": "A B C · A B C · A B C",
+          "destaque": true
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Bloco de *3* letras",
+          "em": "o bloco"
+        }
+      ]
+    },
+    "resto": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Posição distante"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Qual é a letra *100*?"
+        },
+        {
+          "tipo": "conta",
+          "texto": "100 ÷ 3 = 33, resto 1",
+          "em": "100 dividido"
+        },
+        {
+          "tipo": "conta",
+          "texto": "Resto 1 → A",
+          "em": "Resto 1",
+          "destaque": true
+        }
+      ]
+    },
+    "resto-zero": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Resto zero"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "A *última* do bloco"
+        },
+        {
+          "tipo": "conta",
+          "texto": "99 ÷ 3 = 33, resto 0",
+          "em": "a posição"
+        },
+        {
+          "tipo": "conta",
+          "texto": "Resto 0 → C",
+          "em": "99 é C",
+          "destaque": true
+        }
+      ]
+    },
+    "palavras": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Vale para tudo"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "Conte o *ciclo*, / use o *resto*"
+        },
+        {
+          "tipo": "conta",
+          "texto": "BRASIL = 6 letras",
+          "em": "conte",
+          "destaque": true
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Ache o tamanho do ciclo",
+        "Use o resto",
+        "Resto 0 = último do bloco"
+      ]
+    }
+  }
+}

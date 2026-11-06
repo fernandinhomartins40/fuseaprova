@@ -1,0 +1,42 @@
+{
+  "substituir": [
+    {
+      "arquivo": "audio/funcao-primeiro-grau/voz-substituir-1.wav",
+      "segundos": 9.539,
+      "texto": "f(x) igual a 3x mais 5. Quanto vale f(4)? Troque o x por 4: 12 mais 5, 17."
+    }
+  ],
+  "isolar": [
+    {
+      "arquivo": "audio/funcao-primeiro-grau/voz-isolar-1.wav",
+      "segundos": 15.09,
+      "texto": "Agora o contrário: quando f(x) vale 26? 3x mais 5 igual a 26. Passe o 5 subtraindo: 3x igual a 21. Passe o 3 dividindo: x igual a 7."
+    }
+  ],
+  "sinais": [
+    {
+      "arquivo": "audio/funcao-primeiro-grau/voz-sinais-1.wav",
+      "segundos": 6.974,
+      "texto": "Ao mudar de lado, a operação inverte: soma vira subtração, multiplicação vira divisão."
+    }
+  ],
+  "conferir": [
+    {
+      "arquivo": "audio/funcao-primeiro-grau/voz-conferir-1.wav",
+      "segundos": 6.205,
+      "texto": "Confira sempre: 3 vezes 7 mais 5 dá 26. Bateu."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/funcao-primeiro-grau/voz-fecho-1.wav",
+      "segundos": 9.119,
+      "texto": "Resumindo: Achar f(x): substitui. Achar x: isola. Mudou de lado, inverte."
+    },
+    {
+      "arquivo": "audio/funcao-primeiro-grau/voz-fecho-2.wav",
+      "segundos": 1.329,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "mil": [
+    {
+      "arquivo": "audio/conversao-de-unidades/voz-mil-1.wav",
+      "segundos": 6.316,
+      "texto": "Um quilo tem 1.000 gramas. Um litro tem 1.000 mililitros. Um quilômetro tem 1.000 metros."
+    }
+  ],
+  "direcao": [
+    {
+      "arquivo": "audio/conversao-de-unidades/voz-direcao-1.wav",
+      "segundos": 5.427,
+      "texto": "Da unidade maior para a menor, multiplica. Da menor para a maior, divide."
+    },
+    {
+      "arquivo": "audio/conversao-de-unidades/voz-direcao-2.wav",
+      "segundos": 7.728,
+      "texto": "2,5 quilos são 2.500 gramas. 750 mililitros são 0,75 litro."
+    }
+  ],
+  "metro": [
+    {
+      "arquivo": "audio/conversao-de-unidades/voz-metro-1.wav",
+      "segundos": 5.215,
+      "texto": "No metro há passos de 10: 1 metro tem 100 centímetros e 1.000 milímetros."
+    }
+  ],
+  "tonelada": [
+    {
+      "arquivo": "audio/conversao-de-unidades/voz-tonelada-1.wav",
+      "segundos": 10.676,
+      "texto": "E a tonelada: 1 tonelada tem 1.000 quilos. 3 toneladas em sacas de 50 quilos: 3.000 dividido por 50, 60 sacas."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/conversao-de-unidades/voz-fecho-1.wav",
+      "segundos": 9.546,
+      "texto": "Resumindo: Maior para menor: multiplica. kg, L e km: × 1.000. Iguale as unidades antes de calcular."
+    },
+    {
+      "arquivo": "audio/conversao-de-unidades/voz-fecho-2.wav",
+      "segundos": 1.451,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

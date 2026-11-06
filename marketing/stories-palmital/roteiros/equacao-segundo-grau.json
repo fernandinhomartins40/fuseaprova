@@ -1,0 +1,146 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "va": "VA-047",
+  "titulo": "Equação do 2º grau e parábola",
+  "materia": "matematica",
+  "pronuncia": {
+    "2º grau": "segundo grau",
+    "x ao quadrado: x² menos 5x mais 6 igual a zero": "xis ao quadrado: xis ao quadrado menos cinco xis mais seis igual a zero",
+    "Quando a é 1": "Quando á é um",
+    "x igual a menos b sobre 2a": "xis igual a menos bê sobre dois á",
+    "Aqui: 5 sobre 2, 2,5.": "Aqui: cinco sobre dois, dá dois vírgula cinco.",
+    "Se a é positivo": "Se á é positivo",
+    "Soma = −b/a, produto = c/a": "Soma é menos bê sobre á, produto é cê sobre á",
+    "Vértice: x = −b ÷ 2a": "Vértice: xis é menos bê sobre dois á",
+    "a > 0 tem mínimo": "á positivo tem mínimo"
+  },
+  "falas": {
+    "forma": [
+      "A equação do 2º grau tem x ao quadrado: x² menos 5x mais 6 igual a zero."
+    ],
+    "soma-produto": [
+      "Quando a é 1, procure dois números com soma 5 e produto 6: 2 e 3. Essas são as raízes."
+    ],
+    "vertice": [
+      "O vértice da parábola, o ponto de máximo ou de mínimo, está em x igual a menos b sobre 2a. Aqui: 5 sobre 2, 2,5."
+    ],
+    "concavidade": [
+      "Se a é positivo, a parábola abre para cima e tem mínimo. Se é negativo, abre para baixo e tem máximo."
+    ],
+    "fecho": [
+      "Resumindo: Soma = −b/a, produto = c/a. Vértice: x = −b ÷ 2a. a > 0 tem mínimo.",
+      "Agora volta pra questão!"
+    ]
+  },
+  "cenas": {
+    "forma": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "2º grau"
+        },
+        {
+          "tipo": "conta",
+          "texto": "ax² + bx + c = 0"
+        },
+        {
+          "tipo": "conta",
+          "texto": "x² − 5x + 6 = 0",
+          "em": "x² menos",
+          "destaque": true
+        }
+      ]
+    },
+    "soma-produto": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Soma e produto"
+        },
+        {
+          "tipo": "conta",
+          "texto": "soma 5 · produto 6",
+          "em": "soma 5"
+        },
+        {
+          "tipo": "conta",
+          "texto": "2 e 3",
+          "em": "2 e 3",
+          "destaque": true
+        },
+        {
+          "tipo": "chip",
+          "texto": "São as raízes",
+          "em": "Essas",
+          "icone": "icone-alvo",
+          "tamanho": 40
+        }
+      ]
+    },
+    "vertice": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Vértice"
+        },
+        {
+          "tipo": "palavras",
+          "texto": "O ponto de / *máximo* ou *mínimo*",
+          "tamanho": 72
+        },
+        {
+          "tipo": "conta",
+          "texto": "x = −b ÷ 2a",
+          "em": "x igual"
+        },
+        {
+          "tipo": "conta",
+          "texto": "x = 5 ÷ 2 = 2,5",
+          "em": "Aqui",
+          "destaque": true
+        }
+      ]
+    },
+    "concavidade": {
+      "blocos": [
+        {
+          "tipo": "rotulo",
+          "texto": "Concavidade"
+        },
+        {
+          "tipo": "cartoes",
+          "fonteTitulo": 50,
+          "itens": [
+            {
+              "titulo": "a > 0",
+              "texto": "abre para cima: tem mínimo",
+              "em": "Se a é"
+            },
+            {
+              "titulo": "a < 0",
+              "texto": "abre para baixo: tem máximo",
+              "em": "Se é negativo"
+            }
+          ]
+        }
+      ]
+    },
+    "fecho": {
+      "tipo": "resumo",
+      "linhas": [
+        "Soma = −b/a, produto = c/a",
+        "Vértice: x = −b ÷ 2a",
+        "a > 0 tem mínimo"
+      ]
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "regra": [
+    {
+      "arquivo": "audio/fracoes-de-uma-quantidade/voz-regra-1.wav",
+      "segundos": 10.924,
+      "texto": "Para achar 3/4 de 80, divida pelo de baixo e multiplique pelo de cima: 80 dividido por 4, 20, vezes 3, 60."
+    }
+  ],
+  "resto": [
+    {
+      "arquivo": "audio/fracoes-de-uma-quantidade/voz-resto-1.wav",
+      "segundos": 6.111,
+      "texto": "Se 2/5 já foram, sobram 3/5. A fração do resto é 1 menos a parte."
+    }
+  ],
+  "fracao-da-fracao": [
+    {
+      "arquivo": "audio/fracoes-de-uma-quantidade/voz-fracao-da-fracao-1.wav",
+      "segundos": 6.553,
+      "texto": "Metade do que sobrou: multiplique as frações. 1/2 de 3/5 é 3/10."
+    }
+  ],
+  "total": [
+    {
+      "arquivo": "audio/fracoes-de-uma-quantidade/voz-total-1.wav",
+      "segundos": 8.484,
+      "texto": "Voltar ao total: se 1/3 são 25 pessoas, o total é 25 vezes 3, 75."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/fracoes-de-uma-quantidade/voz-fecho-1.wav",
+      "segundos": 8.896,
+      "texto": "Resumindo: Divide pelo de baixo, multiplica pelo de cima. Sobra = 1 − fração. 'De' entre frações = multiplica."
+    },
+    {
+      "arquivo": "audio/fracoes-de-uma-quantidade/voz-fecho-2.wav",
+      "segundos": 1.09,
+      "texto": "Agora volta pra questão!"
+    }
+  ]
+}

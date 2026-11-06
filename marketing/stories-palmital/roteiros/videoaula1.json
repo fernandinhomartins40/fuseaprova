@@ -1,0 +1,18 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 29,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.06
+  },
+  "falas": {
+    "fecho": [
+      "Resumindo: se a força cai na terceira sílaba do fim, tem acento.",
+      "Agora volta pra questão e usa a regra!"
+    ]
+  }
+}
