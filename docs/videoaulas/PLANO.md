@@ -89,6 +89,11 @@ As duas primeiras aulas tiveram cenas escritas à mão (`src/aula1`, `src/aula2`
 3. **Uma trilha por matéria,** gerada uma vez só (`trilha.py portugues|matematica|especificos|gerais`), e não uma por vídeo.
 4. `scripts/lote.py L`: roda narração, render e versão do app de todos os vídeos do lote e grava as fotos de conferência.
 
+**Onde ficam os vídeos:** em `videoaulas/`, na raiz do repositório e fora do git, nunca junto do marketing (`marketing/stories-palmital/out`). O projeto Remotion continua em `marketing/stories-palmital` porque divide componentes com os vídeos de redes.
+
+- `videoaulas/<materia>/<slug>.mp4`: o vídeo pronto, com o mesmo nome que vai para a VPS (`portugues`, `matematica`, `especificos`, `gerais`).
+- `videoaulas/_trabalho/`: render bruto, master em 1080p, fotos de conferência (`quadros/`) e testes. Nada daqui vai para a VPS.
+
 ## 4. Vídeo leve: o que consome menos VPS e menos banda
 
 Medido no vídeo de proparoxítonas, com 44 s:
@@ -150,9 +155,9 @@ Hoje a API em Node lê o arquivo e o envia (`/api/videoaulas/:slug`). Funciona, 
 Em cada lote, a ordem importa: **primeiro o arquivo, depois o banco.** Se o banco apontar para um vídeo que ainda não está na VPS, o aluno vê "Não deu para carregar a videoaula".
 
 1. **Conferir o conteúdo:** checar os itens ⚖️ na norma vigente e corrigir o `.md` se a lei mudou.
-2. **Gerar:** `python scripts/lote.py L`. Ele faz o JSON, a narração, o render e a versão do app, e grava as fotos de conferência em `out/quadros/`.
+2. **Gerar:** `python scripts/lote.py L`. Ele faz o JSON, a narração, o render e a versão do app, e grava as fotos de conferência em `videoaulas/_trabalho/quadros/`.
 3. **Revisar o vídeo:** o dono assiste e ouve cada um. Uma fala com problema é refeita sozinha, com `narracao.py <slug> --so cena:N`.
-4. **Subir:** copiar os `.mp4` para `/root/fuseaprova/arquivos/videoaulas/` (`scp`, com permissão 644) e conferir o `sha256sum` dos dois lados.
+4. **Subir:** copiar os `.mp4` de `videoaulas/<materia>/` para `/root/fuseaprova/arquivos/videoaulas/` (`scp`, com permissão 644) e conferir o `sha256sum` dos dois lados.
 5. **Ligar às questões:** criar a migração `00NN_videoaulas_lote_L.sql`, gerada a partir de `videos-temas.csv`, com um `UPDATE questoes SET videoaula = '<slug>' WHERE id IN (…)` por tema, como a 0016. Fazer commit, push e deploy.
 6. **Conferir em produção:** abrir uma questão de cada vídeo no site e rodar o script de conferência, que lista os slugs do banco sem arquivo e os arquivos sem questão.
 7. **Marcar** no índice abaixo: `roteiro` → `no ar`.

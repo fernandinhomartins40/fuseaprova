@@ -43,3 +43,6 @@ Thumbs.db
 # E2E: relatório visual gerado (pnpm e2e:relatorio)
 e2e/relatorio-visual/index.html
 e2e/relatorio-visual/img/
+
+# videoaulas: MP4 gerados pelo Remotion, publicados direto na VPS
+/videoaulas/
