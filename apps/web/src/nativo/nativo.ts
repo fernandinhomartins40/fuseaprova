@@ -16,6 +16,7 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 import { Share } from '@capacitor/share';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { StatusBar } from '@capacitor/status-bar';
+import { AppUpdate, AppUpdateAvailability } from '@capawesome/capacitor-app-update';
 import type { LembretesResposta } from '@fuse/shared/api';
 import {
   CANAL_LEMBRETES,
@@ -45,6 +46,28 @@ export async function iniciarApp(): Promise<void> {
   });
   // A splash some quando o React já pintou a 1ª tela.
   requestAnimationFrame(() => void SplashScreen.hide({ fadeOutDuration: 200 }));
+}
+
+/* ------------------------------------------------------------- atualização */
+
+/**
+ * D42: pergunta ao Google Play se há versão nova, sem depender de ninguém avisar o servidor. Fora da
+ * loja (APK de teste) ou sem conexão a consulta falha, e não há aviso.
+ * shortcut: só Android, porque o iOS precisa do ID da App Store; incluir quando o app sair por lá.
+ */
+export async function temAtualizacao(): Promise<boolean> {
+  if (Capacitor.getPlatform() !== 'android') return false;
+  try {
+    const { updateAvailability } = await AppUpdate.getAppUpdateInfo();
+    return updateAvailability === AppUpdateAvailability.UPDATE_AVAILABLE;
+  } catch {
+    return false;
+  }
+}
+
+/** Abre a página do app na loja. */
+export function abrirLoja(): void {
+  void AppUpdate.openAppStore().catch(() => undefined);
 }
 
 /* --------------------------------------------------------------- lembrete */

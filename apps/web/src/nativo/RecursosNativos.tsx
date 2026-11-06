@@ -1,13 +1,16 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { chamar } from '../api/cliente';
 import { useMe } from '../api/consultas';
+import { Botao3D, Modal } from '../ui';
 import {
+  abrirLoja,
   aoTocarLembrete,
   aoVoltarAoApp,
   cancelarLembretes,
   iniciarApp,
   sincronizarLembretes,
+  temAtualizacao,
 } from './nativo';
 import { EVENTO_REAGENDAR_LEMBRETES } from './notificacoes';
 
@@ -54,6 +57,19 @@ export default function RecursosNativos() {
   useEffect(() => {
     void iniciarApp();
   }, []);
+
+  // D42: confere a loja ao abrir e ao voltar ao app. "Agora não" vale até o app ser fechado.
+  const [atualizacao, setAtualizacao] = useState(false);
+  const dispensou = useRef(false);
+  const conferirLoja = () => {
+    if (!dispensou.current) void temAtualizacao().then(setAtualizacao);
+  };
+  const dispensar = () => {
+    dispensou.current = true;
+    setAtualizacao(false);
+  };
+  useEffect(conferirLoja, []);
+  useListener(() => aoVoltarAoApp(conferirLoja));
 
   // Registrado logo na montagem: o toque que abriu o app fechado fica guardado pelo plugin até
   // este listener existir, então nenhum toque se perde.
@@ -119,5 +135,23 @@ export default function RecursosNativos() {
     return () => window.removeEventListener(EVENTO_REAGENDAR_LEMBRETES, talvez);
   }, []);
 
-  return null;
+  return (
+    <Modal
+      aberto={atualizacao}
+      titulo="Tem versão nova do app"
+      descricao="Atualize para receber as novidades e as melhorias do Fuse Aprova."
+      onFechar={dispensar}
+      formato="folha"
+      rodape={
+        <>
+          <Botao3D data-autofoco onClick={abrirLoja}>
+            ATUALIZAR
+          </Botao3D>
+          <Botao3D variante="secundario" onClick={dispensar}>
+            AGORA NÃO
+          </Botao3D>
+        </>
+      }
+    />
+  );
 }

@@ -15,6 +15,7 @@ const estado = vi.hoisted(() => ({
   arquivos: new Set<string>(),
   downloads: 0,
   statusVideo: 200,
+  atualizacao: 1 as number | Error,
 }));
 
 vi.mock('@capacitor/local-notifications', () => ({
@@ -66,6 +67,15 @@ vi.mock('@capacitor/filesystem', () => ({
 vi.mock('@capacitor/share', () => ({ Share: {} }));
 vi.mock('@capacitor/splash-screen', () => ({ SplashScreen: {} }));
 vi.mock('@capacitor/status-bar', () => ({ StatusBar: {} }));
+vi.mock('@capawesome/capacitor-app-update', () => ({
+  AppUpdateAvailability: { UPDATE_AVAILABLE: 2 },
+  AppUpdate: {
+    getAppUpdateInfo: vi.fn(async () => {
+      if (estado.atualizacao instanceof Error) throw estado.atualizacao;
+      return { updateAvailability: estado.atualizacao };
+    }),
+  },
+}));
 vi.mock('@capacitor/core', () => ({
   Capacitor: {
     getPlatform: () => estado.plataforma,
@@ -86,6 +96,7 @@ const {
   estadoPermissaoLembrete,
   pedirPermissaoLembrete,
   sincronizarLembretes,
+  temAtualizacao,
 } = await import('./nativo');
 
 const ID = '3f1c2b9a-6d4e-4f1a-9b2c-1a2b3c4d5e6f';
@@ -268,5 +279,26 @@ describe('carregarVideo', () => {
     estado.statusVideo = 200;
     expect(await carregarVideo('/api/videoaulas/crase')).toBe(esperado);
     expect(estado.downloads).toBe(2);
+  });
+});
+
+describe('temAtualizacao', () => {
+  beforeEach(() => {
+    estado.plataforma = 'android';
+  });
+
+  it('avisa só quando o Google Play diz que há versão nova', async () => {
+    estado.atualizacao = 2;
+    expect(await temAtualizacao()).toBe(true);
+    estado.atualizacao = 1;
+    expect(await temAtualizacao()).toBe(false);
+  });
+
+  it('fora da loja, sem conexão ou no iOS, não avisa', async () => {
+    estado.atualizacao = new Error('app não veio da loja');
+    expect(await temAtualizacao()).toBe(false);
+    estado.atualizacao = 2;
+    estado.plataforma = 'ios';
+    expect(await temAtualizacao()).toBe(false);
   });
 });

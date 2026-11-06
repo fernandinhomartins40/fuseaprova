@@ -19,3 +19,5 @@ export const compartilharAgenda = soNoApp;
 export const carregarImagem = soNoApp;
 export const carregarVideo = soNoApp;
 export const barraDeStatus = soNoApp;
+export const temAtualizacao = soNoApp;
+export const abrirLoja = soNoApp;

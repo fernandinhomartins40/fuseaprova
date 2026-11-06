@@ -129,6 +129,9 @@ importers:
       '@capacitor/status-bar':
         specifier: 8.0.4
         version: 8.0.4(@capacitor/core@8.5.3)
+      '@capawesome/capacitor-app-update':
+        specifier: 8.1.1
+        version: 8.1.1(@capacitor/core@8.5.3)
     devDependencies:
       '@capacitor/cli':
         specifier: 8.5.3
@@ -163,6 +166,9 @@ importers:
       '@capacitor/status-bar':
         specifier: 8.0.4
         version: 8.0.4(@capacitor/core@8.5.3)
+      '@capawesome/capacitor-app-update':
+        specifier: 8.1.1
+        version: 8.1.1(@capacitor/core@8.5.3)
       '@fuse/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -920,6 +926,11 @@ packages:
 
   '@capacitor/synapse@1.0.4':
     resolution: {integrity: sha512-/C1FUo8/OkKuAT4nCIu/34ny9siNHr9qtFezu4kxm6GY1wNFxrCFWjfYx5C1tUhVGz3fxBABegupkpjXvjCHrw==}
+
+  '@capawesome/capacitor-app-update@8.1.1':
+    resolution: {integrity: sha512-1TzM4hMN4wgCDu3O0UhaIIoVspUFNfNJ+q+K/EKSQRKkfCbG79S1Fn/sXwMdtMO1Me55LQxdjw1I9rctFtKBOQ==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
 
   '@csstools/color-helpers@5.1.0':
     resolution: {integrity: sha512-S11EXWJyy0Mz5SYvRmY8nJYTFFd1LCNV+7cXyAgQtOOuzb4EsgfqDufL+9esx72/eLhsRdGZwaldu/h+E4t4BA==}
@@ -5297,6 +5308,10 @@ snapshots:
       '@capacitor/core': 8.5.3
 
   '@capacitor/synapse@1.0.4': {}
+
+  '@capawesome/capacitor-app-update@8.1.1(@capacitor/core@8.5.3)':
+    dependencies:
+      '@capacitor/core': 8.5.3
 
   '@csstools/color-helpers@5.1.0': {}
 

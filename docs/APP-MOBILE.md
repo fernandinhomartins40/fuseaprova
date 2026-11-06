@@ -81,6 +81,7 @@ No GitHub, em Settings → Secrets and variables → Actions, crie:
    - `app-release.aab`, que vai para a Play Store;
    - `app-debug.apk`, para instalar direto num celular de teste.
 3. O `versionCode` é o número da execução, então ele sempre cresce.
+4. Depois que a versão é publicada, o app avisa sozinho quem está em versão anterior (D42), a partir da 1.2.2.
 
 ### 3.3 Play Console
 

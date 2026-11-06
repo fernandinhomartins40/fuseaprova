@@ -27,6 +27,7 @@
     "@capacitor/share": "8.0.3",
     "@capacitor/splash-screen": "8.0.2",
     "@capacitor/status-bar": "8.0.4",
+    "@capawesome/capacitor-app-update": "8.1.1",
     "@fuse/shared": "workspace:*",
     "@tanstack/react-query": "^5.104.5",
     "idb": "^8.0.4",
