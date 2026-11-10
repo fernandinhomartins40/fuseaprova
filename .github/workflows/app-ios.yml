@@ -1,21 +1,48 @@
 # =============================================================================
-# App iOS (Capacitor): confere que o projeto compila no macOS (simulador, sem assinatura).
-# Manual. A publicação na App Store (assinatura, archive e envio) está em
-# docs/APP-MOBILE.md §5 e depende da conta Apple Developer do dono.
+# App iOS (Capacitor): gera o build assinado e envia ao App Store Connect (TestFlight),
+# tudo no macOS do GitHub, sem Mac do dono. Manual (Run workflow).
+#
+# Assinatura automática pela chave de API do App Store Connect: o Xcode cria/usa o
+# certificado de distribuição gerenciado na nuvem da Apple e o perfil da App Store.
+# Nenhum certificado .p12 nem perfil fica guardado aqui.
+#
+# Secrets (Settings → Secrets → Actions), docs/APP-MOBILE.md §5:
+#   APPSTORE_API_KEY_ID     Key ID da chave (Users and Access → Integrations), papel Admin
+#   APPSTORE_API_ISSUER_ID  Issuer ID da mesma tela
+#   APPSTORE_API_KEY_P8     conteúdo inteiro do arquivo AuthKey_XXXX.p8
+#   APPLE_TEAM_ID           Team ID (developer.apple.com → Membership details)
+# Sem os secrets, só compila para o simulador (confere que o projeto está são).
 # =============================================================================
 name: App iOS
 
 on:
   workflow_dispatch:
+    inputs:
+      versao:
+        description: Versão exibida na loja (CFBundleShortVersionString), ex. 1.0.0
+        type: string
+        default: '1.0.0'
 
 permissions:
   contents: read
 
+concurrency:
+  group: app-ios
+  cancel-in-progress: false
+
 jobs:
   ios:
-    name: Build iOS (simulador)
-    runs-on: macos-15
-    timeout-minutes: 40
+    name: Build iOS e envio ao TestFlight
+    # Desde 28/04/2026 a Apple só aceita builds do Xcode 26 (SDK iOS 26).
+    runs-on: macos-26
+    timeout-minutes: 60
+    env:
+      KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+      ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+      TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      VERSAO: ${{ inputs.versao }}
+      # O build cresce a cada execução (o App Store Connect exige número sempre maior).
+      BUILD: ${{ github.run_number }}
     steps:
       - uses: actions/checkout@v5
 
@@ -32,9 +59,74 @@ jobs:
       - name: Build web (modo app) e cap sync
         run: pnpm --filter @fuse/mobile sync:ios
 
+      - name: Xcode
+        run: xcodebuild -version
+
+      - name: Chave de API do App Store Connect
+        env:
+          KEY_P8: ${{ secrets.APPSTORE_API_KEY_P8 }}
+        run: |
+          if [ -n "$KEY_P8" ] && [ -n "$KEY_ID" ] && [ -n "$ISSUER_ID" ] && [ -n "$TEAM_ID" ]; then
+            mkdir -p "$RUNNER_TEMP/chave"
+            printf '%s\n' "$KEY_P8" > "$RUNNER_TEMP/chave/AuthKey_$KEY_ID.p8"
+            echo "CHAVE_P8=$RUNNER_TEMP/chave/AuthKey_$KEY_ID.p8" >> "$GITHUB_ENV"
+          else
+            echo "::warning title=Sem envio::Secrets da App Store ausentes: só o build do simulador será feito."
+          fi
+
       - name: xcodebuild (simulador, sem assinatura)
+        if: env.CHAVE_P8 == ''
         working-directory: apps/mobile/ios/App
         run: |
           xcodebuild -project App.xcodeproj -scheme App -configuration Debug \
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO build | tail -40
+
+      - name: Archive (Release, assinatura automática)
+        if: env.CHAVE_P8 != ''
+        working-directory: apps/mobile/ios/App
+        run: |
+          set -o pipefail
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$CHAVE_P8" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER_ID" \
+            DEVELOPMENT_TEAM="$TEAM_ID" \
+            MARKETING_VERSION="$VERSAO" \
+            CURRENT_PROJECT_VERSION="$BUILD" \
+            archive | tail -60
+
+      - name: Exportar e enviar ao App Store Connect
+        if: env.CHAVE_P8 != ''
+        run: |
+          set -o pipefail
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>teamID</key><string>$TEAM_ID</string>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+            <key>uploadSymbols</key><true/>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$CHAVE_P8" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER_ID" | tail -60
+          echo "::notice title=Enviado::Versão $VERSAO (build $BUILD) enviada. Em 10 a 30 min aparece no TestFlight."
+
+      - name: Apagar a chave do runner
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/chave"

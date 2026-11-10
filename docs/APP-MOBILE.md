@@ -1,6 +1,6 @@
 # App nativo do aluno (Android e iOS)
 
-Guia do dono para gerar, testar e publicar o app do Fuse Aprova. A primeira loja é a Play Store; a App Store vem depois. As decisões estão em [DECISOES.md, D20](DECISOES.md).
+Guia do dono para gerar, testar e publicar o app do Fuse Aprova. A Play Store já está no ar; a App Store é publicada pelo GitHub Actions, sem Mac (seção 5). As decisões estão em [DECISOES.md, D20](DECISOES.md).
 
 ## 1. Como o app é feito
 
@@ -37,7 +37,7 @@ Guia do dono para gerar, testar e publicar o app do Fuse Aprova. A primeira loja
 
 Requisitos:
 - **Android:** Android Studio com SDK 36 e **JDK 21**.
-- **iOS:** um Mac com Xcode 16 ou mais novo.
+- **iOS:** um Mac com Xcode 26 só para rodar no simulador local; para a loja, o build é no GitHub Actions (seção 5).
 
 ```bash
 pnpm install
@@ -126,27 +126,25 @@ No GitHub, em Settings → Secrets and variables → Actions, crie:
 - O botão voltar do Android volta entre telas e, na trilha, minimiza o app.
 - Imagens das questões com figura aparecem.
 
-## 5. App Store (depois)
+## 5. App Store (sem Mac: build e envio pelo GitHub Actions)
 
-1. **Apple Developer Program:** inscrição anual da Apple.
-2. **Certificates, IDs & Profiles:** App ID `br.com.fuseaprova.app`.
-3. **App Store Connect:** novo app; nome **Fuse Aprova**; idioma principal português (Brasil); SKU `fuseaprova-ios`.
-4. **No Mac:**
-   - `pnpm --filter @fuse/mobile sync:ios`;
-   - depois, `pnpm --filter @fuse/mobile ios:abrir`.
-5. **No Xcode**, alvo App → Signing & Capabilities:
-   - selecione o seu Team;
-   - deixe "Automatically manage signing".
-6. **Versão** (General): Version `1.0.0` e Build `1`. O Build cresce a cada envio.
-7. **Enviar:** Product → Archive → Distribute App → App Store Connect.
-8. **No App Store Connect:**
-   - **Privacidade do app:** os mesmos dados da Play Store; sem rastreamento (lista na seção 7).
-   - **Informações para revisão:** conta de demonstração com acesso pago. Na nota ao revisor, explique: "O acesso é adquirido no site; o app não vende conteúdo (aplicativo de leitura/consulta da conta existente)".
+O Xcode só é necessário para **compilar e assinar**; o resto (criar o app, preencher a ficha, TestFlight, enviar para revisão) é no site do App Store Connect. Quem compila é o macOS do GitHub (`macos-26`, Xcode 26, exigido pela Apple desde 28/04/2026), com a assinatura automática pela chave de API: não há certificado `.p12` nem perfil para gerar à mão.
+
+1. **Apple Developer Program** ativo.
+2. **App Store Connect → Apps → +  → Novo app:** plataforma iOS; nome **Fuse Aprova**; idioma principal **Português (Brasil)**; ID do pacote **br.com.fuseaprova.app** (se não aparecer na lista, registre em developer.apple.com → Certificates, IDs & Profiles → Identifiers → +, App IDs, "Explicit", sem capabilities extras); SKU `fuseaprova-ios`; acesso total.
+3. **Chave de API:** App Store Connect → Users and Access → Integrations → App Store Connect API → Team Keys → **+**; nome `GitHub Actions`; acesso **Admin** (com papel menor o Xcode não consegue criar o certificado de distribuição na nuvem). Baixe o `AuthKey_XXXX.p8` (só baixa uma vez) e anote o **Key ID** e o **Issuer ID**.
+4. **Team ID:** developer.apple.com → Account → Membership details.
+5. **Secrets do GitHub** (Settings → Secrets and variables → Actions): `APPSTORE_API_KEY_ID`, `APPSTORE_API_ISSUER_ID`, `APPLE_TEAM_ID` e `APPSTORE_API_KEY_P8` (o texto inteiro do `.p8`, com as linhas BEGIN/END). Pelo terminal: `gh secret set APPSTORE_API_KEY_P8 < AuthKey_XXXX.p8`. Depois guarde o `.p8` num lugar seguro fora do repositório.
+6. **GitHub → Actions → App iOS → Run workflow**, com a versão (ex. `1.0.0`). O build é o número da execução e cresce sozinho. Sem os secrets, o workflow só compila para o simulador.
+7. Em 10 a 30 minutos o build aparece em **TestFlight**. Teste interno: TestFlight → Internal Testing → adicione o seu Apple ID e instale pelo app TestFlight no iPhone.
+8. **Ficha da loja e revisão** (App Store Connect):
+   - **Privacidade do app:** lista na seção 7.2; sem rastreamento.
+   - **Informações para revisão:** conta de demonstração com acesso pago. Nota ao revisor: "O acesso é adquirido no site; o app não vende conteúdo nem indica onde comprar. Ele só dá acesso à conta já existente (diretriz 3.1.3(f))."
    - **Exportação de criptografia:** já declarada no `Info.plist` (`ITSAppUsesNonExemptEncryption = false`, só HTTPS).
-   - **Capturas de tela:** só de iPhone, porque o app é só para iPhone (seção 6).
-9. **Revisão:** primeiro pelo **TestFlight**, depois para a loja.
+   - **Capturas de tela:** só de iPhone (o app é só para iPhone), em `apps/mobile/loja/appstore/` (6,9" e 6,5").
+   - Escolha o build e **Adicionar para revisão**.
 
-**Para conferir que o projeto compila no macOS sem assinatura:** GitHub Actions → **App iOS** → Run workflow.
+Se o envio falhar com erro de certificado ("No signing certificate" / "maximum number of certificates"): developer.apple.com → Certificates, revogue certificados "Apple Development" antigos criados pelo CI e rode de novo.
 
 ## 6. Imagens: dimensões exatas
 
