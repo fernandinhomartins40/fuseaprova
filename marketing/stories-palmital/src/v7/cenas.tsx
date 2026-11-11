@@ -47,7 +47,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas }) => {
           </div>
         </Entra>
       </Coluna>
-      <div style={{ position: 'absolute', left: 600, top: 1120, transform: `translateY(${(1 - cel) * 600}px) rotate(-8deg)` }}>
+      <div style={{ position: 'absolute', left: 600, top: 1120, transform: `translateY(${(1 - cel) * 1200}px) rotate(-8deg)` }}>
         <Celular tela="real-inicio" largura={420} />
       </div>
       <Efeito nome="pop" em={b.ini + 14} volume={0.35} />
@@ -110,7 +110,7 @@ export const CenaBanca: React.FC<PropsCena> = ({ falas }) => {
           </Entra>
         ))}
       </Coluna>
-      <div style={{ position: 'absolute', left: 640, top: 1020, transform: `translateY(${(1 - cel) * 700}px) rotate(6deg)` }}>
+      <div style={{ position: 'absolute', left: 640, top: 1020, transform: `translateY(${(1 - cel) * 1200}px) rotate(6deg)` }}>
         <Celular tela="real-acerto" largura={400} />
       </div>
       <Efeito nome="pop" em={a.ini + 22} volume={0.45} />
@@ -168,7 +168,7 @@ export const CenaApp: React.FC<PropsCena> = ({ falas }) => {
           );
         })}
       </Coluna>
-      <div style={{ position: 'absolute', left: 610, top: 560, transform: `translateX(${(1 - cel) * 500}px) rotate(4deg)` }}>
+      <div style={{ position: 'absolute', left: 610, top: 560, transform: `translateX(${(1 - cel) * 1000}px) rotate(4deg)` }}>
         <Celular tela={recursos[Math.max(0, atual)].tela} largura={420} />
       </div>
       {quando.slice(1).map((q) => (
@@ -254,7 +254,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas }) => {
 /* 5. Prazo: 14 dias que vão acabando ------------------------------------ */
 export const CenaPrazo: React.FC<PropsCena> = ({ falas, duracao }) => {
   const frame = useCurrentFrame();
-  const [a] = falas;
+  const [a, b] = falas;
   // depois que os 14 entram, os dias "passam" um a um até sobrar a metade
   const passados = Math.floor(interpolate(frame, [a.ini + 40, duracao - 10], [0, 7], limita));
   return (
@@ -264,7 +264,7 @@ export const CenaPrazo: React.FC<PropsCena> = ({ falas, duracao }) => {
           Atenção
         </Rotulo>
         <div style={{ height: 30 }} />
-        <Palavras texto="O parcelamento / vale por *2 semanas*" atraso={a.ini} passo={3} tamanho={96} alinhamento="left" fundoDestaque={cor.ouro} corDestaque={cor.tinta} />
+        <Palavras texto="Essa oportunidade / vale só *2 semanas*" atraso={a.ini} passo={3} tamanho={96} alinhamento="left" fundoDestaque={cor.ouro} corDestaque={cor.tinta} />
         <Traco em={a.ini + 24} />
       </Coluna>
       <Em y={1000}>
@@ -301,14 +301,21 @@ export const CenaPrazo: React.FC<PropsCena> = ({ falas, duracao }) => {
             Depois, acaba
           </Chip>
         </Entra>
+        <div style={{ height: 26 }} />
+        <Entra atraso={b.ini} de="zoom">
+          <Chip fundo={cor.laranjaVivo} tamanho={40}>
+            Parcele no cartão agora
+          </Chip>
+        </Entra>
       </Em>
       <Efeito nome="pop" em={a.ini + 40} volume={0.35} />
+      <Efeito nome="pop" em={b.ini} volume={0.4} />
     </Fundo>
   );
 };
 
 /* 6. Chamada final ------------------------------------------------------- */
-const resumo = ['Concurso de Palmital', 'Questões no estilo da FAU', 'Até 6x sem juros no cartão', 'Só por 2 semanas'];
+const resumo = ['Concurso de Palmital', 'Questões no estilo da FAU', 'Até 6x sem juros no cartão', 'Oportunidade de 2 semanas'];
 
 export const CenaChamada: React.FC<PropsCena> = ({ falas }) => {
   const [a] = falas;

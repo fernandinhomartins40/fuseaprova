@@ -45,8 +45,13 @@
   "prazo": [
     {
       "arquivo": "audio/v7/voz-prazo-1.wav",
-      "segundos": 3.693,
-      "texto": "Mas atenção: o parcelamento vale só por duas semanas."
+      "segundos": 3.523,
+      "texto": "Mas atenção: essa oportunidade vale só por duas semanas."
+    },
+    {
+      "arquivo": "audio/v7/voz-prazo-2.wav",
+      "segundos": 3.311,
+      "texto": "A chance de parcelar no cartão é agora. Aproveite!"
     }
   ],
   "chamada": [
