@@ -212,6 +212,9 @@ p { margin: 0; text-wrap: pretty; }
 .selo-play img { display: block; height: 60px; width: auto; }
 .selo-play:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -12px rgba(0,0,0,.55); }
 .selo-play.grande img { height: 68px; }
+.selos { display: flex; flex-wrap: wrap; gap: 12px; }
+.hero .selos { flex-basis: 100%; }
+@media (max-width: 480px) { .selo-play img, .selo-play.grande img { height: 48px; } }
 .loja { margin-top: 14px; max-width: 520px; font-size: 15px; line-height: 1.4; color: var(--tinta-2); }
 .loja a { color: var(--tinta); font-weight: 800; }
 .topo nav a.link-app { color: #0B7A52; }
@@ -386,7 +389,7 @@ details p { padding: 0 24px 24px; color: var(--tinta-2); }
 .final h2 { font-size: clamp(44px, 7vw, 92px); max-width: 14ch; margin-inline: auto; }
 .final p { margin: 22px auto 36px; max-width: 46ch; color: rgba(255,255,255,.92); font-size: 20px; }
 .final .btn-principal { background: #fff; color: #C2381D; box-shadow: 0 16px 40px -12px rgba(0,0,0,.4); }
-.final-loja { margin-top: 18px; }
+.final-loja { margin-top: 18px; justify-content: center; }
 .final .capi-final { width: 280px; margin: 50px auto 0; }
 .final .orbita { position: absolute; border-radius: 50%; border: 1.5px dashed rgba(255,255,255,.25); left: 50%; top: 60%; transform: translate(-50%, -50%); animation: gira 80s linear infinite; }
 
