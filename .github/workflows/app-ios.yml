@@ -125,6 +125,26 @@ jobs:
             -authenticationKeyID "$KEY_ID" \
             -authenticationKeyIssuerID "$ISSUER_ID" | tail -60
           echo "::notice title=Enviado::Versão $VERSAO (build $BUILD) enviada. Em 10 a 30 min aparece no TestFlight."
+          # Mesma assinatura, agora gravada em arquivo: .ipa para iPhones reais na nuvem
+          # (BrowserStack, AWS Device Farm), que reassinam o app.
+          sed -i '' 's#<string>upload</string>#<string>export</string>#' "$RUNNER_TEMP/ExportOptions.plist"
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportPath "$RUNNER_TEMP/ipa" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$CHAVE_P8" \
+            -authenticationKeyID "$KEY_ID" \
+            -authenticationKeyIssuerID "$ISSUER_ID" | tail -20
+
+      - name: Artefato (.ipa)
+        if: env.CHAVE_P8 != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuse-aprova-ios-${{ inputs.versao }}-${{ github.run_number }}
+          path: ${{ runner.temp }}/ipa/*.ipa
+          retention-days: 30
+          if-no-files-found: error
 
       - name: Apagar a chave do runner
         if: always()
