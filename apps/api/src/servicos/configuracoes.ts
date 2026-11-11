@@ -67,7 +67,7 @@ export async function salvarConfiguracoes(db: Db, valores: ValoresProduto, porId
   limparCacheConfiguracoes();
 }
 
-export function configPublica(v: ValoresProduto, precos: PrecosProduto): ConfigPublicaResposta {
+export function configPublica(v: ValoresProduto, precos: PrecosProduto, cartaoAte: string | null = null): ConfigPublicaResposta {
   return {
     suporte: { whatsapp: v.suporteWhatsapp, email: v.suporteEmail || 'suporte@fuseaprova.com.br' },
     manutencao: {
@@ -79,5 +79,6 @@ export function configPublica(v: ValoresProduto, precos: PrecosProduto): ConfigP
     precoCentavos: precos.precoCentavos,
     precoAdicionalCentavos: precos.precoAdicionalCentavos,
     precoDeCentavos: precos.precoDeCentavos,
+    cartaoAte,
   };
 }

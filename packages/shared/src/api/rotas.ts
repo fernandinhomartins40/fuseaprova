@@ -230,6 +230,15 @@ export const ROTAS = {
     resposta: pag.PixResposta,
     limite: { max: 10, janelaMs: HORA, por: 'usuario' },
   }),
+  pagamentoCartao: rota({
+    metodo: 'POST',
+    caminho: '/pagamento/cartao',
+    guarda: 'aluno',
+    descricao: 'D43: cobrança no cartão em até 6x sem juros (página do Asaas); só até a data de CARTAO_ATE.',
+    corpo: pag.CartaoEntrada,
+    resposta: pag.CartaoResposta,
+    limite: { max: 10, janelaMs: HORA, por: 'usuario' },
+  }),
   pagamentoCupom: rota({
     metodo: 'POST',
     caminho: '/pagamento/cupom',

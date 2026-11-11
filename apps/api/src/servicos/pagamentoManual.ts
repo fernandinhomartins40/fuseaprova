@@ -197,7 +197,7 @@ export async function aprovarPedidoManual(
       }
     }
     if (pagoNoAsaas) {
-      if (valorMenorQueOPedido(pagoNoAsaas.valor, pedido0.valorCentavos)) {
+      if (valorMenorQueOPedido(pagoNoAsaas.valor, pedido0.valorCentavos, pedido0.parcelas)) {
         throw falha('conflito', 'O Asaas diz que esta cobrança foi paga, mas com valor menor que o do pedido. Confira no Asaas antes de liberar o acesso.');
       }
       await confirmarPagamento(deps, pedido0.asaasPaymentId, agora, { valorLiquidoCentavos: pagoNoAsaas.liquido, valorPagoCentavos: pagoNoAsaas.valor });

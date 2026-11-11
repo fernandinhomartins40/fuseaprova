@@ -573,6 +573,10 @@ export const pedidos = pgTable(
     pixPayload: text('pix_payload'),
     pixImagem: text('pix_imagem'),
     pixExpiraEm: ts('pix_expira_em'),
+    /** extra D43: cartão de crédito (1 a 6 parcelas, sem juros para o aluno); null = Pix. */
+    parcelas: integer('parcelas'),
+    /** extra D43: página de pagamento do Asaas (`invoiceUrl`), onde o aluno digita o cartão. */
+    cartaoUrl: text('cartao_url'),
     pagoEm: ts('pago_em'),
     /** extra */
     reembolsoSolicitadoEm: ts('reembolso_solicitado_em'),

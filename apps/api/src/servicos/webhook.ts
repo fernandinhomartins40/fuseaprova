@@ -29,18 +29,19 @@ export async function executarEvento(deps: Deps, corpo: AsaasWebhookCorpo, agora
   const acao = acaoDoEventoAsaas(corpo.event);
   if (acao === 'ignorar' || !paymentId) return 'ignorado';
   const [p] = await deps.db
-    .select({ id: pedidos.id, valorCentavos: pedidos.valorCentavos })
+    .select({ id: pedidos.id, valorCentavos: pedidos.valorCentavos, parcelas: pedidos.parcelas })
     .from(pedidos)
     .where(eq(pedidos.asaasPaymentId, paymentId));
   if (!p) return 'sem_pedido';
   if (acao === 'pagar') {
     // Cobrança alterada no painel do Asaas para menos que o pedido: não libera (o superadmin vê o evento).
     const valor = typeof corpo.payment?.value === 'number' ? Math.round(corpo.payment.value * 100) : null;
-    if (valorMenorQueOPedido(valor, p.valorCentavos)) {
+    if (valorMenorQueOPedido(valor, p.valorCentavos, p.parcelas)) {
       deps.log.warn({ pedidoId: p.id, valorCentavos: valor }, 'webhook com valor menor que o pedido');
       return 'valor_divergente';
     }
-    const liquido = typeof corpo.payment?.netValue === 'number' ? Math.round(corpo.payment.netValue * 100) : null;
+    // D43: no parcelado o líquido vem por parcela; o total é aproximado pelas N parcelas.
+    const liquido = typeof corpo.payment?.netValue === 'number' ? Math.round(corpo.payment.netValue * 100) * (p.parcelas ?? 1) : null;
     return (await confirmarPagamento(deps, paymentId, agora, { valorLiquidoCentavos: liquido })) ? 'pago' : 'sem_mudanca';
   }
   if (acao === 'estornar') return (await estornarPagamento(deps, paymentId, agora)) ? 'estornado' : 'sem_mudanca';

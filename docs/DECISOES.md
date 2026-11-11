@@ -432,3 +432,20 @@ O cadastro continua sem teste (D35). O dono libera, aluno por aluno, um teste de
 - **Como funciona:** ao abrir e ao voltar ao app, ele pergunta ao Google Play se há versão nova (`@capawesome/capacitor-app-update`, `temAtualizacao`). Se houver, abre um aviso com ATUALIZAR, que leva à página do app na loja, e AGORA NÃO, que vale até o app ser fechado. Não bloqueia o uso.
 - **Por que a loja responde, e não a nossa API:** o aviso só aparece quando a versão já está liberada para aquele aparelho, sem passo manual a cada lançamento e sem mandar para a loja quem ainda não tem o que baixar.
 - **Limites:** só existe a partir do AAB 1.2.2; quem está em versão anterior depende da atualização automática da Play Store. No iOS ainda não avisa, porque precisa do ID da App Store. No APK de teste não aparece, porque o app não veio da loja.
+
+
+## D43. Cartão em até 6x sem juros por 2 semanas, com 7 dias de garantia (11/11/2026, pedido do dono)
+
+- **O quê:** de 11/11 a 25/11/2026, o site aceita cartão de crédito em 1 a 6 parcelas, além do Pix. É "sem juros" para o aluno: a taxa do Asaas para parcelado sai do valor líquido do dono. Exceção, por tempo limitado, à regra "R$ 397 só no Pix" do CLAUDE.md.
+- **Como:** `POST /pagamento/cartao {parcelas, concursoId?, cupom?}` cria no Asaas uma cobrança `CREDIT_CARD` (à vista com `value`; parcelada com `installmentCount` + `totalValue`) **sem dados do cartão**. O aluno abre o `invoiceUrl` numa aba e digita o cartão na página do Asaas, então o servidor nunca vê o número do cartão. O acesso é liberado pelo mesmo webhook do Pix (`PAYMENT_CONFIRMED` da 1ª parcela), e a tela de pagamento consulta o status até liberar.
+- **Banco (migração 0019):** `pedidos.parcelas` (null = Pix) e `pedidos.cartao_url`. O cartão pendente usa `pix_expira_em` = fim do vencimento (amanhã), e o job de 10 min o encerra como faz com o Pix.
+- **Regras:**
+  - O Pix e o cartão pendentes convivem, porque o aluno pode estar digitando o cartão no Asaas enquanto a tela gera o Pix sozinha (D38).
+  - Quando um deles é pago, o outro sai do Asaas (`cancelarOutrasCobrancas`).
+  - No parcelado, o webhook informa o valor de **uma** parcela: a trava de valor menor (`valorMenorQueOPedido`) compara parcela × N, com 1 centavo de folga por parcela. O líquido gravado é aproximado (líquido da parcela × N).
+  - Remover e reembolsar um parcelado age no **parcelamento inteiro**: `DELETE /installments/{id}` e `POST /installments/{id}/refund`. O id do parcelamento vem de `GET /payments/{id}`.
+  - Os eventos das parcelas 2 a 6 caem como `sem_pedido`.
+- **Prazo:** `CARTAO_ATE` (AAAA-MM-DD, São Paulo; padrão 2026-11-25; vazio = só Pix). Depois desse dia, `/config/publica` devolve `cartaoAte: null`, a tela some e a rota responde 409. Não precisa de deploy.
+- **Garantia de 7 dias:** a tela mostra "7 dias de garantia: se não gostar, devolvemos 100% do valor". É o direito de arrependimento (CDC, art. 49) que já existia, e o reembolso continua sendo feito pelo superadmin. **Não chamamos de "grátis":** a pessoa paga antes, e "grátis" seria publicidade enganosa (CDC, art. 37), além de repetir a confusão que levou ao D35.
+- **App das lojas:** não muda. Continua sem preço, pagamento ou link para o site (D20). A novidade chega por e-mail (/super/comunicacao, segmento "Cadastrados sem pagamento"), o que as duas lojas permitem por ser comunicação fora do app. Link de compra dentro do app do iOS no Brasil (acordo da Apple com o CADE, jun/2026) exige versão nova, autorização da Apple e comissão. Não compensa por 2 semanas.
+- **Fora:** as apostilas (D34) continuam só no Pix.

@@ -16,7 +16,7 @@ import { PrecosProduto } from '@fuse/shared/api';
 import type { Config } from '../config.js';
 import type { Deps } from '../contexto.js';
 import { falha } from '../http/erros.js';
-import { ErroAsaas } from '../integracoes/asaas.js';
+import { ErroAsaas, removerCobrancaAsaas } from '../integracoes/asaas.js';
 import { dataSql, type Db } from '../util.js';
 
 const { configuracoes, cupons, pedidos } = schema;
@@ -191,7 +191,7 @@ export async function garantirReservaCupom(deps: Deps, pedido: Pedido, agora: Da
   });
   if (!alemDoLimite) return;
   if (pedido.asaasPaymentId) {
-    await deps.asaas.removerCobranca(pedido.asaasPaymentId).catch((e: Error) => {
+    await removerCobrancaAsaas(deps.asaas, pedido.asaasPaymentId, pedido.parcelas).catch((e: Error) => {
       deps.log.warn({ pedidoId: pedido.id, erro: e.message }, 'pix além do limite do cupom não foi removido no asaas');
     });
   }
@@ -281,7 +281,7 @@ export async function sincronizarPixPendentes(deps: Deps, agora: Date, filtro: {
     const certo = precoComCupom(base, cupom).centavos;
     if (cupomOk && certo === p.valorCentavos) continue;
     try {
-      await deps.asaas.removerCobranca(p.asaasPaymentId!);
+      await removerCobrancaAsaas(deps.asaas, p.asaasPaymentId!, p.parcelas);
     } catch (e) {
       if (!(e instanceof ErroAsaas && e.status === 404)) {
         deps.log.error({ pedidoId: p.id, erro: (e as Error).message }, 'falha ao cancelar pix com preço antigo');

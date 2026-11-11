@@ -21,7 +21,7 @@ import {
 import type { Deps } from '../../contexto.js';
 import type { Registrador } from '../../http/registrar.js';
 import { existe, falha } from '../../http/erros.js';
-import { ErroAsaas } from '../../integracoes/asaas.js';
+import { ErroAsaas, removerCobrancaAsaas } from '../../integracoes/asaas.js';
 import { conciliarPedido } from '../../servicos/conciliacao.js';
 import { reconfirmar } from '../../servicos/doisfatores.js';
 import { enviarEmailConfirmacao, type Pedido } from '../../servicos/pagamento.js';
@@ -438,7 +438,7 @@ export function rotasSuperPagamentos(r: Registrador): void {
     const cancelavel = pedido.asaasPaymentId && !pedido.canceladoEm && (pedido.status === 'pendente' || pedido.metodo === 'manual' || pedido.status === 'vencido');
     if (!cancelavel) throw falha('conflito', 'Só é possível cancelar uma cobrança Pix que ainda está aberta no Asaas.');
     try {
-      await deps.asaas.removerCobranca(pedido.asaasPaymentId!);
+      await removerCobrancaAsaas(deps.asaas, pedido.asaasPaymentId!, pedido.parcelas);
     } catch (e) {
       // Já removida no Asaas: segue e marca aqui.
       if (!(e instanceof ErroAsaas && e.status === 404)) erroAsaas(deps, e, { pedidoId: pedido.id });

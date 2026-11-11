@@ -35,6 +35,29 @@ export const PixResposta = z.object({
 });
 export type PixResposta = z.infer<typeof PixResposta>;
 
+/** D43: parcelas do cartão, sem juros para o aluno (a taxa do Asaas fica com o dono). */
+export const PARCELAS_CARTAO_MAX = 6;
+
+/**
+ * POST /pagamento/cartao (D43): cobrança no cartão em 1 a 6 parcelas. O cartão é digitado na
+ * página do Asaas (`url`); o acesso libera pelo mesmo webhook do Pix.
+ */
+export const CartaoEntrada = z.object({
+  concursoId: Uuid.optional(),
+  cupom: z.string().trim().max(40).optional(),
+  parcelas: z.number().int().min(1).max(PARCELAS_CARTAO_MAX),
+});
+export type CartaoEntrada = z.input<typeof CartaoEntrada>;
+
+export const CartaoResposta = z.object({
+  pedidoId: Uuid,
+  valorCentavos: z.number().int(),
+  parcelas: z.number().int(),
+  /** Página de pagamento do Asaas (`invoiceUrl`). */
+  url: z.string().url(),
+});
+export type CartaoResposta = z.infer<typeof CartaoResposta>;
+
 /** GET /pagamento/status?concursoId= — consultado a cada 4 s pela PWA. */
 export const StatusPagamentoQuery = z.object({ concursoId: Uuid.optional() });
 export type StatusPagamentoQuery = z.input<typeof StatusPagamentoQuery>;
@@ -91,6 +114,9 @@ export const AsaasWebhookCorpo = z
         externalReference: z.string().nullable().optional(),
         paymentDate: z.string().nullable().optional(),
         confirmedDate: z.string().nullable().optional(),
+        netValue: z.number().optional(),
+        /** D43: id do parcelamento (cartão em 2x ou mais). */
+        installment: z.string().nullable().optional(),
       })
       .passthrough()
       .optional(),

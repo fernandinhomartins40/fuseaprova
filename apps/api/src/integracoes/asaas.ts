@@ -8,6 +8,9 @@
  *   GET /myAccount/commercialInfo · GET /finance/balance · GET /financialTransactions
  *   GET /webhooks · POST /webhooks · PUT /webhooks/{id}
  *   (o PUT não aceita `email` nem `apiVersion`; `authToken` tem de 32 a 255 caracteres).
+ * D43 (cartão parcelado), conferidos em 11/11/2026: POST /payments com `billingType: CREDIT_CARD`,
+ *   `installmentCount` + `totalValue` e sem dados do cartão devolve o `invoiceUrl` (o aluno digita
+ *   o cartão no Asaas) · POST /installments/{id}/refund · DELETE /installments/{id}.
  */
 
 export interface AsaasCriarCliente {
@@ -20,8 +23,11 @@ export interface AsaasCriarCliente {
 
 export interface AsaasCriarCobranca {
   customer: string;
-  billingType: 'PIX';
-  value: number;
+  billingType: 'PIX' | 'CREDIT_CARD';
+  /** Pagamento à vista. No parcelamento vão `installmentCount` e `totalValue` no lugar. */
+  value?: number;
+  installmentCount?: number;
+  totalValue?: number;
   dueDate: string;
   description: string;
   externalReference: string;
@@ -39,6 +45,10 @@ export interface AsaasCobranca {
   dateCreated?: string;
   externalReference?: string | null;
   deleted?: boolean;
+  /** D43: página de pagamento do Asaas. */
+  invoiceUrl?: string;
+  /** D43: id do parcelamento (cartão em 2x ou mais). */
+  installment?: string | null;
 }
 
 /** D13: dados comerciais da conta (GET /myAccount/commercialInfo). */
@@ -116,6 +126,9 @@ export interface ClienteAsaas {
     dados: { paymentDate: string; value: number; notifyCustomer: boolean },
   ): Promise<AsaasCobranca>;
   removerCobranca(pagamentoId: string): Promise<{ deleted: boolean; id: string }>;
+  /* D43: cartão parcelado */
+  estornarParcelamento(parcelamentoId: string): Promise<unknown>;
+  removerParcelamento(parcelamentoId: string): Promise<{ deleted: boolean; id: string }>;
   minhaConta(): Promise<AsaasConta>;
   saldo(): Promise<{ balance: number }>;
   extrato(q: { startDate: string; finishDate: string; offset: number; limit: number; order?: 'asc' | 'desc' }): Promise<AsaasLista<AsaasTransacao>>;
@@ -181,6 +194,8 @@ export function criarClienteAsaasHttp(o: OpcoesAsaasHttp): ClienteAsaas {
     estornar: (id, d) => chamar('POST', `/payments/${encodeURIComponent(id)}/refund`, d ?? {}),
     receberEmDinheiro: (id, d) => chamar('POST', `/payments/${encodeURIComponent(id)}/receiveInCash`, d),
     removerCobranca: (id) => chamar('DELETE', `/payments/${encodeURIComponent(id)}`),
+    estornarParcelamento: (id) => chamar('POST', `/installments/${encodeURIComponent(id)}/refund`, {}),
+    removerParcelamento: (id) => chamar('DELETE', `/installments/${encodeURIComponent(id)}`),
     minhaConta: () => chamar('GET', '/myAccount/commercialInfo/'),
     saldo: () => chamar('GET', '/finance/balance'),
     extrato: (q) => chamar('GET', `/financialTransactions${consulta(q)}`),
@@ -188,6 +203,21 @@ export function criarClienteAsaasHttp(o: OpcoesAsaasHttp): ClienteAsaas {
     criarWebhook: (d) => chamar('POST', '/webhooks', d),
     atualizarWebhook: (id, d) => chamar('PUT', `/webhooks/${encodeURIComponent(id)}`, d),
   };
+}
+
+/**
+ * Remove uma cobrança aberta no Asaas. No cartão parcelado remove o parcelamento inteiro (D43),
+ * senão as outras parcelas continuariam abertas. Lança o erro do Asaas, como `removerCobranca`.
+ */
+export async function removerCobrancaAsaas(asaas: ClienteAsaas, paymentId: string, parcelas: number | null): Promise<void> {
+  if (parcelas && parcelas > 1) {
+    const c = await asaas.obterCobranca(paymentId);
+    if (c.installment) {
+      await asaas.removerParcelamento(c.installment);
+      return;
+    }
+  }
+  await asaas.removerCobranca(paymentId);
 }
 
 /** Query string para o Asaas (ignora indefinidos; colchetes como `dateCreated[ge]` ficam legíveis). */
@@ -222,6 +252,9 @@ export interface AsaasFalso extends ClienteAsaas {
   /** D13 */
   recebidasEmDinheiro: { id: string; paymentDate: string; value: number }[];
   removidas: string[];
+  /** D43 */
+  parcelamentosEstornados: string[];
+  parcelamentosRemovidos: string[];
   webhooks: AsaasWebhook[];
   saldoAtual: number;
   transacoes: AsaasTransacao[];
@@ -249,6 +282,8 @@ export function criarAsaasFalso(opcoes: { validadeQrMs?: number; relogio?: () =>
     estornos: [],
     recebidasEmDinheiro: [],
     removidas: [],
+    parcelamentosEstornados: [],
+    parcelamentosRemovidos: [],
     webhooks: [],
     saldoAtual: 1234.56,
     transacoes: [],
@@ -268,9 +303,22 @@ export function criarAsaasFalso(opcoes: { validadeQrMs?: number; relogio?: () =>
     async criarCobranca(d) {
       checar();
       const id = `pay_${String(++n).padStart(6, '0')}`;
-      const c = { id, status: 'PENDING', value: d.value, netValue: Math.round((d.value - 1.99) * 100) / 100, billingType: 'PIX', dados: d };
+      // Parcelado: a cobrança devolvida é a 1ª parcela (valor = total / parcelas, como no Asaas).
+      const parcelas = d.installmentCount ?? 1;
+      const value = d.installmentCount ? Math.floor(((d.totalValue ?? 0) / parcelas) * 100) / 100 : (d.value ?? 0);
+      const installment = d.installmentCount ? `ins_${String(++n).padStart(6, '0')}` : null;
+      const c = {
+        id,
+        status: 'PENDING',
+        value,
+        netValue: Math.round((value - 1.99) * 100) / 100,
+        billingType: d.billingType,
+        invoiceUrl: `https://sandbox.asaas.com/i/${id}`,
+        installment,
+        dados: d,
+      };
       f.cobrancas.set(id, c);
-      return { id, status: c.status, value: d.value };
+      return { id, status: c.status, value, invoiceUrl: c.invoiceUrl, installment };
     },
     async qrCodePix(id) {
       checar();
@@ -286,7 +334,7 @@ export function criarAsaasFalso(opcoes: { validadeQrMs?: number; relogio?: () =>
       f.chamadas.obterCobranca++;
       const c = f.cobrancas.get(id);
       if (!c) throw new ErroAsaas('Cobrança não encontrada.', 404);
-      const r: AsaasCobranca = { id, status: c.status, value: c.value!, billingType: c.billingType ?? 'PIX', deleted: c.deleted ?? false };
+      const r: AsaasCobranca = { id, status: c.status, value: c.value!, billingType: c.billingType ?? 'PIX', deleted: c.deleted ?? false, installment: c.installment ?? null };
       if (c.netValue !== undefined) r.netValue = c.netValue;
       return r;
     },
@@ -314,6 +362,17 @@ export function criarAsaasFalso(opcoes: { validadeQrMs?: number; relogio?: () =>
       if (c.status !== 'PENDING' && c.status !== 'OVERDUE') throw new ErroAsaas('Asaas respondeu 400: só cobranças pendentes podem ser removidas.', 400);
       c.deleted = true;
       f.removidas.push(id);
+      return { deleted: true, id };
+    },
+    async estornarParcelamento(id) {
+      checar();
+      f.parcelamentosEstornados.push(id);
+      return { id };
+    },
+    async removerParcelamento(id) {
+      checar();
+      for (const c of f.cobrancas.values()) if (c.installment === id) c.deleted = true;
+      f.parcelamentosRemovidos.push(id);
       return { deleted: true, id };
     },
     async minhaConta() {

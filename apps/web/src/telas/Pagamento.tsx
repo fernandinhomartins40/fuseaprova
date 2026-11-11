@@ -12,6 +12,7 @@ import {
 } from '@fuse/shared';
 import {
   INTERVALO_STATUS_MS,
+  PARCELAS_CARTAO_MAX,
   type MeusConcursosResposta,
   type PixResposta,
 } from '@fuse/shared/api';
@@ -71,6 +72,10 @@ export default function Pagamento() {
   const [cupomErro, setCupomErro] = useState<string | null>(null);
   const [aplicando, setAplicando] = useState(false);
   const cupom = useRef<string | undefined>(undefined);
+  // D43: cartão em até 6x (página do Asaas), só até `cartaoAte`.
+  const [parcelas, setParcelas] = useState(PARCELAS_CARTAO_MAX);
+  const [abrindoCartao, setAbrindoCartao] = useState(false);
+  const [cartaoAberto, setCartaoAberto] = useState(false);
 
   // Quem já pagou não fica aqui.
   useEffect(() => {
@@ -125,7 +130,7 @@ export default function Pagamento() {
   const status = useQuery({
     queryKey: CHAVES.pagamentoStatus(concursoPedido),
     queryFn: () => chamar('pagamentoStatus', { query: { concursoId: concursoPedido } }),
-    enabled: estado === 'aguardando',
+    enabled: estado === 'aguardando' || cartaoAberto,
     refetchInterval: INTERVALO_STATUS_MS,
     refetchIntervalInBackground: true,
   });
@@ -136,7 +141,7 @@ export default function Pagamento() {
       setEstado('pago');
       void qc.invalidateQueries({ queryKey: CHAVES.me });
       void qc.invalidateQueries({ queryKey: CHAVES.meusConcursos });
-    } else if (d.expirado) {
+    } else if (d.expirado && !cartaoAberto) {
       setEstado('expirado');
     }
   }, [status.data, qc]);
@@ -199,6 +204,32 @@ export default function Pagamento() {
     }
   }
 
+  async function pagarNoCartao() {
+    // A aba nasce no toque (senão o navegador bloqueia o pop-up) e recebe o endereço depois.
+    const aba = window.open('', '_blank');
+    setAbrindoCartao(true);
+    try {
+      const r = await chamar('pagamentoCartao', { corpo: { concursoId: concursoPedido, cupom: cupom.current, parcelas } });
+      if (aba) {
+        aba.opener = null;
+        aba.location.href = r.url;
+        setCartaoAberto(true);
+      } else {
+        window.location.assign(r.url);
+      }
+    } catch (e) {
+      aba?.close();
+      if (e instanceof ErroApi && e.codigo === 'conflito' && /liberado/.test(e.message)) {
+        setEstado('pago');
+        void qc.invalidateQueries({ queryKey: CHAVES.me });
+        return;
+      }
+      toast(e instanceof ErroApi ? e.message : 'Não deu para abrir o pagamento no cartão agora.', 'erro');
+    } finally {
+      setAbrindoCartao(false);
+    }
+  }
+
   async function copiar() {
     if (!pix) return;
     let copiado = true;
@@ -215,6 +246,9 @@ export default function Pagamento() {
   }
 
   // Preço riscado: o valor antes do cupom ou, sem cupom, o preço "de" da campanha (1º concurso).
+  const valorAtual = pix?.valorCentavos ?? (!concursoPedido ? config.data?.precoCentavos : undefined);
+  const cartaoAte = config.data?.cartaoAte ?? null;
+
   const precoRiscado =
     pix?.valorOriginalCentavos ??
     (!concursoPedido && config.data?.precoDeCentavos && (!pix || pix.valorCentavos === config.data.precoCentavos)
@@ -284,7 +318,9 @@ export default function Pagamento() {
                   ? formatarReais(config.data.precoCentavos).replace(',00', '')
                   : 'R$ …'}
             </p>
-            <p className={s.precoSub}>à vista no Pix · pagamento único</p>
+            <p className={s.precoSub}>
+              {cartaoAte ? 'no Pix ou em até 6x sem juros no cartão' : 'à vista no Pix · pagamento único'}
+            </p>
           </div>
         </div>
         <ul className={s.beneficios}>
@@ -297,6 +333,9 @@ export default function Pagamento() {
             </li>
           ))}
         </ul>
+        <p className={s.garantia}>
+          <strong>7 dias de garantia:</strong> estude à vontade. Se não gostar, devolvemos 100% do valor.
+        </p>
         {pix?.cupom ? (
           <p className={s.cupomAplicado}>
             <span>
@@ -417,6 +456,40 @@ export default function Pagamento() {
           </section>
         </>
       )}
+
+      {cartaoAte && !precisaEscolher ? (
+        <section className={s.cartao} aria-label="Pagar no cartão de crédito">
+          <h2 className={s.cartaoTitulo}>Prefere o cartão de crédito?</h2>
+          <p className={s.cartaoTexto}>
+            Em até {PARCELAS_CARTAO_MAX}x sem juros, só até {cartaoAte.split('-').reverse().join('/')}.
+          </p>
+          <label className={s.cartaoRotulo} htmlFor="parcelas">
+            Parcelas
+          </label>
+          <select
+            id="parcelas"
+            className={s.cartaoParcelas}
+            value={parcelas}
+            onChange={(e) => setParcelas(Number(e.target.value))}
+          >
+            {Array.from({ length: PARCELAS_CARTAO_MAX }, (_, i) => i + 1).map((n) => (
+              <option key={n} value={n}>
+                {valorAtual
+                  ? `${n}x de ${formatarReais(Math.ceil(valorAtual / n))}${n > 1 ? ' sem juros' : ''}`
+                  : `${n}x${n > 1 ? ' sem juros' : ''}`}
+              </option>
+            ))}
+          </select>
+          <Botao3D variante="azul" carregando={abrindoCartao} onClick={() => void pagarNoCartao()}>
+            PAGAR NO CARTÃO
+          </Botao3D>
+          <p className={s.cartaoNota}>
+            {cartaoAberto
+              ? 'Termine o pagamento na aba do Asaas. Esta tela libera o acesso sozinha assim que o cartão for aprovado.'
+              : 'Você digita o cartão na página segura do Asaas, nosso intermediador de pagamento. O acesso libera assim que o cartão for aprovado.'}
+          </p>
+        </section>
+      ) : null}
 
       <p className={s.aviso}>{AVISO_EDITAL}</p>
       <p className={s.legal}>{RODAPE_LEGAL}</p>

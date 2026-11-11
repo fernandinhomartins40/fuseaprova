@@ -347,3 +347,42 @@
   color: var(--fa-ink-2);
   font-size: 14px;
 }
+
+/* D43: garantia e cartão em até 6x */
+.garantia {
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--fa-ink-2);
+}
+.cartao {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  display: grid;
+  gap: 10px;
+}
+.cartaoTitulo {
+  font-size: 18px;
+  font-weight: 900;
+}
+.cartaoTexto,
+.cartaoNota {
+  font-size: 14px;
+  color: var(--fa-ink-2);
+}
+.cartaoRotulo {
+  font-size: 14px;
+  font-weight: 800;
+}
+.cartaoParcelas {
+  min-height: 48px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--fa-line);
+  background: var(--fa-surface);
+  color: var(--fa-ink);
+  font: inherit;
+  font-weight: 700;
+}

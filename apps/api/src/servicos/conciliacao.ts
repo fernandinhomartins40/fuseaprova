@@ -102,7 +102,7 @@ export async function conciliarPedido(
   // Divergência. Correções seguras automáticas; o resto fica para análise humana.
   let acao: (() => Promise<unknown>) | null = null;
   let mensagem: string;
-  if (esperado === 'pago' && (p.status === 'pendente' || p.status === 'vencido') && valorMenorQueOPedido(valorPago, p.valorCentavos)) {
+  if (esperado === 'pago' && (p.status === 'pendente' || p.status === 'vencido') && valorMenorQueOPedido(valorPago, p.valorCentavos, p.parcelas)) {
     mensagem = 'Divergência: pago no Asaas com valor menor que o do pedido. Confira antes de liberar o acesso.';
   } else if (esperado === 'pago' && (p.status === 'pendente' || p.status === 'vencido')) {
     acao = () => confirmarPagamento(deps, p.asaasPaymentId!, agora, { valorLiquidoCentavos: liquido, valorPagoCentavos: valorPago });

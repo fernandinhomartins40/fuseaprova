@@ -13,6 +13,7 @@ import type { Deps } from '../../contexto.js';
 import type { Registrador } from '../../http/registrar.js';
 import { reconfirmar } from '../../servicos/doisfatores.js';
 import { configPublica, lerConfiguracoes, salvarConfiguracoes } from '../../servicos/configuracoes.js';
+import { cartaoDisponivel } from '../../servicos/pagamento.js';
 import { lerPrecos } from '../../servicos/precos.js';
 import { comPrazo, consultar, contar, contem, dataSql, iso, isoOuNull, type Db } from '../../util.js';
 import { paginacao } from '../admin/comum.js';
@@ -205,9 +206,9 @@ async function disco(caminho: string): Promise<SistemaResposta['disco']> {
 const fmtHoras = (h: number) => (h >= 48 ? `${Math.floor(h / 24)} dias` : `${Math.round(h)} h`);
 
 export function rotasSuperSistema(r: Registrador): void {
-  r.rota('configPublica', async ({ deps }) => {
+  r.rota('configPublica', async ({ deps, agora }) => {
     const [{ valores }, precos] = await Promise.all([lerConfiguracoes(deps.db, deps.config), lerPrecos(deps.db, deps.config)]);
-    return configPublica(valores, precos.valores);
+    return configPublica(valores, precos.valores, cartaoDisponivel(deps.config, agora) ? deps.config.cartaoAte : null);
   });
 
   r.rota('superSistema', async ({ deps, agora }) => {

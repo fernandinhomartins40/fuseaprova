@@ -89,16 +89,22 @@ const esc = escHtml;
 const botao = botaoEmail;
 
 /** Recibo comum aos e-mails de pagamento confirmado. */
-function recibo(produto: string, valor: string, data: string, cobrancaId: string): string {
+function recibo(produto: string, valor: string, data: string, cobrancaId: string, forma = 'Pix, pagamento único'): string {
   return reciboEmail([
     ['Produto', esc(produto)],
-    ['Valor', `${esc(valor)}<br><span style="font-size:13px;font-weight:600;color:${CORES_EMAIL.apagado}">Pix, pagamento único</span>`],
+    ['Valor', `${esc(valor)}<br><span style="font-size:13px;font-weight:600;color:${CORES_EMAIL.apagado}">${esc(forma)}</span>`],
     ['Data', esc(data)],
     ['Cobrança', esc(cobrancaId)],
   ]);
 }
 
 const ARREPENDIMENTO = 'Você tem 7 dias para desistir da compra com reembolso integral (CDC, art. 49).';
+
+/** D43: como o pedido foi pago, para o recibo (null = Pix). */
+export function formaDePagamento(parcelas: number | null): string {
+  if (!parcelas) return 'Pix, pagamento único';
+  return parcelas > 1 ? `Cartão de crédito em ${parcelas}x sem juros` : 'Cartão de crédito, à vista';
+}
 
 export function emailBoasVindas(d: {
   nome: string;
@@ -107,21 +113,25 @@ export function emailBoasVindas(d: {
   pagoEm: Date;
   cobrancaId: string;
   appUrl: string;
+  /** D43: cartão (1 a 6 parcelas); ausente = Pix. */
+  parcelas?: number | null;
 }): MensagemEmail {
   const valor = formatarReais(d.valorCentavos);
   const data = `${formatarDataBR(diaSP(d.pagoEm))} às ${horaMinutoSP(d.pagoEm)}`;
   const nome = primeiroNome(d.nome);
+  const forma = formaDePagamento(d.parcelas ?? null);
+  const via = d.parcelas ? 'no cartão' : 'via Pix';
   const html = layoutEmail(
     `Bem-vindo(a), ${nome}! Seu acesso está liberado.`,
-    `${pEmail('Seu pagamento via Pix foi confirmado e o acesso completo ao Fuse Aprova já está liberado. As lições, a revisão, os simulados e a liga estão esperando por você.')}
+    `${pEmail(`Seu pagamento ${via} foi confirmado e o acesso completo ao Fuse Aprova já está liberado. As lições, a revisão, os simulados e a liga estão esperando por você.`)}
 ${botao(`${d.appUrl}/aprender`, 'COMEÇAR A ESTUDAR')}
-${recibo('Fuse Aprova – acesso completo', valor, data, d.cobrancaId)}
+${recibo('Fuse Aprova – acesso completo', valor, data, d.cobrancaId, forma)}
 ${avisoEmail(esc(AVISO_EDITAL))}
 ${notaEmail(esc(ARREPENDIMENTO))}`,
     { appUrl: d.appUrl, capi: 'celebrando', previa: 'Pagamento confirmado. Seu acesso ao Fuse Aprova já está liberado.' },
   );
-  const texto = `Olá, ${nome}! Seu pagamento via Pix foi confirmado e o acesso ao Fuse Aprova está liberado.
-Recibo: Fuse Aprova – acesso completo · ${valor} · ${data} · cobrança ${d.cobrancaId}.
+  const texto = `Olá, ${nome}! Seu pagamento ${via} foi confirmado e o acesso ao Fuse Aprova está liberado.
+Recibo: Fuse Aprova – acesso completo · ${valor} (${forma}) · ${data} · cobrança ${d.cobrancaId}.
 ${AVISO_EDITAL}
 Acesse: ${d.appUrl}/aprender`;
   return { para: d.email, assunto: 'Pagamento confirmado: seu acesso ao Fuse Aprova', html, texto };

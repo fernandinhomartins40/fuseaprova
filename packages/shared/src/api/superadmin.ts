@@ -1202,6 +1202,8 @@ export const ConfigPublicaResposta = z.object({
   precoAdicionalCentavos: z.number().int(),
   /** Preço "de" (riscado); null = sem preço riscado. */
   precoDeCentavos: z.number().int().nullable(),
+  /** D43: último dia (AAAA-MM-DD, São Paulo) do cartão em até 6x; null = só Pix. */
+  cartaoAte: z.string().nullable().default(null),
 });
 export type ConfigPublicaResposta = z.infer<typeof ConfigPublicaResposta>;
 

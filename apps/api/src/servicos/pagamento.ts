@@ -1,7 +1,7 @@
 /**
  * Pagamento único por Pix via Asaas (PRD 8.3).
  */
-import { and, desc, eq, ne } from 'drizzle-orm';
+import { and, desc, eq, isNotNull, isNull, ne } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import { centavosParaReais, diaSP, MS_HORA, ocultarCpf, somarDias } from '@fuse/shared';
 import {
@@ -10,6 +10,7 @@ import {
   STATUS_ASAAS_PAGO,
   referenciaEhDoFuseAprova,
   referenciaExterna,
+  type CartaoResposta,
   type CupomConsultaResposta,
   type PixResposta,
   type StatusPagamentoResposta,
@@ -17,7 +18,7 @@ import {
 import type { Deps, Usuario } from '../contexto.js';
 import { ErroHttp, falha } from '../http/erros.js';
 import { emailApostilasLiberadas, emailBoasVindas, emailReembolso } from '../integracoes/email.js';
-import { lerDataAsaas } from '../integracoes/asaas.js';
+import { lerDataAsaas, removerCobrancaAsaas } from '../integracoes/asaas.js';
 import { concursoAbertoPorId, liberarConcurso, precoDoConcurso, revogarConcurso } from './concursos.js';
 import { cupomValido, descricaoCupom, garantirReservaCupom, precoComCupom } from './precos.js';
 import { encerrarSessoesDoUsuario } from './sessoes.js';
@@ -74,25 +75,7 @@ export async function gerarPix(
   const { asaas } = deps;
   const { db } = deps;
   const resultado = await umPorAluno(usuario.id, async () => {
-    const [u] = await db.select().from(usuarios).where(eq(usuarios.id, usuario.id));
-    if (!u) throw falha('nao_autenticado');
-    const concurso = concursoIdPedido
-      ? await concursoAbertoPorId(db, concursoIdPedido)
-      : await concursoDoUsuario(db, u);
-    if (!concurso) throw falha('nao_encontrado', 'Concurso não encontrado.');
-    // D33: concurso homologado ou fora de venda não recebe Pix, nem de quem já estudava nele.
-    if (!concurso.ativo) throw falha('nao_encontrado', 'Este concurso não está mais disponível para compra.');
-    const [linha] = await db
-      .select()
-      .from(usuariosConcursos)
-      .where(and(eq(usuariosConcursos.usuarioId, u.id), eq(usuariosConcursos.concursoId, concurso.id)));
-    // Sem linha (equipe, legado) vale o acesso global quando o pedido é do concurso ativo.
-    if (linha?.acesso || (!linha && !concursoIdPedido && u.acesso)) {
-      throw falha('conflito', 'Seu acesso a este concurso já está liberado.');
-    }
-    // D23: cupom conferido aqui (inválido = 400 com campos.cupom); o valor sai só do servidor.
-    const cupom = cupomCodigo ? await cupomValido(db, cupomCodigo, concurso.id, agora, u.id) : null;
-    const preco = precoComCupom(await precoDoConcurso(deps, db, u.id, concurso.id), cupom);
+    const { u, concurso, cupom, preco } = await dadosDaCompra(deps, usuario.id, agora, concursoIdPedido, cupomCodigo);
     const [pendente] = await db
       .select()
       .from(pedidos)
@@ -102,6 +85,8 @@ export async function gerarPix(
           eq(pedidos.produto, 'concurso'),
           eq(pedidos.concursoId, concurso.id),
           eq(pedidos.status, 'pendente'),
+          // D43: o cartão pendente segue à parte (o aluno pode estar digitando o cartão no Asaas).
+          isNull(pedidos.parcelas),
         ),
       )
       .orderBy(desc(pedidos.criadoEm))
@@ -142,18 +127,7 @@ export async function gerarPix(
 
     const ref = referenciaExterna(u.id);
     try {
-      let customerId = u.asaasCustomerId;
-      if (!customerId) {
-        const c = await asaas.criarCliente({
-          name: u.nome,
-          cpfCnpj: u.cpf,
-          email: u.email,
-          mobilePhone: u.celular,
-          externalReference: ref,
-        });
-        customerId = c.id;
-        await db.update(usuarios).set({ asaasCustomerId: customerId }).where(eq(usuarios.id, u.id));
-      }
+      const customerId = await clienteAsaasDo(deps, u);
       const cobranca = await asaas.criarCobranca({
         customer: customerId,
         billingType: 'PIX',
@@ -193,6 +167,156 @@ export async function gerarPix(
     }
   });
   if (!resultado) throw falha('pix_indisponivel');
+  return resultado;
+}
+
+type UsuarioCompleto = typeof schema.usuarios.$inferSelect;
+
+/**
+ * O que toda compra de concurso confere antes de ir ao Asaas (Pix e cartão): o aluno, o concurso
+ * à venda e ainda não liberado para ele, o cupom e o preço (que sai só do servidor).
+ */
+async function dadosDaCompra(deps: Deps, usuarioId: string, agora: Date, concursoIdPedido?: string, cupomCodigo?: string) {
+  const { db } = deps;
+  const [u] = await db.select().from(usuarios).where(eq(usuarios.id, usuarioId));
+  if (!u) throw falha('nao_autenticado');
+  const concurso = concursoIdPedido ? await concursoAbertoPorId(db, concursoIdPedido) : await concursoDoUsuario(db, u);
+  if (!concurso) throw falha('nao_encontrado', 'Concurso não encontrado.');
+  // D33: concurso homologado ou fora de venda não recebe Pix, nem de quem já estudava nele.
+  if (!concurso.ativo) throw falha('nao_encontrado', 'Este concurso não está mais disponível para compra.');
+  const [linha] = await db
+    .select()
+    .from(usuariosConcursos)
+    .where(and(eq(usuariosConcursos.usuarioId, u.id), eq(usuariosConcursos.concursoId, concurso.id)));
+  // Sem linha (equipe, legado) vale o acesso global quando o pedido é do concurso ativo.
+  if (linha?.acesso || (!linha && !concursoIdPedido && u.acesso)) {
+    throw falha('conflito', 'Seu acesso a este concurso já está liberado.');
+  }
+  // D23: cupom conferido aqui (inválido = 400 com campos.cupom); o valor sai só do servidor.
+  const cupom = cupomCodigo ? await cupomValido(db, cupomCodigo, concurso.id, agora, u.id) : null;
+  const preco = precoComCupom(await precoDoConcurso(deps, db, u.id, concurso.id), cupom);
+  return { u, concurso, cupom, preco };
+}
+
+/** Cliente do aluno no Asaas, criado na 1ª cobrança (o id fica gravado). */
+async function clienteAsaasDo(deps: Deps, u: UsuarioCompleto): Promise<string> {
+  if (u.asaasCustomerId) return u.asaasCustomerId;
+  const c = await deps.asaas.criarCliente({
+    name: u.nome,
+    cpfCnpj: u.cpf!,
+    email: u.email,
+    mobilePhone: u.celular!,
+    externalReference: referenciaExterna(u.id),
+  });
+  await deps.db.update(usuarios).set({ asaasCustomerId: c.id }).where(eq(usuarios.id, u.id));
+  return c.id;
+}
+
+/** D43: o cartão em até 6x está à venda hoje (até o dia CARTAO_ATE, em São Paulo)? */
+export function cartaoDisponivel(config: Deps['config'], agora: Date): boolean {
+  return !!config.cartaoAte && diaSP(agora) <= config.cartaoAte;
+}
+
+const TEXTO_CARTAO_ERRO = 'Não foi possível abrir o pagamento no cartão agora. Tente de novo em alguns minutos ou pague com Pix.';
+
+/**
+ * POST /pagamento/cartao (D43): cartão em 1 a 6 parcelas, sem juros para o aluno (a taxa do Asaas
+ * fica com o dono). O aluno digita o cartão na página do Asaas; o webhook libera como no Pix.
+ * Reaproveita o cartão pendente com o mesmo valor, cupom e parcelas; senão cria outro e remove o antigo.
+ */
+export async function gerarCartao(
+  deps: Deps,
+  usuario: Usuario,
+  agora: Date,
+  parcelas: number,
+  concursoIdPedido?: string,
+  cupomCodigo?: string,
+): Promise<CartaoResposta> {
+  if (!cartaoDisponivel(deps.config, agora)) {
+    throw falha('conflito', 'O pagamento no cartão não está disponível. Pague com Pix.');
+  }
+  const { db, asaas } = deps;
+  const resultado = await umPorAluno(usuario.id, async () => {
+    const { u, concurso, cupom, preco } = await dadosDaCompra(deps, usuario.id, agora, concursoIdPedido, cupomCodigo);
+    const [pendente] = await db
+      .select()
+      .from(pedidos)
+      .where(
+        and(
+          eq(pedidos.usuarioId, u.id),
+          eq(pedidos.produto, 'concurso'),
+          eq(pedidos.concursoId, concurso.id),
+          eq(pedidos.status, 'pendente'),
+          isNotNull(pedidos.parcelas),
+        ),
+      )
+      .orderBy(desc(pedidos.criadoEm))
+      .limit(1);
+    if (
+      pendente &&
+      pendente.parcelas === parcelas &&
+      pendente.valorCentavos === preco.centavos &&
+      (pendente.cupomId ?? null) === (cupom?.id ?? null) &&
+      pendente.cartaoUrl &&
+      (!pendente.pixExpiraEm || pendente.pixExpiraEm > agora)
+    ) {
+      return { pedidoId: pendente.id, valorCentavos: pendente.valorCentavos, parcelas, url: pendente.cartaoUrl };
+    }
+    if (pendente) {
+      const substituido = await db
+        .update(pedidos)
+        .set({ status: 'vencido' })
+        .where(and(eq(pedidos.id, pendente.id), eq(pedidos.status, 'pendente')))
+        .returning({ id: pedidos.id });
+      if (substituido.length !== 1) throw falha('conflito', 'Este pagamento acabou de ser confirmado. Atualize a tela.');
+      if (pendente.asaasPaymentId) {
+        await removerCobrancaAsaas(deps.asaas, pendente.asaasPaymentId, pendente.parcelas).catch((e: Error) => {
+          deps.log.warn({ pedidoId: pendente.id, erro: e.message }, 'cartão substituído não foi removido no asaas');
+        });
+      }
+    }
+    if (!u.cpf || !u.celular) throw falha('pix_indisponivel', TEXTO_CARTAO_ERRO);
+    try {
+      const customerId = await clienteAsaasDo(deps, u);
+      const dueDate = somarDias(diaSP(agora), 1);
+      const total = centavosParaReais(preco.centavos);
+      const cobranca = await asaas.criarCobranca({
+        customer: customerId,
+        billingType: 'CREDIT_CARD',
+        ...(parcelas > 1 ? { installmentCount: parcelas, totalValue: total } : { value: total }),
+        dueDate,
+        description: descricaoCobranca(concurso.nome),
+        externalReference: referenciaExterna(u.id),
+      });
+      if (!cobranca.invoiceUrl) throw new Error('Asaas não devolveu o invoiceUrl.');
+      const [p] = await db
+        .insert(pedidos)
+        .values({
+          usuarioId: u.id,
+          concursoId: concurso.id,
+          asaasCustomerId: customerId,
+          asaasPaymentId: cobranca.id,
+          valorCentavos: preco.centavos,
+          valorOriginalCentavos: preco.originalCentavos,
+          cupomId: cupom?.id ?? null,
+          status: 'pendente',
+          parcelas,
+          cartaoUrl: cobranca.invoiceUrl,
+          // Vale até o fim do vencimento: o job de 10 min o encerra como faz com o Pix.
+          pixExpiraEm: lerDataAsaas(dueDate),
+          criadoEm: agora,
+        })
+        .returning();
+      deps.log.info({ pedidoId: p!.id, usuarioId: u.id, parcelas }, 'cartão gerado');
+      if (cupom?.limiteUsos != null) await garantirReservaCupom(deps, p!, agora);
+      return { pedidoId: p!.id, valorCentavos: p!.valorCentavos, parcelas, url: cobranca.invoiceUrl };
+    } catch (e) {
+      if (e instanceof ErroHttp) throw e;
+      deps.log.error({ usuarioId: u.id, erro: (e as Error).message }, 'falha ao gerar cartão');
+      return null;
+    }
+  });
+  if (!resultado) throw falha('pix_indisponivel', TEXTO_CARTAO_ERRO);
   return resultado;
 }
 
@@ -311,6 +435,7 @@ export function enviarEmailConfirmacao(deps: Deps, pedido: Pedido, usuario: Usua
       pagoEm: pedido.pagoEm ?? pedido.criadoEm,
       cobrancaId: idRecibo(pedido),
       appUrl: deps.config.appUrl,
+      parcelas: pedido.parcelas,
     }),
   );
 }
@@ -330,7 +455,7 @@ export async function confirmarPagamento(
     if (!p || p.status === 'pago' || p.status === 'estornado') return null;
     // Cobrança com valor menor que o do pedido (alterada no painel do Asaas) não libera, venha
     // a confirmação do webhook, do status ou da conciliação (validação PIE V1-07).
-    if (valorMenorQueOPedido(opcoes.valorPagoCentavos, p.valorCentavos)) {
+    if (valorMenorQueOPedido(opcoes.valorPagoCentavos, p.valorCentavos, p.parcelas)) {
       deps.log.warn({ pedidoId: p.id, valorCentavos: opcoes.valorPagoCentavos }, 'pagamento com valor menor que o pedido');
       return null;
     }
@@ -353,7 +478,34 @@ export async function confirmarPagamento(
   });
   if (!resultado) return false;
   enviarEmailConfirmacao(deps, resultado.pedido, resultado.usuario);
+  await cancelarOutrasCobrancas(deps, resultado.pedido);
   return true;
+}
+
+/**
+ * D43: pagou por um caminho (Pix ou cartão), a outra cobrança aberta do mesmo concurso sai do
+ * Asaas, para o aluno não pagar duas vezes. Falha aqui só vai para o log.
+ */
+async function cancelarOutrasCobrancas(deps: Deps, pago: Pedido): Promise<void> {
+  const abertos = await deps.db
+    .update(pedidos)
+    .set({ status: 'vencido' })
+    .where(
+      and(
+        eq(pedidos.usuarioId, pago.usuarioId),
+        eq(pedidos.produto, pago.produto),
+        pago.concursoId ? eq(pedidos.concursoId, pago.concursoId) : isNull(pedidos.concursoId),
+        eq(pedidos.status, 'pendente'),
+        ne(pedidos.id, pago.id),
+      ),
+    )
+    .returning();
+  for (const p of abertos) {
+    if (!p.asaasPaymentId) continue;
+    await removerCobrancaAsaas(deps.asaas, p.asaasPaymentId, p.parcelas).catch((e: Error) => {
+      deps.log.warn({ pedidoId: p.id, erro: e.message }, 'cobrança aberta não foi removida no asaas após o pagamento');
+    });
+  }
 }
 
 async function usuarioDe(db: Db, id: string): Promise<Usuario> {
@@ -361,9 +513,18 @@ async function usuarioDe(db: Db, id: string): Promise<Usuario> {
   return u!;
 }
 
-/** O Asaas informou um valor pago menor que o do pedido? (sem valor informado: não). */
-export function valorMenorQueOPedido(valorPagoCentavos: number | null | undefined, valorPedido: number): boolean {
-  return typeof valorPagoCentavos === 'number' && valorPagoCentavos < valorPedido;
+/**
+ * O Asaas informou um valor pago menor que o do pedido? (sem valor informado: não). D43: no cartão
+ * parcelado o Asaas informa o valor de UMA parcela, e o arredondamento cabe em 1 centavo por parcela.
+ */
+export function valorMenorQueOPedido(
+  valorPagoCentavos: number | null | undefined,
+  valorPedido: number,
+  parcelas: number | null = null,
+): boolean {
+  if (typeof valorPagoCentavos !== 'number') return false;
+  const n = parcelas && parcelas > 1 ? parcelas : 1;
+  return valorPagoCentavos * n + (n - 1) < valorPedido;
 }
 
 /**

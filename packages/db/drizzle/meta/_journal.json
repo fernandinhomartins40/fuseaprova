@@ -134,6 +134,13 @@
       "when": 1793929094105,
       "tag": "0018_videoaulas_lotes_1_a_4",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1794422648070,
+      "tag": "0019_cartao_parcelado",
+      "breakpoints": true
     }
   ]
 }

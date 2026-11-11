@@ -19,6 +19,8 @@ export interface Config {
   precoCentavos: number;
   /** Preço de cada concurso adicional, com desconto (PRICE_ADICIONAL_CENTS, D21). */
   precoAdicionalCentavos: number;
+  /** D43: último dia (AAAA-MM-DD, São Paulo) do cartão em até 6x (CARTAO_ATE; vazio = só Pix). */
+  cartaoAte: string | null;
   asaas: { apiKey: string; baseUrl: string; webhookToken: string };
   smtp: { host: string; porta: number; usuario: string; senha: string; remetente: string };
   /** D37: com a chave, o e-mail sai pela API do Velomail (o remetente é o SMTP_FROM). */
@@ -59,6 +61,8 @@ export function lerConfig(env: NodeJS.ProcessEnv = process.env): Config {
     cookieSeguro: !(env.COOKIE_SECURE === '0' || env.COOKIE_SECURE === 'false'),
     precoCentavos: numero(env.PRICE_CENTS, 39700),
     precoAdicionalCentavos: numero(env.PRICE_ADICIONAL_CENTS, 19700),
+    // Campanha de 2 semanas pedida pelo dono em 11/11/2026: sem a variável, vale até 25/11/2026.
+    cartaoAte: /^\d{4}-\d{2}-\d{2}$/.test(env.CARTAO_ATE ?? '2026-11-25') ? (env.CARTAO_ATE ?? '2026-11-25') : null,
     asaas: {
       apiKey: env.ASAAS_API_KEY ?? '',
       baseUrl: (env.ASAAS_BASE_URL ?? 'https://api-sandbox.asaas.com/v3').replace(/\/+$/, ''),

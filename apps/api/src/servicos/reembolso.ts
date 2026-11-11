@@ -57,7 +57,10 @@ export async function estornarPeloAsaas(
     .returning();
   if (!travado) throw falha('conflito', 'O reembolso deste pagamento já foi pedido ao Asaas. Aguarde a confirmação do Asaas.');
   try {
-    await deps.asaas.estornar(pedido.asaasPaymentId, { description: 'Reembolso Fuse Aprova' });
+    // D43: cartão parcelado estorna o parcelamento inteiro (todas as parcelas).
+    const parcelamento = pedido.parcelas && pedido.parcelas > 1 ? (await deps.asaas.obterCobranca(pedido.asaasPaymentId)).installment : null;
+    if (parcelamento) await deps.asaas.estornarParcelamento(parcelamento);
+    else await deps.asaas.estornar(pedido.asaasPaymentId, { description: 'Reembolso Fuse Aprova' });
   } catch (e) {
     await deps.db
       .update(pedidos)
