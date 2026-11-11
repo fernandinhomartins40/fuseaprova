@@ -127,6 +127,9 @@ ESTILOS = {
     # v6: tutorial leve e confiante, Lá maior (I–IV–vi–V), 118 BPM
     'v6': dict(bpm=118, acordes=[[57, 61, 64, 69], [62, 66, 69, 74], [54, 57, 61, 66], [52, 56, 59, 64]],
                baixos=[33, 38, 30, 28], bumbo=0.54, baixo=0.3, brilho=1.05, chimbal=0.8, semente=53),
+    # v7: sóbrio e decidido, Ré menor (i–VI–III–VII), 120 BPM, menos brilho
+    'v7': dict(bpm=120, acordes=[[62, 65, 69, 74], [58, 62, 65, 70], [53, 57, 60, 65], [60, 64, 67, 72]],
+               baixos=[38, 34, 29, 36], bumbo=0.58, baixo=0.34, brilho=0.7, chimbal=0.7, semente=71),
     # aulas: mais calmas que as de venda, para a explicação ficar na frente
     # aula1: estudo leve, Fá maior (I–vi–IV–V), 100 BPM
     'aula1': dict(bpm=100, acordes=[[65, 69, 72, 77], [62, 65, 69, 74], [58, 62, 65, 70], [60, 64, 67, 72]],

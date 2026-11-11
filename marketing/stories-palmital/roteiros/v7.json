@@ -1,0 +1,35 @@
+{
+  "voz": "Qrdut83w0Cr152Yb4Xn3",
+  "nomeVoz": "Paulo",
+  "semente": 41,
+  "ajustes": {
+    "stability": 0.42,
+    "similarity_boost": 0.8,
+    "style": 0.45,
+    "use_speaker_boost": true,
+    "speed": 1.1
+  },
+  "falas": {
+    "gancho": [
+      "Vai fazer o concurso da Prefeitura de Palmital?",
+      "Fica até o final, porque agora ficou bem mais fácil começar."
+    ],
+    "banca": [
+      "Quem organiza esse concurso é a banca FAU.",
+      "No Fuse Aprova, você treina com mais de dez mil questões no estilo dessa banca."
+    ],
+    "app": [
+      "Lições curtas, explicação em cada questão, revisão do que você erra e simulados no formato da prova."
+    ],
+    "oferta": [
+      "E a novidade: o acesso completo, de cento e noventa e sete reais, agora pode ser parcelado no cartão.",
+      "Em até seis vezes sem juros."
+    ],
+    "prazo": [
+      "Mas atenção: o parcelamento vale só por duas semanas."
+    ],
+    "chamada": [
+      "Garanta o seu acesso agora. O link está na bio."
+    ]
+  }
+}

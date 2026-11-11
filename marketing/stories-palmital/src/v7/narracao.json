@@ -1,0 +1,59 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v7/voz-gancho-1.wav",
+      "segundos": 2.508,
+      "texto": "Vai fazer o concurso da Prefeitura de Palmital?"
+    },
+    {
+      "arquivo": "audio/v7/voz-gancho-2.wav",
+      "segundos": 3.191,
+      "texto": "Fica até o final, porque agora ficou bem mais fácil começar."
+    }
+  ],
+  "banca": [
+    {
+      "arquivo": "audio/v7/voz-banca-1.wav",
+      "segundos": 2.476,
+      "texto": "Quem organiza esse concurso é a banca FAU."
+    },
+    {
+      "arquivo": "audio/v7/voz-banca-2.wav",
+      "segundos": 4.507,
+      "texto": "No Fuse Aprova, você treina com mais de dez mil questões no estilo dessa banca."
+    }
+  ],
+  "app": [
+    {
+      "arquivo": "audio/v7/voz-app-1.wav",
+      "segundos": 6.539,
+      "texto": "Lições curtas, explicação em cada questão, revisão do que você erra e simulados no formato da prova."
+    }
+  ],
+  "oferta": [
+    {
+      "arquivo": "audio/v7/voz-oferta-1.wav",
+      "segundos": 5.97,
+      "texto": "E a novidade: o acesso completo, de cento e noventa e sete reais, agora pode ser parcelado no cartão."
+    },
+    {
+      "arquivo": "audio/v7/voz-oferta-2.wav",
+      "segundos": 1.692,
+      "texto": "Em até seis vezes sem juros."
+    }
+  ],
+  "prazo": [
+    {
+      "arquivo": "audio/v7/voz-prazo-1.wav",
+      "segundos": 3.693,
+      "texto": "Mas atenção: o parcelamento vale só por duas semanas."
+    }
+  ],
+  "chamada": [
+    {
+      "arquivo": "audio/v7/voz-chamada-1.wav",
+      "segundos": 2.578,
+      "texto": "Garanta o seu acesso agora. O link está na bio."
+    }
+  ]
+}
