@@ -1,0 +1,76 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v10/voz-gancho-1.wav",
+      "segundos": 2.873,
+      "texto": "O erro que mais reprova em concurso não é falta de estudo."
+    },
+    {
+      "arquivo": "audio/v10/voz-gancho-2.wav",
+      "segundos": 3.067,
+      "texto": "Fica até o final, que eu te mostro qual é."
+    }
+  ],
+  "erro": [
+    {
+      "arquivo": "audio/v10/voz-erro-1.wav",
+      "segundos": 2.879,
+      "texto": "É estudar o conteúdo certo… do jeito errado."
+    },
+    {
+      "arquivo": "audio/v10/voz-erro-2.wav",
+      "segundos": 3.958,
+      "texto": "Olha só: o mesmo assunto, cobrado de dois jeitos."
+    }
+  ],
+  "explica": [
+    {
+      "arquivo": "audio/v10/voz-explica-1.wav",
+      "segundos": 2.15,
+      "texto": "Quem só leu a teoria trava na segunda."
+    },
+    {
+      "arquivo": "audio/v10/voz-explica-2.wav",
+      "segundos": 4.859,
+      "texto": "Cada banca tem o seu jeito de cobrar. E em Palmital, a banca é a FAU."
+    }
+  ],
+  "produto": [
+    {
+      "arquivo": "audio/v10/voz-produto-1.wav",
+      "segundos": 5.895,
+      "texto": "No Fuse Aprova, você treina com mais de dez mil questões no estilo dela, com a explicação na hora."
+    }
+  ],
+  "antes": [
+    {
+      "arquivo": "audio/v10/voz-antes-1.wav",
+      "segundos": 3.664,
+      "texto": "E o melhor momento pra começar é agora, antes do edital."
+    },
+    {
+      "arquivo": "audio/v10/voz-antes-2.wav",
+      "segundos": 4.396,
+      "texto": "Porque depois que ele sai, sobram poucas semanas até a prova."
+    }
+  ],
+  "oferta": [
+    {
+      "arquivo": "audio/v10/voz-oferta-1.wav",
+      "segundos": 6.168,
+      "texto": "E pro valor não te segurar: por duas semanas, dá pra parcelar em até seis vezes sem juros no cartão."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/v10/voz-fecho-1.wav",
+      "segundos": 1.736,
+      "texto": "Agora você já sabe qual é o erro."
+    },
+    {
+      "arquivo": "audio/v10/voz-fecho-2.wav",
+      "segundos": 4.268,
+      "texto": "Comenta “não vou cometer”, e corre pro link na bio."
+    }
+  ]
+}

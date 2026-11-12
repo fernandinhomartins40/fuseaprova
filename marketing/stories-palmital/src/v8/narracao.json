@@ -1,0 +1,89 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v8/voz-gancho-1.wav",
+      "segundos": 2.063,
+      "texto": "Imagina receber essa notificação…"
+    },
+    {
+      "arquivo": "audio/v8/voz-gancho-2.wav",
+      "segundos": 1.87,
+      "texto": "e ainda não ter começado a estudar."
+    }
+  ],
+  "historia": [
+    {
+      "arquivo": "audio/v8/voz-historia-1.wav",
+      "segundos": 2.9,
+      "texto": "Pensa na Ana. Ela quer passar no concurso de Palmital."
+    },
+    {
+      "arquivo": "audio/v8/voz-historia-2.wav",
+      "segundos": 2.117,
+      "texto": "Ela esperou o edital sair pra começar."
+    },
+    {
+      "arquivo": "audio/v8/voz-historia-3.wav",
+      "segundos": 3.616,
+      "texto": "Aí correu: apostila genérica, tudo de todas as bancas."
+    },
+    {
+      "arquivo": "audio/v8/voz-historia-4.wav",
+      "segundos": 3.789,
+      "texto": "E na prova, as questões vieram de um jeito que ela nunca tinha treinado."
+    }
+  ],
+  "virada": [
+    {
+      "arquivo": "audio/v8/voz-virada-1.wav",
+      "segundos": 3.122,
+      "texto": "Ela estudou muito. Mas estudou tarde, e do jeito errado."
+    },
+    {
+      "arquivo": "audio/v8/voz-virada-2.wav",
+      "segundos": 2.164,
+      "texto": "Porque quem passa não é quem estuda mais."
+    },
+    {
+      "arquivo": "audio/v8/voz-virada-3.wav",
+      "segundos": 1.481,
+      "texto": "É quem treina no jeito da banca."
+    }
+  ],
+  "produto": [
+    {
+      "arquivo": "audio/v8/voz-produto-1.wav",
+      "segundos": 1.749,
+      "texto": "Por isso existe o Fuse Aprova."
+    },
+    {
+      "arquivo": "audio/v8/voz-produto-2.wav",
+      "segundos": 5.822,
+      "texto": "Mais de dez mil questões no estilo da banca FAU, com explicação em cada uma e simulado igual à prova."
+    }
+  ],
+  "oferta": [
+    {
+      "arquivo": "audio/v8/voz-oferta-1.wav",
+      "segundos": 6.945,
+      "texto": "E pro dinheiro não ser o motivo de esperar o edital: por duas semanas, dá pra parcelar em até seis vezes sem juros no cartão."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/v8/voz-fecho-1.wav",
+      "segundos": 2.344,
+      "texto": "Agora imagina a mesma notificação…"
+    },
+    {
+      "arquivo": "audio/v8/voz-fecho-2.wav",
+      "segundos": 2.074,
+      "texto": "só que dessa vez, você já treinou por meses."
+    },
+    {
+      "arquivo": "audio/v8/voz-fecho-3.wav",
+      "segundos": 1.952,
+      "texto": "Começa antes. O link tá na bio."
+    }
+  ]
+}

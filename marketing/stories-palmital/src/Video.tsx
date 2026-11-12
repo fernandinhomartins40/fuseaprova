@@ -11,10 +11,12 @@ export type ConfigVideo = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   transicoes: TransitionPresentation<any>[];
   trilha: string;
+  // camada por cima de todas as cenas (ex.: contagem até a prova)
+  sobreposicao?: React.FC;
 };
 
 /** Monta o vídeo: cenas em sequência com transições, falas em cada cena e a trilha com ducking. */
-export const criarVideo = ({ linha, componentes, transicoes, trilha }: ConfigVideo): React.FC =>
+export const criarVideo = ({ linha, componentes, transicoes, trilha, sobreposicao: Sobre }: ConfigVideo): React.FC =>
   function Video() {
     return (
       <>
@@ -42,6 +44,7 @@ export const criarVideo = ({ linha, componentes, transicoes, trilha }: ConfigVid
             );
           })}
         </TransitionSeries>
+        {Sobre ? <Sobre /> : null}
         <Html5Audio src={staticFile(trilha)} volume={linha.volumeTrilha} />
       </>
     );

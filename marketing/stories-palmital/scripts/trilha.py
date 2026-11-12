@@ -130,6 +130,15 @@ ESTILOS = {
     # v7: sóbrio e decidido, Ré menor (i–VI–III–VII), 120 BPM, menos brilho
     'v7': dict(bpm=120, acordes=[[62, 65, 69, 74], [58, 62, 65, 70], [53, 57, 60, 65], [60, 64, 67, 72]],
                baixos=[38, 34, 29, 36], bumbo=0.58, baixo=0.34, brilho=0.7, chimbal=0.7, semente=71),
+    # v8: tenso no começo e resolvido no fim, Fá# menor (i–VI–III–VII), 110 BPM
+    'v8': dict(bpm=110, acordes=[[54, 57, 61, 66], [50, 54, 57, 62], [57, 61, 64, 69], [52, 56, 59, 64]],
+               baixos=[30, 26, 33, 28], bumbo=0.56, baixo=0.34, brilho=0.65, chimbal=0.6, semente=83),
+    # v9: dinâmico, Si menor (i–VI–III–VII), 124 BPM
+    'v9': dict(bpm=124, acordes=[[59, 62, 66, 71], [55, 59, 62, 67], [50, 54, 57, 62], [57, 61, 64, 69]],
+               baixos=[35, 31, 26, 33], bumbo=0.6, baixo=0.33, brilho=0.85, chimbal=0.8, semente=91),
+    # v10: curioso e confiante, Mi menor (i–iv–VI–V), 114 BPM
+    'v10': dict(bpm=114, acordes=[[52, 55, 59, 64], [57, 60, 64, 69], [48, 52, 55, 60], [47, 51, 54, 59]],
+                baixos=[28, 33, 24, 35], bumbo=0.55, baixo=0.32, brilho=0.8, chimbal=0.7, semente=101),
     # aulas: mais calmas que as de venda, para a explicação ficar na frente
     # aula1: estudo leve, Fá maior (I–vi–IV–V), 100 BPM
     'aula1': dict(bpm=100, acordes=[[65, 69, 72, 77], [62, 65, 69, 74], [58, 62, 65, 70], [60, 64, 67, 72]],

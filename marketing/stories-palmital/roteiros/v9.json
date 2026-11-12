@@ -1,0 +1,45 @@
+{
+  "voz": "NQmLEqxcRTkWYIYZSYod",
+  "nomeVoz": "Matheus",
+  "semente": 91,
+  "ajustes": {
+    "stability": 0.38,
+    "similarity_boost": 0.78,
+    "style": 0.6,
+    "use_speaker_boost": true,
+    "speed": 1.1
+  },
+  "falas": {
+    "gancho": [
+      "Duas pessoas vão fazer o concurso de Palmital.",
+      "Só uma vai chegar preparada. Descobre qual."
+    ],
+    "escolha": [
+      "A Júlia decidiu esperar o edital sair.",
+      "O Marcos começou agora: quinze minutos por dia, treinando no estilo da banca FAU."
+    ],
+    "edital": [
+      "Aí o edital sai.",
+      "A Júlia tem poucas semanas pra correr atrás de tudo.",
+      "O Marcos já tem meses de treino."
+    ],
+    "prova": [
+      "No dia da prova, a Júlia estranha o jeito das perguntas.",
+      "O Marcos reconhece na hora."
+    ],
+    "virada": [
+      "A diferença não foi inteligência.",
+      "Foi começar antes, e treinar do jeito certo."
+    ],
+    "produto": [
+      "É isso que o Fuse Aprova faz: mais de dez mil questões no estilo da FAU, lições curtas e simulado igual à prova."
+    ],
+    "oferta": [
+      "E pra ninguém ficar de fora por causa do valor: por duas semanas, dá pra parcelar em até seis vezes sem juros no cartão."
+    ],
+    "fecho": [
+      "E você? Vai ser a Júlia ou o Marcos?",
+      "Comenta aí. E o link tá na bio."
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "voz": "ORgG8rwdAiMYRug8RJwR",
+  "nomeVoz": "Ana Alice",
+  "semente": 101,
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.78,
+    "style": 0.55,
+    "use_speaker_boost": true,
+    "speed": 1.1
+  },
+  "falas": {
+    "gancho": [
+      "O erro que mais reprova em concurso não é falta de estudo.",
+      "Fica até o final, que eu te mostro qual é."
+    ],
+    "erro": [
+      "É estudar o conteúdo certo… do jeito errado.",
+      "Olha só: o mesmo assunto, cobrado de dois jeitos."
+    ],
+    "explica": [
+      "Quem só leu a teoria trava na segunda.",
+      "Cada banca tem o seu jeito de cobrar. E em Palmital, a banca é a FAU."
+    ],
+    "produto": [
+      "No Fuse Aprova, você treina com mais de dez mil questões no estilo dela, com a explicação na hora."
+    ],
+    "antes": [
+      "E o melhor momento pra começar é agora, antes do edital.",
+      "Porque depois que ele sai, sobram poucas semanas até a prova."
+    ],
+    "oferta": [
+      "E pro valor não te segurar: por duas semanas, dá pra parcelar em até seis vezes sem juros no cartão."
+    ],
+    "fecho": [
+      "Agora você já sabe qual é o erro.",
+      "Comenta “não vou cometer”, e corre pro link na bio."
+    ]
+  }
+}

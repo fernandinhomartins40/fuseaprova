@@ -18,7 +18,7 @@ def ler_roteiro(video: str) -> dict:
     return json.loads(arquivo.read_text(encoding='utf-8')) if arquivo.exists() else {}
 
 
-for video in sys.argv[1:] or ['v1', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7']:
+for video in sys.argv[1:] or ['v1', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8', 'v9', 'v10']:
     roteiro = ler_roteiro(video)
     aula = video.startswith('videoaula') or 'cenas' in roteiro
     pasta = VIDEOAULAS / '_trabalho' if aula else RAIZ / 'out'

@@ -5,15 +5,15 @@ import { Celular, Chip, Efeito, Entra, Fundo, Icone, Palavras, Rotulo, useMola }
 import { cor, fonte } from '../tema';
 
 // V7 · "Parcelado em até 6x" — mais sóbrio: fundo escuro, tipografia alinhada à esquerda, sem confete nem carimbo
-const noite = { de: '#121726', para: cor.azulNoite, manchas: ['rgba(255,106,31,0.35)', 'rgba(29,111,224,0.4)', 'rgba(20,128,140,0.35)'] };
+export const noite = { de: '#121726', para: cor.azulNoite, manchas: ['rgba(255,106,31,0.35)', 'rgba(29,111,224,0.4)', 'rgba(20,128,140,0.35)'] };
 
 /** Barra laranja fina sob os títulos, que cresce da esquerda. */
-const Traco: React.FC<{ em: number; largura?: number }> = ({ em, largura = 220 }) => {
+export const Traco: React.FC<{ em: number; largura?: number }> = ({ em, largura = 220 }) => {
   const p = useMola(em, { damping: 20 });
   return <div style={{ width: largura * p, height: 10, borderRadius: 5, background: cor.laranjaVivo, marginTop: 26 }} />;
 };
 
-const Coluna: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+export const Coluna: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <Area style={{ justifyContent: 'flex-start', alignItems: 'flex-start' }}>{children}</Area>
 );
 
@@ -179,7 +179,7 @@ export const CenaApp: React.FC<PropsCena> = ({ falas }) => {
 };
 
 /* 4. Oferta: parcelado no cartão em até 6x sem juros -------------------- */
-const Cartao: React.FC<{ em: number }> = ({ em }) => {
+export const Cartao: React.FC<{ em: number }> = ({ em }) => {
   const frame = useCurrentFrame();
   const p = useMola(em, { damping: 14, stiffness: 120 });
   return (
@@ -205,9 +205,24 @@ const Cartao: React.FC<{ em: number }> = ({ em }) => {
   );
 };
 
+/** "6x sem juros de R$ 32,83" que bate na tela. */
+export const SeisVezes: React.FC<{ em: number }> = ({ em }) => {
+  const seis = useMola(em, { damping: 10, stiffness: 200, mass: 0.7 });
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 28, transform: `scale(${interpolate(seis, [0, 1], [2.2, 1])})`, opacity: Math.min(1, seis * 3) }}>
+      <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 230, lineHeight: 0.9, color: cor.branco }}>6x</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ background: cor.ouro, color: cor.tinta, fontFamily: fonte.display, fontWeight: 800, fontSize: 64, lineHeight: 1, padding: '14px 28px', borderRadius: 22 }}>
+          sem juros
+        </div>
+        <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 44, color: cor.branco }}>de R$ 32,83</div>
+      </div>
+    </div>
+  );
+};
+
 export const CenaOferta: React.FC<PropsCena> = ({ falas }) => {
   const [a, b] = falas;
-  const seis = useMola(b.ini, { damping: 10, stiffness: 200, mass: 0.7 });
   return (
     <Fundo de="#1A1220" para="#3A1608" manchas={['rgba(255,106,31,0.5)', 'rgba(255,194,51,0.25)', 'rgba(220,38,38,0.25)']} halo={{ x: 540, y: 1250, cor: 'rgba(255,106,31,0.3)' }}>
       <Coluna>
@@ -227,23 +242,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas }) => {
         <Cartao em={a.ini + 36} />
       </Em>
       <Em y={1210}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 28,
-            transform: `scale(${interpolate(seis, [0, 1], [2.2, 1])})`,
-            opacity: Math.min(1, seis * 3),
-          }}
-        >
-          <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 230, lineHeight: 0.9, color: cor.branco }}>6x</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ background: cor.ouro, color: cor.tinta, fontFamily: fonte.display, fontWeight: 800, fontSize: 64, lineHeight: 1, padding: '14px 28px', borderRadius: 22 }}>
-              sem juros
-            </div>
-            <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 44, color: cor.branco }}>de R$ 32,83</div>
-          </div>
-        </div>
+        <SeisVezes em={b.ini} />
       </Em>
       <Efeito nome="whoosh" em={a.ini + 36} volume={0.35} />
       <Efeito nome="ding" em={b.ini} volume={0.45} />
