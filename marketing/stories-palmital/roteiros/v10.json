@@ -8,6 +8,10 @@
     "use_speaker_boost": true,
     "speed": 1.0
   },
+  "pronuncia": {
+    "Fuse": "Fúze",
+    "FAU": "Fáu"
+  },
   "falas": {
     "gancho": [
       "O erro que mais reprova em concurso não é falta de estudo.",

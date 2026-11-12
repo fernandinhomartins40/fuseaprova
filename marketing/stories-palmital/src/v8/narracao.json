@@ -53,12 +53,12 @@
   "produto": [
     {
       "arquivo": "audio/v8/voz-produto-1.wav",
-      "segundos": 2.124,
+      "segundos": 2.215,
       "texto": "Por isso existe o Fuse Aprova."
     },
     {
       "arquivo": "audio/v8/voz-produto-2.wav",
-      "segundos": 6.289,
+      "segundos": 5.976,
       "texto": "Mais de dez mil questões no estilo da banca FAU, com explicação em cada uma e simulado igual à prova."
     }
   ],

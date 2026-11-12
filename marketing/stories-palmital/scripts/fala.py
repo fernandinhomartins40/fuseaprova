@@ -61,9 +61,14 @@ def _numero(m: re.Match) -> str:
     return f'{txt} {seguinte}' if seguinte else txt
 
 
-def preparar(texto: str, pronuncia: dict[str, str] | None = None) -> str:
+def pronunciar(texto: str, pronuncia: dict[str, str] | None = None) -> str:
     for de in sorted(pronuncia or {}, key=len, reverse=True):
         texto = texto.replace(de, pronuncia[de])
+    return texto
+
+
+def preparar(texto: str, pronuncia: dict[str, str] | None = None) -> str:
+    texto = pronunciar(texto, pronuncia)
     texto = re.sub(r'(?<=\d)\s*=\s*(?=\d)', ' é igual a ', texto)
     texto = texto.replace(' = ', ' é ').replace('÷', ' dividido por ').replace('×', ' vezes ').replace('−', ' menos ')
     texto = texto.replace(' + ', ' mais ').replace('→', ':').replace('%', ' por cento')
@@ -84,4 +89,5 @@ if __name__ == '__main__':
                      ('3 + 2 = 5', 'três mais dois é igual a cinco')]:
         assert preparar(de) == para, (de, preparar(de))
     assert preparar('Vai RR agora', {'RR': 'erre erre'}) == 'Vai erre erre agora'
+    assert pronunciar('No Fuse Aprova, banca FAU.', {'Fuse': 'Fúze', 'FAU': 'Fáu'}) == 'No Fúze Aprova, banca Fáu.'
     print('ok')

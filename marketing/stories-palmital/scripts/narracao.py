@@ -18,7 +18,7 @@ import edge_tts
 import numpy as np
 
 import eleven
-from fala import preparar
+from fala import preparar, pronunciar
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 VOZ_RESERVA = 'pt-BR-FranciscaNeural'
@@ -52,7 +52,9 @@ async def main(video: str, so: set[str]) -> None:
     # Videoaula por dados: a duração fica junto do modelo; o texto vai para a voz já preparado (fala.py).
     por_dados = 'cenas' in roteiro
     destino = RAIZ / 'src' / 'videoaula' / 'narracao' / f'{video}.json' if por_dados else RAIZ / 'src' / video / 'narracao.json'
-    falado = (lambda t: preparar(t, roteiro.get('pronuncia'))) if por_dados else (lambda t: t)
+    # Stories: só a pronúncia do roteiro (ex.: "FAU" → "Fáu"); os números já vêm por extenso.
+    pron = roteiro.get('pronuncia') or {}
+    falado = (lambda t: preparar(t, pron)) if por_dados else (lambda t: pronunciar(t, pron))
     destino.parent.mkdir(parents=True, exist_ok=True)
     anterior_json = json.loads(destino.read_text(encoding='utf-8')) if destino.exists() else {}
     tem_chave = (RAIZ / '.env').exists() and eleven.env().get('ELEVENLABS_API_KEY')
