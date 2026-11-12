@@ -2,91 +2,96 @@
   "gancho": [
     {
       "arquivo": "audio/v9/voz-gancho-1.wav",
-      "segundos": 2.185,
+      "segundos": 2.909,
       "texto": "Duas pessoas vão fazer o concurso de Palmital."
     },
     {
       "arquivo": "audio/v9/voz-gancho-2.wav",
-      "segundos": 2.779,
+      "segundos": 2.981,
       "texto": "Só uma vai chegar preparada. Descobre qual."
     }
   ],
   "escolha": [
     {
       "arquivo": "audio/v9/voz-escolha-1.wav",
-      "segundos": 1.972,
+      "segundos": 2.618,
       "texto": "A Júlia decidiu esperar o edital sair."
     },
     {
       "arquivo": "audio/v9/voz-escolha-2.wav",
-      "segundos": 5.331,
+      "segundos": 5.859,
       "texto": "O Marcos começou agora: quinze minutos por dia, treinando no estilo da banca FAU."
     }
   ],
   "edital": [
     {
       "arquivo": "audio/v9/voz-edital-1.wav",
-      "segundos": 1.014,
+      "segundos": 1.505,
       "texto": "Aí o edital sai."
     },
     {
       "arquivo": "audio/v9/voz-edital-2.wav",
-      "segundos": 2.62,
+      "segundos": 3.297,
       "texto": "A Júlia tem poucas semanas pra correr atrás de tudo."
     },
     {
       "arquivo": "audio/v9/voz-edital-3.wav",
-      "segundos": 1.821,
+      "segundos": 2.358,
       "texto": "O Marcos já tem meses de treino."
     }
   ],
   "prova": [
     {
       "arquivo": "audio/v9/voz-prova-1.wav",
-      "segundos": 3.268,
+      "segundos": 3.863,
       "texto": "No dia da prova, a Júlia estranha o jeito das perguntas."
     },
     {
       "arquivo": "audio/v9/voz-prova-2.wav",
-      "segundos": 1.888,
+      "segundos": 1.951,
       "texto": "O Marcos reconhece na hora."
     }
   ],
   "virada": [
     {
       "arquivo": "audio/v9/voz-virada-1.wav",
-      "segundos": 1.997,
+      "segundos": 2.341,
       "texto": "A diferença não foi inteligência."
     },
     {
       "arquivo": "audio/v9/voz-virada-2.wav",
-      "segundos": 2.824,
+      "segundos": 3.209,
       "texto": "Foi começar antes, e treinar do jeito certo."
     }
   ],
   "produto": [
     {
       "arquivo": "audio/v9/voz-produto-1.wav",
-      "segundos": 7.291,
+      "segundos": 8.34,
       "texto": "É isso que o Fuse Aprova faz: mais de dez mil questões no estilo da FAU, lições curtas e simulado igual à prova."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v9/voz-oferta-1.wav",
-      "segundos": 7.643,
-      "texto": "E pra ninguém ficar de fora por causa do valor: por duas semanas, dá pra parcelar em até seis vezes sem juros no cartão."
+      "segundos": 6.518,
+      "texto": "E pra ninguém ficar de fora por causa do valor: dá pra parcelar em até seis vezes sem juros no cartão."
+    },
+    {
+      "arquivo": "audio/v9/voz-oferta-2.wav",
+      "segundos": 4.529,
+      "texto": "Mas só até quarta-feira, dia vinte e cinco de novembro. Aproveita!"
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v9/voz-fecho-1.wav",
-      "segundos": 2.694,
+      "segundos": 2.89,
       "texto": "E você? Vai ser a Júlia ou o Marcos?"
     },
     {
       "arquivo": "audio/v9/voz-fecho-2.wav",
-      "segundos": 2.639,
+      "segundos": 2.238,
       "texto": "Comenta aí. E o link tá na bio."
     }
   ]

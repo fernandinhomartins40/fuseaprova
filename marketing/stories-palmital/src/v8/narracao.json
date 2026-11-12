@@ -2,87 +2,92 @@
   "gancho": [
     {
       "arquivo": "audio/v8/voz-gancho-1.wav",
-      "segundos": 2.063,
+      "segundos": 2.09,
       "texto": "Imagina receber essa notificação…"
     },
     {
       "arquivo": "audio/v8/voz-gancho-2.wav",
-      "segundos": 1.87,
+      "segundos": 2.041,
       "texto": "e ainda não ter começado a estudar."
     }
   ],
   "historia": [
     {
       "arquivo": "audio/v8/voz-historia-1.wav",
-      "segundos": 2.9,
+      "segundos": 3.203,
       "texto": "Pensa na Ana. Ela quer passar no concurso de Palmital."
     },
     {
       "arquivo": "audio/v8/voz-historia-2.wav",
-      "segundos": 2.117,
+      "segundos": 2.236,
       "texto": "Ela esperou o edital sair pra começar."
     },
     {
       "arquivo": "audio/v8/voz-historia-3.wav",
-      "segundos": 3.616,
+      "segundos": 3.982,
       "texto": "Aí correu: apostila genérica, tudo de todas as bancas."
     },
     {
       "arquivo": "audio/v8/voz-historia-4.wav",
-      "segundos": 3.789,
+      "segundos": 3.867,
       "texto": "E na prova, as questões vieram de um jeito que ela nunca tinha treinado."
     }
   ],
   "virada": [
     {
       "arquivo": "audio/v8/voz-virada-1.wav",
-      "segundos": 3.122,
+      "segundos": 3.918,
       "texto": "Ela estudou muito. Mas estudou tarde, e do jeito errado."
     },
     {
       "arquivo": "audio/v8/voz-virada-2.wav",
-      "segundos": 2.164,
+      "segundos": 2.629,
       "texto": "Porque quem passa não é quem estuda mais."
     },
     {
       "arquivo": "audio/v8/voz-virada-3.wav",
-      "segundos": 1.481,
+      "segundos": 1.838,
       "texto": "É quem treina no jeito da banca."
     }
   ],
   "produto": [
     {
       "arquivo": "audio/v8/voz-produto-1.wav",
-      "segundos": 1.749,
+      "segundos": 2.124,
       "texto": "Por isso existe o Fuse Aprova."
     },
     {
       "arquivo": "audio/v8/voz-produto-2.wav",
-      "segundos": 5.822,
+      "segundos": 6.289,
       "texto": "Mais de dez mil questões no estilo da banca FAU, com explicação em cada uma e simulado igual à prova."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v8/voz-oferta-1.wav",
-      "segundos": 6.945,
-      "texto": "E pro dinheiro não ser o motivo de esperar o edital: por duas semanas, dá pra parcelar em até seis vezes sem juros no cartão."
+      "segundos": 5.85,
+      "texto": "E pro dinheiro não ser motivo pra esperar o edital: dá pra parcelar em até seis vezes sem juros no cartão."
+    },
+    {
+      "arquivo": "audio/v8/voz-oferta-2.wav",
+      "segundos": 3.949,
+      "texto": "Mas só até quarta-feira, dia vinte e cinco de novembro. Aproveita!"
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v8/voz-fecho-1.wav",
-      "segundos": 2.344,
+      "segundos": 2.24,
       "texto": "Agora imagina a mesma notificação…"
     },
     {
       "arquivo": "audio/v8/voz-fecho-2.wav",
-      "segundos": 2.074,
+      "segundos": 2.886,
       "texto": "só que dessa vez, você já treinou por meses."
     },
     {
       "arquivo": "audio/v8/voz-fecho-3.wav",
-      "segundos": 1.952,
+      "segundos": 2.105,
       "texto": "Começa antes. O link tá na bio."
     }
   ]

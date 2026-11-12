@@ -73,7 +73,8 @@ async def main(video: str, so: set[str]) -> None:
             if tem_chave:
                 eleven.sintetizar(falado(texto), arquivo, roteiro['voz'], ' '.join(corrido[max(0, n - 2):n]),
                                   corrido[n + 1] if n + 1 < len(corrido) else '',
-                                  ajustes=roteiro['ajustes'], semente=roteiro['semente'])
+                                  ajustes=roteiro['ajustes'], semente=roteiro['semente'],
+                                  modelo=roteiro.get('modelo', eleven.MODELO))
             else:
                 await edge_tts.Communicate(texto, VOZ_RESERVA, rate='+15%').save(str(arquivo))
             n += 1

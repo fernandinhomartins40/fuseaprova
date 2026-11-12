@@ -2,74 +2,79 @@
   "gancho": [
     {
       "arquivo": "audio/v10/voz-gancho-1.wav",
-      "segundos": 2.873,
+      "segundos": 3.929,
       "texto": "O erro que mais reprova em concurso não é falta de estudo."
     },
     {
       "arquivo": "audio/v10/voz-gancho-2.wav",
-      "segundos": 3.067,
+      "segundos": 2.341,
       "texto": "Fica até o final, que eu te mostro qual é."
     }
   ],
   "erro": [
     {
       "arquivo": "audio/v10/voz-erro-1.wav",
-      "segundos": 2.879,
+      "segundos": 3.489,
       "texto": "É estudar o conteúdo certo… do jeito errado."
     },
     {
       "arquivo": "audio/v10/voz-erro-2.wav",
-      "segundos": 3.958,
+      "segundos": 3.933,
       "texto": "Olha só: o mesmo assunto, cobrado de dois jeitos."
     }
   ],
   "explica": [
     {
       "arquivo": "audio/v10/voz-explica-1.wav",
-      "segundos": 2.15,
+      "segundos": 2.705,
       "texto": "Quem só leu a teoria trava na segunda."
     },
     {
       "arquivo": "audio/v10/voz-explica-2.wav",
-      "segundos": 4.859,
+      "segundos": 5.555,
       "texto": "Cada banca tem o seu jeito de cobrar. E em Palmital, a banca é a FAU."
     }
   ],
   "produto": [
     {
       "arquivo": "audio/v10/voz-produto-1.wav",
-      "segundos": 5.895,
+      "segundos": 6.248,
       "texto": "No Fuse Aprova, você treina com mais de dez mil questões no estilo dela, com a explicação na hora."
     }
   ],
   "antes": [
     {
       "arquivo": "audio/v10/voz-antes-1.wav",
-      "segundos": 3.664,
+      "segundos": 3.996,
       "texto": "E o melhor momento pra começar é agora, antes do edital."
     },
     {
       "arquivo": "audio/v10/voz-antes-2.wav",
-      "segundos": 4.396,
+      "segundos": 3.933,
       "texto": "Porque depois que ele sai, sobram poucas semanas até a prova."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v10/voz-oferta-1.wav",
-      "segundos": 6.168,
-      "texto": "E pro valor não te segurar: por duas semanas, dá pra parcelar em até seis vezes sem juros no cartão."
+      "segundos": 5.679,
+      "texto": "E pro valor não te segurar: dá pra parcelar em até seis vezes sem juros no cartão."
+    },
+    {
+      "arquivo": "audio/v10/voz-oferta-2.wav",
+      "segundos": 4.432,
+      "texto": "Mas só até quarta-feira, dia vinte e cinco de novembro. Aproveita!"
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v10/voz-fecho-1.wav",
-      "segundos": 1.736,
+      "segundos": 2.119,
       "texto": "Agora você já sabe qual é o erro."
     },
     {
       "arquivo": "audio/v10/voz-fecho-2.wav",
-      "segundos": 4.268,
+      "segundos": 3.671,
       "texto": "Comenta “não vou cometer”, e corre pro link na bio."
     }
   ]

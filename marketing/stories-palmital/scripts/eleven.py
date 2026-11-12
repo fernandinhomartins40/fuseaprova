@@ -53,9 +53,12 @@ def chamar(metodo: str, caminho: str, corpo: dict | None = None, binario: bool =
 
 
 def sintetizar(texto: str, destino: pathlib.Path, voz: str, anterior: str = '', proximo: str = '',
-               ajustes: dict | None = None, semente: int | None = None) -> None:
+               ajustes: dict | None = None, semente: int | None = None, modelo: str = MODELO) -> None:
     """Gera um MP3. O texto vizinho (anterior/próximo) mantém a entonação contínua entre os clipes."""
-    corpo = {'text': texto, 'model_id': MODELO, 'voice_settings': ajustes or AJUSTES, 'seed': SEMENTE if semente is None else semente}
+    corpo = {'text': texto, 'model_id': modelo, 'voice_settings': ajustes or AJUSTES, 'seed': SEMENTE if semente is None else semente}
+    if modelo != MODELO:  # v3/v4 não aceitam texto vizinho nem 'style'
+        anterior = proximo = ''
+        corpo['voice_settings'] = {k: v for k, v in corpo['voice_settings'].items() if k != 'style'}
     if anterior:
         corpo['previous_text'] = anterior
     if proximo:

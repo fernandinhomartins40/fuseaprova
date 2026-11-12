@@ -1,7 +1,8 @@
 import React from 'react';
 import { Img, interpolate, staticFile, useCurrentFrame } from 'remotion';
 import { AcaoBio, Aviso, Em, limita, tremida } from '../comum';
-import { Celular, Chip, Efeito, Entra, Icone, Palavras, useMola } from '../componentes';
+import { Celular, Chip, Efeito, Entra, Icone, useMola } from '../componentes';
+import { Manchete, Surge } from './cinema';
 import type { Fala } from '../linhaDoTempo';
 import { cor, fonte } from '../tema';
 import { Cartao, SeisVezes } from '../v7/cenas';
@@ -44,7 +45,7 @@ export const Personagem: React.FC<{
   tamanho?: number;
   selo?: React.ReactNode;
 }> = ({ nome, pessoa, em, fundo = 'rgba(255,255,255,0.12)', tamanho = 220, selo }) => (
-  <Entra atraso={em} de="zoom">
+  <Surge em={em}>
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
       <div style={{ position: 'relative', width: tamanho, height: tamanho, borderRadius: '50%', background: fundo, overflow: 'hidden', border: '6px solid rgba(255,255,255,0.85)' }}>
         <div style={{ position: 'absolute', left: 0, bottom: -tamanho * 0.04 }}>
@@ -54,7 +55,7 @@ export const Personagem: React.FC<{
       {selo}
       <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 52, lineHeight: 1, color: cor.branco }}>{nome}</div>
     </div>
-  </Entra>
+  </Surge>
 );
 
 export const AvisoPersonagem: React.FC<{ texto?: string }> = ({ texto = 'Personagem ilustrativa' }) => (
@@ -201,7 +202,7 @@ export const VitrineApp: React.FC<{ ini: number; fim: number; logo?: number }> =
       ) : null}
       <div style={{ position: 'absolute', left: 72, top: logo !== undefined ? 620 : 420, width: 500 }}>
         {recursos.map((r, i) => (
-          <Entra key={r.titulo} atraso={quando[i]} de="esquerda">
+          <Surge key={r.titulo} em={quando[i]} de="esquerda">
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, marginBottom: 40, opacity: i === atual ? 1 : 0.55 }}>
               <div style={{ flex: 'none', width: 56, height: 56, borderRadius: 16, background: i === atual ? cor.laranjaVivo : 'rgba(255,255,255,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke={cor.branco} strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
@@ -210,7 +211,7 @@ export const VitrineApp: React.FC<{ ini: number; fim: number; logo?: number }> =
               </div>
               <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 46, lineHeight: 1.08, color: cor.branco }}>{r.titulo}</div>
             </div>
-          </Entra>
+          </Surge>
         ))}
       </div>
       <div style={{ position: 'absolute', left: 620, top: logo !== undefined ? 600 : 420, transform: `translateX(${(1 - cel) * 1000}px) rotate(4deg)` }}>
@@ -223,32 +224,54 @@ export const VitrineApp: React.FC<{ ini: number; fim: number; logo?: number }> =
   );
 };
 
-/** Oferta com o motivo antes do preço: motivo → cartão → 6x sem juros → prazo da oportunidade. */
-export const BlocoOferta: React.FC<{ fala: Fala; motivo: string }> = ({ fala, motivo }) => {
-  const len = fala.fim - fala.ini;
-  const t = (f: number) => fala.ini + Math.round(f * len);
+/** Folha de calendário com a data-limite do parcelamento. */
+export const CartaoData: React.FC<{ em: number }> = ({ em }) => {
+  const p = useMola(em, { damping: 15, stiffness: 140 });
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 34, opacity: Math.min(1, p * 2), transform: `translateY(${(1 - p) * 120}px)` }}>
+      <div style={{ width: 230, borderRadius: 30, overflow: 'hidden', background: cor.branco, boxShadow: '0 24px 50px rgba(0,0,0,0.4)', transform: `rotate(${interpolate(p, [0, 1], [-14, -4])}deg)` }}>
+        <div style={{ background: cor.vermelho, color: cor.branco, fontFamily: fonte.corpo, fontWeight: 900, fontSize: 34, letterSpacing: 4, textAlign: 'center', padding: '10px 0' }}>NOV</div>
+        <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 140, lineHeight: 1.05, color: cor.tinta, textAlign: 'center' }}>25</div>
+        <div style={{ fontFamily: fonte.corpo, fontWeight: 800, fontSize: 26, color: cor.muted, textAlign: 'center', paddingBottom: 14 }}>quarta-feira</div>
+      </div>
+      <div>
+        <div style={{ fontFamily: fonte.corpo, fontWeight: 800, fontSize: 38, color: 'rgba(255,255,255,0.8)' }}>Parcelamento em 6x</div>
+        <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 76, lineHeight: 1.02, color: cor.branco }}>
+          só até
+          <br />
+          <span style={{ color: cor.ouro }}>25/11</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/** Oferta com o motivo antes do preço: motivo → cartão → 6x sem juros; na 2ª fala, a data-limite. */
+export const BlocoOferta: React.FC<{ falas: Fala[]; motivo: string }> = ({ falas, motivo }) => {
+  const [a, b] = falas;
+  const frame = useCurrentFrame();
+  const len = a.fim - a.ini;
+  const t = (f: number) => a.ini + Math.round(f * len);
+  const sobe = interpolate(frame, [b.ini - 6, b.ini + 10], [0, 1], { ...limita, easing: (x) => 1 - (1 - x) ** 3 });
   return (
     <>
-      <Em y={260}>
-        <div style={{ width: 936 }}>
-          <Palavras texto={motivo} atraso={fala.ini} passo={2} tamanho={76} alinhamento="left" fundoDestaque={cor.ouro} corDestaque={cor.tinta} />
-        </div>
+      <div style={{ position: 'absolute', left: 72, top: 270, width: 936, opacity: 1 - sobe * 0.6, transform: `translateY(${-sobe * 20}px)` }}>
+        <Manchete texto={motivo} atraso={a.ini} tamanho={74} faixa={cor.ouro} corFaixa={cor.tinta} />
+      </div>
+      <div style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, transform: `translateY(${-sobe * 150}px) scale(${1 - sobe * 0.18})`, transformOrigin: '50% 40%' }}>
+        <Em x={560} y={660}>
+          <Cartao em={t(0.4)} />
+        </Em>
+        <Em y={1080}>
+          <SeisVezes em={t(0.68)} />
+        </Em>
+      </div>
+      <Em y={1180}>
+        <CartaoData em={b.ini + 2} />
       </Em>
-      <Em x={560} y={640}>
-        <Cartao em={t(0.42)} />
-      </Em>
-      <Em y={1060}>
-        <SeisVezes em={t(0.66)} />
-      </Em>
-      <Em y={1330}>
-        <Entra atraso={t(0.86)} de="zoom">
-          <Chip fundo={cor.vermelho} tamanho={38} icone="icone-relogio">
-            Oportunidade de 2 semanas
-          </Chip>
-        </Entra>
-      </Em>
-      <Efeito nome="whoosh" em={t(0.42)} volume={0.35} />
-      <Efeito nome="ding" em={t(0.66)} volume={0.45} />
+      <Efeito nome="whoosh" em={t(0.4)} volume={0.35} />
+      <Efeito nome="ding" em={t(0.68)} volume={0.45} />
+      <Efeito nome="pop" em={b.ini + 2} volume={0.45} />
     </>
   );
 };

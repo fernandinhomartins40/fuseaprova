@@ -1,13 +1,12 @@
 {
-  "voz": "ORgG8rwdAiMYRug8RJwR",
-  "nomeVoz": "Ana Alice",
+  "voz": "ohZOfA9iwlZ5nOsoY7LB",
+  "nomeVoz": "Roberta",
   "semente": 101,
   "ajustes": {
-    "stability": 0.4,
-    "similarity_boost": 0.78,
-    "style": 0.55,
+    "stability": 0.5,
+    "similarity_boost": 0.8,
     "use_speaker_boost": true,
-    "speed": 1.1
+    "speed": 1.0
   },
   "falas": {
     "gancho": [
@@ -30,11 +29,13 @@
       "Porque depois que ele sai, sobram poucas semanas até a prova."
     ],
     "oferta": [
-      "E pro valor não te segurar: por duas semanas, dá pra parcelar em até seis vezes sem juros no cartão."
+      "E pro valor não te segurar: dá pra parcelar em até seis vezes sem juros no cartão.",
+      "Mas só até quarta-feira, dia vinte e cinco de novembro. Aproveita!"
     ],
     "fecho": [
       "Agora você já sabe qual é o erro.",
       "Comenta “não vou cometer”, e corre pro link na bio."
     ]
-  }
+  },
+  "modelo": "eleven_v4"
 }

@@ -1,13 +1,12 @@
 {
-  "voz": "NQmLEqxcRTkWYIYZSYod",
-  "nomeVoz": "Matheus",
+  "voz": "GDzHdQOi6jjf8zaXhCYD",
+  "nomeVoz": "Raquel",
   "semente": 91,
   "ajustes": {
-    "stability": 0.38,
-    "similarity_boost": 0.78,
-    "style": 0.6,
+    "stability": 0.5,
+    "similarity_boost": 0.8,
     "use_speaker_boost": true,
-    "speed": 1.1
+    "speed": 1.0
   },
   "falas": {
     "gancho": [
@@ -35,11 +34,13 @@
       "É isso que o Fuse Aprova faz: mais de dez mil questões no estilo da FAU, lições curtas e simulado igual à prova."
     ],
     "oferta": [
-      "E pra ninguém ficar de fora por causa do valor: por duas semanas, dá pra parcelar em até seis vezes sem juros no cartão."
+      "E pra ninguém ficar de fora por causa do valor: dá pra parcelar em até seis vezes sem juros no cartão.",
+      "Mas só até quarta-feira, dia vinte e cinco de novembro. Aproveita!"
     ],
     "fecho": [
       "E você? Vai ser a Júlia ou o Marcos?",
       "Comenta aí. E o link tá na bio."
     ]
-  }
+  },
+  "modelo": "eleven_v4"
 }

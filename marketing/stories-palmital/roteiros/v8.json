@@ -1,13 +1,12 @@
 {
-  "voz": "Qrdut83w0Cr152Yb4Xn3",
-  "nomeVoz": "Paulo",
+  "voz": "7lu3ze7orhWaNeSPowWx",
+  "nomeVoz": "Lucas",
   "semente": 83,
   "ajustes": {
-    "stability": 0.42,
+    "stability": 0.5,
     "similarity_boost": 0.8,
-    "style": 0.45,
     "use_speaker_boost": true,
-    "speed": 1.1
+    "speed": 1.0
   },
   "falas": {
     "gancho": [
@@ -30,12 +29,14 @@
       "Mais de dez mil questões no estilo da banca FAU, com explicação em cada uma e simulado igual à prova."
     ],
     "oferta": [
-      "E pro dinheiro não ser o motivo de esperar o edital: por duas semanas, dá pra parcelar em até seis vezes sem juros no cartão."
+      "E pro dinheiro não ser motivo pra esperar o edital: dá pra parcelar em até seis vezes sem juros no cartão.",
+      "Mas só até quarta-feira, dia vinte e cinco de novembro. Aproveita!"
     ],
     "fecho": [
       "Agora imagina a mesma notificação…",
       "só que dessa vez, você já treinou por meses.",
       "Começa antes. O link tá na bio."
     ]
-  }
+  },
+  "modelo": "eleven_v4"
 }
