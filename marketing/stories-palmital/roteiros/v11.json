@@ -1,0 +1,42 @@
+{
+  "voz": "7lu3ze7orhWaNeSPowWx",
+  "nomeVoz": "Lucas",
+  "semente": 111,
+  "ajustes": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.0
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "FAU": "Fáu"
+  },
+  "falas": {
+    "gancho": [
+      "Saiu o edital do concurso da Prefeitura de Palmital.",
+      "Se você quer trabalhar lá, fica até o final."
+    ],
+    "numeros": [
+      "São cento e vinte e seis vagas, em quarenta e nove cargos, do ensino fundamental ao superior.",
+      "As inscrições vão de vinte e cinco de novembro a vinte e sete de dezembro.",
+      "E a prova está marcada para vinte e um de fevereiro."
+    ],
+    "virada": [
+      "Isso dá só uns três meses de preparação.",
+      "E quem passa não é quem estuda mais. É quem treina no jeito da banca."
+    ],
+    "produto": [
+      "No Fuse Aprova, você treina com mais de dez mil questões no estilo da FAU, com explicação em cada uma e simulado igual à prova."
+    ],
+    "oferta": [
+      "E a hora de entrar é agora: essa é a última semana com o valor de cento e noventa e sete reais.",
+      "Dá pra parcelar em até seis vezes sem juros no cartão.",
+      "Na semana que vem, o valor sobe pra duzentos e noventa e sete."
+    ],
+    "fecho": [
+      "Garante o seu antes de subir. O link tá na bio."
+    ]
+  },
+  "modelo": "eleven_v4"
+}

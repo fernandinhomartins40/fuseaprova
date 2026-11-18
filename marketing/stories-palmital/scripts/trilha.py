@@ -139,6 +139,9 @@ ESTILOS = {
     # v10: curioso e confiante, Mi menor (i–iv–VI–V), 114 BPM
     'v10': dict(bpm=114, acordes=[[52, 55, 59, 64], [57, 60, 64, 69], [48, 52, 55, 60], [47, 51, 54, 59]],
                 baixos=[28, 33, 24, 35], bumbo=0.55, baixo=0.32, brilho=0.8, chimbal=0.7, semente=101),
+    # v11: notícia urgente e confiante, Lá menor (i–VI–III–VII), 122 BPM
+    'v11': dict(bpm=122, acordes=[[57, 60, 64, 69], [53, 57, 60, 65], [48, 52, 55, 60], [55, 59, 62, 67]],
+                baixos=[33, 29, 24, 31], bumbo=0.6, baixo=0.34, brilho=0.8, chimbal=0.8, semente=111),
     # aulas: mais calmas que as de venda, para a explicação ficar na frente
     # aula1: estudo leve, Fá maior (I–vi–IV–V), 100 BPM
     'aula1': dict(bpm=100, acordes=[[65, 69, 72, 77], [62, 65, 69, 74], [58, 62, 65, 70], [60, 64, 67, 72]],

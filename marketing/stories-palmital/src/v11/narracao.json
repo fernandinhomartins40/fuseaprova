@@ -1,0 +1,74 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v11/voz-gancho-1.wav",
+      "segundos": 3.098,
+      "texto": "Saiu o edital do concurso da Prefeitura de Palmital."
+    },
+    {
+      "arquivo": "audio/v11/voz-gancho-2.wav",
+      "segundos": 2.364,
+      "texto": "Se você quer trabalhar lá, fica até o final."
+    }
+  ],
+  "numeros": [
+    {
+      "arquivo": "audio/v11/voz-numeros-1.wav",
+      "segundos": 5.226,
+      "texto": "São cento e vinte e seis vagas, em quarenta e nove cargos, do ensino fundamental ao superior."
+    },
+    {
+      "arquivo": "audio/v11/voz-numeros-2.wav",
+      "segundos": 4.123,
+      "texto": "As inscrições vão de vinte e cinco de novembro a vinte e sete de dezembro."
+    },
+    {
+      "arquivo": "audio/v11/voz-numeros-3.wav",
+      "segundos": 2.726,
+      "texto": "E a prova está marcada para vinte e um de fevereiro."
+    }
+  ],
+  "virada": [
+    {
+      "arquivo": "audio/v11/voz-virada-1.wav",
+      "segundos": 2.547,
+      "texto": "Isso dá só uns três meses de preparação."
+    },
+    {
+      "arquivo": "audio/v11/voz-virada-2.wav",
+      "segundos": 4.354,
+      "texto": "E quem passa não é quem estuda mais. É quem treina no jeito da banca."
+    }
+  ],
+  "produto": [
+    {
+      "arquivo": "audio/v11/voz-produto-1.wav",
+      "segundos": 7.227,
+      "texto": "No Fuse Aprova, você treina com mais de dez mil questões no estilo da FAU, com explicação em cada uma e simulado igual à prova."
+    }
+  ],
+  "oferta": [
+    {
+      "arquivo": "audio/v11/voz-oferta-1.wav",
+      "segundos": 5.525,
+      "texto": "E a hora de entrar é agora: essa é a última semana com o valor de cento e noventa e sete reais."
+    },
+    {
+      "arquivo": "audio/v11/voz-oferta-2.wav",
+      "segundos": 3.233,
+      "texto": "Dá pra parcelar em até seis vezes sem juros no cartão."
+    },
+    {
+      "arquivo": "audio/v11/voz-oferta-3.wav",
+      "segundos": 3.618,
+      "texto": "Na semana que vem, o valor sobe pra duzentos e noventa e sete."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/v11/voz-fecho-1.wav",
+      "segundos": 2.823,
+      "texto": "Garante o seu antes de subir. O link tá na bio."
+    }
+  ]
+}

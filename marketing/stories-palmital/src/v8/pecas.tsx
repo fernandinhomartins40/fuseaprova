@@ -277,9 +277,9 @@ export const BlocoOferta: React.FC<{ falas: Fala[]; motivo: string }> = ({ falas
 };
 
 /** Fecho: botão + link na bio, pergunta para comentar e o aviso legal. */
-export const Fechamento: React.FC<{ em: number; y?: number; pergunta: string }> = ({ em, y = 860, pergunta }) => (
+export const Fechamento: React.FC<{ em: number; y?: number; pergunta: string; acao?: string }> = ({ em, y = 860, pergunta, acao = 'Quero começar antes' }) => (
   <>
-    <AcaoBio em={em} y={y} texto="Quero começar antes" fundo={cor.laranjaVivo} sombra={cor.laranjaSombra} corBio={cor.azulNoite} />
+    <AcaoBio em={em} y={y} texto={acao} fundo={cor.laranjaVivo} sombra={cor.laranjaSombra} corBio={cor.azulNoite} />
     <Em y={y + 330}>
       <Entra atraso={em + 16}>
         <Chip fundo="rgba(255,255,255,0.14)" tamanho={36}>
