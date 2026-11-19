@@ -246,7 +246,7 @@ function FormularioEdital({ edital }: { edital: EditalResposta }) {
                   onChange={(e) => mudarCargo(i, 'escolaridade', e.target.value)}
                 />
                 <CampoTexto
-                  rotulo="Vagas"
+                  rotulo="Vagas (vazio = só cadastro reserva)"
                   type="number"
                   min={0}
                   value={c.vagas}

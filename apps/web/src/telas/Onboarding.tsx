@@ -17,6 +17,7 @@ import {
   Pagina,
 } from '../ui';
 import type { NomeAsset } from '../assets/gerados';
+import { textoVagas } from './comum';
 import s from './Onboarding.module.css';
 
 const ICONE_AREA: Record<AreaCargo, NomeAsset> = {
@@ -125,11 +126,7 @@ export default function Onboarding() {
                     <span className={s.cartaoTextos}>
                       <span className={s.cartaoTitulo}>{cg.nome}</span>
                       <span className={s.cartaoSub}>
-                        {cg.generico
-                          ? a.exemplos.join(', ')
-                          : cg.vagas != null
-                            ? `${cg.vagas} vagas`
-                            : NOMES_AREA[a.area]}
+                        {cg.generico ? a.exemplos.join(', ') : textoVagas(cg)}
                       </span>
                     </span>
                     {cargoId === cg.id ? (

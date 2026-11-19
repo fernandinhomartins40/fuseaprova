@@ -34,6 +34,16 @@ export function plural(n: number, um: string, varios: string): string {
   return `${n.toLocaleString('pt-BR')} ${n === 1 ? um : varios}`;
 }
 
+/**
+ * D45: vagas de um cargo para o aluno. Num cargo do edital, vagas vazias querem dizer "só cadastro
+ * reserva" (o edital sempre informa as vagas); cargo genérico não tem vaga.
+ */
+export function textoVagas(c: { vagas: number | null; generico: boolean }): string | null {
+  if (c.generico) return null;
+  if (!c.vagas) return 'Cadastro reserva';
+  return plural(c.vagas, 'vaga', 'vagas');
+}
+
 export function formatarNumero(n: number): string {
   return n.toLocaleString('pt-BR');
 }

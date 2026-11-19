@@ -6,6 +6,7 @@ import { chamar, mensagemDeErro } from '../api/cliente';
 import { CHAVES, useConcurso, useMe } from '../api/consultas';
 import { Botao3D, Capi, Modal, NavInferior } from '../ui';
 import { EH_APP } from '../nativo/plataforma';
+import { textoVagas } from '../telas/comum';
 import { rotaInicial } from './rotaInicial';
 import s from './LayoutAbas.module.css';
 
@@ -96,7 +97,7 @@ export function ModalEdital({ cargoAtual }: { cargoAtual: string | null }) {
                 onClick={() => setEscolhido(c.id)}
               >
                 <span className={s.nome}>{c.nome}</span>
-                {c.vagas != null ? <span className={s.vagas}>{c.vagas} vagas</span> : null}
+                {textoVagas(c) ? <span className={s.vagas}>{textoVagas(c)}</span> : null}
               </button>
             ))}
           </div>
