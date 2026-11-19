@@ -15,7 +15,7 @@ const paleta = {
 } satisfies Record<string, Paleta>;
 
 /** Celular que troca de tela com um esmaecido. */
-const CelularTelas: React.FC<{ telas: { tela: string; em: number }[]; largura?: number }> = ({ telas, largura = 470 }) => {
+export const CelularTelas: React.FC<{ telas: { tela: string; em: number }[]; largura?: number }> = ({ telas, largura = 470 }) => {
   const frame = useCurrentFrame();
   return (
     <div style={{ position: 'relative' }}>

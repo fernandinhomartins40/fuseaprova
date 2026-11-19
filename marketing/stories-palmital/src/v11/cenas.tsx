@@ -207,7 +207,7 @@ export const CenaProduto: React.FC<PropsCena> = ({ falas, duracao }) => (
 );
 
 /** "Na próxima semana: R$ 297" com a seta para cima. */
-const Aumento: React.FC<{ em: number }> = ({ em }) => {
+export const Aumento: React.FC<{ em: number }> = ({ em }) => {
   const p = useMola(em, { damping: 15, stiffness: 140 });
   const frame = useCurrentFrame();
   return (

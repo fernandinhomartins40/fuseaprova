@@ -1,0 +1,38 @@
+{
+  "voz": "GDzHdQOi6jjf8zaXhCYD",
+  "nomeVoz": "Raquel",
+  "semente": 151,
+  "ajustes": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.0
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "FAU": "Fáu"
+  },
+  "falas": {
+    "conta": [
+      "Faz a conta comigo."
+    ],
+    "preco": [
+      "Hoje, o Fuse Aprova sai por cento e noventa e sete reais."
+    ],
+    "parcela": [
+      "No cartão, em até seis vezes sem juros,",
+      "fica trinta e dois e oitenta e três por mês."
+    ],
+    "sobe": [
+      "Mas na próxima semana, sobe pra duzentos e noventa e sete."
+    ],
+    "data": [
+      "E dia vinte e cinco já abrem as inscrições de Palmital.",
+      "Dá tempo de começar antes."
+    ],
+    "fecho": [
+      "Garanta o seu pelo preço de hoje. O link tá na bio."
+    ]
+  },
+  "modelo": "eleven_v4"
+}

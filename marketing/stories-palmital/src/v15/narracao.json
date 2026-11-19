@@ -1,0 +1,54 @@
+{
+  "conta": [
+    {
+      "arquivo": "audio/v15/voz-conta-1.wav",
+      "segundos": 1.252,
+      "texto": "Faz a conta comigo."
+    }
+  ],
+  "preco": [
+    {
+      "arquivo": "audio/v15/voz-preco-1.wav",
+      "segundos": 3.864,
+      "texto": "Hoje, o Fuse Aprova sai por cento e noventa e sete reais."
+    }
+  ],
+  "parcela": [
+    {
+      "arquivo": "audio/v15/voz-parcela-1.wav",
+      "segundos": 3.054,
+      "texto": "No cartão, em até seis vezes sem juros,"
+    },
+    {
+      "arquivo": "audio/v15/voz-parcela-2.wav",
+      "segundos": 3.025,
+      "texto": "fica trinta e dois e oitenta e três por mês."
+    }
+  ],
+  "sobe": [
+    {
+      "arquivo": "audio/v15/voz-sobe-1.wav",
+      "segundos": 4.017,
+      "texto": "Mas na próxima semana, sobe pra duzentos e noventa e sete."
+    }
+  ],
+  "data": [
+    {
+      "arquivo": "audio/v15/voz-data-1.wav",
+      "segundos": 3.52,
+      "texto": "E dia vinte e cinco já abrem as inscrições de Palmital."
+    },
+    {
+      "arquivo": "audio/v15/voz-data-2.wav",
+      "segundos": 1.84,
+      "texto": "Dá tempo de começar antes."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/v15/voz-fecho-1.wav",
+      "segundos": 3.277,
+      "texto": "Garanta o seu pelo preço de hoje. O link tá na bio."
+    }
+  ]
+}

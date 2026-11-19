@@ -145,6 +145,16 @@ ESTILOS = {
     # v12: tecnológico e leve, Ré maior (I–V–vi–IV), 116 BPM
     'v12': dict(bpm=116, acordes=[[62, 66, 69, 74], [57, 61, 64, 69], [59, 62, 66, 71], [55, 59, 62, 67]],
                 baixos=[38, 33, 35, 31], bumbo=0.52, baixo=0.3, brilho=1.0, chimbal=0.75, semente=121),
+    # v13–v15: campanha colorida "antes do dia 25", pop alegre em tom maior
+    # v13: Sol maior (I–V–vi–IV), 124 BPM
+    'v13': dict(bpm=124, acordes=[[55, 59, 62, 67], [62, 66, 69, 74], [52, 55, 59, 64], [60, 64, 67, 72]],
+                baixos=[31, 38, 28, 36], bumbo=0.58, baixo=0.32, brilho=1.15, chimbal=0.85, semente=131),
+    # v14: Fá maior (I–vi–IV–V), 112 BPM, mais leve para a lista
+    'v14': dict(bpm=112, acordes=[[65, 69, 72, 77], [62, 65, 69, 74], [58, 62, 65, 70], [60, 64, 67, 72]],
+                baixos=[29, 38, 34, 36], bumbo=0.5, baixo=0.3, brilho=1.05, chimbal=0.75, semente=141),
+    # v15: Mi maior (I–IV–V–IV), 128 BPM, saltitante
+    'v15': dict(bpm=128, acordes=[[64, 68, 71, 76], [57, 61, 64, 69], [59, 63, 66, 71], [57, 61, 64, 69]],
+                baixos=[40, 33, 35, 33], bumbo=0.6, baixo=0.32, brilho=1.25, chimbal=0.9, semente=151),
     # aulas: mais calmas que as de venda, para a explicação ficar na frente
     # aula1: estudo leve, Fá maior (I–vi–IV–V), 100 BPM
     'aula1': dict(bpm=100, acordes=[[65, 69, 72, 77], [62, 65, 69, 74], [58, 62, 65, 70], [60, 64, 67, 72]],

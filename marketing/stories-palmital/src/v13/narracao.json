@@ -1,0 +1,64 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v13/voz-gancho-1.wav",
+      "segundos": 3.567,
+      "texto": "Dia vinte e cinco abrem as inscrições do concurso de Palmital."
+    }
+  ],
+  "virada": [
+    {
+      "arquivo": "audio/v13/voz-virada-1.wav",
+      "segundos": 2.134,
+      "texto": "Mas a inscrição é só um formulário."
+    },
+    {
+      "arquivo": "audio/v13/voz-virada-2.wav",
+      "segundos": 1.961,
+      "texto": "Quem decide a vaga é o estudo."
+    }
+  ],
+  "tempo": [
+    {
+      "arquivo": "audio/v13/voz-tempo-1.wav",
+      "segundos": 2.349,
+      "texto": "A prova é dia vinte e um de fevereiro."
+    },
+    {
+      "arquivo": "audio/v13/voz-tempo-2.wav",
+      "segundos": 2.95,
+      "texto": "Quem começa agora chega na inscrição já estudando."
+    }
+  ],
+  "app": [
+    {
+      "arquivo": "audio/v13/voz-app-1.wav",
+      "segundos": 5.648,
+      "texto": "No Fuse Aprova são lições curtas no celular, com questões no estilo da banca e revisão do que você erra."
+    }
+  ],
+  "oferta": [
+    {
+      "arquivo": "audio/v13/voz-oferta-1.wav",
+      "segundos": 3.44,
+      "texto": "E hoje o acesso sai por cento e noventa e sete reais,"
+    },
+    {
+      "arquivo": "audio/v13/voz-oferta-2.wav",
+      "segundos": 3.864,
+      "texto": "em até seis vezes sem juros no cartão, até o dia vinte e cinco."
+    },
+    {
+      "arquivo": "audio/v13/voz-oferta-3.wav",
+      "segundos": 3.291,
+      "texto": "Na próxima semana, sobe pra duzentos e noventa e sete."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/v13/voz-fecho-1.wav",
+      "segundos": 3.173,
+      "texto": "Comece antes do dia vinte e cinco. O link tá na bio."
+    }
+  ]
+}

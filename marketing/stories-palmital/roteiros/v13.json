@@ -1,0 +1,40 @@
+{
+  "voz": "7lu3ze7orhWaNeSPowWx",
+  "nomeVoz": "Lucas",
+  "semente": 131,
+  "ajustes": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.0
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "FAU": "Fáu"
+  },
+  "falas": {
+    "gancho": [
+      "Dia vinte e cinco abrem as inscrições do concurso de Palmital."
+    ],
+    "virada": [
+      "Mas a inscrição é só um formulário.",
+      "Quem decide a vaga é o estudo."
+    ],
+    "tempo": [
+      "A prova é dia vinte e um de fevereiro.",
+      "Quem começa agora chega na inscrição já estudando."
+    ],
+    "app": [
+      "No Fuse Aprova são lições curtas no celular, com questões no estilo da banca e revisão do que você erra."
+    ],
+    "oferta": [
+      "E hoje o acesso sai por cento e noventa e sete reais,",
+      "em até seis vezes sem juros no cartão, até o dia vinte e cinco.",
+      "Na próxima semana, sobe pra duzentos e noventa e sete."
+    ],
+    "fecho": [
+      "Comece antes do dia vinte e cinco. O link tá na bio."
+    ]
+  },
+  "modelo": "eleven_v4"
+}

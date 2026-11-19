@@ -1,0 +1,41 @@
+{
+  "voz": "ohZOfA9iwlZ5nOsoY7LB",
+  "nomeVoz": "Roberta",
+  "semente": 141,
+  "ajustes": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.0
+  },
+  "pronuncia": {
+    "Fuse": "Fuzi",
+    "FAU": "Fáu"
+  },
+  "falas": {
+    "gancho": [
+      "Quatro coisas pra fazer antes do dia vinte e cinco, quando abrem as inscrições de Palmital."
+    ],
+    "um": [
+      "Um: descubra o seu cargo.",
+      "Tem uma ferramenta grátis que confere os requisitos do edital pra você."
+    ],
+    "dois": [
+      "Dois: separe vinte minutos por dia.",
+      "É pouco, mas é todo dia."
+    ],
+    "tres": [
+      "Três: comece por Português e Matemática.",
+      "Elas caem na prova de todos os cargos."
+    ],
+    "quatro": [
+      "Quatro: garanta o Fuse Aprova pelo preço de agora.",
+      "Cento e noventa e sete reais, em até seis vezes sem juros no cartão, até o dia vinte e cinco.",
+      "Na próxima semana, sobe pra duzentos e noventa e sete."
+    ],
+    "fecho": [
+      "Começa hoje, antes de abrir a inscrição. O link tá na bio."
+    ]
+  },
+  "modelo": "eleven_v4"
+}

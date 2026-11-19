@@ -1,0 +1,69 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v14/voz-gancho-1.wav",
+      "segundos": 5.285,
+      "texto": "Quatro coisas pra fazer antes do dia vinte e cinco, quando abrem as inscrições de Palmital."
+    }
+  ],
+  "um": [
+    {
+      "arquivo": "audio/v14/voz-um-1.wav",
+      "segundos": 2.293,
+      "texto": "Um: descubra o seu cargo."
+    },
+    {
+      "arquivo": "audio/v14/voz-um-2.wav",
+      "segundos": 3.912,
+      "texto": "Tem uma ferramenta grátis que confere os requisitos do edital pra você."
+    }
+  ],
+  "dois": [
+    {
+      "arquivo": "audio/v14/voz-dois-1.wav",
+      "segundos": 3.042,
+      "texto": "Dois: separe vinte minutos por dia."
+    },
+    {
+      "arquivo": "audio/v14/voz-dois-2.wav",
+      "segundos": 2.367,
+      "texto": "É pouco, mas é todo dia."
+    }
+  ],
+  "tres": [
+    {
+      "arquivo": "audio/v14/voz-tres-1.wav",
+      "segundos": 3.414,
+      "texto": "Três: comece por Português e Matemática."
+    },
+    {
+      "arquivo": "audio/v14/voz-tres-2.wav",
+      "segundos": 2.669,
+      "texto": "Elas caem na prova de todos os cargos."
+    }
+  ],
+  "quatro": [
+    {
+      "arquivo": "audio/v14/voz-quatro-1.wav",
+      "segundos": 3.637,
+      "texto": "Quatro: garanta o Fuse Aprova pelo preço de agora."
+    },
+    {
+      "arquivo": "audio/v14/voz-quatro-2.wav",
+      "segundos": 6.012,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros no cartão, até o dia vinte e cinco."
+    },
+    {
+      "arquivo": "audio/v14/voz-quatro-3.wav",
+      "segundos": 3.754,
+      "texto": "Na próxima semana, sobe pra duzentos e noventa e sete."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/v14/voz-fecho-1.wav",
+      "segundos": 4.025,
+      "texto": "Começa hoje, antes de abrir a inscrição. O link tá na bio."
+    }
+  ]
+}
