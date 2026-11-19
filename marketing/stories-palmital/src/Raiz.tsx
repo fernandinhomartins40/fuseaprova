@@ -1,6 +1,7 @@
 import './fontes';
 import React from 'react';
-import { Composition } from 'remotion';
+import { Composition, Still } from 'remotion';
+import { Arte } from './arte/Arte';
 import { ALTURA, FPS, LARGURA } from './tema';
 import * as v1 from './v1';
 import * as v2 from './v2';
@@ -43,5 +44,7 @@ export const Raiz: React.FC = () => (
     {videos.map((v) => (
       <Composition key={v.id} id={v.id} component={v.Video} durationInFrames={v.linha.duracao} fps={FPS} width={LARGURA} height={ALTURA} />
     ))}
+    <Still id="arte-feed" component={Arte} width={1080} height={1350} />
+    <Still id="arte-story" component={Arte} width={1080} height={1920} defaultProps={{ story: true }} />
   </>
 );
