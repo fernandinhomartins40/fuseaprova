@@ -1,0 +1,43 @@
+{
+  "voz": "GDzHdQOi6jjf8zaXhCYD",
+  "nomeVoz": "Raquel",
+  "semente": 121,
+  "ajustes": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.0
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "FAU": "Fáu"
+  },
+  "falas": {
+    "gancho": [
+      "Saiu o edital de Palmital: são quarenta e nove cargos.",
+      "E aí, qual é o seu?"
+    ],
+    "problema": [
+      "O edital tem dezenas de páginas, tabelas e anexos.",
+      "Descobrir se você pode concorrer dá trabalho."
+    ],
+    "ferramenta": [
+      "Por isso a gente criou o Descubra seu Cargo.",
+      "Você conta até onde estudou e se tem carteira de motorista,",
+      "e ele mostra os cargos que combinam com você."
+    ],
+    "requisitos": [
+      "Aí você responde os requisitos do cargo, com o trecho do edital do lado,",
+      "e vê na hora se você atende."
+    ],
+    "ia": [
+      "Ficou com dúvida? Pergunta pro edital.",
+      "A inteligência artificial responde com base no texto oficial, e mostra o item."
+    ],
+    "fecho": [
+      "É grátis e sem cadastro.",
+      "E na hora de estudar, o Fuse Aprova é feito sob medida pro concurso de Palmital. O link tá na bio."
+    ]
+  },
+  "modelo": "eleven_v4"
+}

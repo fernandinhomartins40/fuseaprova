@@ -1,0 +1,79 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v12/voz-gancho-1.wav",
+      "segundos": 3.917,
+      "texto": "Saiu o edital de Palmital: são quarenta e nove cargos."
+    },
+    {
+      "arquivo": "audio/v12/voz-gancho-2.wav",
+      "segundos": 1.642,
+      "texto": "E aí, qual é o seu?"
+    }
+  ],
+  "problema": [
+    {
+      "arquivo": "audio/v12/voz-problema-1.wav",
+      "segundos": 4.158,
+      "texto": "O edital tem dezenas de páginas, tabelas e anexos."
+    },
+    {
+      "arquivo": "audio/v12/voz-problema-2.wav",
+      "segundos": 3.064,
+      "texto": "Descobrir se você pode concorrer dá trabalho."
+    }
+  ],
+  "ferramenta": [
+    {
+      "arquivo": "audio/v12/voz-ferramenta-1.wav",
+      "segundos": 2.863,
+      "texto": "Por isso a gente criou o Descubra seu Cargo."
+    },
+    {
+      "arquivo": "audio/v12/voz-ferramenta-2.wav",
+      "segundos": 3.758,
+      "texto": "Você conta até onde estudou e se tem carteira de motorista,"
+    },
+    {
+      "arquivo": "audio/v12/voz-ferramenta-3.wav",
+      "segundos": 2.753,
+      "texto": "e ele mostra os cargos que combinam com você."
+    }
+  ],
+  "requisitos": [
+    {
+      "arquivo": "audio/v12/voz-requisitos-1.wav",
+      "segundos": 4.238,
+      "texto": "Aí você responde os requisitos do cargo, com o trecho do edital do lado,"
+    },
+    {
+      "arquivo": "audio/v12/voz-requisitos-2.wav",
+      "segundos": 1.841,
+      "texto": "e vê na hora se você atende."
+    }
+  ],
+  "ia": [
+    {
+      "arquivo": "audio/v12/voz-ia-1.wav",
+      "segundos": 2.618,
+      "texto": "Ficou com dúvida? Pergunta pro edital."
+    },
+    {
+      "arquivo": "audio/v12/voz-ia-2.wav",
+      "segundos": 5.021,
+      "texto": "A inteligência artificial responde com base no texto oficial, e mostra o item."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/v12/voz-fecho-1.wav",
+      "segundos": 1.963,
+      "texto": "É grátis e sem cadastro."
+    },
+    {
+      "arquivo": "audio/v12/voz-fecho-2.wav",
+      "segundos": 6.303,
+      "texto": "E na hora de estudar, o Fuse Aprova é feito sob medida pro concurso de Palmital. O link tá na bio."
+    }
+  ]
+}
