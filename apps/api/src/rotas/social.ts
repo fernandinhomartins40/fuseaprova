@@ -4,7 +4,7 @@
 import { and, asc, count, desc, eq, isNotNull, isNull } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import {
-  AVISO_EDITAL,
+  avisoEditalDoStatus,
   CONQUISTAS,
   corDoAvatar,
   diasParaFimDaSemana,
@@ -157,7 +157,7 @@ export function rotasSocial(r: Registrador): void {
         dataProva,
         diasParaProva: diasParaProva(dataProva, agora),
       },
-      avisoEdital: AVISO_EDITAL,
+      avisoEdital: avisoEditalDoStatus(status),
     };
   });
 

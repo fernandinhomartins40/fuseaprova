@@ -86,6 +86,7 @@ export const NOMES_ACAO_AUDITORIA: Record<string, string> = {
   'cargo.editar': 'Editou cargo',
   'edital.salvar': 'Salvou edital',
   'edital.publicar': 'Publicou edital',
+  'edital.desfazer': 'Desfez a importação do edital',
   'trilha.editar': 'Editou trilha',
   'report.atualizar': 'Atualizou report',
   'usuario.revogar_sessoes': 'Revogou sessões',

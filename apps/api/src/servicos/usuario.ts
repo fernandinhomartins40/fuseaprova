@@ -148,7 +148,7 @@ export async function montarMe(
       : null,
     cargo: cargo ? { id: cargo.id, nome: cargo.nome, area: cargo.area, generico: cargo.generico } : null,
     area: u.area,
-    areasExtras: areasDaTrilha(u.area, u.areasExtras, edital).slice(1),
+    areasExtras: areasDaTrilha(u.area, u.areasExtras).slice(1),
     metaDiaria: (meta >= 1 && meta <= 3 ? meta : 1) as 1 | 2 | 3,
     lembreteHora: u.lembreteHora,
     notificacoes: u.notificacoes,

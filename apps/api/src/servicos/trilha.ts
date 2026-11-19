@@ -38,14 +38,14 @@ export interface EstruturaTrilha {
 type AlunoTrilha = Pick<Usuario, 'concursoId' | 'area'> & Partial<Pick<Usuario, 'areasExtras'>>;
 
 /**
- * Unidades visíveis ao aluno (comuns + da área do cargo + das áreas extras antes do edital, D36),
+ * Unidades visíveis ao aluno (comuns + da área do cargo + das áreas extras, D36/D45),
  * na ordem intercalada.
  */
 export async function estruturaDaTrilha(db: Db, u: AlunoTrilha): Promise<EstruturaTrilha | null> {
   const concurso = await concursoDoUsuario(db, u);
   if (!concurso) return null;
   const edital = modoEdital(concurso);
-  const areas = areasDaTrilha(u.area, u.areasExtras ?? [], edital);
+  const areas = areasDaTrilha(u.area, u.areasExtras ?? []);
   const us = await db
     .select({ unidade: unidades, disciplina: disciplinas })
     .from(unidades)

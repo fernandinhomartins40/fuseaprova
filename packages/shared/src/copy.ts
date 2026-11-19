@@ -11,6 +11,15 @@ export const NOME_PRODUTO = 'Fuse Aprova';
 export const AVISO_EDITAL =
   'Quando o edital sair, as trilhas e os simulados se ajustam ao seu cargo, sem custo extra.';
 
+/** D45: o aviso do app depois que o edital sai (o de cima ficaria velho). */
+export const AVISO_EDITAL_PUBLICADO =
+  'O edital saiu: seus simulados seguem a prova do seu cargo, e você pode estudar também outras áreas, sem custo extra.';
+
+/** O aviso certo para o status do concurso. */
+export function avisoEditalDoStatus(status: string): string {
+  return status === 'aguardando_edital' ? AVISO_EDITAL : AVISO_EDITAL_PUBLICADO;
+}
+
 /**
  * D26: quem vende e quem controla os dados (CDC; Decreto 7.962/2013, art. 2º; LGPD, arts. 9º e 41).
  * Dados públicos do cartão CNPJ. Mudou o contrato social? Atualize aqui e a versão dos termos.

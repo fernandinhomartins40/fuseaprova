@@ -38,10 +38,22 @@ export function LayoutAbas() {
   );
 }
 
+/** D45: com dezenas de cargos no edital, a lista do modal vem agrupada por nível. */
+const NIVEIS_DO_MODAL: { titulo: string; escolaridades: readonly (string | null)[] }[] = [
+  { titulo: 'Nível superior', escolaridades: ['superior'] },
+  { titulo: 'Nível médio e técnico', escolaridades: ['medio', 'tecnico'] },
+  { titulo: 'Nível fundamental', escolaridades: ['fundamental'] },
+  { titulo: 'Outros cargos', escolaridades: [null] },
+];
+
 export function ModalEdital({ cargoAtual }: { cargoAtual: string | null }) {
   const concurso = useConcurso();
   const qc = useQueryClient();
   const cargos = (concurso.data?.cargos ?? []).filter((c) => !c.generico);
+  const grupos = NIVEIS_DO_MODAL.map((n) => ({
+    titulo: n.titulo,
+    itens: cargos.filter((c) => n.escolaridades.includes(c.escolaridade ?? null)),
+  })).filter((g) => g.itens.length > 0);
   const [marcado, setEscolhido] = useState<string | null>(null);
   const escolhido = marcado ?? (cargos.some((c) => c.id === cargoAtual) ? cargoAtual : null);
   const salvar = useMutation({
@@ -71,18 +83,23 @@ export function ModalEdital({ cargoAtual }: { cargoAtual: string | null }) {
     >
       <div role="radiogroup" aria-label="Cargos do edital" className={s.lista}>
         {concurso.isPending ? <p className={s.vazio}>Carregando os cargos…</p> : null}
-        {cargos.map((c) => (
-          <button
-            key={c.id}
-            type="button"
-            role="radio"
-            aria-checked={escolhido === c.id}
-            className={[s.cargo, escolhido === c.id ? s.marcado : ''].join(' ')}
-            onClick={() => setEscolhido(c.id)}
-          >
-            <span className={s.nome}>{c.nome}</span>
-            {c.vagas != null ? <span className={s.vagas}>{c.vagas} vagas</span> : null}
-          </button>
+        {grupos.map((g) => (
+          <div key={g.titulo} className={s.grupo}>
+            {grupos.length > 1 ? <p className={s.grupoTitulo}>{g.titulo}</p> : null}
+            {g.itens.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                role="radio"
+                aria-checked={escolhido === c.id}
+                className={[s.cargo, escolhido === c.id ? s.marcado : ''].join(' ')}
+                onClick={() => setEscolhido(c.id)}
+              >
+                <span className={s.nome}>{c.nome}</span>
+                {c.vagas != null ? <span className={s.vagas}>{c.vagas} vagas</span> : null}
+              </button>
+            ))}
+          </div>
         ))}
       </div>
       {salvar.isError ? (

@@ -120,6 +120,7 @@ export const ACOES_AUDITORIA = [
   'cargo.editar',
   'edital.salvar',
   'edital.publicar',
+  'edital.desfazer',
   'trilha.editar',
   'report.atualizar',
   'usuario.revogar_sessoes',

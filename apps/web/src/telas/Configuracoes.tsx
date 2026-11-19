@@ -124,8 +124,8 @@ export default function Configuracoes() {
   const cargos = (concurso.data?.cargos ?? []).filter((c) =>
     concurso.data?.modoEdital ? !c.generico : true,
   );
-  // D36: até o edital sair, dá para estudar as áreas de outros cargos junto com a do cargo.
-  const outrasAreas = concurso.data?.modoEdital || !u.area
+  // D36/D45: dá para estudar as áreas de outros cargos junto com a do cargo (também depois do edital).
+  const outrasAreas = !u.area
     ? []
     : AREAS_CARGO.filter((a) => a !== u.area && cargos.some((c) => c.area === a));
   const extras = u.areasExtras ?? [];
@@ -237,8 +237,8 @@ export default function Configuracoes() {
               Estudar também para
             </span>
             <p className={s.ajuda}>
-              Em dúvida sobre o cargo? Até o edital sair, a sua trilha pode ter as matérias de
-              outras áreas junto com as do seu cargo.
+              Quer treinar mais? A sua trilha pode ter as matérias de outras áreas junto com as do
+              seu cargo. O simulado continua seguindo a prova do seu cargo.
             </p>
             <div role="group" aria-labelledby="areas-rotulo" className={s.opcoes}>
               {outrasAreas.map((a) => (

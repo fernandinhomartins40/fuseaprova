@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   AVISO_EDITAL,
+  AVISO_EDITAL_PUBLICADO,
+  avisoEditalDoStatus,
   TITULO_BOAS_VINDAS,
   fraseOfensiva,
   primeiroNome,
@@ -39,6 +41,13 @@ describe('copy (PRD 11)', () => {
     expect(RODAPE_LEGAL).not.toMatch(/FAU|Palmital/);
     expect(AVISO_EDITAL).not.toMatch(/FAU|Palmital/);
     expect(TITULO_BOAS_VINDAS).not.toMatch(/FAU|Palmital/);
+  });
+
+  it('D45: aviso do edital conforme o status do concurso', () => {
+    expect(avisoEditalDoStatus('aguardando_edital')).toBe(AVISO_EDITAL);
+    expect(avisoEditalDoStatus('edital_publicado')).toBe(AVISO_EDITAL_PUBLICADO);
+    expect(AVISO_EDITAL_PUBLICADO).toContain('sem custo extra');
+    expect(AVISO_EDITAL_PUBLICADO).not.toMatch(/FAU|Palmital/);
   });
 
   it('título de acerto varia e usa o primeiro nome', () => {

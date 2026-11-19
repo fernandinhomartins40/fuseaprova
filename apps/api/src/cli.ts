@@ -14,6 +14,16 @@
  *     mostra uma única vez. O 2FA é configurado no primeiro login, em /super/2fa.
  *   pnpm --filter @fuse/api cli superadmin:resetar-2fa --email dono@x.com
  *     Apaga o 2FA (perdeu o celular e os códigos de recuperação). Encerra as sessões.
+ *
+ * D45:
+ *   pnpm --filter @fuse/api cli edital:palmital [--simular]
+ *     Mostra o que a importação dos 49 cargos do edital de Palmital vai mudar. Não grava nada.
+ *   pnpm --filter @fuse/api cli edital:palmital --aplicar --confirmar
+ *     Grava os cargos do edital (invisíveis para o aluno até publicar), com a foto do antes.
+ *   pnpm --filter @fuse/api cli edital:palmital --publicar --confirmar
+ *     Liga o modo edital (o mesmo botão "Publicar edital" do painel).
+ *   pnpm --filter @fuse/api cli edital:palmital --desfazer --confirmar
+ *     Volta o concurso e os cargos à foto da importação.
  */
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -21,6 +31,13 @@ import { parseArgs } from 'node:util';
 import { eq } from 'drizzle-orm';
 import { conectar, migrar, schema } from '@fuse/db';
 import { normalizarEmail, validarEmail, validarNomeCompleto, SENHA_MINIMA } from '@fuse/shared';
+import {
+  aplicarEditalPalmital,
+  descreverPlano,
+  desfazerEditalPalmital,
+  planejarEditalPalmital,
+  publicarEditalPalmital,
+} from './servicos/editalPalmital.js';
 import { gerarHashSenha } from './servicos/senhas.js';
 import { criarOuPromoverSuperadmin } from './servicos/superadminCli.js';
 
@@ -159,14 +176,56 @@ async function superadminResetar2fa(args: string[]): Promise<void> {
   }
 }
 
+async function editalPalmital(args: string[]): Promise<void> {
+  const { values } = parseArgs({
+    args,
+    options: {
+      simular: { type: 'boolean' },
+      aplicar: { type: 'boolean' },
+      publicar: { type: 'boolean' },
+      desfazer: { type: 'boolean' },
+      confirmar: { type: 'boolean' },
+    },
+  });
+  const modos = (['aplicar', 'publicar', 'desfazer'] as const).filter((m) => values[m]);
+  if (modos.length > 1) throw new Error('Use um modo por vez: --simular, --aplicar, --publicar ou --desfazer.');
+  const modo = modos[0] ?? 'simular';
+  if (modo !== 'simular' && !values.confirmar) {
+    throw new Error(`--${modo} grava no banco: rode antes sem ele para conferir e repita com --confirmar.`);
+  }
+  const conexao = conectar(process.env.DATABASE_URL, { max: 1 });
+  try {
+    if (conexao.tipo === 'pglite') await migrar(conexao);
+    const agora = new Date();
+    if (modo === 'simular') {
+      console.info(descreverPlano(await planejarEditalPalmital(conexao.db)));
+      console.info('');
+      console.info('SIMULAÇÃO: nada foi gravado. Para gravar: --aplicar --confirmar');
+    } else if (modo === 'aplicar') {
+      console.info(descreverPlano(await aplicarEditalPalmital(conexao.db, agora)));
+      console.info('');
+      console.info('Cargos do edital gravados. Os alunos só veem depois de publicar (--publicar --confirmar ou o painel).');
+    } else if (modo === 'publicar') {
+      const r = await publicarEditalPalmital(conexao.db, agora);
+      console.info(`Edital publicado. ${r.usuariosParaConfirmar} alunos vão ver "Confirme seu cargo".`);
+    } else {
+      const r = await desfazerEditalPalmital(conexao.db, agora);
+      console.info(`Desfeito: o concurso e ${r.restaurados} cargos voltaram ao estado de antes da importação de ${r.fotoDe}.`);
+    }
+  } finally {
+    await conexao.fechar();
+  }
+}
+
 const [comando, ...resto] = process.argv.slice(2);
 try {
   if (comando === 'admin:criar') await adminCriar(resto);
   else if (comando === 'superadmin:criar') await superadminCriar(resto);
   else if (comando === 'superadmin:resetar-2fa') await superadminResetar2fa(resto);
+  else if (comando === 'edital:palmital') await editalPalmital(resto);
   else {
     console.info(
-      'Comandos:\n  admin:criar --email <e-mail> --nome "<nome completo>" [--senha <senha>]\n  superadmin:criar --email <e-mail> [--nome "<nome completo>"] [--senha <senha>]\n  superadmin:resetar-2fa --email <e-mail>',
+      'Comandos:\n  admin:criar --email <e-mail> --nome "<nome completo>" [--senha <senha>]\n  superadmin:criar --email <e-mail> [--nome "<nome completo>"] [--senha <senha>]\n  superadmin:resetar-2fa --email <e-mail>\n  edital:palmital [--simular | --aplicar | --publicar | --desfazer] [--confirmar]',
     );
     process.exitCode = comando ? 1 : 0;
   }

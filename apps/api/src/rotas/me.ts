@@ -63,16 +63,11 @@ export function rotasMe(r: Registrador): void {
         await guardarCargoNoConcurso(deps.db, usuario, concurso.id, cargo, agora);
       }
     }
-    // D36: outras áreas para estudar junto, até o edital sair. Só áreas com cargo no concurso.
+    // D36/D45: outras áreas para estudar junto (também depois do edital). Só áreas com cargo no concurso.
     if (corpo.areasExtras !== undefined) {
       if (!podeEstudar(usuario.papel)) throw falha('proibido', 'Contas da equipe não escolhem cargo.');
       const concurso = await concursoDoUsuario(deps.db, usuario);
       if (!concurso) throw falha('validacao', 'Escolha um concurso primeiro.');
-      if (modoEdital(concurso) && corpo.areasExtras.length) {
-        throw falha('validacao', 'O edital saiu: agora o estudo segue só o seu cargo do edital.', {
-          areasExtras: 'O edital saiu: estude pelo seu cargo do edital.',
-        });
-      }
       const doConcurso = await deps.db
         .select({ area: cargos.area })
         .from(cargos)

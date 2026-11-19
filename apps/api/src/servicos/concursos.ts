@@ -12,7 +12,7 @@ import { schema, type BancoDados } from '@fuse/db';
 import {
   acessoVencido,
   AREAS_CARGO,
-  AVISO_EDITAL,
+  avisoEditalDoStatus,
   diaSP,
   diferencaDias,
   NOMES_AREA,
@@ -407,7 +407,7 @@ export async function montarConcursoResposta(db: Db, c: Concurso, agora: Date): 
       nome: NOMES_AREA[area],
       exemplos: lista.filter((x) => x.area === area).map((x) => x.nome),
     })),
-    avisoEdital: AVISO_EDITAL,
+    avisoEdital: avisoEditalDoStatus(c.status),
   };
 }
 

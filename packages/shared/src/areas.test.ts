@@ -1,21 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { alternarListas, areasDaTrilha } from './areas.js';
 
-describe('areasDaTrilha (D36)', () => {
+describe('areasDaTrilha (D36/D45)', () => {
   it('sem cargo, nenhuma área específica', () => {
-    expect(areasDaTrilha(null, ['educacao'], false)).toEqual([]);
+    expect(areasDaTrilha(null, ['educacao'])).toEqual([]);
   });
 
-  it('antes do edital soma as extras, sem repetir a do cargo, na ordem das áreas', () => {
-    expect(areasDaTrilha('educacao', ['saude_medio', 'educacao', 'administrativo'], false)).toEqual([
+  it('soma as extras, sem repetir a do cargo, na ordem das áreas (também depois do edital, D45)', () => {
+    expect(areasDaTrilha('educacao', ['saude_medio', 'educacao', 'administrativo'])).toEqual([
       'educacao',
       'administrativo',
       'saude_medio',
     ]);
-  });
-
-  it('com o edital publicado vale só o cargo', () => {
-    expect(areasDaTrilha('educacao', ['administrativo'], true)).toEqual(['educacao']);
   });
 });
 

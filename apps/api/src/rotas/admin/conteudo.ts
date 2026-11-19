@@ -13,6 +13,7 @@ import type { QuestaoAdmin, QuestaoAdmin as QuestaoAdminSchema, QuestaoEntrada }
 import type { Registrador } from '../../http/registrar.js';
 import { ehViolacaoUnica, existe, falha } from '../../http/erros.js';
 import { clonarConcurso } from '../../servicos/concursos.js';
+import { publicarEdital, salvarEdital } from '../../servicos/edital.js';
 import { carregarQuestoes } from '../../servicos/questoes.js';
 import { concursoAtivo, subirVersaoConteudo } from '../../servicos/usuario.js';
 import { contar, contem, iso, isoOuNull, type Db } from '../../util.js';
@@ -30,7 +31,6 @@ const {
   secoes,
   licoes,
   importacoes,
-  usuarios,
 } = schema;
 
 type Questao = typeof schema.questoes.$inferSelect;
@@ -668,74 +668,11 @@ export function rotasAdminConteudo(r: Registrador): void {
   };
   r.rota('adminEditalObter', async ({ query, deps }) => edital(deps.db, query.concursoId));
   r.rota('adminEditalSalvar', async ({ corpo, deps, usuario, agora }) => {
-    await deps.db.transaction(async (tx) => {
-      const [c] = await tx
-        .update(concursos)
-        .set({ dataProva: corpo.dataProva, links: corpo.links, versaoConteudo: sql`${concursos.versaoConteudo} + 1` })
-        .where(eq(concursos.id, corpo.concursoId))
-        .returning();
-      existe(c, 'Concurso não encontrado.');
-      const mantidos: string[] = [];
-      for (const [i, k] of corpo.cargos.entries()) {
-        const dados = {
-          nome: k.nome,
-          area: k.area,
-          escolaridade: k.escolaridade,
-          vagas: k.vagas,
-          distribuicao: k.distribuicao,
-          conteudoProgramatico: k.conteudoProgramatico,
-          generico: false,
-          ativo: true,
-          ordem: i + 1,
-        };
-        if (k.id) {
-          const [up] = await tx
-            .update(cargos)
-            .set(dados)
-            .where(and(eq(cargos.id, k.id), eq(cargos.concursoId, corpo.concursoId)))
-            .returning({ id: cargos.id });
-          if (up) {
-            mantidos.push(up.id);
-            continue;
-          }
-        }
-        const [novo] = await tx
-          .insert(cargos)
-          .values({ ...dados, concursoId: corpo.concursoId, criadoEm: agora })
-          .onConflictDoUpdate({ target: [cargos.concursoId, cargos.nome], set: dados })
-          .returning({ id: cargos.id });
-        mantidos.push(novo!.id);
-      }
-      // Cargos do edital que saíram da lista ficam inativos (os genéricos não mudam).
-      const doEdital = await tx
-        .select({ id: cargos.id })
-        .from(cargos)
-        .where(and(eq(cargos.concursoId, corpo.concursoId), eq(cargos.generico, false)));
-      const sair = doEdital.map((x) => x.id).filter((id) => !mantidos.includes(id));
-      if (sair.length) await tx.update(cargos).set({ ativo: false }).where(inArray(cargos.id, sair));
-      for (const s of corpo.secoes) await tx.update(secoes).set({ noEdital: s.noEdital }).where(eq(secoes.id, s.secaoId));
-      await auditar(tx, usuario.id, 'edital.salvar', `concurso:${corpo.concursoId}`, { cargos: corpo.cargos.length, secoes: corpo.secoes.length }, agora);
-    });
+    await deps.db.transaction((tx) => salvarEdital(tx, corpo, usuario.id, agora));
     return edital(deps.db, corpo.concursoId);
   });
   r.rota('adminEditalPublicar', async ({ corpo, deps, usuario, agora }) =>
-    deps.db.transaction(async (tx) => {
-      const [n] = await tx.select({ n: count() }).from(cargos).where(and(eq(cargos.concursoId, corpo.concursoId), eq(cargos.generico, false), eq(cargos.ativo, true)));
-      if (contar(n?.n) === 0) throw falha('conflito', 'Cadastre os cargos do edital antes de publicar.');
-      const [c] = await tx
-        .update(concursos)
-        .set({ status: 'edital_publicado', editalPublicadoEm: agora, versaoConteudo: sql`${concursos.versaoConteudo} + 1` })
-        .where(eq(concursos.id, corpo.concursoId))
-        .returning();
-      existe(c, 'Concurso não encontrado.');
-      const [p] = await tx
-        .select({ n: count() })
-        .from(usuarios)
-        .innerJoin(cargos, eq(cargos.id, usuarios.cargoId))
-        .where(and(eq(usuarios.concursoId, corpo.concursoId), eq(cargos.generico, true), isNull(usuarios.excluidoEm)));
-      await auditar(tx, usuario.id, 'edital.publicar', `concurso:${corpo.concursoId}`, null, agora);
-      return { ok: true as const, usuariosParaConfirmar: contar(p?.n) };
-    }),
+    deps.db.transaction((tx) => publicarEdital(tx, corpo.concursoId, usuario.id, agora)),
   );
 
   /* ---------------------------------------------------------- importações */

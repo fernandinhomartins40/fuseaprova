@@ -378,7 +378,7 @@ Quem ainda está em dúvida sobre o cargo pode estudar as matérias de outras á
 - **Banco:** `usuarios.areas_extras` (lista de `area_cargo`, vazia por padrão). O cargo principal continua sendo `cargo_id`/`area`.
 - **Trilha:** `areasDaTrilha` (`@fuse/shared`) junta a área do cargo e as extras. As unidades específicas de cada área alternam uma seção de cada, e o conjunto segue intercalado com as comuns (3 : 5). As lições, o pacote offline e o desempenho já usavam a área de cada unidade, então funcionam sem mudança.
 - **Escolha:** em Configurações, "Estudar também para", com as áreas que têm cargo no concurso. `PATCH /me` com `areasExtras` troca a lista inteira. A área do próprio cargo é ignorada.
-- **Edital:** com o edital publicado, as extras deixam de valer (trilha e `/me`), e escolher extras é recusado. O estudo segue o cargo do edital, como no PRD.
+- **Edital:** ~~com o edital publicado, as extras deixam de valer~~ **revisado pela D45:** as extras continuam valendo depois do edital, para o aluno não perder o acesso às 10 mil questões. O simulado segue o cargo do edital.
 - **Trocar de concurso** limpa as extras, porque eram do concurso anterior.
 - **Simulado:** continua por cargo, escolhido na tela do simulado.
 - **App nativo:** o app publicado não mostra a escolha, mas mostra a trilha com as áreas escolhidas no site. Um próximo AAB já leva a escolha junto.
@@ -473,3 +473,17 @@ O cadastro continua sem teste (D35). O dono libera, aluno por aluno, um teste de
   - Bacharel em TI aparece com nome literal.
   - O Anexo I não cita o conselho de Arquiteto, Farmacêutico e Neuropediatra.
 - **Fora:** levar o cargo escolhido para o cadastro e guardar métricas de uso.
+
+## D45. Cargos do edital de Palmital no app, sem perder questões (18/11/2026, pedido do dono)
+
+- **O quê:** os 49 cargos do Edital nº 01/2026 viram os cargos do concurso de Palmital no app, como prometido ("quando o edital sair, o app se ajusta ao seu cargo"). Os 29 cargos genéricos nunca são apagados.
+- **As questões não mudam:** elas são ligadas a assuntos e áreas, não a cargos. Cada cargo do edital aponta para uma das 7 áreas que já existem (`AREA_DO_CARGO_PALMITAL`, em `@fuse/shared/palmital2026`), escolhida pelo conteúdo de cada área. Nenhuma questão, assunto, unidade, seção, lição, progresso, XP, revisão, simulado ou pedido é alterado.
+- **Revisão da D36:** "Estudar também para" (áreas extras) **continua valendo depois do edital**. Antes, publicar o edital desligava as extras, e cada aluno ficaria só com a própria área (de 2,3 mil a 4,9 mil questões), o que quebraria a promessa das 10 mil questões. O simulado continua seguindo a prova do cargo.
+- **Simulado no formato do edital:** superior com 40 questões (7, 7, 6 e 20; pesos 2, 2, 2 e 3), médio com 35 (5, 5, 5 e 20; pesos 3,5, 2,5, 2 e 3) e fundamental com 25 (5, 5, 5 e 10; pesos 4, 2, 2 e 6). No médio, o peso de Português é 3,50 porque o 3,00 impresso na Tabela 9.3 não fecha o total de 17,50 (D44). O nível segue os quadros 3.1 a 3.4, não o bloco do Anexo II.
+- **Nomes iguais:** 12 cargos genéricos têm o nome de um cargo do edital (Enfermeiro, Psicólogo, Motorista, Técnico de Enfermagem…). Como o banco não aceita dois cargos com o mesmo nome no concurso, eles viram o cargo do edital, na mesma área. Quem está neles não precisa confirmar nada.
+- **"Fora do edital" fica intacto:** a marcação `secoes.no_edital` vale para a área inteira, e uma área serve vários cargos. Marcar um assunto para um cargo o tiraria dos outros, por isso a importação não mexe nela.
+- **Como aplicar:** `pnpm --filter @fuse/api cli edital:palmital` (simula, não grava), `--aplicar --confirmar` (grava numa transação; os cargos ficam invisíveis até publicar), `--publicar --confirmar` (o mesmo botão "Publicar edital" do painel) e `--desfazer --confirmar`. A lógica de salvar e publicar foi movida para `servicos/edital.ts` e é a mesma do painel.
+- **Desfazer:** a foto do concurso e dos cargos fica na auditoria (`edital.salvar`, campo `antes`). O desfazer volta à foto da primeira importação depois do último desfazer. Cargos criados pela importação continuam no banco, mas somem das listas porque o concurso volta a "aguardando edital".
+- **Ensaio na cópia da produção (18/11/2026, dump das 23h24):** aplicar e publicar deixaram idênticas as contagens de questões (10.587 publicadas), assuntos, unidades, seções, lições, progresso, tentativas, revisões, pedidos, alunos e XP. Os 29 alunos ficaram com a mesma trilha, o mesmo progresso, a mesma lição atual e as mesmas áreas extras. 8 alunos em genéricos sem equivalente (Médico, Professor, Fiscal, Agente de Endemias) veem "Confirme seu cargo". Os simulados saíram com 40, 35 e 25 questões. O desfazer devolveu tudo ao estado original.
+- **Telas:** a janela "Confirme seu cargo" agrupa os cargos por nível, e o aviso do edital muda quando ele sai (`avisoEditalDoStatus`).
+- **Fora:** trilha focada em cada cargo (o conteúdo do edital do cargo primeiro, sem esconder o resto da área) e simulado com os específicos do cargo. Ficam para uma próxima etapa, com coluna nova no banco.

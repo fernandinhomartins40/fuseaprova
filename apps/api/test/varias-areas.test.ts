@@ -31,7 +31,7 @@ afterAll(() => t.fechar());
 const trilha = async (a: Aluno) => (await t.chamar('trilha', { cookie: a.cookie })).json() as { unidades: { id: string; area: string | null }[] };
 const atualizar = (a: Aluno, corpo: object) => t.chamar('meAtualizar', { cookie: a.cookie, corpo });
 
-describe('estudar para mais de um cargo até o edital (D36)', () => {
+describe('estudar para mais de um cargo (D36/D45)', () => {
   it('a trilha soma as unidades da área extra, sem tirar as do cargo', async () => {
     const a = await t.alunoPago();
     const antes = await trilha(a);
@@ -56,16 +56,16 @@ describe('estudar para mais de um cargo até o edital (D36)', () => {
     expect(r.statusCode).toBe(400);
   });
 
-  it('com o edital publicado, vale só o cargo e não dá para escolher extras', async () => {
+  it('D45: com o edital publicado, as áreas extras continuam valendo e dá para mudar', async () => {
     const a = await t.alunoPago();
     await atualizar(a, { areasExtras: ['saude_medio'] });
     await t.db.update(schema.concursos).set({ status: 'edital_publicado', editalPublicadoEm: t.relogio.agora() }).where(eq(schema.concursos.id, concursoId));
     try {
-      expect((await t.chamar('meObter', { cookie: a.cookie })).json().areasExtras).toEqual([]);
+      expect((await t.chamar('meObter', { cookie: a.cookie })).json().areasExtras).toEqual(['saude_medio']);
+      expect((await trilha(a)).unidades.some((u) => u.id === unidadeSaude)).toBe(true);
+      const r = await atualizar(a, { areasExtras: [] });
+      expect(r.statusCode, r.body).toBe(200);
       expect((await trilha(a)).unidades.some((u) => u.id === unidadeSaude)).toBe(false);
-      const r = await atualizar(a, { areasExtras: ['saude_medio'] });
-      expect(r.statusCode).toBe(400);
-      expect(r.json().erro).toMatch(/edital saiu/);
     } finally {
       await t.db.update(schema.concursos).set({ status: 'aguardando_edital', editalPublicadoEm: null }).where(eq(schema.concursos.id, concursoId));
     }
