@@ -197,6 +197,13 @@ describe('edital de Palmital (D45)', () => {
       corpo: { cargoId: (await cargo('Gari')).id },
     });
     expect(gari.statusCode).toBe(400);
+    // Nem o simulado aceita cargo genérico depois do edital: só os cargos do edital.
+    const simGenerico = await t.chamar('simuladoCriar', {
+      cookie: medico.cookie,
+      corpo: { cargoId: (await cargo('Médico')).id },
+    });
+    expect(simGenerico.statusCode, simGenerico.body).toBe(400);
+    expect(simGenerico.json().erro).toMatch(/edital saiu/);
     const ok = await t.chamar('meAtualizar', {
       cookie: medico.cookie,
       corpo: { cargoId: (await cargo('Médico Pediatra')).id },

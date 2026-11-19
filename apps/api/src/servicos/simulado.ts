@@ -102,6 +102,12 @@ export async function criarSimulado(
       });
     }
     const edital = concurso ? modoEdital(concurso) : false;
+    // D45: com o edital publicado, só os cargos do edital (como no /me e na escolha do concurso).
+    if (edital && cargo.generico) {
+      throw falha('validacao', 'O edital saiu: escolha um cargo do edital.', {
+        cargoId: 'Escolha um cargo do edital.',
+      });
+    }
     const fora = edital && concurso ? await assuntosForaDoEdital(db, concurso.id) : [];
     const dist = edital
       ? cargo.distribuicao
