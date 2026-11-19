@@ -1,0 +1,287 @@
+.pilha {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 32px;
+}
+.pilhaPequena {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+.titulo {
+  font-family: var(--fa-font-display);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--fa-petroleo);
+}
+.pergunta {
+  font-family: var(--fa-font-display);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.subtitulo {
+  font-size: 19px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.texto {
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+.ajuda {
+  font-size: 13.5px;
+  color: var(--fa-muted);
+  font-weight: 600;
+}
+.legenda {
+  font-size: 12.5px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fa-muted);
+  margin: 12px 0 6px;
+}
+.destaque {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 16.5px;
+}
+.erro {
+  color: var(--fa-red);
+  font-weight: 700;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.botoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* opções do perfil */
+.grupo {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.linhaCnh {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.opcao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--fa-tap, 48px);
+  padding: 10px 14px;
+  border-radius: var(--fa-r-md);
+  background: var(--fa-surface);
+  border: 2px solid var(--fa-line);
+  font-weight: 700;
+  cursor: pointer;
+}
+.opcao input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--fa-acao);
+}
+.opcaoMarcada {
+  border-color: var(--fa-acao);
+  background: var(--fa-turquesa-soft);
+}
+
+/* listas de cargos */
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.linhaCargo {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  min-height: 60px;
+  padding: 12px 14px;
+  border-radius: var(--fa-r-md);
+  background: var(--fa-surface);
+  border: 1.5px solid var(--fa-line);
+  color: var(--fa-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.linhaCargoTexto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* pergunta */
+.citacao {
+  margin: 0;
+  padding: 12px 14px;
+  border-left: 4px solid var(--fa-laranja);
+  background: var(--fa-laranja-soft);
+  border-radius: 0 var(--fa-r-sm) var(--fa-r-sm) 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+.citacao footer {
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 900;
+  color: var(--fa-laranja-texto);
+}
+.detalhes summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: var(--fa-petroleo);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.detalhes[open] summary {
+  margin-bottom: 6px;
+}
+
+/* resultado */
+.veredito {
+  padding: 16px;
+  border-radius: var(--fa-r-lg);
+  border: 2px solid;
+  font-size: 15.5px;
+  line-height: 1.45;
+}
+.vereditoTitulo {
+  font-family: var(--fa-font-display);
+  font-size: 21px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.atende {
+  background: var(--fa-green-soft);
+  border-color: var(--fa-green-line);
+}
+.pendente {
+  background: var(--fa-gold-soft);
+  border-color: var(--fa-gold);
+}
+.confirmar {
+  background: var(--fa-blue-soft);
+  border-color: var(--fa-blue-line);
+}
+.naoAtende {
+  background: var(--fa-red-soft);
+  border-color: var(--fa-red-line);
+}
+.alerta {
+  padding: 14px;
+  border-radius: var(--fa-r-md);
+  background: var(--fa-gold-soft);
+  border: 1.5px solid var(--fa-gold);
+  font-size: 14.5px;
+  line-height: 1.45;
+  display: grid;
+  gap: 4px;
+}
+.itens {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.itens li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 15px;
+  line-height: 1.4;
+}
+.marcadores {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 6px;
+  font-size: 14.5px;
+  line-height: 1.4;
+}
+.ficha {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+.ficha dt {
+  color: var(--fa-muted);
+  font-weight: 700;
+}
+.ficha dd {
+  margin: 0;
+  font-weight: 800;
+}
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 14.5px;
+}
+.tabela th,
+.tabela td {
+  text-align: left;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--fa-line);
+}
+.tabela td + td,
+.tabela th + th {
+  text-align: right;
+  white-space: nowrap;
+}
+.chamada {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+  padding: 18px;
+  border-radius: var(--fa-r-lg);
+  background: var(--fa-turquesa-soft);
+  border: 2px solid var(--fa-turquesa-line);
+}
+.botaoLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 54px;
+  border-radius: var(--fa-r-md);
+  background: var(--fa-acao);
+  box-shadow: 0 4px 0 var(--fa-acao-shade);
+  color: #fff;
+  font-weight: 900;
+  text-decoration: none;
+}
+.linkSimples {
+  font-weight: 800;
+  color: var(--fa-petroleo);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

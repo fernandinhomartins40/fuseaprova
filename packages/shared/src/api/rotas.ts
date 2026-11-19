@@ -22,6 +22,7 @@ import * as ag from './admin-gestao.js';
 import * as sa from './superadmin.js';
 import * as pr from './precos.js';
 import * as lem from './lembretes.js';
+import * as edi from './edital.js';
 
 export const PREFIXO_API = '/api';
 
@@ -73,6 +74,26 @@ const LIMITE_SENSIVEL = { max: 20, janelaMs: 15 * MIN, por: 'usuario' } as const
 const LIMITE_LOGIN = { max: 20, janelaMs: 15 * MIN, por: 'ip', balde: 'login' } as const;
 
 export const ROTAS = {
+  /* ------------------------------------------- ferramenta pública do edital (D44) */
+  editalCurso: rota({
+    metodo: 'POST',
+    caminho: '/publico/edital/curso',
+    guarda: 'nenhuma',
+    descricao: 'D44: a IA compara um curso digitado com o requisito literal do cargo (não decide a elegibilidade).',
+    corpo: edi.EditalCursoEntrada,
+    resposta: edi.EditalCursoResposta,
+    limite: { max: 20, janelaMs: HORA, por: 'ip', balde: 'edital-ia' },
+  }),
+  editalPergunta: rota({
+    metodo: 'POST',
+    caminho: '/publico/edital/pergunta',
+    guarda: 'nenhuma',
+    descricao: 'D44: dúvida livre respondida só com o texto do edital, citando o item.',
+    corpo: edi.EditalPerguntaEntrada,
+    resposta: edi.EditalPerguntaResposta,
+    limite: { max: 20, janelaMs: HORA, por: 'ip', balde: 'edital-ia' },
+  }),
+
   /* --------------------------------------------------------------- auth */
   authCadastro: rota({
     metodo: 'POST',

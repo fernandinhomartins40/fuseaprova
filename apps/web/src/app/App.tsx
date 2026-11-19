@@ -25,6 +25,7 @@ const ExclusaoDeConta = lazy(() =>
 );
 const Pagamento = EH_APP ? Vazio : lazy(() => import('../telas/Pagamento'));
 const Apostilas = EH_APP ? Vazio : lazy(() => import('../telas/apostilas/Apostilas'));
+const DescubraCargo = EH_APP ? Vazio : lazy(() => import('../telas/edital/DescubraCargo'));
 const Onboarding = lazy(() => import('../telas/Onboarding'));
 const Aprender = lazy(() => import('../telas/Aprender'));
 const SobreConcurso = lazy(() => import('../telas/SobreConcurso'));
@@ -96,6 +97,7 @@ function Redirecionador() {
             '/privacidade',
             '/excluir-conta',
             '/apostilas',
+            '/descubra-seu-cargo',
           ].includes(local.pathname)
         )
           return;
@@ -166,6 +168,12 @@ export function Rotas() {
           <Route path="/apostilas" element={<Navigate to="/" replace />} />
         ) : (
           <Route path="/apostilas" element={<Apostilas />} />
+        )}
+        {/* D44: ferramenta pública do edital de Palmital, sem login (só no site). */}
+        {EH_APP ? (
+          <Route path="/descubra-seu-cargo" element={<Navigate to="/" replace />} />
+        ) : (
+          <Route path="/descubra-seu-cargo" element={<DescubraCargo />} />
         )}
 
         {EH_APP ? (

@@ -55,6 +55,7 @@ export const CODIGOS_ERRO = {
   codigo_invalido: 400,
   ultimo_superadmin: 409,
   asaas_indisponivel: 502,
+  ia_indisponivel: 503,
   manutencao: 503,
   banco_indisponivel: 503,
   dois_fatores_bloqueado: 429,
@@ -93,6 +94,8 @@ export const MENSAGENS_ERRO: Record<CodigoErro, string> = {
   codigo_invalido: 'Código inválido ou expirado. Confira o app autenticador e tente de novo.',
   ultimo_superadmin: 'Não é possível remover o último superadmin ativo.',
   asaas_indisponivel: 'O Asaas não respondeu agora. Tente de novo em alguns minutos.',
+  ia_indisponivel:
+    'A assistente não respondeu agora. O resto da ferramenta continua funcionando; tente de novo em alguns minutos.',
   manutencao: 'O Fuse Aprova está em manutenção. Volte em alguns minutos.',
   banco_indisponivel:
     'O banco de dados não está respondendo. O app volta sozinho quando ele voltar; se passar de alguns minutos, confira a VPS.',

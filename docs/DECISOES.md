@@ -449,3 +449,27 @@ O cadastro continua sem teste (D35). O dono libera, aluno por aluno, um teste de
 - **Garantia de 7 dias:** a tela mostra "7 dias de garantia: se não gostar, devolvemos 100% do valor". É o direito de arrependimento (CDC, art. 49) que já existia, e o reembolso continua sendo feito pelo superadmin. **Não chamamos de "grátis":** a pessoa paga antes, e "grátis" seria publicidade enganosa (CDC, art. 37), além de repetir a confusão que levou ao D35.
 - **App das lojas:** não muda. Continua sem preço, pagamento ou link para o site (D20). A novidade chega por e-mail (/super/comunicacao, segmento "Cadastrados sem pagamento"), o que as duas lojas permitem por ser comunicação fora do app. Link de compra dentro do app do iOS no Brasil (acordo da Apple com o CADE, jun/2026) exige versão nova, autorização da Apple e comissão. Não compensa por 2 semanas.
 - **Fora:** as apostilas (D34) continuam só no Pix.
+
+
+## D44. Ferramenta pública "Descubra seu cargo" para o edital de Palmital (18/11/2026, pedido do dono)
+
+- **O quê:** página aberta, sem login, em `/descubra-seu-cargo` (só no site; no app nativo a rota volta para o início, D20). É um wizard: a pessoa escolhe o cargo ("Já sei o cargo") ou informa escolaridade, graduação e CNH ("Me ajude a descobrir"), responde os requisitos do cargo e vê se atende, quanto paga, como é a prova, o que cai e as datas. No fim, um convite para estudar no Fuse Aprova e um botão de compartilhar no WhatsApp. Link na LP (menu e frase do topo).
+- **Fonte da verdade:** o Edital de Abertura nº 01/2026 (publicado em 18/11/2026), a retificação do mesmo dia (datas do formulário de títulos) e os Anexos I, II e III, guardados em `dados/editais/palmital-2026/`. O `gerar.py` extrai dos PDFs os quadros 3.1 a 3.4 (49 cargos), os bairros do ACS, os requisitos, as tarefas e o conteúdo programático. Nada é digitado à mão: o resultado fica em `textos.gerado.ts` (shared) e `corpus.gerado.ts` (API).
+- **Quem decide é a regra, não a IA:** `@fuse/shared/palmital2026` tem as perguntas de cada cargo, com o trecho literal e o item do edital. `avaliarCargo` dá um de quatro resultados: atende, pendente (falta algo que pode ser cumprido até a posse ou, no caso da CNH de Motorista e Operador, até a prova prática, itens 13.7.1 e 13.9), confirmar com a FAU ou não atende. Pergunta sem resposta nunca vira "atende". O teste confere cada citação do Anexo I contra o texto do PDF.
+- **IA (DeepSeek pelo Fusai):** só em duas rotas públicas, `POST /publico/edital/curso` (compara um curso digitado com o requisito literal e devolve consta, não consta ou confirmar; a pessoa confirma antes de usar) e `POST /publico/edital/pergunta` (responde só com o texto do edital, citando o item). Exceção à regra "Asaas é o único serviço externo" do CLAUDE.md, pedida pelo dono. Proteções:
+  - chave só no servidor (`FUSAI_API_KEY`);
+  - 20 chamadas por hora por IP, no balde persistente `edital-ia`, e teto global de 300 por dia;
+  - cache em memória das respostas iguais;
+  - nada pessoal é enviado ou guardado.
+  - Sem a chave ou com o Fusai fora do ar, a rota responde 503 `ia_indisponivel` e o wizard segue funcionando.
+- **Erros e lacunas do edital mostrados como alerta, sem inventar:**
+  - O Pedreiro (408) não tem requisitos nem conteúdo nos anexos e nunca sai como "atende".
+  - O conteúdo específico do ACS é o do Atendente de Farmácia.
+  - O Anexo II troca o nível de Agente de Endemias, Eletricista e Mecânico.
+  - Na Tabela 9.3, Português do médio aparece como "3,00 × 5 = 17,50".
+  - O requisito para a docência do Professor não está claro.
+  - Não há ESF II nem vagas por área do ACS.
+  - O Educador Social é só para mulheres.
+  - Bacharel em TI aparece com nome literal.
+  - O Anexo I não cita o conselho de Arquiteto, Farmacêutico e Neuropediatra.
+- **Fora:** levar o cargo escolhido para o cadastro e guardar métricas de uso.

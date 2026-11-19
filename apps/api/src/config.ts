@@ -25,6 +25,8 @@ export interface Config {
   smtp: { host: string; porta: number; usuario: string; senha: string; remetente: string };
   /** D37: com a chave, o e-mail sai pela API do Velomail (o remetente é o SMTP_FROM). */
   velomail: { apiKey: string; url: string };
+  /** D44: IA da ferramenta pública do edital (Fusai, formato OpenAI). Sem chave, a IA fica desligada. */
+  fusai: { apiKey: string; baseUrl: string; modelo: string };
   vapid: { publica: string; privada: string; assunto: string };
   arquivosDir: string;
   /** D41: o nginx entrega as videoaulas (X-Accel-Redirect); sem isso, o Node envia o arquivo. */
@@ -78,6 +80,11 @@ export function lerConfig(env: NodeJS.ProcessEnv = process.env): Config {
     velomail: {
       apiKey: env.VELOMAIL_API_KEY ?? '',
       url: env.VELOMAIL_URL ?? URL_VELOMAIL_PADRAO,
+    },
+    fusai: {
+      apiKey: env.FUSAI_API_KEY ?? '',
+      baseUrl: (env.FUSAI_BASE_URL ?? 'https://api.fusai.com.br/v1').replace(/\/+$/, ''),
+      modelo: env.FUSAI_MODELO ?? 'fuse/deepseek-chat',
     },
     vapid: {
       publica: env.VAPID_PUBLIC_KEY ?? '',

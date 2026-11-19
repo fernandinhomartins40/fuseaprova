@@ -21,6 +21,8 @@ export default tseslint.config(
       'packages/db/drizzle/**',
       'design/**',
       'dados/**',
+      // Textos do edital extraídos dos PDFs por dados/editais/*/gerar.py.
+      '**/*.gerado.ts',
       'Fuse_Aprova_Assets_4K/**',
       'Guias_visuais/**',
       'Telas_referencia/**',

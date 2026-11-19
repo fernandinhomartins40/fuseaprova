@@ -14,6 +14,11 @@
       "@fuse/source": "./src/api/index.ts",
       "types": "./dist/api/index.d.ts",
       "default": "./dist/api/index.js"
+    },
+    "./palmital2026": {
+      "@fuse/source": "./src/editais/palmital2026/index.ts",
+      "types": "./dist/editais/palmital2026/index.d.ts",
+      "default": "./dist/editais/palmital2026/index.js"
     }
   },
   "scripts": {
