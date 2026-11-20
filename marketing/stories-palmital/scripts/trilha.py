@@ -155,6 +155,9 @@ ESTILOS = {
     # v15: Mi maior (I–IV–V–IV), 128 BPM, saltitante
     'v15': dict(bpm=128, acordes=[[64, 68, 71, 76], [57, 61, 64, 69], [59, 63, 66, 71], [57, 61, 64, 69]],
                 baixos=[40, 33, 35, 33], bumbo=0.6, baixo=0.32, brilho=1.25, chimbal=0.9, semente=151),
+    # v16: curioso, de "laboratório", Lá menor (i–VI–III–VII), 104 BPM e pouco brilho
+    'v16': dict(bpm=104, acordes=[[57, 60, 64, 69], [53, 57, 60, 65], [48, 52, 55, 60], [55, 59, 62, 67]],
+                baixos=[33, 29, 36, 31], bumbo=0.5, baixo=0.32, brilho=0.7, chimbal=0.6, semente=161),
     # aulas: mais calmas que as de venda, para a explicação ficar na frente
     # aula1: estudo leve, Fá maior (I–vi–IV–V), 100 BPM
     'aula1': dict(bpm=100, acordes=[[65, 69, 72, 77], [62, 65, 69, 74], [58, 62, 65, 70], [60, 64, 67, 72]],

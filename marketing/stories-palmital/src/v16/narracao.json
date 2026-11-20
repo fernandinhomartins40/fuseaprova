@@ -1,0 +1,62 @@
+{
+  "neuronio": [
+    {
+      "arquivo": "audio/v16/voz-neuronio-1.wav",
+      "segundos": 3.635,
+      "texto": "Isso aqui é um neurônio de verdade, filmado no microscópio."
+    },
+    {
+      "arquivo": "audio/v16/voz-neuronio-2.wav",
+      "segundos": 2.48,
+      "texto": "Repara no relógio, no canto da tela."
+    },
+    {
+      "arquivo": "audio/v16/voz-neuronio-3.wav",
+      "segundos": 3.93,
+      "texto": "Ele leva quase dois dias pra esticar um braço e alcançar o vizinho."
+    }
+  ],
+  "licao": [
+    {
+      "arquivo": "audio/v16/voz-licao-1.wav",
+      "segundos": 3.883,
+      "texto": "É assim que o cérebro aprende: criando ligações entre os neurônios."
+    },
+    {
+      "arquivo": "audio/v16/voz-licao-2.wav",
+      "segundos": 3.556,
+      "texto": "E cada vez que você repete, essa ligação fica mais forte."
+    }
+  ],
+  "vespera": [
+    {
+      "arquivo": "audio/v16/voz-vespera-1.wav",
+      "segundos": 3.271,
+      "texto": "Por isso, estudar tudo na véspera rende tão pouco."
+    },
+    {
+      "arquivo": "audio/v16/voz-vespera-2.wav",
+      "segundos": 1.959,
+      "texto": "Não dá tempo de a ligação se firmar."
+    }
+  ],
+  "app": [
+    {
+      "arquivo": "audio/v16/voz-app-1.wav",
+      "segundos": 6.347,
+      "texto": "No Fuse Aprova, você estuda um pouco por dia, e o que você erra volta na revisão, no tempo certo pra fixar."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/v16/voz-fecho-1.wav",
+      "segundos": 3.448,
+      "texto": "As inscrições do concurso de Palmital abrem dia vinte e cinco."
+    },
+    {
+      "arquivo": "audio/v16/voz-fecho-2.wav",
+      "segundos": 3.817,
+      "texto": "Comece antes, e dê tempo pro seu cérebro. O link tá na bio."
+    }
+  ]
+}
