@@ -1,0 +1,37 @@
+{
+  "voz": "33B4UnXyTNbgLmdEDh5P",
+  "nomeVoz": "Keren",
+  "semente": 191,
+  "ajustes": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.05
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "FAU": "Fáu"
+  },
+  "falas": {
+    "gancho": [
+      "É amanhã!",
+      "Amanhã, ao meio-dia, abrem as inscrições do concurso da Prefeitura de Palmital."
+    ],
+    "duas": [
+      "E amanhã acontece mais uma coisa.",
+      "É o último dia do preparatório Fuse Aprova por cento e noventa e sete reais.",
+      "Na quinta, sobe pra duzentos e noventa e sete."
+    ],
+    "cartao": [
+      "O parcelamento em até seis vezes sem juros no cartão também vai só até amanhã."
+    ],
+    "hoje": [
+      "Então não deixa pra última hora.",
+      "Garante hoje, e amanhã você faz a inscrição já estudando."
+    ],
+    "fecho": [
+      "Preparatório pro concurso da Prefeitura de Palmital. O link tá na bio."
+    ]
+  },
+  "modelo": "eleven_v4"
+}

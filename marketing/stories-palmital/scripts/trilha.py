@@ -88,6 +88,20 @@ def baixo(midi: int, seg: float) -> np.ndarray:
     return np.tanh(s * env * 1.4) * 0.8
 
 
+def oitocentos(midi: int, seg: float) -> np.ndarray:
+    """Baixo 808 do trap: seno grave e longo, com um leve deslize de afinação no ataque."""
+    t = t_(seg)
+    f = nota(midi) * (1 + 0.5 * np.exp(-t * 30))
+    s = np.sin(2 * np.pi * np.cumsum(f) / TAXA)
+    return np.tanh(s * 2.2) * np.minimum(1, t * 300) * np.exp(-t * 1.6) * 0.8
+
+
+def caixa() -> np.ndarray:
+    t = t_(0.22)
+    tom = np.sin(2 * np.pi * 190 * t) * np.exp(-t * 30) * 0.6
+    return (tom + passa_alta(rng.standard_normal(len(t)), 2) * np.exp(-t * 18) * 0.7) * 0.6
+
+
 def sino(midi: int, seg: float = 0.5) -> np.ndarray:
     t = t_(seg)
     f = nota(midi)
@@ -107,6 +121,7 @@ ACORDES = [[62, 66, 69, 74], [61, 64, 69, 73], [62, 66, 71, 74], [62, 67, 71, 74
 BAIXOS = [38, 33, 35, 31]
 ARPEJO = [74, 78, 81, 78, 73, 76, 81, 76, 74, 78, 83, 78, 74, 79, 83, 79]
 BUMBO, BAIXO_GANHO, BRILHO, CHIMBAL = 0.55, 0.32, 1.0, 0.8
+GROOVE = 'house'
 
 # Um estilo por vídeo: andamento, harmonia (4 acordes), baixo e timbre.
 ESTILOS = {
@@ -158,6 +173,19 @@ ESTILOS = {
     # v16: curioso, de "laboratório", Lá menor (i–VI–III–VII), 104 BPM e pouco brilho
     'v16': dict(bpm=104, acordes=[[57, 60, 64, 69], [53, 57, 60, 65], [48, 52, 55, 60], [55, 59, 62, 67]],
                 baixos=[33, 29, 36, 31], bumbo=0.5, baixo=0.32, brilho=0.7, chimbal=0.6, semente=161),
+    # v17–v20: contagem regressiva para 25/11, cada uma com uma batida diferente das anteriores
+    # v17: disco alegre de domingo, Si bemol maior (I–vi–ii–V), 118 BPM
+    'v17': dict(bpm=118, acordes=[[58, 62, 65, 70], [55, 58, 62, 67], [60, 63, 67, 72], [53, 57, 60, 65]],
+                baixos=[34, 31, 36, 29], bumbo=0.58, baixo=0.3, brilho=1.2, chimbal=0.85, semente=171, groove='disco'),
+    # v18: funk de segunda-feira, Dó menor (i–VI–III–VII), 130 BPM
+    'v18': dict(bpm=130, acordes=[[60, 63, 67, 72], [56, 60, 63, 68], [55, 58, 63, 67], [58, 62, 65, 70]],
+                baixos=[36, 32, 39, 34], bumbo=0.66, baixo=0.36, brilho=0.9, chimbal=0.8, semente=181, groove='funk'),
+    # v19: trap de véspera, Sol menor (i–VI–VII–i), 140 BPM em meio tempo
+    'v19': dict(bpm=140, acordes=[[55, 58, 62, 67], [51, 55, 58, 63], [53, 57, 60, 65], [55, 58, 62, 67]],
+                baixos=[31, 27, 29, 31], bumbo=0.62, baixo=0.34, brilho=0.85, chimbal=0.8, semente=191, groove='trap'),
+    # v20: funk de festa no dia 25, Mi bemol maior (I–V–vi–IV), 132 BPM e mais brilho
+    'v20': dict(bpm=132, acordes=[[63, 67, 70, 75], [58, 62, 65, 70], [60, 63, 67, 72], [56, 60, 63, 68]],
+                baixos=[39, 34, 36, 32], bumbo=0.66, baixo=0.34, brilho=1.25, chimbal=0.9, semente=201, groove='funk'),
     # aulas: mais calmas que as de venda, para a explicação ficar na frente
     # aula1: estudo leve, Fá maior (I–vi–IV–V), 100 BPM
     'aula1': dict(bpm=100, acordes=[[65, 69, 72, 77], [62, 65, 69, 74], [58, 62, 65, 70], [60, 64, 67, 72]],
@@ -172,14 +200,57 @@ ESTILOS['matematica'] = ESTILOS['aula2']
 
 
 def usa_estilo(nome: str) -> None:
-    global BPM, BATIDA, COMPASSO, ACORDES, BAIXOS, ARPEJO, BUMBO, BAIXO_GANHO, BRILHO, CHIMBAL, rng
+    global BPM, BATIDA, COMPASSO, ACORDES, BAIXOS, ARPEJO, BUMBO, BAIXO_GANHO, BRILHO, CHIMBAL, GROOVE, rng
     e = ESTILOS[nome]
+    GROOVE = e.get('groove', 'house')
     BPM, ACORDES, BAIXOS = e['bpm'], e['acordes'], e['baixos']
     BATIDA, COMPASSO = 60 / BPM, 240 / BPM
     BUMBO, BAIXO_GANHO, BRILHO, CHIMBAL = e['bumbo'], e['baixo'], e['brilho'], e['chimbal']
     rng = np.random.default_rng(e['semente'])
     if nome != 'v1':  # arpejo derivado do acorde, uma oitava acima
         ARPEJO = None
+
+
+def env_pump(pump: np.ndarray, seg: float) -> None:
+    i = int(seg * TAXA)
+    env = 1 - 0.6 * np.exp(-t_(BATIDA) * 14)
+    pump[i:i + len(env)] = env[: max(0, min(len(env), len(pump) - i))]
+
+
+def groove(bat, harm, pump, ini: float, raiz: int, c: int, k, p) -> None:
+    """Bateria e baixo dos estilos novos: funk (batida dembow), trap (meio tempo com 808) e disco (baixo em oitavas)."""
+    passo = BATIDA / 4
+    if GROOVE == 'funk':
+        for s in (0, 3, 8, 11):  # tum . . tum . . . . tum . . tum
+            poe(bat, k, ini + s * passo, BUMBO)
+            env_pump(pump, ini + s * passo)
+            poe(harm, baixo(raiz, passo * 2.5), ini + s * passo, BAIXO_GANHO)
+        for s in (4, 12):
+            poe(bat, p, ini + s * passo, 0.75)
+        for s in (6, 14):
+            poe(bat, caixa(), ini + s * passo, 0.55)
+        for s in range(0, 16, 2):
+            poe(bat, chimbal(), ini + s * passo, 0.3 * CHIMBAL)
+    elif GROOVE == 'trap':
+        for s, dur in ((0, 7), (7, 3), (10, 6)):
+            poe(bat, k, ini + s * passo, BUMBO)
+            poe(harm, oitocentos(raiz, dur * passo), ini + s * passo, BAIXO_GANHO * 1.6)
+        poe(bat, caixa(), ini + 8 * passo, 0.75)
+        poe(bat, p, ini + 8 * passo, 0.5)
+        for s in range(16):
+            rolo = c % 2 == 1 and s >= 12  # rolinho de chimbal em tercinas no fim dos compassos ímpares
+            for r in range(3 if rolo else 1):
+                poe(bat, chimbal(), ini + s * passo + r * passo / 3, (0.45 if s % 2 == 0 else 0.3) * CHIMBAL)
+    else:  # disco
+        for b in range(4):
+            tb = ini + b * BATIDA
+            poe(bat, k, tb, BUMBO)
+            env_pump(pump, tb)
+            if b in (1, 3):
+                poe(bat, p, tb, 0.7)
+            poe(bat, chimbal(aberto=True), tb + BATIDA / 2, CHIMBAL)
+            for o in range(2):  # baixo em oitavas, colcheias
+                poe(harm, baixo(raiz + 12 * o, BATIDA / 2.2), tb + o * BATIDA / 2, BAIXO_GANHO)
 
 
 def trilha() -> np.ndarray:
@@ -192,7 +263,9 @@ def trilha() -> np.ndarray:
         acorde, raiz = ACORDES[c % 4], BAIXOS[c % 4]
         intro = c < 2
         cheio = c >= 2
-        for b in range(4):
+        if cheio and GROOVE != 'house':
+            groove(bat, harm, pump, ini, raiz, c, k, p)
+        for b in range(4 if GROOVE == 'house' else 0):
             tb = ini + b * BATIDA
             if cheio:
                 poe(bat, k, tb, BUMBO)
@@ -208,7 +281,7 @@ def trilha() -> np.ndarray:
                 if cheio and s % 2 == 1:
                     poe(bat, chimbal(), tb + s * BATIDA / 4, 0.35)
             # stabs de acorde no contratempo (padrão 3-3-2)
-        for pos in (0, 0.75, 1.5, 2.25, 3, 3.5):
+        for pos in ((0, 0.75, 1.5, 2.25, 3, 3.5) if GROOVE != 'trap' else (0, 1.5, 2.5)):
             poe(harm, pluck(acorde, 0.45, brilho=(0.6 if intro else 1.0) * BRILHO), ini + pos * BATIDA, 1.1 if intro else 1.0)
         if c >= 6:  # arpejo entra depois da apresentação
             arpejo = ARPEJO or [acorde[j] + 12 for j in (0, 1, 2, 1, 0, 2, 3, 2) * 2]

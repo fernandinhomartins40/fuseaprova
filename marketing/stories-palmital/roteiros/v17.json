@@ -1,0 +1,41 @@
+{
+  "voz": "GOkMqfyKMLVUcYfO2WbB",
+  "nomeVoz": "Jenifer",
+  "semente": 171,
+  "ajustes": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.0
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "FAU": "Fáu"
+  },
+  "falas": {
+    "contagem": [
+      "Faltam três dias.",
+      "Na quarta, ao meio-dia, abrem as inscrições do concurso da Prefeitura de Palmital."
+    ],
+    "facil": [
+      "Se inscrever é fácil.",
+      "Difícil é chegar na prova preparado."
+    ],
+    "plano": [
+      "Então faz assim: hoje, descubra o seu cargo e o que cai na sua prova.",
+      "Segunda e terça, comece por Português e Matemática, que caem pra todos os cargos.",
+      "E na quarta, faça a inscrição já estudando."
+    ],
+    "app": [
+      "O Fuse Aprova é o preparatório pro concurso da Prefeitura de Palmital, com trilha de estudo, questões e revisão do que você erra."
+    ],
+    "oferta": [
+      "E até quarta, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão.",
+      "Na quinta, sobe pra duzentos e noventa e sete."
+    ],
+    "fecho": [
+      "Faltam três dias. Começa hoje. O link tá na bio."
+    ]
+  },
+  "modelo": "eleven_v4"
+}

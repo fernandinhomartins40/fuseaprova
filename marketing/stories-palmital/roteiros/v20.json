@@ -1,0 +1,37 @@
+{
+  "voz": "ORgG8rwdAiMYRug8RJwR",
+  "nomeVoz": "Ana Alice",
+  "semente": 201,
+  "ajustes": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.0
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "FAU": "Fáu"
+  },
+  "falas": {
+    "gancho": [
+      "É hoje!",
+      "Hoje, ao meio-dia, abrem as inscrições do concurso da Prefeitura de Palmital."
+    ],
+    "inscricao": [
+      "As inscrições vão até vinte e sete de dezembro, pelo site da banca.",
+      "E a prova objetiva é em fevereiro."
+    ],
+    "ultimo": [
+      "Mas atenção: hoje é o último dia do preparatório Fuse Aprova por cento e noventa e sete reais.",
+      "Amanhã, sobe pra duzentos e noventa e sete."
+    ],
+    "cartao": [
+      "E hoje também é o último dia pra parcelar em até seis vezes sem juros no cartão."
+    ],
+    "fecho": [
+      "Inscrição feita? Agora é estudar.",
+      "Garante o seu hoje. O link tá na bio."
+    ]
+  },
+  "modelo": "eleven_v4"
+}

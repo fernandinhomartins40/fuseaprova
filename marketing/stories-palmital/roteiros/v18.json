@@ -1,0 +1,40 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "semente": 181,
+  "ajustes": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.0
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "FAU": "Fáu"
+  },
+  "falas": {
+    "gancho": [
+      "Faltam dois dias pras inscrições do concurso da Prefeitura de Palmital."
+    ],
+    "duas": [
+      "Imagina duas pessoas.",
+      "Uma espera abrir a inscrição pra começar a estudar.",
+      "A outra começa hoje, nessa segunda-feira."
+    ],
+    "quarta": [
+      "Na quarta, as duas se inscrevem.",
+      "Mas só uma já chega na inscrição estudando."
+    ],
+    "app": [
+      "Seja essa pessoa. O Fuse Aprova é o preparatório pro concurso da Prefeitura de Palmital: um pouco por dia, direto no celular."
+    ],
+    "oferta": [
+      "Até quarta, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão.",
+      "Na quinta, sobe pra duzentos e noventa e sete."
+    ],
+    "fecho": [
+      "Faltam dois dias. Começa hoje. O link tá na bio."
+    ]
+  },
+  "modelo": "eleven_v4"
+}

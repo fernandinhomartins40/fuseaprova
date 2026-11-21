@@ -1,0 +1,64 @@
+{
+  "gancho": [
+    {
+      "arquivo": "audio/v18/voz-gancho-1.wav",
+      "segundos": 3.643,
+      "texto": "Faltam dois dias pras inscrições do concurso da Prefeitura de Palmital."
+    }
+  ],
+  "duas": [
+    {
+      "arquivo": "audio/v18/voz-duas-1.wav",
+      "segundos": 1.356,
+      "texto": "Imagina duas pessoas."
+    },
+    {
+      "arquivo": "audio/v18/voz-duas-2.wav",
+      "segundos": 2.423,
+      "texto": "Uma espera abrir a inscrição pra começar a estudar."
+    },
+    {
+      "arquivo": "audio/v18/voz-duas-3.wav",
+      "segundos": 2.132,
+      "texto": "A outra começa hoje, nessa segunda-feira."
+    }
+  ],
+  "quarta": [
+    {
+      "arquivo": "audio/v18/voz-quarta-1.wav",
+      "segundos": 1.689,
+      "texto": "Na quarta, as duas se inscrevem."
+    },
+    {
+      "arquivo": "audio/v18/voz-quarta-2.wav",
+      "segundos": 2.031,
+      "texto": "Mas só uma já chega na inscrição estudando."
+    }
+  ],
+  "app": [
+    {
+      "arquivo": "audio/v18/voz-app-1.wav",
+      "segundos": 6.643,
+      "texto": "Seja essa pessoa. O Fuse Aprova é o preparatório pro concurso da Prefeitura de Palmital: um pouco por dia, direto no celular."
+    }
+  ],
+  "oferta": [
+    {
+      "arquivo": "audio/v18/voz-oferta-1.wav",
+      "segundos": 4.439,
+      "texto": "Até quarta, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão."
+    },
+    {
+      "arquivo": "audio/v18/voz-oferta-2.wav",
+      "segundos": 2.465,
+      "texto": "Na quinta, sobe pra duzentos e noventa e sete."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/v18/voz-fecho-1.wav",
+      "segundos": 3.271,
+      "texto": "Faltam dois dias. Começa hoje. O link tá na bio."
+    }
+  ]
+}
