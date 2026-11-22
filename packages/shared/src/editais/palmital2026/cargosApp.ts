@@ -10,6 +10,7 @@ import type {
   Escolaridade as EscolaridadeCargo,
   SlugDisciplina,
 } from '../../dominio.js';
+import { profissaoDoNomeDeCargo, type Profissao } from '../../profissoes.js';
 import {
   CARGOS_PALMITAL,
   CONHECIMENTOS_COMUNS,
@@ -75,6 +76,88 @@ export const AREA_DO_CARGO_PALMITAL: Readonly<Record<number, AreaCargo>> = {
   409: 'servicos_gerais', // Vigia
   410: 'servicos_gerais', // Vigia 12X36
 };
+
+const MEDICINA: readonly Profissao[] = ['medicina'];
+const ENFERMAGEM: readonly Profissao[] = ['enfermagem'];
+/** Os Técnicos de Controle têm o mesmo conteúdo específico: administração geral e pública. */
+const CONTROLE: readonly Profissao[] = [
+  'administracao',
+  'controle_interno',
+  'contabilidade',
+  'licitacao',
+  'administrativo',
+];
+const VIGIA: readonly Profissao[] = ['vigia', 'servicos_gerais'];
+
+/**
+ * D46: profissões de cada cargo, pelo conteúdo específico do Anexo II. A trilha e o simulado do
+ * cargo usam as questões das provas dessas profissões. A segunda em diante cobre cargos com poucas
+ * questões próprias no banco (Agente Sanitário, Lavador de Veículos, Coletor, Vigia).
+ */
+export const PROFISSOES_DO_CARGO_PALMITAL: Readonly<Record<number, readonly Profissao[]>> = {
+  101: ['saneamento', 'endemias', 'vigilancia_saude'], // água, esgoto, lixo, vetores
+  102: ['servico_social'],
+  103: ['arquitetura'],
+  104: ENFERMAGEM,
+  105: ENFERMAGEM,
+  106: ['agronomia', 'tecnico_agricola'],
+  107: ['farmacia'],
+  108: ['fiscal_tributos'],
+  109: ['fisioterapia'],
+  110: ['fonoaudiologia'],
+  111: ['jornalismo'],
+  112: ['veterinaria'],
+  113: MEDICINA,
+  114: MEDICINA,
+  115: MEDICINA,
+  116: MEDICINA,
+  117: MEDICINA,
+  118: ['nutricao'],
+  119: ['odontologia'],
+  120: ['ti'],
+  121: ['psicologia'],
+  122: CONTROLE,
+  123: CONTROLE,
+  124: CONTROLE,
+  125: CONTROLE,
+  126: CONTROLE,
+  127: CONTROLE,
+  128: CONTROLE,
+  129: CONTROLE,
+  201: ['professor'],
+  // O Anexo II trouxe para o ACS o conteúdo do Atendente de Farmácia (D44): as duas, até a FAU corrigir.
+  301: ['acs', 'farmacia_tecnico'],
+  302: ['farmacia_tecnico'],
+  303: ['educador_social'],
+  304: ['eletricista'],
+  305: ['fiscal_obras'],
+  306: ['mecanico'],
+  307: ['meio_ambiente'],
+  308: ['tecnico_enfermagem'],
+  309: ['radiologia'],
+  401: ['endemias'],
+  402: ['saude_bucal'],
+  403: ['administrativo'],
+  404: ['coletor', 'servicos_gerais'],
+  405: ['servicos_gerais'],
+  406: ['motorista'],
+  407: ['operador_maquinas'],
+  408: ['pedreiro'],
+  409: VIGIA,
+  410: VIGIA,
+};
+
+/**
+ * Profissões de um cargo do app pelo nome: as do edital de Palmital ou, num cargo genérico (antes
+ * do edital, como "Médico" ou "Professor"), a do próprio nome. Sem profissão, o cargo fica com a
+ * área inteira, como antes da D46.
+ */
+export function profissoesDoCargo(nome: string): readonly Profissao[] {
+  const doEdital = CARGOS_PALMITAL.find((c) => c.nome === nome);
+  if (doEdital) return PROFISSOES_DO_CARGO_PALMITAL[doEdital.codigo] ?? [];
+  const pelaRegra = profissaoDoNomeDeCargo(nome);
+  return pelaRegra ? [pelaRegra] : [];
+}
 
 /** Cargos de nível médio que exigem curso técnico (Anexo I). */
 const COM_CURSO_TECNICO = new Set([302, 307, 308, 309]);

@@ -11,6 +11,7 @@ import type { z } from 'zod';
 import type { Deps, Usuario } from '../contexto.js';
 import { iso, type Db } from '../util.js';
 import { dicaDaLicao, finalizarSessao, licaoAbrivel, revisoesVencidas, sortearQuestoesDaLicao } from './estudo.js';
+import { focoAtualDoAluno, provasDoFoco, questaoDasProvas, type Foco } from './foco.js';
 import { aplicarRevisao, creditarXp, ofensivaHoje, travarUsuario } from './progresso.js';
 import { carregarQuestoes, cifrarCorrecao, emOrdem, questaoVisivel, type QuestaoCompleta } from './questoes.js';
 import { calcularTrilha, tituloDaLicao, type TrilhaCalculada } from './trilha.js';
@@ -35,7 +36,7 @@ export async function montarPacote(deps: Deps, u: Usuario, agora: Date): Promise
       const { ids } = await sortearQuestoesDaLicao(
         db,
         u.id,
-        { licao: n.licao, secao: n.secao, unidade: n.unidade, secoesDaUnidade: [n.secao] },
+        { licao: n.licao, secao: n.secao, unidade: n.unidade, secoesDaUnidade: [n.secao], foco: t.estrutura.foco },
         agora,
         deps.rng,
         { semRevisao: true },
@@ -156,6 +157,9 @@ export async function sincronizar(deps: Deps, usuario: Usuario, lote: Lote, agor
     const mapa = await carregarQuestoes(tx, [...new Set(lote.tentativas.map((t) => t.questaoId))]);
     const vistasNoLote = new Set<string>();
     const licoesNoLote = new Set<string>();
+    // D46: o foco do cargo, calculado só se alguma lição offline for concluída neste lote.
+    let foco: Promise<Foco | null> | undefined;
+    const focoDoLote = () => (foco ??= focoAtualDoAluno(tx, u).catch(() => null));
 
     // 3) Em ordem cronológica: a 2ª lição do pacote só abre depois que a 1ª foi concluída.
     const inicio = (id: string) =>
@@ -256,7 +260,13 @@ export async function sincronizar(deps: Deps, usuario: Usuario, lote: Lote, agor
         .from(tentativas)
         .where(eq(tentativas.sessaoEstudoId, sessao.id));
       if (feitas.length === 0) continue;
-      if (licao && sessao.licaoId && feitas.length < (await questoesExigidas(tx, licao))) continue;
+      if (
+        licao &&
+        sessao.licaoId &&
+        feitas.length < (await questoesExigidas(tx, licao, provasDoFoco(await focoDoLote(), licao.area)))
+      ) {
+        continue;
+      }
       const qs = [...new Set(feitas.map((f) => f.questaoId))];
       await tx
         .update(sessoesEstudo)
@@ -296,7 +306,15 @@ async function validarSessaoOffline(
     return c.licao.tipo === 'normal' ? true : 'Lição indisponível offline.';
   } catch {
     const t = await calcularTrilha(tx, u);
-    return t && licoesDoPacote(t).some((n) => n.licao.id === s.licaoId) ? true : 'Lição indisponível offline.';
+    if (t && licoesDoPacote(t).some((n) => n.licao.id === s.licaoId)) return true;
+    // D46: pacote baixado antes do foco no cargo traz lições de temas que saíram da trilha focada.
+    // Vale o que o aluno podia ter no pacote pela trilha da área inteira.
+    const semFoco = await calcularTrilha(tx, u, { semFoco: true });
+    const no = semFoco?.nos.get(s.licaoId);
+    const naTrilhaAntiga =
+      (no?.podeAbrir && no.licao.tipo === 'normal') ||
+      (semFoco !== null && licoesDoPacote(semFoco).some((n) => n.licao.id === s.licaoId));
+    return naTrilhaAntiga ? true : 'Lição indisponível offline.';
   }
 }
 
@@ -332,11 +350,24 @@ async function recusaDaTentativa(
  * Respostas que uma lição offline precisa para contar como concluída: o tamanho da lição, ou
  * todas as questões visíveis do assunto se houver menos (como o sorteio do pacote). O online
  * exige todas as questões da sessão; o offline não pode concluir com 1 (validação PIE V1-02).
+ * D46: com o foco, conta só as questões das provas do cargo, como o sorteio; sem nenhuma (pacote
+ * de antes do foco), conta o assunto inteiro.
  */
-async function questoesExigidas(tx: Db, licao: LimiteLicao): Promise<number> {
-  const [n] = await tx
-    .select({ n: count() })
-    .from(questoes)
-    .where(and(eq(questoes.assuntoId, licao.assuntoId), questaoVisivel(), licao.area ? sql`${questoes.areas} @> array[${licao.area}]::text[]` : undefined));
-  return Math.min(licao.tamanho, Number(n?.n ?? 0));
+async function questoesExigidas(tx: Db, licao: LimiteLicao, provas: readonly string[] | null): Promise<number> {
+  const contarCom = async (filtro: readonly string[] | null) => {
+    const [n] = await tx
+      .select({ n: count() })
+      .from(questoes)
+      .where(
+        and(
+          eq(questoes.assuntoId, licao.assuntoId),
+          questaoVisivel(),
+          licao.area ? sql`${questoes.areas} @> array[${licao.area}]::text[]` : undefined,
+          filtro ? questaoDasProvas(filtro) : undefined,
+        ),
+      );
+    return Number(n?.n ?? 0);
+  };
+  const n = (provas ? await contarCom(provas) : 0) || (await contarCom(null));
+  return Math.min(licao.tamanho, n);
 }

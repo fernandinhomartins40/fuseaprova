@@ -25,6 +25,7 @@ import type { Deps, Usuario } from '../contexto.js';
 import { falha } from '../http/erros.js';
 import { agrupar, consultar, contar, iso, type Db } from '../util.js';
 import { candidatasDoAssunto, respostaInicio, revisoesVencidas } from './estudo.js';
+import { provasDoFoco, type Foco } from './foco.js';
 import { calcularTrilha } from './trilha.js';
 
 const { assuntos, disciplinas, sessoesEstudo } = schema;
@@ -33,17 +34,23 @@ interface TemasDaTrilha {
   /** assuntoId → área da unidade (filtro das questões do cargo). */
   temas: Map<string, string | null>;
   trilhaConcluida: boolean;
+  /** D46: foco no cargo, para o treino sortear as questões das provas dele. */
+  foco: Foco | null;
 }
 
 export async function temasDaTrilha(db: Db, u: Usuario): Promise<TemasDaTrilha> {
   const t = await calcularTrilha(db, u);
-  if (!t) return { temas: new Map(), trilhaConcluida: false };
+  if (!t) return { temas: new Map(), trilhaConcluida: false, foco: null };
   const temas = new Map<string, string | null>();
   for (const n of t.nos.values()) {
     if (!temas.has(n.secao.assuntoId)) temas.set(n.secao.assuntoId, n.unidade.area ?? null);
   }
   const nos = [...t.nos.values()];
-  return { temas, trilhaConcluida: nos.length > 0 && nos.every((n) => n.estado === 'concluida') };
+  return {
+    temas,
+    trilhaConcluida: nos.length > 0 && nos.every((n) => n.estado === 'concluida'),
+    foco: t.estrutura.foco,
+  };
 }
 
 interface EstatisticaTema {
@@ -143,15 +150,18 @@ export async function iniciarReforco(
   agora: Date,
 ): Promise<IniciarSessaoResposta> {
   const { db, rng } = deps;
-  const { temas } = await temasDaTrilha(db, u);
+  const { temas, foco } = await temasDaTrilha(db, u);
+  const candidatas = (assuntoId: string) => {
+    const area = temas.get(assuntoId) ?? null;
+    return candidatasDoAssunto(db, u.id, assuntoId, area, provasDoFoco(foco, area));
+  };
   let ids: string[] = [];
   let revisao = new Set<string>();
   let dica: DicaLicao | null = null;
 
   if (corpo.assuntoId) {
     if (!temas.has(corpo.assuntoId)) throw falha('nao_encontrado', 'Esse tema não está na sua trilha.');
-    const cands = await candidatasDoAssunto(db, u.id, corpo.assuntoId, temas.get(corpo.assuntoId) ?? null);
-    ids = sortearNovas(cands, TAMANHO_TREINO, rng);
+    ids = sortearNovas(await candidatas(corpo.assuntoId), TAMANHO_TREINO, rng);
     const [a] = await db.select().from(assuntos).where(sql`${assuntos.id} = ${corpo.assuntoId}`);
     if (a?.dicaTexto?.trim()) {
       dica = { titulo: a.dicaTitulo?.trim() || a.nome, texto: a.dicaTexto.trim(), exemplo: a.dicaExemplo?.trim() || null };
@@ -171,9 +181,7 @@ export async function iniciarReforco(
     revisao = new Set(plano.revisao);
     const escolhidas = new Set(plano.revisao);
     for (const item of plano.temas) {
-      const cands = (await candidatasDoAssunto(db, u.id, item.assuntoId, temas.get(item.assuntoId) ?? null)).filter(
-        (c) => !escolhidas.has(c.id),
-      );
+      const cands = (await candidatas(item.assuntoId)).filter((c) => !escolhidas.has(c.id));
       for (const id of sortearNovas(cands, item.quantidade, rng)) escolhidas.add(id);
     }
     ids = embaralhar([...escolhidas], rng);

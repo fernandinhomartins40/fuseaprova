@@ -30,6 +30,7 @@ import {
   travarUsuario,
   verificarConquistas,
 } from './progresso.js';
+import { provasDoCargo } from './foco.js';
 import { carregarQuestoes, emOrdem, questaoVisivel } from './questoes.js';
 import { concursoDoUsuario, modoEdital } from './usuario.js';
 
@@ -117,7 +118,7 @@ export async function criarSimulado(
         };
 
     const cands = await db
-      .select({ id: questoes.id, slug: disciplinas.slug })
+      .select({ id: questoes.id, slug: disciplinas.slug, prova: questoes.provaOrigemId })
       .from(questoes)
       .innerJoin(disciplinas, eq(disciplinas.id, questoes.disciplinaId))
       .where(
@@ -133,6 +134,13 @@ export async function criarSimulado(
       .orderBy(asc(questoes.id));
     const porBloco: Partial<Record<SlugDisciplina, string[]>> = {};
     for (const c of cands) (porBloco[c.slug] ??= []).push(c.id);
+    // D46: as específicas saem das provas da profissão do cargo; se não bastarem, vale a área inteira.
+    // Não depende do foco da trilha: cargo com as questões num tema só (ex.: Fonoaudiólogo) também usa.
+    const provas = new Set(await provasDoCargo(db, cargo.nome));
+    const daProfissao = cands
+      .filter((c) => c.slug === 'especificos' && c.prova !== null && provas.has(c.prova))
+      .map((c) => c.id);
+    if (daProfissao.length >= dist.especificos) porBloco.especificos = daProfissao;
     const montagem = montarSimulado(porBloco, dist, deps.rng);
     if (!montagem.ok) {
       const falta = montagem.faltando

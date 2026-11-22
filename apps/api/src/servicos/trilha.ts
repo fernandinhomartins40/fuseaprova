@@ -9,6 +9,7 @@ import {
   areasDaTrilha,
   diaSP,
   estadoDaTrilha,
+  focarSecoes,
   inicioDoDiaSP,
   intercalarSecoes,
   licoesAteOBau,
@@ -19,6 +20,7 @@ import {
 import type { TrilhaResposta, UnidadeTrilha } from '@fuse/shared/api';
 import type { Usuario } from '../contexto.js';
 import { agrupar, type Db } from '../util.js';
+import { focoDoAluno, type Foco } from './foco.js';
 import { concursoDoUsuario, modoEdital, type Concurso } from './usuario.js';
 
 const { unidades, secoes, licoes, disciplinas, progressoLicoes, assuntos, tentativas, questoes, revisoes } = schema;
@@ -31,21 +33,34 @@ export type Disciplina = typeof schema.disciplinas.$inferSelect;
 export interface EstruturaTrilha {
   concurso: Concurso;
   edital: boolean;
+  /** D46: foco no cargo (null = a área inteira). As lições da área do cargo usam as provas dele. */
+  foco: Foco | null;
   /** Unidades na ordem do aluno, com todas as seções (inclusive fora do edital). */
   unidades: { unidade: Unidade; disciplina: Disciplina; secoes: { secao: Secao; licoes: Licao[] }[] }[];
 }
 
-type AlunoTrilha = Pick<Usuario, 'concursoId' | 'area'> & Partial<Pick<Usuario, 'areasExtras'>>;
+type AlunoTrilha = Pick<Usuario, 'concursoId' | 'area'> & Partial<Pick<Usuario, 'areasExtras' | 'cargoId'>>;
+
+/** `semFoco`: a trilha da área inteira, como antes da D46 (aceita pacote offline antigo). */
+export interface OpcoesTrilha {
+  semFoco?: boolean;
+}
 
 /**
  * Unidades visíveis ao aluno (comuns + da área do cargo + das áreas extras, D36/D45),
- * na ordem intercalada.
+ * na ordem intercalada. D46: na unidade específica da área do cargo, só os temas do foco.
  */
-export async function estruturaDaTrilha(db: Db, u: AlunoTrilha): Promise<EstruturaTrilha | null> {
+export async function estruturaDaTrilha(
+  db: Db,
+  u: AlunoTrilha,
+  opcoes: OpcoesTrilha = {},
+): Promise<EstruturaTrilha | null> {
   const concurso = await concursoDoUsuario(db, u);
   if (!concurso) return null;
   const edital = modoEdital(concurso);
   const areas = areasDaTrilha(u.area, u.areasExtras ?? []);
+  // O foco é uma melhoria: se ele falhar, a trilha sai com a área inteira, como antes da D46.
+  const foco = opcoes.semFoco ? null : await focoDoAluno(db, u, concurso).catch(() => null);
   const us = await db
     .select({ unidade: unidades, disciplina: disciplinas })
     .from(unidades)
@@ -67,32 +82,42 @@ export async function estruturaDaTrilha(db: Db, u: AlunoTrilha): Promise<Estrutu
     : [];
   const licoesPorSecao = agrupar(ls, (l) => l.secaoId);
   const secoesPorUnidade = agrupar(ss, (s) => s.unidadeId);
+  const secoesCom = new Map<string, { secao: Secao; licoes: Licao[] }[]>();
+  for (const x of us) {
+    const todas = (secoesPorUnidade.get(x.unidade.id) ?? []).map((secao) => ({
+      secao,
+      licoes: licoesPorSecao.get(secao.id) ?? [],
+    }));
+    // D46: na área do cargo, só os temas do foco; o desafio vai para a última seção que ficou.
+    const assuntosDoFoco = foco && x.unidade.area === foco.area ? foco.assuntos : null;
+    const focada = assuntosDoFoco !== null;
+    const secoesDaUnidade = assuntosDoFoco
+      ? focarSecoes(todas, (s) => assuntosDoFoco.has(s.assuntoId))
+      : todas;
+    // Unidade da área do cargo sem nenhum tema do foco sai da trilha (as outras ficam como antes).
+    if (!focada || secoesDaUnidade.length > 0) secoesCom.set(x.unidade.id, secoesDaUnidade);
+  }
+  const visiveis = us.filter((x) => secoesCom.has(x.unidade.id));
 
   // Intercala por seção (3 comuns : 5 específicas) e ordena as unidades pela primeira aparição.
   // Com áreas extras (D36), as específicas alternam uma seção de cada área.
-  const comuns = us.filter((x) => x.unidade.area === null);
+  const comuns = visiveis.filter((x) => x.unidade.area === null);
   const secoesDe = (lista: typeof us) =>
-    lista.flatMap((x) => (secoesPorUnidade.get(x.unidade.id) ?? []).map((s) => s.unidadeId));
-  const especificas = alternarListas(areas.map((a) => secoesDe(us.filter((x) => x.unidade.area === a))));
+    lista.flatMap((x) => secoesCom.get(x.unidade.id)!.map(() => x.unidade.id));
+  const especificas = alternarListas(
+    areas.map((a) => secoesDe(visiveis.filter((x) => x.unidade.area === a))),
+  );
   const ordemUnidades: string[] = [];
   for (const uid of intercalarSecoes(secoesDe(comuns), especificas)) {
     if (!ordemUnidades.includes(uid)) ordemUnidades.push(uid);
   }
-  for (const x of us) if (!ordemUnidades.includes(x.unidade.id)) ordemUnidades.push(x.unidade.id);
-  const porId = new Map(us.map((x) => [x.unidade.id, x]));
+  for (const x of visiveis) if (!ordemUnidades.includes(x.unidade.id)) ordemUnidades.push(x.unidade.id);
+  const porId = new Map(visiveis.map((x) => [x.unidade.id, x]));
   return {
     concurso,
     edital,
-    unidades: ordemUnidades.map((id) => {
-      const x = porId.get(id)!;
-      return {
-        ...x,
-        secoes: (secoesPorUnidade.get(id) ?? []).map((secao) => ({
-          secao,
-          licoes: licoesPorSecao.get(secao.id) ?? [],
-        })),
-      };
-    }),
+    foco,
+    unidades: ordemUnidades.map((id) => ({ ...porId.get(id)!, secoes: secoesCom.get(id)! })),
   };
 }
 
@@ -108,8 +133,12 @@ export interface TrilhaCalculada {
   progresso: Map<string, { vezes: number; melhorPrecisao: number | null; concluidaEm: Date | null }>;
 }
 
-export async function calcularTrilha(db: Db, u: AlunoTrilha & Pick<Usuario, 'id'>): Promise<TrilhaCalculada | null> {
-  const estrutura = await estruturaDaTrilha(db, u);
+export async function calcularTrilha(
+  db: Db,
+  u: AlunoTrilha & Pick<Usuario, 'id'>,
+  opcoes: OpcoesTrilha = {},
+): Promise<TrilhaCalculada | null> {
+  const estrutura = await estruturaDaTrilha(db, u, opcoes);
   if (!estrutura) return null;
   const lista: { licao: Licao; secao: Secao; unidade: Unidade }[] = [];
   for (const x of estrutura.unidades) {

@@ -24,6 +24,14 @@
  *     Liga o modo edital (o mesmo botão "Publicar edital" do painel).
  *   pnpm --filter @fuse/api cli edital:palmital --desfazer --confirmar
  *     Volta o concurso e os cargos à foto da importação.
+ *
+ * D46:
+ *   pnpm --filter @fuse/api cli foco:cargo
+ *     Relatório do foco no cargo de cada aluno com acesso (temas, lição atual, revisões). Não grava.
+ *   pnpm --filter @fuse/api cli foco:cargo --revisoes --confirmar
+ *     Tira da fila as revisões de questões de outras profissões (sem apagar), com a lista na auditoria.
+ *   pnpm --filter @fuse/api cli foco:cargo --desfazer --confirmar
+ *     Devolve essas revisões à fila.
  */
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -38,6 +46,12 @@ import {
   planejarEditalPalmital,
   publicarEditalPalmital,
 } from './servicos/editalPalmital.js';
+import {
+  descreverRelatorioFoco,
+  devolverRevisoesDoFoco,
+  relatorioFoco,
+  retirarRevisoesForaDoFoco,
+} from './servicos/focoCli.js';
 import { gerarHashSenha } from './servicos/senhas.js';
 import { criarOuPromoverSuperadmin } from './servicos/superadminCli.js';
 
@@ -217,15 +231,49 @@ async function editalPalmital(args: string[]): Promise<void> {
   }
 }
 
+async function focoCargo(args: string[]): Promise<void> {
+  const { values } = parseArgs({
+    args,
+    options: {
+      revisoes: { type: 'boolean' },
+      desfazer: { type: 'boolean' },
+      confirmar: { type: 'boolean' },
+    },
+  });
+  if (values.revisoes && values.desfazer) throw new Error('Use um modo por vez: --revisoes ou --desfazer.');
+  const modo = values.revisoes ? 'revisoes' : values.desfazer ? 'desfazer' : 'relatorio';
+  if (modo !== 'relatorio' && !values.confirmar) {
+    throw new Error(`--${modo} grava no banco: rode antes sem ele para conferir e repita com --confirmar.`);
+  }
+  const conexao = conectar(process.env.DATABASE_URL, { max: 1 });
+  try {
+    if (conexao.tipo === 'pglite') await migrar(conexao);
+    if (modo === 'relatorio') {
+      console.info(descreverRelatorioFoco(await relatorioFoco(conexao.db)));
+      console.info('');
+      console.info('RELATÓRIO: nada foi gravado. Para tirar da fila as revisões fora do foco: --revisoes --confirmar');
+    } else if (modo === 'revisoes') {
+      const r = await retirarRevisoesForaDoFoco(conexao.db, new Date());
+      console.info(`${r.revisoes} revisões de ${r.alunos} alunos saíram da fila (nada foi apagado). Para devolver: --desfazer --confirmar`);
+    } else {
+      const r = await devolverRevisoesDoFoco(conexao.db, new Date());
+      console.info(`${r.revisoes} revisões voltaram para a fila.`);
+    }
+  } finally {
+    await conexao.fechar();
+  }
+}
+
 const [comando, ...resto] = process.argv.slice(2);
 try {
   if (comando === 'admin:criar') await adminCriar(resto);
   else if (comando === 'superadmin:criar') await superadminCriar(resto);
   else if (comando === 'superadmin:resetar-2fa') await superadminResetar2fa(resto);
   else if (comando === 'edital:palmital') await editalPalmital(resto);
+  else if (comando === 'foco:cargo') await focoCargo(resto);
   else {
     console.info(
-      'Comandos:\n  admin:criar --email <e-mail> --nome "<nome completo>" [--senha <senha>]\n  superadmin:criar --email <e-mail> [--nome "<nome completo>"] [--senha <senha>]\n  superadmin:resetar-2fa --email <e-mail>\n  edital:palmital [--simular | --aplicar | --publicar | --desfazer] [--confirmar]',
+      'Comandos:\n  admin:criar --email <e-mail> --nome "<nome completo>" [--senha <senha>]\n  superadmin:criar --email <e-mail> [--nome "<nome completo>"] [--senha <senha>]\n  superadmin:resetar-2fa --email <e-mail>\n  edital:palmital [--simular | --aplicar | --publicar | --desfazer] [--confirmar]\n  foco:cargo [--revisoes | --desfazer] [--confirmar]',
     );
     process.exitCode = comando ? 1 : 0;
   }

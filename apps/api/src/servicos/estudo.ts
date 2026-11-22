@@ -48,6 +48,7 @@ import {
   travarUsuario,
   verificarConquistas,
 } from './progresso.js';
+import { provasDoFoco, questaoDasProvas, type Foco } from './foco.js';
 import { carregarQuestoes, cifrarCorrecao, emOrdem, questaoVisivel } from './questoes.js';
 import { calcularTrilha, tituloDaLicao, type Licao, type Secao, type Unidade } from './trilha.js';
 import { salvarVidas, vidasAtuais } from './usuario.js';
@@ -69,13 +70,17 @@ export type SessaoEstudo = typeof schema.sessoesEstudo.$inferSelect;
 
 /* --------------------------------------------------------------- sorteio */
 
-/** Questões visíveis de um assunto, com quantas vezes o aluno já as viu. */
+/**
+ * Questões visíveis de um assunto, com quantas vezes o aluno já as viu. D46: com `provas` (o foco
+ * do cargo), só as dessas provas; se o foco não tiver nenhuma, vale o assunto inteiro, como antes.
+ */
 export async function candidatasDoAssunto(
   db: Db,
   usuarioId: string,
   assuntoId: string,
   area: string | null,
-) {
+  provas: readonly string[] | null = null,
+): Promise<{ id: string; vezesRespondida: number; ultimaRespostaEm: Date | null }[]> {
   const vistas = db
     .select({
       questaoId: tentativas.questaoId,
@@ -95,10 +100,12 @@ export async function candidatasDoAssunto(
         eq(questoes.assuntoId, assuntoId),
         questaoVisivel(),
         area ? sql`${questoes.areas} @> array[${area}]::text[]` : undefined,
+        provas ? questaoDasProvas(provas) : undefined,
       ),
     )
     // Ordem estável: o sorteio depende só do rng, não da ordem física das linhas.
     .orderBy(asc(questoes.id));
+  if (provas && rows.length === 0) return candidatasDoAssunto(db, usuarioId, assuntoId, area);
   return rows.map((r) => ({
     id: r.id,
     vezesRespondida: Number(r.vezes ?? 0),
@@ -136,6 +143,8 @@ export interface ContextoLicao {
   unidade: Unidade;
   /** Seções da unidade que estão na trilha (para o desafio). */
   secoesDaUnidade: Secao[];
+  /** D46: foco no cargo da trilha (null = a área inteira). */
+  foco: Foco | null;
 }
 
 /** Sorteia as questões de uma lição normal (novas + 1 revisão) ou do desafio. */
@@ -148,15 +157,16 @@ export async function sortearQuestoesDaLicao(
   opcoes: { semRevisao?: boolean } = {},
 ): Promise<{ ids: string[]; revisao: Set<string> }> {
   const area = c.unidade.area;
+  const provas = provasDoFoco(c.foco, area);
   if (c.licao.tipo === 'desafio') {
     const porAssunto = await Promise.all(
       [...new Set(c.secoesDaUnidade.map((s) => s.assuntoId))].map(async (a) =>
-        (await candidatasDoAssunto(db, usuarioId, a, area)).map((q) => q.id),
+        (await candidatasDoAssunto(db, usuarioId, a, area, provas)).map((q) => q.id),
       ),
     );
     return { ids: montarDesafio(porAssunto, rng, c.licao.tamanho), revisao: new Set() };
   }
-  const cands = await candidatasDoAssunto(db, usuarioId, c.secao.assuntoId, area);
+  const cands = await candidatasDoAssunto(db, usuarioId, c.secao.assuntoId, area, provas);
   const novas = sortearNovas(cands, c.licao.tamanho, rng);
   const vencidas = opcoes.semRevisao
     ? []
@@ -232,7 +242,7 @@ export async function licaoAbrivel(db: Db, u: Usuario, licaoId: string): Promise
     .filter((n) => n.unidade.id === no.unidade.id)
     .map((n) => n.secao)
     .filter((s, i, l) => l.findIndex((x) => x.id === s.id) === i);
-  return { licao: no.licao, secao: no.secao, unidade: no.unidade, secoesDaUnidade };
+  return { licao: no.licao, secao: no.secao, unidade: no.unidade, secoesDaUnidade, foco: t.estrutura.foco };
 }
 
 export async function iniciarLicao(

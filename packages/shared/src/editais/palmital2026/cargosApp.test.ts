@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { AREAS_CARGO } from '../../dominio.js';
 import { pontuacaoMaxima, totalDeQuestoes } from '../../simulado.js';
-import { AREA_DO_CARGO_PALMITAL, cargosAppPalmital, distribuicaoDoNivel } from './cargosApp.js';
+import {
+  AREA_DO_CARGO_PALMITAL,
+  cargosAppPalmital,
+  distribuicaoDoNivel,
+  PROFISSOES_DO_CARGO_PALMITAL,
+  profissoesDoCargo,
+} from './cargosApp.js';
 import { CARGOS_PALMITAL } from './cargos.js';
 
 const cargos = cargosAppPalmital();
@@ -93,5 +99,32 @@ describe('cargos do edital no app (D45)', () => {
 
   it('a ordem é a dos quadros do edital', () => {
     expect(cargos.map((c) => c.codigo)).toEqual(CARGOS_PALMITAL.map((c) => c.codigo));
+  });
+});
+
+describe('profissões de cada cargo (D46)', () => {
+  it('os 49 cargos do edital têm pelo menos uma profissão, sem repetir', () => {
+    for (const c of CARGOS_PALMITAL) {
+      const p = PROFISSOES_DO_CARGO_PALMITAL[c.codigo];
+      expect(p?.length, c.nome).toBeGreaterThan(0);
+      expect(new Set(p).size, c.nome).toBe(p!.length);
+    }
+    expect(Object.keys(PROFISSOES_DO_CARGO_PALMITAL)).toHaveLength(49);
+  });
+
+  it('pelo nome do cargo do edital: o médico não leva a veterinária, e vice-versa', () => {
+    expect(profissoesDoCargo('Médico Clínico Geral 40h')).toEqual(['medicina']);
+    expect(profissoesDoCargo('Médico Pediatra')).toEqual(['medicina']);
+    expect(profissoesDoCargo('Médico Veterinário')).toEqual(['veterinaria']);
+    expect(profissoesDoCargo('Psicólogo')).toEqual(['psicologia']);
+    expect(profissoesDoCargo('Vigia 12X36')).toEqual(['vigia', 'servicos_gerais']);
+  });
+
+  it('cargo genérico (antes do edital) usa a profissão do próprio nome; sem regra, nenhuma', () => {
+    expect(profissoesDoCargo('Professor')).toEqual(['professor']);
+    expect(profissoesDoCargo('Agente de Endemias')).toEqual(['endemias']);
+    expect(profissoesDoCargo('Médico')).toEqual(['medicina']);
+    expect(profissoesDoCargo('Fiscal')).toEqual([]);
+    expect(profissoesDoCargo('Recepcionista')).toEqual([]);
   });
 });
