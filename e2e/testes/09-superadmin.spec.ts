@@ -57,7 +57,9 @@ for (const [nome, viewport] of [
     test.use({ viewport });
 
     test.beforeEach(async ({ page }) => {
-      await definirRelogio(page, '2026-11-20T10:00:00-03:00');
+      // Hora real: a sessão do superadmin dura 12 h e o navegador confere o vencimento do cookie
+      // pelo relógio de verdade. Com data fixa, o teste quebrava 12 h depois dela (20/11, 22h).
+      await definirRelogio(page, new Date().toISOString());
     });
 
     test('login com 2FA obrigatório e layout do painel', async ({ page }) => {
