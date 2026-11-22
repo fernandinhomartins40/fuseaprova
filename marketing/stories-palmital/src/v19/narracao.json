@@ -2,55 +2,55 @@
   "gancho": [
     {
       "arquivo": "audio/v19/voz-gancho-1.wav",
-      "segundos": 0.676,
+      "segundos": 0.825,
       "texto": "É amanhã!"
     },
     {
       "arquivo": "audio/v19/voz-gancho-2.wav",
-      "segundos": 4.259,
+      "segundos": 4.956,
       "texto": "Amanhã, ao meio-dia, abrem as inscrições do concurso da Prefeitura de Palmital."
     }
   ],
   "duas": [
     {
       "arquivo": "audio/v19/voz-duas-1.wav",
-      "segundos": 1.753,
+      "segundos": 2.595,
       "texto": "E amanhã acontece mais uma coisa."
     },
     {
       "arquivo": "audio/v19/voz-duas-2.wav",
-      "segundos": 3.824,
+      "segundos": 4.888,
       "texto": "É o último dia do preparatório Fuse Aprova por cento e noventa e sete reais."
     },
     {
       "arquivo": "audio/v19/voz-duas-3.wav",
-      "segundos": 2.465,
+      "segundos": 3.07,
       "texto": "Na quinta, sobe pra duzentos e noventa e sete."
     }
   ],
   "cartao": [
     {
       "arquivo": "audio/v19/voz-cartao-1.wav",
-      "segundos": 4.108,
+      "segundos": 4.975,
       "texto": "O parcelamento em até seis vezes sem juros no cartão também vai só até amanhã."
     }
   ],
   "hoje": [
     {
       "arquivo": "audio/v19/voz-hoje-1.wav",
-      "segundos": 1.538,
+      "segundos": 2.167,
       "texto": "Então não deixa pra última hora."
     },
     {
       "arquivo": "audio/v19/voz-hoje-2.wav",
-      "segundos": 2.996,
+      "segundos": 3.915,
       "texto": "Garante hoje, e amanhã você faz a inscrição já estudando."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v19/voz-fecho-1.wav",
-      "segundos": 3.707,
+      "segundos": 4.307,
       "texto": "Preparatório pro concurso da Prefeitura de Palmital. O link tá na bio."
     }
   ]

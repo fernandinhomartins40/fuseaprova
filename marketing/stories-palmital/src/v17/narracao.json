@@ -2,67 +2,67 @@
   "contagem": [
     {
       "arquivo": "audio/v17/voz-contagem-1.wav",
-      "segundos": 1.118,
+      "segundos": 1.672,
       "texto": "Faltam três dias."
     },
     {
       "arquivo": "audio/v17/voz-contagem-2.wav",
-      "segundos": 4.397,
+      "segundos": 5.337,
       "texto": "Na quarta, ao meio-dia, abrem as inscrições do concurso da Prefeitura de Palmital."
     }
   ],
   "facil": [
     {
       "arquivo": "audio/v17/voz-facil-1.wav",
-      "segundos": 1.165,
+      "segundos": 1.495,
       "texto": "Se inscrever é fácil."
     },
     {
       "arquivo": "audio/v17/voz-facil-2.wav",
-      "segundos": 1.863,
+      "segundos": 2.913,
       "texto": "Difícil é chegar na prova preparado."
     }
   ],
   "plano": [
     {
       "arquivo": "audio/v17/voz-plano-1.wav",
-      "segundos": 3.81,
+      "segundos": 4.901,
       "texto": "Então faz assim: hoje, descubra o seu cargo e o que cai na sua prova."
     },
     {
       "arquivo": "audio/v17/voz-plano-2.wav",
-      "segundos": 4.291,
+      "segundos": 5.309,
       "texto": "Segunda e terça, comece por Português e Matemática, que caem pra todos os cargos."
     },
     {
       "arquivo": "audio/v17/voz-plano-3.wav",
-      "segundos": 2.105,
+      "segundos": 3.277,
       "texto": "E na quarta, faça a inscrição já estudando."
     }
   ],
   "app": [
     {
       "arquivo": "audio/v17/voz-app-1.wav",
-      "segundos": 6.342,
+      "segundos": 8.007,
       "texto": "O Fuse Aprova é o preparatório pro concurso da Prefeitura de Palmital, com trilha de estudo, questões e revisão do que você erra."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v17/voz-oferta-1.wav",
-      "segundos": 4.567,
+      "segundos": 5.637,
       "texto": "E até quarta, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão."
     },
     {
       "arquivo": "audio/v17/voz-oferta-2.wav",
-      "segundos": 2.465,
+      "segundos": 3.288,
       "texto": "Na quinta, sobe pra duzentos e noventa e sete."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v17/voz-fecho-1.wav",
-      "segundos": 3.244,
+      "segundos": 3.826,
       "texto": "Faltam três dias. Começa hoje. O link tá na bio."
     }
   ]

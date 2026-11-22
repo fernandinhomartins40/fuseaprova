@@ -2,55 +2,55 @@
   "gancho": [
     {
       "arquivo": "audio/v20/voz-gancho-1.wav",
-      "segundos": 0.538,
+      "segundos": 0.923,
       "texto": "É hoje!"
     },
     {
       "arquivo": "audio/v20/voz-gancho-2.wav",
-      "segundos": 4.077,
+      "segundos": 5.086,
       "texto": "Hoje, ao meio-dia, abrem as inscrições do concurso da Prefeitura de Palmital."
     }
   ],
   "inscricao": [
     {
       "arquivo": "audio/v20/voz-inscricao-1.wav",
-      "segundos": 3.419,
+      "segundos": 4.392,
       "texto": "As inscrições vão até vinte e sete de dezembro, pelo site da banca."
     },
     {
       "arquivo": "audio/v20/voz-inscricao-2.wav",
-      "segundos": 1.74,
+      "segundos": 2.396,
       "texto": "E a prova objetiva é em fevereiro."
     }
   ],
   "ultimo": [
     {
       "arquivo": "audio/v20/voz-ultimo-1.wav",
-      "segundos": 4.976,
+      "segundos": 7.035,
       "texto": "Mas atenção: hoje é o último dia do preparatório Fuse Aprova por cento e noventa e sete reais."
     },
     {
       "arquivo": "audio/v20/voz-ultimo-2.wav",
-      "segundos": 2.473,
+      "segundos": 3.162,
       "texto": "Amanhã, sobe pra duzentos e noventa e sete."
     }
   ],
   "cartao": [
     {
       "arquivo": "audio/v20/voz-cartao-1.wav",
-      "segundos": 4.265,
+      "segundos": 5.405,
       "texto": "E hoje também é o último dia pra parcelar em até seis vezes sem juros no cartão."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v20/voz-fecho-1.wav",
-      "segundos": 2.101,
+      "segundos": 2.874,
       "texto": "Inscrição feita? Agora é estudar."
     },
     {
       "arquivo": "audio/v20/voz-fecho-2.wav",
-      "segundos": 2.121,
+      "segundos": 2.793,
       "texto": "Garante o seu hoje. O link tá na bio."
     }
   ]
