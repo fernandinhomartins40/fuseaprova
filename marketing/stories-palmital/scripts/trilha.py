@@ -122,6 +122,7 @@ BAIXOS = [38, 33, 35, 31]
 ARPEJO = [74, 78, 81, 78, 73, 76, 81, 76, 74, 78, 83, 78, 74, 79, 83, 79]
 BUMBO, BAIXO_GANHO, BRILHO, CHIMBAL = 0.55, 0.32, 1.0, 0.8
 GROOVE = 'house'
+ENTRA = 2  # compasso em que a bateria entra
 
 # Um estilo por vídeo: andamento, harmonia (4 acordes), baixo e timbre.
 ESTILOS = {
@@ -186,6 +187,9 @@ ESTILOS = {
     # v20: funk de festa no dia 25, Mi bemol maior (I–V–vi–IV), 132 BPM e mais brilho
     'v20': dict(bpm=132, acordes=[[63, 67, 70, 75], [58, 62, 65, 70], [60, 63, 67, 72], [56, 60, 63, 68]],
                 baixos=[39, 34, 36, 32], bumbo=0.66, baixo=0.34, brilho=1.25, chimbal=0.9, semente=201, groove='funk'),
+    # v21: "O pavio", trailer alegre e crescente, Ré maior (I–V–vi–IV), 104 BPM; só pluck e sinos até a metade
+    'v21': dict(bpm=104, acordes=[[62, 66, 69, 74], [57, 61, 64, 69], [59, 62, 66, 71], [55, 59, 62, 67]],
+                baixos=[38, 33, 35, 31], bumbo=0.5, baixo=0.3, brilho=0.9, chimbal=0.65, semente=211, entra=6),
     # aulas: mais calmas que as de venda, para a explicação ficar na frente
     # aula1: estudo leve, Fá maior (I–vi–IV–V), 100 BPM
     'aula1': dict(bpm=100, acordes=[[65, 69, 72, 77], [62, 65, 69, 74], [58, 62, 65, 70], [60, 64, 67, 72]],
@@ -200,9 +204,10 @@ ESTILOS['matematica'] = ESTILOS['aula2']
 
 
 def usa_estilo(nome: str) -> None:
-    global BPM, BATIDA, COMPASSO, ACORDES, BAIXOS, ARPEJO, BUMBO, BAIXO_GANHO, BRILHO, CHIMBAL, GROOVE, rng
+    global BPM, BATIDA, COMPASSO, ACORDES, BAIXOS, ARPEJO, BUMBO, BAIXO_GANHO, BRILHO, CHIMBAL, GROOVE, ENTRA, rng
     e = ESTILOS[nome]
     GROOVE = e.get('groove', 'house')
+    ENTRA = e.get('entra', 2)
     BPM, ACORDES, BAIXOS = e['bpm'], e['acordes'], e['baixos']
     BATIDA, COMPASSO = 60 / BPM, 240 / BPM
     BUMBO, BAIXO_GANHO, BRILHO, CHIMBAL = e['bumbo'], e['baixo'], e['brilho'], e['chimbal']
@@ -262,7 +267,7 @@ def trilha() -> np.ndarray:
         ini = c * COMPASSO
         acorde, raiz = ACORDES[c % 4], BAIXOS[c % 4]
         intro = c < 2
-        cheio = c >= 2
+        cheio = c >= ENTRA
         if cheio and GROOVE != 'house':
             groove(bat, harm, pump, ini, raiz, c, k, p)
         for b in range(4 if GROOVE == 'house' else 0):

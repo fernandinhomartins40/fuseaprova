@@ -23,6 +23,7 @@ import * as v17 from './v17';
 import * as v18 from './v18';
 import * as v19 from './v19';
 import * as v20 from './v20';
+import * as v21 from './v21';
 import * as aula1 from './aula1';
 import * as aula2 from './aula2';
 import * as videoaula1 from './videoaula1';
@@ -50,6 +51,7 @@ const videos = [
   { id: 'v18', ...v18 },
   { id: 'v19', ...v19 },
   { id: 'v20', ...v20 },
+  { id: 'v21', ...v21 },
   { id: 'aula1', ...aula1 },
   { id: 'aula2', ...aula2 },
   { id: 'videoaula1', ...videoaula1 },

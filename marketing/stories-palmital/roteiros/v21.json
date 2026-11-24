@@ -1,0 +1,30 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "semente": 211,
+  "ajustes": {
+    "stability": 0.55,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 0.95
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "falas": {
+    "caminho": [
+      "Poucos minutos por dia.",
+      "É só disso que você precisa.",
+      "Uma questão de cada vez.",
+      "Uma ofensiva que você não vai querer perder.",
+      "Uma liga que você vai querer ganhar.",
+      "E, de repente, no dia da prova, você chega preparado.",
+      "Português, matemática, conhecimentos gerais e o seu cargo.",
+      "Um só caminho até a prova da Prefeitura de Palmital.",
+      "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital."
+    ]
+  },
+  "modelo": "eleven_v4"
+}

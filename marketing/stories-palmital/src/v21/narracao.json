@@ -1,0 +1,49 @@
+{
+  "caminho": [
+    {
+      "arquivo": "audio/v21/voz-caminho-1.wav",
+      "segundos": 1.552,
+      "texto": "Poucos minutos por dia."
+    },
+    {
+      "arquivo": "audio/v21/voz-caminho-2.wav",
+      "segundos": 1.899,
+      "texto": "É só disso que você precisa."
+    },
+    {
+      "arquivo": "audio/v21/voz-caminho-3.wav",
+      "segundos": 1.658,
+      "texto": "Uma questão de cada vez."
+    },
+    {
+      "arquivo": "audio/v21/voz-caminho-4.wav",
+      "segundos": 2.58,
+      "texto": "Uma ofensiva que você não vai querer perder."
+    },
+    {
+      "arquivo": "audio/v21/voz-caminho-5.wav",
+      "segundos": 2.23,
+      "texto": "Uma liga que você vai querer ganhar."
+    },
+    {
+      "arquivo": "audio/v21/voz-caminho-6.wav",
+      "segundos": 3.377,
+      "texto": "E, de repente, no dia da prova, você chega preparado."
+    },
+    {
+      "arquivo": "audio/v21/voz-caminho-7.wav",
+      "segundos": 3.898,
+      "texto": "Português, matemática, conhecimentos gerais e o seu cargo."
+    },
+    {
+      "arquivo": "audio/v21/voz-caminho-8.wav",
+      "segundos": 2.962,
+      "texto": "Um só caminho até a prova da Prefeitura de Palmital."
+    },
+    {
+      "arquivo": "audio/v21/voz-caminho-9.wav",
+      "segundos": 3.981,
+      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital."
+    }
+  ]
+}
