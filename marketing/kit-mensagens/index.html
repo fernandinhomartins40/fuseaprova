@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kit de respostas Fuse Aprova</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: conversa próxima de dono para candidato; prática, sem enfeite.
+   IDEA: um caderninho de respostas prontas, igual ao "respostas rápidas" do WhatsApp Business.
+   PICTURE: as próprias mensagens, em balões de conversa, cada uma com Copiar.
+   COLOUR and TYPE: petróleo e creme da campanha, laranja como acento; Baloo 2 nos títulos, Nunito no texto.
+   LAYOUT: faixa petróleo com título e busca, chips de assunto, uma coluna de balões até 760px. */
+:root{color-scheme:light dark;
+--bg:light-dark(#fbf5ea,#0d1f22);--ink:light-dark(#14262a,#eef3f1);--muted:light-dark(#5b6b6d,#a9b8b8);
+--band:#0f3d44;--band-ink:#fbf5ea;--accent:#f26b1d;--teal:light-dark(#007c83,#4cc3c9);
+--bubble:light-dark(#ffffff,#16343a);--line:light-dark(#e6dccb,#24474e);--warn:light-dark(#fff1e6,#3a2516)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Nunito,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:"Baloo 2",Nunito,sans-serif;line-height:1.05;text-wrap:balance;margin:0}
+.top{background:var(--band);color:var(--band-ink);padding:clamp(28px,5vw,56px) max(5vw,16px) 24px}
+.wrap{max-width:760px;margin:0 auto}
+.top h1{font-size:clamp(32px,6vw,48px)}
+.top h1 b{color:var(--accent)}
+.top p{margin:10px 0 18px;max-width:60ch;opacity:.9}
+.busca{width:100%;font:inherit;font-size:16px;padding:12px 16px;border-radius:14px;border:0;background:#fbf5ea;color:#14262a;min-height:48px}
+.busca:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+nav{position:sticky;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px max(5vw,16px);max-width:792px;margin:0 auto;scrollbar-width:none}
+.chips a{flex:none;text-decoration:none;color:var(--ink);background:var(--bubble);border:1px solid var(--line);padding:8px 14px;border-radius:999px;font-weight:700;font-size:14px;min-height:40px;display:flex;align-items:center}
+.chips a:focus-visible{outline:3px solid var(--accent)}
+main{padding:8px max(5vw,16px) 64px}
+section{padding-top:28px}
+section>h2{font-size:28px;margin-bottom:4px}
+section>p.sub{color:var(--muted);margin:0 0 14px}
+.msg{margin:14px 0 22px}
+.msg h3{font-family:Nunito,sans-serif;font-size:14px;font-weight:800;color:var(--teal);margin-bottom:6px;letter-spacing:0}
+.bolha{position:relative;background:var(--bubble);border:1px solid var(--line);border-radius:4px 18px 18px 18px;padding:14px 16px 12px;box-shadow:0 2px 0 var(--line);white-space:pre-wrap;overflow-wrap:anywhere}
+.acoes{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.copiar{font:inherit;font-weight:800;font-size:15px;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:10px 18px;min-height:44px;cursor:pointer;box-shadow:0 3px 0 #b44c10}
+.copiar:active{transform:translateY(2px);box-shadow:0 1px 0 #b44c10}
+.copiar:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.copiar.ok{background:var(--teal);box-shadow:0 3px 0 #00565b}
+.dica{font-size:14px;color:var(--muted)}
+.prazo{display:inline-block;font-size:13px;font-weight:800;background:var(--warn);color:var(--ink);border-radius:8px;padding:2px 8px;margin-left:6px;vertical-align:1px}
+.regras{background:var(--bubble);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
+.regras ul{margin:8px 0 0;padding-left:20px}.regras li{margin:6px 0}
+.nao li::marker{content:"✕  ";color:var(--accent);font-weight:800}
+.vazio{color:var(--muted);padding:24px 0;display:none}
+footer{color:var(--muted);font-size:14px;padding:0 max(5vw,16px) 40px}
+html{scroll-padding-top:72px}
+@media (prefers-reduced-motion:no-preference){.copiar{transition:background .2s}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <h1>Kit de respostas <b>Fuse Aprova</b></h1>
+  <p>Mensagens prontas para responder no WhatsApp e no Instagram. Toque em Copiar, cole na conversa e ajuste uma palavra ou outra para soar como você.</p>
+  <input class="busca" id="busca" type="search" placeholder="Buscar: preço, tempo, iPhone, garantia…" aria-label="Buscar mensagem">
+</div></header>
+<nav aria-label="Assuntos"><div class="chips" id="chips"></div></nav>
+<main><div class="wrap" id="lista"></div><div class="wrap vazio" id="vazio">Nenhuma mensagem com essa palavra.</div></main>
+<footer><div class="wrap">Fatos conferidos em 24/11/2026 no app e no Edital nº 01/2026 de Palmital: 14.049 questões publicadas, prova prevista para 21/02/2027, inscrições de 25/11 a 27/12, cartão em 6x só até 25/11. Se algum desses dados mudar, atualize a mensagem antes de mandar.</div></footer>
+
+<script>
+{
+const SITE = 'www.fuseaprova.com.br';
+const KIT = [
+ {id:'como-usar', t:'Antes de responder', sub:'Cinco hábitos que passam confiança em qualquer conversa.', regras:[
+  'Responda rápido, mesmo que seja só "já te respondo". Quem espera muito procura outro lugar.',
+  'Pergunte o cargo logo no começo. Com o cargo, a conversa deixa de ser genérica.',
+  'Uma ideia por mensagem. Mande duas ou três mensagens curtas em vez de um textão.',
+  'Mostre o app de verdade: mande print ou gravação de tela de uma questão sendo respondida e da explicação aparecendo. Vale mais que qualquer texto.',
+  'Áudio curto (até 1 minuto) funciona muito bem depois da primeira resposta escrita. Fale como você fala.'
+ ], nao:[
+  'Garantir aprovação ou vaga. Ninguém pode, e o cliente sabe disso.',
+  'Dizer que tem "as questões da prova de Palmital". São questões reais da FAU em provas de outras prefeituras, a mesma banca.',
+  'Chamar de grátis. O acesso é pago; o que existe são os 7 dias de garantia.',
+  'Prometer o cartão depois de 25/11. Depois disso é só Pix.',
+  'Falar mal de outro cursinho. Fale do que o app faz.'
+ ]},
+ {id:'inicio', t:'Primeiro contato', sub:'A primeira resposta termina sempre com uma pergunta.', m:[
+  {h:'Primeira resposta no WhatsApp', x:`Oi! Tudo bem? Aqui é o Luiz, do Fuse Aprova 😊
+Que bom que você chamou!
+
+Me conta: você vai fazer o concurso da Prefeitura de Palmital? Pra qual cargo?`},
+  {h:'Primeira resposta no direct do Instagram', x:`Oi! Obrigado por chamar 😊 Aqui é o Luiz, do Fuse Aprova.
+
+Você tá se preparando pro concurso da Prefeitura de Palmital? Me fala o cargo que eu te explico como o app te ajuda nele.`},
+  {h:'Quando você demorou a responder', x:`Oi! Desculpa a demora, vi sua mensagem agora 🙏
+Me conta: qual cargo você quer no concurso de Palmital? Assim te explico certinho.`},
+  {h:'Pessoa só mandou "quero saber mais" ou "info"', x:`Oi! Claro, te explico 😊
+O Fuse Aprova é um app pra estudar pro concurso da Prefeitura de Palmital pelo celular, com questões reais da FAU, que é a banca do concurso.
+
+Antes de tudo: qual cargo você vai tentar?`}
+ ]},
+ {id:'cargo', t:'Descobrir o cargo', sub:'Muita gente ainda não sabe qual cargo pode fazer.', m:[
+  {h:'Ainda não sabe o cargo', x:`Sem problema, muita gente tá nessa!
+Fiz uma ferramenta aberta pra ajudar: você informa escolaridade, formação e CNH, e ela mostra os cargos do edital que você pode fazer, quanto paga, como é a prova e o que cai.
+
+👉 ${SITE}/descubra-seu-cargo
+
+Depois me conta qual cargo apareceu pra você 😉`},
+  {h:'Em dúvida entre dois cargos', x:`Dá pra estudar pros dois!
+No app você escolhe o cargo principal e, nas Configurações, marca "Estudar também para" as outras áreas. E Português, Matemática e Conhecimentos Gerais caem em todos os cargos, então nada do que você estudar se perde.`},
+  {h:'Pessoa disse o cargo', x:`Boa escolha! No app, a sua trilha de estudo fica focada nesse cargo: as questões específicas vêm das provas da FAU pra essa mesma profissão, junto com Português, Matemática e Conhecimentos Gerais.
+
+E o simulado sai no formato da sua prova, com o número de questões e os pesos do edital.`}
+ ]},
+ {id:'app', t:'Como o app funciona', sub:'Explique pelo que a pessoa faz no app, não pela lista de funções.', m:[
+  {h:'Explicação curta', x:`Funciona assim: você abre o app, faz uma lição curta de questões e, a cada resposta, já vê se acertou e a explicação do porquê.
+
+O que você errar volta depois na revisão, até você pegar o jeito. Dá pra estudar 15 minutinhos por dia, no celular, onde estiver.`},
+  {h:'Explicação completa (quando pedirem detalhes)', x:`O que você tem no Fuse Aprova:
+
+✅ Mais de 14 mil questões reais de provas da FAU, a mesma banca do concurso de Palmital
+✅ Trilha de estudo focada no seu cargo do edital
+✅ Explicação em toda questão e uma mini-aula do tema
+✅ Videoaulas curtas em temas de Português e Matemática
+✅ Revisão automática do que você errou
+✅ Simulado no formato da sua prova
+✅ Estuda até sem internet (baixa as lições antes)
+
+E o acesso vale até a homologação do concurso.`},
+  {h:'Por que treinar com questões da FAU', x:`Cada banca tem um jeito de perguntar. A FAU repete muito o estilo de uma prefeitura pra outra.
+
+Por isso o app usa questões reais que a FAU aplicou em outros concursos do Paraná: é o treino mais próximo do que você vai ver no dia da prova.`},
+  {h:'Pessoa acha que não tem tempo', x:`Te entendo, a maioria dos nossos alunos trabalha o dia inteiro.
+
+O app foi feito pra isso: de manhã, no café, uma lição. Na hora do almoço, a revisão dos erros. À noite, antes de dormir, mais umas questões.
+
+Faz essa conta comigo: 15 minutos por dia, em 30 dias, são 7 horas e meia de estudo. Sem precisar sentar 3 horas seguidas.`},
+  {h:'Antes de mandar prints do app', x:`Vou te mandar umas telas do app pra você ver como é por dentro 👇`, d:'Em seguida, mande prints ou gravação de tela reais: uma questão, a explicação depois da resposta e a trilha.'},
+  {h:'Pessoa tem dificuldade em Português ou Matemática', x:`Fica tranquilo(a), o app foi pensado pra isso.
+Toda questão tem explicação em linguagem simples e uma mini-aula do tema, com exemplo e macete. Em vários temas de Português e Matemática tem videoaula curta, de menos de 1 minuto.
+
+E o que você errar volta na revisão, então você vai fixando aos poucos.`}
+ ]},
+ {id:'preco', t:'Preço e pagamento', sub:'Fale o preço sem rodeio e junte sempre o que ele inclui.', m:[
+  {h:'Quanto custa', x:`É R$ 397, pagamento único. Não é mensalidade.
+
+O acesso vale até a homologação do concurso de Palmital (ou 24 meses, o que vier primeiro). E você tem 7 dias de garantia: se não gostar, eu devolvo 100% do valor.`},
+  {h:'Parcelamento no cartão', p:'só até 25/11', x:`Até 25/11 dá pra pagar no cartão em até 6x sem juros (6 parcelas de uns R$ 66). Depois disso volta a ser só no Pix.
+
+Quer que eu te mande o passo a passo?`},
+  {h:'Pediram parcelamento depois de 25/11', x:`No momento o pagamento é só no Pix, R$ 397 à vista, uma vez só. O acesso libera na hora que o Pix cai, e você tem 7 dias de garantia.`},
+  {h:'Passo a passo da compra', x:`É bem rápido:
+
+1️⃣ Entra em ${SITE}
+2️⃣ Cria sua conta com seus dados
+3️⃣ O Pix aparece na tela. Copia o código e paga no app do seu banco
+4️⃣ Caiu o pagamento, o acesso libera na hora
+
+Depois é só entrar com o mesmo e-mail e senha no navegador do celular ou no app da Play Store.
+
+Qualquer coisa no caminho, me chama aqui 😉`},
+  {h:'Pessoa achou caro', x:`Entendo, é um valor que pesa. Faz essa conta comigo:
+
+Daqui até a prova são uns 3 meses. R$ 397 dá uns R$ 4 por dia pra treinar com mais de 14 mil questões da banca, com explicação e simulado.
+
+E se em 7 dias você achar que não vale, eu devolvo tudo.`},
+  {h:'Opção mais barata (só se o app não couber agora)', x:`Se agora o app não cabe no bolso, tem uma opção pra começar: as apostilas em PDF, por R$ 47 no Pix.
+
+São 4 volumes com 10.587 questões da FAU comentadas. Não tem a trilha, a revisão nem o simulado do app, mas já dá pra treinar.
+
+👉 ${SITE}/apostilas`, d:'Use só no fim da conversa. Oferecer cedo puxa a venda do app para baixo.'}
+ ]},
+ {id:'duvidas', t:'Dúvidas e objeções', sub:'Responda a dúvida primeiro, depois devolva com uma pergunta.', m:[
+  {h:'"Garante que eu passo?"', x:`Vou ser sincero com você: ninguém pode garantir aprovação, e eu desconfiaria de quem garante.
+
+O que o Fuse Aprova faz é te fazer treinar do jeito certo: questões da banca, explicação de cada erro, revisão do que você esquece e simulado no formato da prova. O resto é constância, e o app te ajuda a manter isso todo dia.`},
+  {h:'"É confiável?" / medo de golpe', x:`Pergunta justa, tem que desconfiar mesmo!
+
+O pagamento é processado pelo Asaas, uma plataforma de pagamentos, e o Pix sai no nome dela. O app está na Play Store. E você tem 7 dias de garantia: se não gostar, devolvo 100%.
+
+E eu tô aqui no WhatsApp pra qualquer coisa, antes e depois da compra.`},
+  {h:'"Posso testar antes de pagar?"', x:`O acesso é liberado com o pagamento, mas você não corre risco: são 7 dias de garantia. Se não gostar, devolvo 100% do valor, sem burocracia.`},
+  {h:'Oferecer teste de 24 horas (você decide quem recebe)', x:`Faz assim: cria sua conta em ${SITE} e me manda o e-mail que você usou. Eu libero 24 horas pra você testar o app por dentro 😉`, d:'Depois, libere pelo superadmin em Usuários → "Liberar teste 24 h".'},
+  {h:'"Já tenho apostila" / "estudo pelo YouTube"', x:`Ótimo, continua! Uma coisa não substitui a outra.
+
+A apostila e o vídeo ensinam o conteúdo. O app é o treino: é resolvendo questão da banca que você descobre onde erra. E ele guarda seus erros e traz de volta na revisão, coisa que a apostila não faz.`},
+  {h:'"Vou esperar mais um pouco"', x:`Tranquilo! Só um toque: a prova está prevista pra 21/02/2027, menos de 3 meses daqui.
+
+Quem começa agora chega lá com o hábito pronto e já conhecendo o jeito da FAU. Se quiser, começa hoje e, se não gostar, tem 7 dias pra desistir.`},
+  {h:'"Ainda nem me inscrevi"', x:`Dá tempo! As inscrições são no site da FAU, de 25/11 (a partir das 12h) até 27/12. O boleto da taxa pode ser pago até 28/12.
+
+Quem tem CadÚnico ou é doador de medula pode pedir isenção da taxa em 26 e 27/11.
+
+Mas o estudo não precisa esperar a inscrição 😉`},
+  {h:'"Funciona no iPhone?"', x:`Funciona! No iPhone você usa pelo navegador (Safari), é só entrar em ${SITE} com seu e-mail e senha. No Android tem também o app na Play Store.`},
+  {h:'"Precisa de internet?"', x:`Pra entrar e baixar as lições, sim. Mas dá pra baixar as lições e estudar sem internet, tipo no ônibus. Quando a internet volta, o app sincroniza seu progresso sozinho.`},
+  {h:'"Serve pra outro concurso?"', x:`Hoje o Fuse Aprova é montado pro concurso da Prefeitura de Palmital-PR: a trilha e o simulado seguem o edital de lá.
+
+As questões são da FAU, então o treino ajuda em outros concursos dessa banca também, mas o foco é Palmital.`},
+  {h:'"É Palmital de São Paulo?"', x:`Não, é Palmital do Paraná, o concurso da Prefeitura com a banca FAU-Unicentro.`},
+  {h:'"Por quanto tempo tenho acesso?"', x:`Até a homologação do concurso de Palmital (ou 24 meses, o que vier primeiro). É pagamento único, sem mensalidade.`}
+ ]},
+ {id:'fechar', t:'Fechar a conversa', sub:'Convide para o próximo passo, sem pressionar.', m:[
+  {h:'Convite para começar', x:`Quer que eu te mande o passo a passo pra você já começar hoje? Leva uns 2 minutos.`},
+  {h:'Depois de mandar o passo a passo', x:`Pronto! Qualquer dúvida no meio do caminho, me chama aqui que eu te ajudo na hora 😊`},
+  {h:'Pessoa disse que vai pensar', x:`Claro, pensa com calma! Se surgir qualquer dúvida, me chama aqui. Vou deixar o link pra quando quiser: ${SITE}`}
+ ]},
+ {id:'retomar', t:'Retomar quem sumiu', sub:'No máximo duas retomadas: uma no dia seguinte e outra 3 ou 4 dias depois.', m:[
+  {h:'Primeira retomada (no dia seguinte)', x:`Oi! Passando só pra saber se ficou alguma dúvida sobre o Fuse Aprova. Se preferir, te explico num áudio rapidinho 😊`},
+  {h:'Segunda retomada (3 ou 4 dias depois)', x:`Oi, tudo bem? Lembrando que as inscrições do concurso de Palmital vão até 27/12 no site da FAU, e a prova está prevista pra 21/02.
+
+Se quiser começar a treinar, é só me chamar. Não vou ficar te enchendo, prometo 😄`}
+ ]},
+ {id:'aluno', t:'Depois da compra', sub:'O atendimento depois do pagamento é o que gera indicação.', m:[
+  {h:'Boas-vindas', x:`Pagamento confirmado! Seja muito bem-vindo(a) ao Fuse Aprova 🎉
+
+Uma dica pra começar bem: faz a primeira lição hoje, nem que seja uma. O app conta os dias seguidos de estudo, e é esse hábito que faz diferença lá na prova.
+
+Qualquer coisa, é só me chamar aqui.`},
+  {h:'Pagou e o acesso não liberou', x:`Normalmente libera em poucos segundos. Fecha o app (ou a página) e abre de novo.
+
+Se continuar bloqueado, me manda o e-mail da sua conta e o comprovante do Pix que eu resolvo agora.`},
+  {h:'Esqueceu a senha', x:`Na tela de entrar, toca em "Esqueci minha senha" e coloca seu e-mail. O link pra criar a senha nova chega na hora (olha também o spam) e vale por 1 hora.`},
+  {h:'Achou erro numa questão', x:`Valeu demais por avisar! Na própria questão tem o botão "Reportar problema": tocando lá, a gente recebe a questão certinha e corrige rápido.`},
+  {h:'Pediu reembolso', x:`Sem problema. Dentro dos 7 dias eu devolvo 100% do valor. Só me confirma o e-mail da conta.
+
+Se puder, me conta o que não funcionou pra você? Isso me ajuda muito a melhorar o app.`},
+  {h:'Pedir indicação', x:`Que bom que você tá gostando! 😊 Se tiver alguém aí que também vai fazer o concurso de Palmital, me indica? Estudar junto ajuda a manter o ritmo.`}
+ ]},
+ {id:'instagram', t:'Comentários no Instagram', sub:'No comentário público, resposta curta. A conversa continua no direct.', m:[
+  {h:'Comentaram "quero", "info" ou "valor"', x:`Te chamei no direct! 📩`},
+  {h:'Perguntaram o preço no comentário', x:`É R$ 397, pagamento único, com acesso até a homologação do concurso. Te mandei os detalhes no direct 😉`},
+  {h:'Elogio', x:`Obrigado! Bora pra cima, Palmital 💪`},
+  {h:'Crítica ou reclamação', x:`Obrigado pelo retorno. Me chama no direct? Quero entender melhor e resolver com você.`},
+  {h:'Dúvida sobre o concurso (não sobre o app)', x:`Boa pergunta! A resposta tá no edital, e a gente fez uma ferramenta que explica cargo por cargo: ${SITE}/descubra-seu-cargo`}
+ ]}
+];
+
+const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const lista = document.getElementById('lista');
+document.getElementById('chips').innerHTML = KIT.map(s => `<a href="#${s.id}">${esc(s.t)}</a>`).join('');
+let n = 0; const textos = [];
+lista.innerHTML = KIT.map(s => `<section id="${s.id}"><h2>${esc(s.t)}</h2><p class="sub">${esc(s.sub)}</p>` +
+ (s.regras ? `<div class="regras"><strong>Faça</strong><ul>${s.regras.map(r=>`<li>${esc(r)}</li>`).join('')}</ul><br><strong>Nunca diga</strong><ul class="nao">${s.nao.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>` : '') +
+ (s.m||[]).map(m => { textos[n] = m.x; return `<div class="msg" data-busca="${esc((s.t+' '+m.h+' '+m.x).toLowerCase())}"><h3>${esc(m.h)}${m.p?`<span class="prazo">${esc(m.p)}</span>`:''}</h3><div class="bolha">${esc(m.x)}</div><div class="acoes"><button class="copiar" data-i="${n++}" type="button">Copiar</button>${m.d?`<span class="dica">${esc(m.d)}</span>`:''}</div></div>`; }).join('') +
+ `</section>`).join('');
+
+async function copiar(texto){
+  try { await navigator.clipboard.writeText(texto); return true; } catch(e) {
+    const t = document.createElement('textarea'); t.value = texto; t.style.position='fixed'; t.style.opacity='0';
+    document.body.appendChild(t); t.select(); let ok = false; try { ok = document.execCommand('copy'); } catch(_) {} t.remove(); return ok;
+  }
+}
+lista.addEventListener('click', async e => {
+  const b = e.target.closest('.copiar'); if (!b) return;
+  const ok = await copiar(textos[b.dataset.i]);
+  b.textContent = ok ? 'Copiado ✓' : 'Selecione e copie'; b.classList.toggle('ok', ok);
+  setTimeout(() => { b.textContent = 'Copiar'; b.classList.remove('ok'); }, 1800);
+});
+document.getElementById('busca').addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase(); let vis = 0;
+  for (const m of lista.querySelectorAll('.msg')) { const on = !q || m.dataset.busca.includes(q); m.style.display = on ? '' : 'none'; vis += on; }
+  for (const s of lista.querySelectorAll('section')) s.style.display = !q || s.querySelector('.msg:not([style*="none"])') ? '' : 'none';
+  document.getElementById('vazio').style.display = vis ? 'none' : 'block';
+});
+}
+</script>
+</body>
+</html>
