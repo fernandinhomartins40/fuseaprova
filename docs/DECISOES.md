@@ -503,3 +503,14 @@ O cadastro continua sem teste (D35). O dono libera, aluno por aluno, um teste de
 - **Revisões:** `pnpm --filter @fuse/api cli foco:cargo --revisoes --confirmar` tira da fila as revisões ativas de questões de outras profissões da área do cargo (status `dominada`, nada apagado; as das áreas extras ficam), com a lista na auditoria (`foco.revisoes`). `--desfazer --confirmar` devolve. Sem opção, o comando só mostra o relatório por aluno, sem nome nem e-mail.
 - **Ensaio na cópia da produção (22/11/2026, 15h28):** 15 dos 16 alunos com acesso ganharam foco (médico: 64 → 19 temas, 560 questões de provas de médico). Nenhuma lição atual mudou. Lições, pacotes offline e simulados novos saíram sem nenhuma questão específica de outra profissão. As 37 revisões fora do foco (5 alunos) saíram da fila e voltaram no desfazer, com a tabela idêntica.
 - **Fora:** ordem dos temas por especialidade (o Pediatra vê os mesmos temas do Clínico Geral) e dividir em subtemas os temas grandes de uma profissão só (Fonoaudiologia, Agronomia, Tecnologia da informação, Jornalismo), para esses cargos também ganharem a trilha focada.
+
+## D47. Mini-aula própria em todas as questões publicadas e auditoria das videoaulas (23/11/2026, pedido do dono)
+
+- **Problema:** uma aluna relatou que o "Entenda o tema" e o vídeo de algumas questões não correspondiam a elas.
+- **Causa do texto:** 3.476 questões publicadas não tinham `questoes.aula`. A API (`aulaDaQuestao`) mostrava a dica genérica do assunto, que muitas vezes tratava de outro tema.
+- **Correção do texto:** foi escrita uma mini-aula própria para cada uma dessas 3.476 questões, no formato `{titulo, texto, exemplos, macete, atencao}`.
+  - Cada aula foi validada para não conter o texto da alternativa correta.
+  - Foram aplicadas apenas onde a aula estava vazia.
+  - O backup foi feito antes (`Backups/fuseaprova/2026-11-23/antes_aulas_novas_211846.dump`).
+  - Resultado: 0 das 14.049 publicadas sem aula.
+- **Videoaulas:** a auditoria achou 29 ligações questão → vídeo erradas, vindas do cruzamento de `videos-temas.csv` (migração 0018). A lista e o pedido de correção estão em `docs/conteudo/videoaulas-correcoes.md`.
