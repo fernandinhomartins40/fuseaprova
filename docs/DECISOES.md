@@ -514,3 +514,13 @@ O cadastro continua sem teste (D35). O dono libera, aluno por aluno, um teste de
   - O backup foi feito antes (`Backups/fuseaprova/2026-11-23/antes_aulas_novas_211846.dump`).
   - Resultado: 0 das 14.049 publicadas sem aula.
 - **Videoaulas:** a auditoria achou 29 ligações questão → vídeo erradas, vindas do cruzamento de `videos-temas.csv` (migração 0018). A lista e o pedido de correção estão em `docs/conteudo/videoaulas-correcoes.md`.
+
+**Revisão das mini-aulas de D47 (23/11/2026).** Uma segunda leitura, com checagem dos fatos na internet, corrigiu 23 aulas em produção:
+- **ISS de planos de saúde:** a aula passou a citar a decisão do STF de 2023 (ADI 5835/5862).
+- **Licença-paternidade:** a aula agora cita a Lei 15.371/2026, que amplia a licença até 20 dias em 2029.
+- **Violência vicária:** passou a constar a Lei 15.384/2026 no lugar de "desde 2025".
+- **Vocativo no Manual da Presidência:** "Excelentíssimo Senhor" continua valendo para os chefes de Poder.
+- **Merz:** saiu a menção a um pedido de desculpas, que não houve.
+- **Carne bovina:** a aula agora diz que o Brasil é o 1º exportador mundial.
+
+Em 75 questões do tipo EXCETO ou INCORRETA, o campo "Atenção" negava diretamente a alternativa que era o gabarito. Nessas questões ele passou a trazer uma orientação neutra. O backup das aulas anteriores está em `Backups/fuseaprova/2026-11-23/aulas_antes_correcoes*_revisao.json`.
