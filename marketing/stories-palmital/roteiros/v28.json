@@ -1,29 +1,16 @@
 {
-  "voz": "2CECaLAGTS5NRGxgbcxr",
-  "nomeVoz": "Davi Andrei",
+  "voz": "ORgG8rwdAiMYRug8RJwR",
+  "nomeVoz": "Ana Alice",
   "modelo": "eleven_v4",
-  "ajustes": {
-    "stability": 0.4,
-    "similarity_boost": 0.8,
-    "use_speaker_boost": true,
-    "speed": 1.08
-  },
-  "pronuncia": {
-    "Fuse": "Fúzi",
-    "Aprova": "Aprôva",
-    "FAU": "Fáu"
-  },
-  "semente": 305,
-  "titulo": "Na fila do banco",
-  "dia": "26/11",
+  "semente": 281,
+  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
+  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
   "falas": {
-    "mesa": [
-      "Existe um jeito de estudar pra concurso que cabe na fila do banco.",
-      "Não precisa de apostila na mão, nem de duas horas livres.",
-      "Errou? A explicação aparece na hora.",
-      "É o treino de cinco minutos do Fuse Aprova: cinco questões no estilo da FAU.",
-      "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão.",
-      "O link tá na bio."
-    ]
+    "gancho": ["Dá pra estudar pra concurso na fila do banco."],
+    "sem": ["Sem apostila pesada, e sem duas horas livres."],
+    "treino": ["São cinco minutos: cinco questões no estilo da FAU."],
+    "app": ["Acertou, ganha ponto. Errou, vem a explicação."],
+    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."],
+    "fecho": ["Link na bio."]
   }
 }

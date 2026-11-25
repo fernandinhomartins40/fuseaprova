@@ -1,29 +1,16 @@
 {
-  "voz": "2CECaLAGTS5NRGxgbcxr",
-  "nomeVoz": "Davi Andrei",
+  "voz": "ohZOfA9iwlZ5nOsoY7LB",
+  "nomeVoz": "Roberta",
   "modelo": "eleven_v4",
-  "ajustes": {
-    "stability": 0.4,
-    "similarity_boost": 0.8,
-    "use_speaker_boost": true,
-    "speed": 1.08
-  },
-  "pronuncia": {
-    "Fuse": "Fúzi",
-    "Aprova": "Aprôva",
-    "FAU": "Fáu"
-  },
-  "semente": 304,
-  "titulo": "A resposta escondida no edital",
-  "dia": "26/11",
+  "semente": 271,
+  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
+  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
   "falas": {
-    "mesa": [
-      "Tem uma resposta escondida no edital que muda o que você vai estudar.",
-      "Ela não tá na primeira página. Nem na segunda.",
-      "Ela fica nos anexos, cargo por cargo.",
-      "É o que o edital pede pro seu cargo. No Fuse Aprova, você pergunta, e a resposta vem com o item citado.",
-      "E a trilha foca nisso. Cento e noventa e sete reais, em até seis vezes, até cinco de dezembro.",
-      "O link tá na bio."
-    ]
+    "gancho": ["O edital de Palmital tem regras escondidas pro seu cargo."],
+    "gaveta": ["Requisitos, matérias, número de questões: cada cargo tem os seus."],
+    "horas": ["Achar isso sozinho leva horas."],
+    "app": ["No Fuse Aprova, você pergunta, e a resposta vem com o item do edital."],
+    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."],
+    "fecho": ["Link na bio."]
   }
 }

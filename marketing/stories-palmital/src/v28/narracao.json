@@ -1,34 +1,44 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v28/voz-mesa-1.wav",
-      "segundos": 3.655,
-      "texto": "Existe um jeito de estudar pra concurso que cabe na fila do banco."
-    },
+      "arquivo": "audio/v28/voz-gancho-1.wav",
+      "segundos": 2.804,
+      "texto": "Dá pra estudar pra concurso na fila do banco."
+    }
+  ],
+  "sem": [
     {
-      "arquivo": "audio/v28/voz-mesa-2.wav",
-      "segundos": 3.392,
-      "texto": "Não precisa de apostila na mão, nem de duas horas livres."
-    },
+      "arquivo": "audio/v28/voz-sem-1.wav",
+      "segundos": 3.823,
+      "texto": "Sem apostila pesada, e sem duas horas livres."
+    }
+  ],
+  "treino": [
     {
-      "arquivo": "audio/v28/voz-mesa-3.wav",
-      "segundos": 2.619,
-      "texto": "Errou? A explicação aparece na hora."
-    },
+      "arquivo": "audio/v28/voz-treino-1.wav",
+      "segundos": 3.874,
+      "texto": "São cinco minutos: cinco questões no estilo da FAU."
+    }
+  ],
+  "app": [
     {
-      "arquivo": "audio/v28/voz-mesa-4.wav",
-      "segundos": 4.549,
-      "texto": "É o treino de cinco minutos do Fuse Aprova: cinco questões no estilo da FAU."
-    },
+      "arquivo": "audio/v28/voz-app-1.wav",
+      "segundos": 4.011,
+      "texto": "Acertou, ganha ponto. Errou, vem a explicação."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v28/voz-mesa-5.wav",
-      "segundos": 5.661,
-      "texto": "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão."
-    },
+      "arquivo": "audio/v28/voz-oferta-1.wav",
+      "segundos": 5.322,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v28/voz-mesa-6.wav",
-      "segundos": 1.053,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v28/voz-fecho-1.wav",
+      "segundos": 0.95,
+      "texto": "Link na bio."
     }
   ]
 }

@@ -1,34 +1,44 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v27/voz-mesa-1.wav",
-      "segundos": 3.897,
-      "texto": "Tem uma resposta escondida no edital que muda o que você vai estudar."
-    },
+      "arquivo": "audio/v27/voz-gancho-1.wav",
+      "segundos": 3.736,
+      "texto": "O edital de Palmital tem regras escondidas pro seu cargo."
+    }
+  ],
+  "gaveta": [
     {
-      "arquivo": "audio/v27/voz-mesa-2.wav",
-      "segundos": 2.972,
-      "texto": "Ela não tá na primeira página. Nem na segunda."
-    },
+      "arquivo": "audio/v27/voz-gaveta-1.wav",
+      "segundos": 5.241,
+      "texto": "Requisitos, matérias, número de questões: cada cargo tem os seus."
+    }
+  ],
+  "horas": [
     {
-      "arquivo": "audio/v27/voz-mesa-3.wav",
-      "segundos": 2.583,
-      "texto": "Ela fica nos anexos, cargo por cargo."
-    },
+      "arquivo": "audio/v27/voz-horas-1.wav",
+      "segundos": 2.54,
+      "texto": "Achar isso sozinho leva horas."
+    }
+  ],
+  "app": [
     {
-      "arquivo": "audio/v27/voz-mesa-4.wav",
-      "segundos": 6.159,
-      "texto": "É o que o edital pede pro seu cargo. No Fuse Aprova, você pergunta, e a resposta vem com o item citado."
-    },
+      "arquivo": "audio/v27/voz-app-1.wav",
+      "segundos": 4.812,
+      "texto": "No Fuse Aprova, você pergunta, e a resposta vem com o item do edital."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v27/voz-mesa-5.wav",
-      "segundos": 5.86,
-      "texto": "E a trilha foca nisso. Cento e noventa e sete reais, em até seis vezes, até cinco de dezembro."
-    },
+      "arquivo": "audio/v27/voz-oferta-1.wav",
+      "segundos": 5.226,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v27/voz-mesa-6.wav",
-      "segundos": 1.065,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v27/voz-fecho-1.wav",
+      "segundos": 0.899,
+      "texto": "Link na bio."
     }
   ]
 }
