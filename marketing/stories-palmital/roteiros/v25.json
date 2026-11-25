@@ -1,29 +1,17 @@
 {
-  "voz": "2CECaLAGTS5NRGxgbcxr",
-  "nomeVoz": "Davi Andrei",
+  "voz": "7lu3ze7orhWaNeSPowWx",
+  "nomeVoz": "Lucas",
   "modelo": "eleven_v4",
-  "ajustes": {
-    "stability": 0.4,
-    "similarity_boost": 0.8,
-    "use_speaker_boost": true,
-    "speed": 1.08
-  },
-  "pronuncia": {
-    "Fuse": "Fúzi",
-    "Aprova": "Aprôva",
-    "FAU": "Fáu"
-  },
-  "semente": 302,
-  "titulo": "A pergunta que ninguém faz",
-  "dia": "25/11",
+  "semente": 251,
+  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
+  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
   "falas": {
-    "mesa": [
-      "Antes de estudar pro concurso de Palmital, tem uma pergunta que quase ninguém faz.",
-      "E ela pode jogar meses de estudo no lixo.",
-      "Tem cargo que exige CNH. Tem cargo que exige experiência.",
-      "A pergunta é: eu atendo aos requisitos do meu cargo? No Fuse Aprova, você descobre pelo edital.",
-      "E estuda pela trilha do seu cargo. Cento e noventa e sete reais, em até seis vezes, até cinco de dezembro.",
-      "O link tá na bio."
-    ]
+    "gancho": ["Antes de estudar pra Palmital, responda uma pergunta."],
+    "pergunta": ["Você atende aos requisitos do seu cargo?"],
+    "exemplos": ["Tem cargo que exige CNH. Tem cargo que exige experiência."],
+    "risco": ["Quem não confere pode estudar meses à toa."],
+    "app": ["No Fuse Aprova, você escolhe o cargo e vê o que o edital pede."],
+    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."],
+    "fecho": ["Link na bio."]
   }
 }

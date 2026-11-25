@@ -1,34 +1,44 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v26/voz-mesa-1.wav",
-      "segundos": 3.961,
-      "texto": "Quanto você acha que custa se preparar pro concurso da Prefeitura de Palmital?"
-    },
+      "arquivo": "audio/v26/voz-gancho-1.wav",
+      "segundos": 2.835,
+      "texto": "Quanto custa se preparar pro concurso de Palmital?"
+    }
+  ],
+  "inclui": [
     {
-      "arquivo": "audio/v26/voz-mesa-2.wav",
-      "segundos": 3.986,
-      "texto": "Com a trilha do seu cargo e mais de dez mil questões no estilo da FAU."
-    },
+      "arquivo": "audio/v26/voz-inclui-1.wav",
+      "segundos": 4.819,
+      "texto": "Trilha do seu cargo, mais de dez mil questões, revisão e simulados."
+    }
+  ],
+  "ate": [
     {
-      "arquivo": "audio/v26/voz-mesa-3.wav",
-      "segundos": 4.505,
-      "texto": "Com revisão dos erros e simulado no formato oficial, até o dia da prova."
-    },
+      "arquivo": "audio/v26/voz-ate-1.wav",
+      "segundos": 3.1,
+      "texto": "Tudo isso até o dia da prova, em fevereiro."
+    }
+  ],
+  "revela": [
     {
-      "arquivo": "audio/v26/voz-mesa-4.wav",
-      "segundos": 4.248,
-      "texto": "Trinta e dois reais e oitenta e três por mês, em até seis vezes sem juros."
-    },
+      "arquivo": "audio/v26/voz-revela-1.wav",
+      "segundos": 2.82,
+      "texto": "Por trinta e dois e oitenta e três por mês."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v26/voz-mesa-5.wav",
-      "segundos": 3.691,
-      "texto": "São cento e noventa e sete reais, só até cinco de dezembro."
-    },
+      "arquivo": "audio/v26/voz-oferta-1.wav",
+      "segundos": 5.95,
+      "texto": "São cento e noventa e sete reais em até seis vezes sem juros, só até cinco de dezembro."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v26/voz-mesa-6.wav",
-      "segundos": 1.035,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v26/voz-fecho-1.wav",
+      "segundos": 0.95,
+      "texto": "Link na bio."
     }
   ]
 }

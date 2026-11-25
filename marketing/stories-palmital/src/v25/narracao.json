@@ -1,34 +1,51 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v25/voz-mesa-1.wav",
-      "segundos": 4.72,
-      "texto": "Antes de estudar pro concurso de Palmital, tem uma pergunta que quase ninguém faz."
-    },
+      "arquivo": "audio/v25/voz-gancho-1.wav",
+      "segundos": 2.981,
+      "texto": "Antes de estudar pra Palmital, responda uma pergunta."
+    }
+  ],
+  "pergunta": [
     {
-      "arquivo": "audio/v25/voz-mesa-2.wav",
-      "segundos": 2.787,
-      "texto": "E ela pode jogar meses de estudo no lixo."
-    },
+      "arquivo": "audio/v25/voz-pergunta-1.wav",
+      "segundos": 2.264,
+      "texto": "Você atende aos requisitos do seu cargo?"
+    }
+  ],
+  "exemplos": [
     {
-      "arquivo": "audio/v25/voz-mesa-3.wav",
-      "segundos": 4.469,
+      "arquivo": "audio/v25/voz-exemplos-1.wav",
+      "segundos": 4.437,
       "texto": "Tem cargo que exige CNH. Tem cargo que exige experiência."
-    },
+    }
+  ],
+  "risco": [
     {
-      "arquivo": "audio/v25/voz-mesa-4.wav",
-      "segundos": 5.842,
-      "texto": "A pergunta é: eu atendo aos requisitos do meu cargo? No Fuse Aprova, você descobre pelo edital."
-    },
+      "arquivo": "audio/v25/voz-risco-1.wav",
+      "segundos": 2.625,
+      "texto": "Quem não confere pode estudar meses à toa."
+    }
+  ],
+  "app": [
     {
-      "arquivo": "audio/v25/voz-mesa-5.wav",
-      "segundos": 6.291,
-      "texto": "E estuda pela trilha do seu cargo. Cento e noventa e sete reais, em até seis vezes, até cinco de dezembro."
-    },
+      "arquivo": "audio/v25/voz-app-1.wav",
+      "segundos": 3.845,
+      "texto": "No Fuse Aprova, você escolhe o cargo e vê o que o edital pede."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v25/voz-mesa-6.wav",
-      "segundos": 1.04,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v25/voz-oferta-1.wav",
+      "segundos": 4.716,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/v25/voz-fecho-1.wav",
+      "segundos": 0.906,
+      "texto": "Link na bio."
     }
   ]
 }
