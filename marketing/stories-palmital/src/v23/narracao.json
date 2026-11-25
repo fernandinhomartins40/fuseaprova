@@ -1,34 +1,49 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v23/voz-mesa-1.wav",
-      "segundos": 3.429,
-      "texto": "Tenho uma notícia pra quem ia deixar o Fuse Aprova pra depois."
+      "arquivo": "audio/v23/voz-gancho-1.wav",
+      "segundos": 3.089,
+      "texto": "Perdeu o prazo do Fuse Aprova? Tenho uma notícia boa."
+    }
+  ],
+  "ultimo": [
+    {
+      "arquivo": "audio/v23/voz-ultimo-1.wav",
+      "segundos": 3.268,
+      "texto": "O preço de cento e noventa e sete reais acabava hoje."
+    }
+  ],
+  "app": [
+    {
+      "arquivo": "audio/v23/voz-app-1.wav",
+      "segundos": 6.902,
+      "texto": "Preparatório completo pro concurso de Palmital: trilha do seu cargo, questões no estilo da FAU e simulado oficial."
+    }
+  ],
+  "revela": [
+    {
+      "arquivo": "audio/v23/voz-revela-1.wav",
+      "segundos": 2.152,
+      "texto": "Prorrogamos até cinco de dezembro!"
+    }
+  ],
+  "oferta": [
+    {
+      "arquivo": "audio/v23/voz-oferta-1.wav",
+      "segundos": 3.519,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros."
     },
     {
-      "arquivo": "audio/v23/voz-mesa-2.wav",
-      "segundos": 2.804,
-      "texto": "Ontem era pra ser o último dia de uma coisa."
-    },
+      "arquivo": "audio/v23/voz-oferta-2.wav",
+      "segundos": 3.192,
+      "texto": "No dia seis, sobe pra duzentos e noventa e sete."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v23/voz-mesa-3.wav",
-      "segundos": 3.438,
-      "texto": "Uma coisa no preparatório pro concurso da Prefeitura de Palmital."
-    },
-    {
-      "arquivo": "audio/v23/voz-mesa-4.wav",
-      "segundos": 4.463,
-      "texto": "Com trilha do seu cargo, questões no estilo da FAU e simulado oficial."
-    },
-    {
-      "arquivo": "audio/v23/voz-mesa-5.wav",
-      "segundos": 6.704,
-      "texto": "A notícia: prorrogamos! Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
-    },
-    {
-      "arquivo": "audio/v23/voz-mesa-6.wav",
-      "segundos": 4.23,
-      "texto": "No dia seis, sobe pra duzentos e noventa e sete. O link tá na bio."
+      "arquivo": "audio/v23/voz-fecho-1.wav",
+      "segundos": 0.885,
+      "texto": "Link na bio."
     }
   ]
 }

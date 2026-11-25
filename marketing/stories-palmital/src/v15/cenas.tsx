@@ -10,7 +10,7 @@ import { Calendario25, FechoVivo, FundoVivo, vivas } from '../vivo';
 // (R$ 32,83, no cartão até 25/11), sobe para R$ 297 na próxima semana (sem preço riscado), inscrições em 25/11. Voz Raquel.
 
 /** Número que quica ao entrar. */
-const Quica: React.FC<{ em: number; children: React.ReactNode; style?: React.CSSProperties }> = ({ em, children, style }) => {
+export const Quica: React.FC<{ em: number; children: React.ReactNode; style?: React.CSSProperties }> = ({ em, children, style }) => {
   const p = useMola(em, { damping: 9, stiffness: 190, mass: 0.8 });
   return <div style={{ transform: `scale(${interpolate(p, [0, 1], [0.2, 1])})`, opacity: Math.min(1, p * 3), ...style }}>{children}</div>;
 };
@@ -18,7 +18,7 @@ const Quica: React.FC<{ em: number; children: React.ReactNode; style?: React.CSS
 const TECLAS = ['7', '8', '9', '÷', '4', '5', '6', '×', '1', '2', '3', '−', '0', ',', '=', '+'];
 
 /** Calculadora colorida que entra girando. */
-const Calculadora: React.FC<{ em: number }> = ({ em }) => {
+export const Calculadora: React.FC<{ em: number }> = ({ em }) => {
   const frame = useCurrentFrame();
   const p = useMola(em, { damping: 13, stiffness: 110 });
   return (

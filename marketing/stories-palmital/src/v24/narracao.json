@@ -1,34 +1,51 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v24/voz-mesa-1.wav",
-      "segundos": 4.688,
-      "texto": "Tem uma palavrinha de uma letra só que derruba muita gente em prova de concurso."
-    },
+      "arquivo": "audio/v24/voz-gancho-1.wav",
+      "segundos": 3.639,
+      "texto": "Uma letra só derruba muita gente na prova de Palmital."
+    }
+  ],
+  "prova": [
     {
-      "arquivo": "audio/v24/voz-mesa-2.wav",
-      "segundos": 4.262,
-      "texto": "Ela cai em Português, que é matéria de todos os cargos. Olha essa questão."
-    },
+      "arquivo": "audio/v24/voz-prova-1.wav",
+      "segundos": 1.84,
+      "texto": "Qual dessas duas está certa?"
+    }
+  ],
+  "corrige": [
     {
-      "arquivo": "audio/v24/voz-mesa-3.wav",
-      "segundos": 2.628,
-      "texto": "Quem marcou a letra A caiu na pegadinha."
-    },
+      "arquivo": "audio/v24/voz-corrige-1.wav",
+      "segundos": 2.017,
+      "texto": "Quem marcou a primeira, errou."
+    }
+  ],
+  "regra": [
     {
-      "arquivo": "audio/v24/voz-mesa-4.wav",
-      "segundos": 7.427,
-      "texto": "A palavrinha é a crase. Cidade sem artigo não leva crase: vai a Curitiba, volta de Curitiba."
-    },
+      "arquivo": "audio/v24/voz-regra-1.wav",
+      "segundos": 5.827,
+      "texto": "Cidade sem artigo não leva crase: quem volta de Curitiba, vai a Curitiba."
+    }
+  ],
+  "app": [
     {
-      "arquivo": "audio/v24/voz-mesa-5.wav",
-      "segundos": 7.102,
-      "texto": "No Fuse Aprova, cada erro vem com explicação. Cento e noventa e sete reais, em até seis vezes, até cinco de dezembro."
-    },
+      "arquivo": "audio/v24/voz-app-1.wav",
+      "segundos": 3.827,
+      "texto": "No Fuse Aprova, cada erro vem com a explicação na hora."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v24/voz-mesa-6.wav",
-      "segundos": 1.181,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v24/voz-oferta-1.wav",
+      "segundos": 5.12,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    }
+  ],
+  "fecho": [
+    {
+      "arquivo": "audio/v24/voz-fecho-1.wav",
+      "segundos": 1.034,
+      "texto": "Link na bio."
     }
   ]
 }

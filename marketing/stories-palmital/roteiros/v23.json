@@ -2,28 +2,37 @@
   "voz": "2CECaLAGTS5NRGxgbcxr",
   "nomeVoz": "Davi Andrei",
   "modelo": "eleven_v4",
+  "semente": 231,
   "ajustes": {
     "stability": 0.4,
     "similarity_boost": 0.8,
     "use_speaker_boost": true,
-    "speed": 1.08
+    "speed": 1.12
   },
   "pronuncia": {
     "Fuse": "Fúzi",
     "Aprova": "Aprôva",
     "FAU": "Fáu"
   },
-  "semente": 300,
-  "titulo": "A notícia",
-  "dia": "25/11",
   "falas": {
-    "mesa": [
-      "Tenho uma notícia pra quem ia deixar o Fuse Aprova pra depois.",
-      "Ontem era pra ser o último dia de uma coisa.",
-      "Uma coisa no preparatório pro concurso da Prefeitura de Palmital.",
-      "Com trilha do seu cargo, questões no estilo da FAU e simulado oficial.",
-      "A notícia: prorrogamos! Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro.",
-      "No dia seis, sobe pra duzentos e noventa e sete. O link tá na bio."
+    "gancho": [
+      "Perdeu o prazo do Fuse Aprova? Tenho uma notícia boa."
+    ],
+    "ultimo": [
+      "O preço de cento e noventa e sete reais acabava hoje."
+    ],
+    "app": [
+      "Preparatório completo pro concurso de Palmital: trilha do seu cargo, questões no estilo da FAU e simulado oficial."
+    ],
+    "revela": [
+      "Prorrogamos até cinco de dezembro!"
+    ],
+    "oferta": [
+      "Cento e noventa e sete reais, em até seis vezes sem juros.",
+      "No dia seis, sobe pra duzentos e noventa e sete."
+    ],
+    "fecho": [
+      "Link na bio."
     ]
   }
 }

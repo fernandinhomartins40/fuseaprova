@@ -193,6 +193,9 @@ ESTILOS = {
     # v22: lançamento de app, cinematográfico e confiante — Lá menor (i–VI–III–VII), 96 BPM, bateria no 4º compasso
     'v22': dict(bpm=96, acordes=[[57, 60, 64, 69], [53, 57, 60, 65], [48, 52, 55, 60], [55, 59, 62, 67]],
                 baixos=[33, 29, 36, 31], bumbo=0.56, baixo=0.32, brilho=1.0, chimbal=0.6, semente=221, entra=4),
+    # v23: "A notícia", plantão urgente que vira festa, Lá menor → Dó (vi–IV–I–V), 126 BPM, house
+    'v23': dict(bpm=126, acordes=[[57, 60, 64, 69], [53, 57, 60, 65], [60, 64, 67, 72], [55, 59, 62, 67]],
+                baixos=[33, 29, 36, 31], bumbo=0.6, baixo=0.33, brilho=1.15, chimbal=0.85, semente=231),
     # aulas: mais calmas que as de venda, para a explicação ficar na frente
     # aula1: estudo leve, Fá maior (I–vi–IV–V), 100 BPM
     'aula1': dict(bpm=100, acordes=[[65, 69, 72, 77], [62, 65, 69, 74], [58, 62, 65, 70], [60, 64, 67, 72]],
@@ -201,6 +204,22 @@ ESTILOS = {
     'aula2': dict(bpm=104, acordes=[[60, 64, 67, 72], [59, 62, 67, 71], [57, 60, 64, 69], [57, 60, 65, 69]],
                   baixos=[36, 31, 33, 29], bumbo=0.44, baixo=0.28, brilho=0.8, chimbal=0.6, semente=67),
 }
+# v24–v46: campanha até 05/12, uma batida por vídeo (groove, andamento, tom e modo giram)
+_MAIOR = [[0, 4, 7, 12], [7, 11, 14, 19], [9, 12, 16, 21], [5, 9, 12, 17]]  # I–V–vi–IV
+_MENOR = [[0, 3, 7, 12], [-4, 0, 3, 8], [3, 7, 10, 15], [-2, 2, 5, 10]]  # i–VI–III–VII
+_CAMPANHA = [  # (bpm, groove, tom, menor, brilho)
+    (120, 'disco', 2, False, 1.1), (130, 'funk', 0, True, 0.9), (112, 'house', 7, False, 1.2), (140, 'trap', 5, True, 0.85),
+    (124, 'house', 9, False, 1.0), (118, 'disco', 4, True, 1.0), (104, 'house', 0, True, 0.75), (132, 'funk', 7, False, 1.2),
+    (116, 'disco', 10, False, 1.1), (126, 'house', 3, False, 1.15), (110, 'house', 5, False, 0.9), (140, 'trap', 2, True, 0.8),
+    (122, 'disco', 0, False, 1.2), (128, 'funk', 9, True, 0.95), (114, 'house', 4, False, 1.0), (136, 'funk', 11, False, 1.1),
+    (120, 'house', 7, True, 0.85), (118, 'disco', 2, False, 1.25), (106, 'house', 9, False, 0.9), (140, 'trap', 0, True, 0.85),
+    (124, 'disco', 5, False, 1.15), (132, 'funk', 3, True, 0.9), (100, 'house', 2, True, 0.8),
+]
+for _n, (_bpm, _g, _tom, _menor, _brilho) in enumerate(_CAMPANHA, start=24):
+    _ac = _MENOR if _menor else _MAIOR
+    ESTILOS[f'v{_n}'] = dict(bpm=_bpm, acordes=[[60 + _tom + x for x in a] for a in _ac],
+                             baixos=[36 + _tom + a[0] - (12 if _tom + a[0] > 6 else 0) for a in _ac],
+                             bumbo=0.58, baixo=0.32, brilho=_brilho, chimbal=0.8, semente=200 + _n * 7, groove=_g)
 # Videoaulas por dados: uma trilha por matéria, gerada uma vez só.
 ESTILOS['portugues'] = ESTILOS['aula1']
 ESTILOS['matematica'] = ESTILOS['aula2']

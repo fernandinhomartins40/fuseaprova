@@ -12,7 +12,7 @@ import { FechoVivo, FundoVivo } from '../vivo';
 // do R$ 197 e do 6x no cartão; "não deixa pra última hora": garante hoje, se inscreve amanhã. Voz Keren, batida trap.
 
 /** Despertador: o relógio com dois sinos e pezinhos, que treme enquanto toca. */
-const Despertador: React.FC<{ ini: number; fim: number }> = ({ ini, fim }) => {
+export const Despertador: React.FC<{ ini: number; fim: number }> = ({ ini, fim }) => {
   const frame = useCurrentFrame();
   const toca = frame >= ini - 10 && frame < fim;
   const giro = toca ? Math.sin(frame * 2.4) * 6 : 0;
