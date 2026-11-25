@@ -18,13 +18,13 @@ def ler_roteiro(video: str) -> dict:
     return json.loads(arquivo.read_text(encoding='utf-8')) if arquivo.exists() else {}
 
 
-for video in sys.argv[1:] or ['v1', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8', 'v9', 'v10', 'v11', 'v12', 'v13', 'v14', 'v15', 'v16', 'v17', 'v18', 'v19', 'v20', 'v21']:
+for video in sys.argv[1:] or ['v1', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8', 'v9', 'v10', 'v11', 'v12', 'v13', 'v14', 'v15', 'v16', 'v17', 'v18', 'v19', 'v20', 'v21', 'v22']:
     roteiro = ler_roteiro(video)
     aula = video.startswith('videoaula') or 'cenas' in roteiro
     pasta = VIDEOAULAS / '_trabalho' if aula else RAIZ / 'out'
     pasta.mkdir(parents=True, exist_ok=True)
     bruto = pasta / f'{video}.mp4'
-    subprocess.run(['npx', 'remotion', 'render', 'src/index.ts', video, str(bruto), '--codec=h264', '--crf=18', '--log=error'],
+    subprocess.run(['npx', 'remotion', 'render', 'src/index.ts', video, str(bruto), '--codec=h264', '--crf=18', '--log=error', '--gl=angle'],  # angle: WebGL das cenas 3D (V22)
                    check=True, cwd=RAIZ, shell=True)
     subprocess.run([sys.executable, 'scripts/master.py', str(bruto)], check=True, cwd=RAIZ)
     if aula:

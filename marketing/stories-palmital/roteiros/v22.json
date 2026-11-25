@@ -1,0 +1,26 @@
+{
+  "voz": "GOkMqfyKMLVUcYfO2WbB",
+  "nomeVoz": "Jenifer",
+  "semente": 221,
+  "ajustes": {
+    "stability": 0.5,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.0
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "falas": {
+    "celular": [
+      "O concurso da Prefeitura de Palmital tem quarenta e nove cargos. Qual é o seu?",
+      "O Fuse Aprova descobre com você, pelo edital, e monta a trilha do seu cargo.",
+      "Você treina com mais de dez mil questões no estilo da FAU, a banca da prova.",
+      "Errou? A explicação vem na hora, e a questão volta pra você revisar.",
+      "Perto da prova, simulado no formato oficial: quarenta questões, quatro horas.",
+      "Fuse Aprova. O preparatório pro concurso da Prefeitura de Palmital."
+    ]
+  }
+}

@@ -190,6 +190,9 @@ ESTILOS = {
     # v21: "O pavio", trailer alegre e crescente, Ré maior (I–V–vi–IV), 104 BPM; só pluck e sinos até a metade
     'v21': dict(bpm=104, acordes=[[62, 66, 69, 74], [57, 61, 64, 69], [59, 62, 66, 71], [55, 59, 62, 67]],
                 baixos=[38, 33, 35, 31], bumbo=0.5, baixo=0.3, brilho=0.9, chimbal=0.65, semente=211, entra=6),
+    # v22: lançamento de app, cinematográfico e confiante — Lá menor (i–VI–III–VII), 96 BPM, bateria no 4º compasso
+    'v22': dict(bpm=96, acordes=[[57, 60, 64, 69], [53, 57, 60, 65], [48, 52, 55, 60], [55, 59, 62, 67]],
+                baixos=[33, 29, 36, 31], bumbo=0.56, baixo=0.32, brilho=1.0, chimbal=0.6, semente=221, entra=4),
     # aulas: mais calmas que as de venda, para a explicação ficar na frente
     # aula1: estudo leve, Fá maior (I–vi–IV–V), 100 BPM
     'aula1': dict(bpm=100, acordes=[[65, 69, 72, 77], [62, 65, 69, 74], [58, 62, 65, 70], [60, 64, 67, 72]],

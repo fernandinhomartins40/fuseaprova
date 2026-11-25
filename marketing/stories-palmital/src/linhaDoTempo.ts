@@ -15,7 +15,7 @@ export type Linha = { cenas: Cena[]; duracao: number; volumeTrilha: (quadro: num
  * Monta a linha do tempo a partir da narração: cada fala é um clipe, a cena dura o que suas falas duram
  * e termina no quadro final com a logo. `minimo` dá tempo mínimo por fala numa cena (ex.: vitrine de telas).
  */
-export const montarLinha = (narracao: Narracao, ordem: string[], minimo: Record<string, number> = {}, comMarca = true): Linha => {
+export const montarLinha = (narracao: Narracao, ordem: string[], minimo: Record<string, number> = {}, comMarca = true, sobra: Record<string, number> = {}): Linha => {
   const cenas: Cena[] = [];
   let inicio = 0;
   for (const nome of ordem) {
@@ -26,7 +26,8 @@ export const montarLinha = (narracao: Narracao, ordem: string[], minimo: Record<
       f += Math.max(quadros + INTERVALO, minimo[nome] ?? 0);
       return fala;
     });
-    const duracao = falas[falas.length - 1].fim + SAIDA;
+    // `sobra`: quadros a mais depois da última fala (ex.: a marca parada no fim de uma cena contínua)
+    const duracao = falas[falas.length - 1].fim + SAIDA + (sobra[nome] ?? 0);
     cenas.push({ nome, inicio, duracao, falas });
     inicio += duracao - T;
   }
