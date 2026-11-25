@@ -1,34 +1,44 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v33/voz-mesa-1.wav",
-      "segundos": 3.368,
-      "texto": "Tem um jeito de testar o Fuse Aprova sem arriscar o seu dinheiro."
-    },
+      "arquivo": "audio/v33/voz-gancho-1.wav",
+      "segundos": 3.335,
+      "texto": "Dá pra testar o Fuse Aprova sem arriscar o seu dinheiro."
+    }
+  ],
+  "sete": [
     {
-      "arquivo": "audio/v33/voz-mesa-2.wav",
-      "segundos": 1.91,
-      "texto": "Você entra e faz os treinos..."
-    },
+      "arquivo": "audio/v33/voz-sete-1.wav",
+      "segundos": 2.145,
+      "texto": "Você tem sete dias de garantia."
+    }
+  ],
+  "devolve": [
     {
-      "arquivo": "audio/v33/voz-mesa-3.wav",
-      "segundos": 2.282,
-      "texto": "...faz um simulado, e vê se é pra você."
-    },
+      "arquivo": "audio/v33/voz-devolve-1.wav",
+      "segundos": 3.136,
+      "texto": "Não gostou? Devolvemos cem por cento do valor."
+    }
+  ],
+  "app": [
     {
-      "arquivo": "audio/v33/voz-mesa-4.wav",
-      "segundos": 4.735,
-      "texto": "São sete dias de garantia. Não gostou? Devolvemos cem por cento do valor."
-    },
+      "arquivo": "audio/v33/voz-app-1.wav",
+      "segundos": 4.099,
+      "texto": "Nesses dias, faça os treinos, um simulado, e decida."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v33/voz-mesa-5.wav",
-      "segundos": 5.516,
-      "texto": "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão."
-    },
+      "arquivo": "audio/v33/voz-oferta-1.wav",
+      "segundos": 5.164,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v33/voz-mesa-6.wav",
-      "segundos": 0.99,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v33/voz-fecho-1.wav",
+      "segundos": 0.932,
+      "texto": "Link na bio."
     }
   ]
 }

@@ -1,34 +1,44 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v34/voz-mesa-1.wav",
-      "segundos": 3.592,
-      "texto": "Tem um hábito de domingo que muda a semana inteira de estudo."
-    },
+      "arquivo": "audio/v34/voz-gancho-1.wav",
+      "segundos": 3.445,
+      "texto": "Domingo é o dia de montar a sua semana de estudo."
+    }
+  ],
+  "treinos": [
     {
-      "arquivo": "audio/v34/voz-mesa-2.wav",
-      "segundos": 2.789,
-      "texto": "Segunda a sexta, um treino curto por dia."
-    },
+      "arquivo": "audio/v34/voz-treinos-1.wav",
+      "segundos": 3.822,
+      "texto": "Segunda a sexta: um treino de cinco minutos por dia."
+    }
+  ],
+  "revisao": [
     {
-      "arquivo": "audio/v34/voz-mesa-3.wav",
-      "segundos": 3.774,
-      "texto": "Todo dia, a revisão do que errou. E no sábado, um simulado."
-    },
+      "arquivo": "audio/v34/voz-revisao-1.wav",
+      "segundos": 4.314,
+      "texto": "Todo dia, a revisão do que errou. No sábado, um simulado."
+    }
+  ],
+  "app": [
     {
-      "arquivo": "audio/v34/voz-mesa-4.wav",
-      "segundos": 4.873,
-      "texto": "O hábito é planejar a semana. E o Fuse Aprova já entrega esse plano pronto."
-    },
+      "arquivo": "audio/v34/voz-app-1.wav",
+      "segundos": 2.913,
+      "texto": "O Fuse Aprova já entrega esse plano pronto."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v34/voz-mesa-5.wav",
-      "segundos": 5.529,
-      "texto": "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão."
-    },
+      "arquivo": "audio/v34/voz-oferta-1.wav",
+      "segundos": 5.471,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v34/voz-mesa-6.wav",
-      "segundos": 1.04,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v34/voz-fecho-1.wav",
+      "segundos": 0.956,
+      "texto": "Link na bio."
     }
   ]
 }

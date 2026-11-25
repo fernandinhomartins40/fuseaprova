@@ -1,29 +1,16 @@
 {
-  "voz": "2CECaLAGTS5NRGxgbcxr",
-  "nomeVoz": "Davi Andrei",
+  "voz": "ORgG8rwdAiMYRug8RJwR",
+  "nomeVoz": "Ana Alice",
   "modelo": "eleven_v4",
-  "ajustes": {
-    "stability": 0.4,
-    "similarity_boost": 0.8,
-    "use_speaker_boost": true,
-    "speed": 1.08
-  },
-  "pronuncia": {
-    "Fuse": "Fúzi",
-    "Aprova": "Aprôva",
-    "FAU": "Fáu"
-  },
-  "semente": 311,
-  "titulo": "O hábito de domingo",
-  "dia": "29/11",
+  "semente": 341,
+  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
+  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
   "falas": {
-    "mesa": [
-      "Tem um hábito de domingo que muda a semana inteira de estudo.",
-      "Segunda a sexta, um treino curto por dia.",
-      "Todo dia, a revisão do que errou. E no sábado, um simulado.",
-      "O hábito é planejar a semana. E o Fuse Aprova já entrega esse plano pronto.",
-      "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão.",
-      "O link tá na bio."
-    ]
+    "gancho": ["Domingo é o dia de montar a sua semana de estudo."],
+    "treinos": ["Segunda a sexta: um treino de cinco minutos por dia."],
+    "revisao": ["Todo dia, a revisão do que errou. No sábado, um simulado."],
+    "app": ["O Fuse Aprova já entrega esse plano pronto."],
+    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."],
+    "fecho": ["Link na bio."]
   }
 }
