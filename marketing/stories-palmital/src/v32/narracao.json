@@ -1,34 +1,44 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v32/voz-mesa-1.wav",
-      "segundos": 5.153,
-      "texto": "Dois candidatos estudam pro concurso de Palmital. Só um estudou o que cai na prova dele."
-    },
+      "arquivo": "audio/v32/voz-gancho-1.wav",
+      "segundos": 4.655,
+      "texto": "Dois candidatos, o mesmo concurso. Só um tem o foco certo."
+    }
+  ],
+  "pista": [
     {
-      "arquivo": "audio/v32/voz-mesa-2.wav",
-      "segundos": 3.131,
-      "texto": "O outro estudou um monte de coisa que nem cai."
-    },
+      "arquivo": "audio/v32/voz-pista-1.wav",
+      "segundos": 4.768,
+      "texto": "Um estuda tudo, sem rumo. O outro segue a trilha do cargo dele."
+    }
+  ],
+  "cargos": [
     {
-      "arquivo": "audio/v32/voz-mesa-3.wav",
-      "segundos": 3.52,
+      "arquivo": "audio/v32/voz-cargos-1.wav",
+      "segundos": 3.823,
       "texto": "São quarenta e nove cargos, e cada um tem a sua prova."
-    },
+    }
+  ],
+  "app": [
     {
-      "arquivo": "audio/v32/voz-mesa-4.wav",
-      "segundos": 6.782,
-      "texto": "A diferença: o primeiro conferiu o cargo e os requisitos antes. No Fuse Aprova, isso leva poucos minutos."
-    },
+      "arquivo": "audio/v32/voz-app-1.wav",
+      "segundos": 4.439,
+      "texto": "No Fuse Aprova, você escolhe o cargo e estuda pela trilha dele."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v32/voz-mesa-5.wav",
-      "segundos": 6.274,
-      "texto": "E estudou pela trilha do cargo. Cento e noventa e sete reais, em até seis vezes, até cinco de dezembro."
-    },
+      "arquivo": "audio/v32/voz-oferta-1.wav",
+      "segundos": 5.28,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v32/voz-mesa-6.wav",
-      "segundos": 1.104,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v32/voz-fecho-1.wav",
+      "segundos": 0.966,
+      "texto": "Link na bio."
     }
   ]
 }

@@ -1,29 +1,16 @@
 {
-  "voz": "2CECaLAGTS5NRGxgbcxr",
-  "nomeVoz": "Davi Andrei",
+  "voz": "7lu3ze7orhWaNeSPowWx",
+  "nomeVoz": "Lucas",
   "modelo": "eleven_v4",
-  "ajustes": {
-    "stability": 0.4,
-    "similarity_boost": 0.8,
-    "use_speaker_boost": true,
-    "speed": 1.08
-  },
-  "pronuncia": {
-    "Fuse": "Fúzi",
-    "Aprova": "Aprôva",
-    "FAU": "Fáu"
-  },
-  "semente": 308,
-  "titulo": "O que mais pesa na prova",
-  "dia": "28/11",
+  "semente": 311,
+  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
+  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
   "falas": {
-    "mesa": [
-      "No dia da prova, o que mais pesa nem sempre é o conteúdo.",
-      "Tem gente que sabe a matéria e se perde mesmo assim.",
-      "Quarenta questões. Quatro horas.",
-      "O que pesa é o ritmo. E ritmo se treina com simulado no formato oficial, quantas vezes quiser.",
-      "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão.",
-      "O link tá na bio."
-    ]
+    "gancho": ["No dia da prova, saber a matéria não basta."],
+    "numeros": ["São quarenta questões em quatro horas."],
+    "grade": ["Dá seis minutos por questão. Quem não treina, perde tempo e chuta no fim."],
+    "app": ["No Fuse Aprova, você treina com simulado no formato oficial, quantas vezes quiser."],
+    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."],
+    "fecho": ["Link na bio."]
   }
 }
