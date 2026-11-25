@@ -2,32 +2,32 @@
   "celular": [
     {
       "arquivo": "audio/v22/voz-celular-1.wav",
-      "segundos": 5.346,
+      "segundos": 4.578,
       "texto": "O concurso da Prefeitura de Palmital tem quarenta e nove cargos. Qual é o seu?"
     },
     {
       "arquivo": "audio/v22/voz-celular-2.wav",
-      "segundos": 5.205,
+      "segundos": 4.783,
       "texto": "O Fuse Aprova descobre com você, pelo edital, e monta a trilha do seu cargo."
     },
     {
       "arquivo": "audio/v22/voz-celular-3.wav",
-      "segundos": 5.041,
+      "segundos": 4.383,
       "texto": "Você treina com mais de dez mil questões no estilo da FAU, a banca da prova."
     },
     {
       "arquivo": "audio/v22/voz-celular-4.wav",
-      "segundos": 5.514,
+      "segundos": 4.298,
       "texto": "Errou? A explicação vem na hora, e a questão volta pra você revisar."
     },
     {
       "arquivo": "audio/v22/voz-celular-5.wav",
-      "segundos": 6.084,
+      "segundos": 4.933,
       "texto": "Perto da prova, simulado no formato oficial: quarenta questões, quatro horas."
     },
     {
       "arquivo": "audio/v22/voz-celular-6.wav",
-      "segundos": 4.78,
+      "segundos": 4.135,
       "texto": "Fuse Aprova. O preparatório pro concurso da Prefeitura de Palmital."
     }
   ]

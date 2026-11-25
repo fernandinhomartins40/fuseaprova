@@ -1,12 +1,12 @@
 {
-  "voz": "GOkMqfyKMLVUcYfO2WbB",
-  "nomeVoz": "Jenifer",
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
   "semente": 221,
   "ajustes": {
-    "stability": 0.5,
+    "stability": 0.4,
     "similarity_boost": 0.8,
     "use_speaker_boost": true,
-    "speed": 1.0
+    "speed": 1.08
   },
   "pronuncia": {
     "Fuse": "Fúzi",
@@ -22,5 +22,6 @@
       "Perto da prova, simulado no formato oficial: quarenta questões, quatro horas.",
       "Fuse Aprova. O preparatório pro concurso da Prefeitura de Palmital."
     ]
-  }
+  },
+  "modelo": "eleven_v4"
 }
