@@ -1,34 +1,44 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v36/voz-mesa-1.wav",
-      "segundos": 4.376,
-      "texto": "Uma matéria cai pra todos os quarenta e nove cargos do concurso de Palmital."
-    },
+      "arquivo": "audio/v36/voz-gancho-1.wav",
+      "segundos": 3.985,
+      "texto": "Uma matéria cai em todos os quarenta e nove cargos de Palmital."
+    }
+  ],
+  "revela": [
     {
-      "arquivo": "audio/v36/voz-mesa-2.wav",
-      "segundos": 4.638,
-      "texto": "Quem vai bem nela já sai na frente. Quem vai mal, sente em qualquer cargo."
-    },
+      "arquivo": "audio/v36/voz-revela-1.wav",
+      "segundos": 1.082,
+      "texto": "É Português."
+    }
+  ],
+  "frente": [
     {
-      "arquivo": "audio/v36/voz-mesa-3.wav",
-      "segundos": 3.84,
-      "texto": "É Português. E a sua trilha no Fuse Aprova começa por ela."
-    },
+      "arquivo": "audio/v36/voz-frente-1.wav",
+      "segundos": 3.571,
+      "texto": "Quem vai bem nela sai na frente, em qualquer cargo."
+    }
+  ],
+  "app": [
     {
-      "arquivo": "audio/v36/voz-mesa-4.wav",
-      "segundos": 4.545,
-      "texto": "Com treinos de cinco minutos no estilo da FAU, e explicação em cada questão."
-    },
+      "arquivo": "audio/v36/voz-app-1.wav",
+      "segundos": 5.014,
+      "texto": "No Fuse Aprova, a sua trilha começa por ela, com explicação em cada questão."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v36/voz-mesa-5.wav",
-      "segundos": 5.748,
-      "texto": "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão."
-    },
+      "arquivo": "audio/v36/voz-oferta-1.wav",
+      "segundos": 5.05,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v36/voz-mesa-6.wav",
-      "segundos": 1.014,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v36/voz-fecho-1.wav",
+      "segundos": 0.938,
+      "texto": "Link na bio."
     }
   ]
 }

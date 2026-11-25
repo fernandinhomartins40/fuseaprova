@@ -1,29 +1,37 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v35/voz-mesa-1.wav",
-      "segundos": 3.277,
-      "texto": "Daqui a seis dias, uma coisa muda no Fuse Aprova."
-    },
+      "arquivo": "audio/v35/voz-gancho-1.wav",
+      "segundos": 2.575,
+      "texto": "Em seis dias, o Fuse Aprova muda."
+    }
+  ],
+  "igual": [
     {
-      "arquivo": "audio/v35/voz-mesa-2.wav",
-      "segundos": 4.643,
-      "texto": "Não é o conteúdo: a trilha, as questões e os simulados continuam iguais."
-    },
+      "arquivo": "audio/v35/voz-igual-1.wav",
+      "segundos": 5.696,
+      "texto": "A trilha, as questões e os simulados continuam iguais. E o acesso vale até o dia da prova."
+    }
+  ],
+  "revela": [
     {
-      "arquivo": "audio/v35/voz-mesa-3.wav",
-      "segundos": 2.891,
-      "texto": "E o acesso continua valendo até o dia da prova."
-    },
+      "arquivo": "audio/v35/voz-revela-1.wav",
+      "segundos": 4.652,
+      "texto": "O que muda é o preço: no dia seis, sobe pra duzentos e noventa e sete."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v35/voz-mesa-4.wav",
-      "segundos": 6.061,
-      "texto": "O que muda é o preço. Até sábado, cento e noventa e sete reais, em até seis vezes sem juros."
-    },
+      "arquivo": "audio/v35/voz-oferta-1.wav",
+      "segundos": 4.869,
+      "texto": "Até sábado, ainda é cento e noventa e sete reais, em até seis vezes sem juros."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v35/voz-mesa-5.wav",
-      "segundos": 4.231,
-      "texto": "No dia seis, sobe pra duzentos e noventa e sete. O link tá na bio."
+      "arquivo": "audio/v35/voz-fecho-1.wav",
+      "segundos": 0.868,
+      "texto": "Link na bio."
     }
   ]
 }
