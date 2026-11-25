@@ -1,29 +1,16 @@
 {
-  "voz": "2CECaLAGTS5NRGxgbcxr",
-  "nomeVoz": "Davi Andrei",
+  "voz": "GDzHdQOi6jjf8zaXhCYD",
+  "nomeVoz": "Raquel",
   "modelo": "eleven_v4",
-  "ajustes": {
-    "stability": 0.4,
-    "similarity_boost": 0.8,
-    "use_speaker_boost": true,
-    "speed": 1.08
-  },
-  "pronuncia": {
-    "Fuse": "Fúzi",
-    "Aprova": "Aprôva",
-    "FAU": "Fáu"
-  },
-  "semente": 315,
-  "titulo": "Sem saber nada",
-  "dia": "01/12",
+  "semente": 381,
+  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
+  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
   "falas": {
-    "mesa": [
-      "Dá pra estudar pra concurso mesmo sem saber nada da matéria?",
-      "Muita gente desiste antes de tentar.",
-      "Olha o que acontece quando você erra no Fuse Aprova.",
-      "Dá, sim. Cada questão vem com a explicação do tema, do zero. E o que errou volta pra revisão.",
-      "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão.",
-      "O link tá na bio."
-    ]
+    "gancho": ["Não sabe nada da matéria? Dá pra começar assim mesmo."],
+    "explica": ["No Fuse Aprova, cada questão vem com a explicação do tema, do zero."],
+    "rega": ["E o que você errou volta pra revisão, até fixar."],
+    "cresce": ["Um pouco por dia, você evolui."],
+    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."],
+    "fecho": ["Link na bio."]
   }
 }

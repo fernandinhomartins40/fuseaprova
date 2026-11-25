@@ -1,34 +1,44 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v38/voz-mesa-1.wav",
-      "segundos": 3.498,
-      "texto": "Dá pra estudar pra concurso mesmo sem saber nada da matéria?"
-    },
+      "arquivo": "audio/v38/voz-gancho-1.wav",
+      "segundos": 3.431,
+      "texto": "Não sabe nada da matéria? Dá pra começar assim mesmo."
+    }
+  ],
+  "explica": [
     {
-      "arquivo": "audio/v38/voz-mesa-2.wav",
-      "segundos": 2.479,
-      "texto": "Muita gente desiste antes de tentar."
-    },
+      "arquivo": "audio/v38/voz-explica-1.wav",
+      "segundos": 4.626,
+      "texto": "No Fuse Aprova, cada questão vem com a explicação do tema, do zero."
+    }
+  ],
+  "rega": [
     {
-      "arquivo": "audio/v38/voz-mesa-3.wav",
-      "segundos": 2.942,
-      "texto": "Olha o que acontece quando você erra no Fuse Aprova."
-    },
+      "arquivo": "audio/v38/voz-rega-1.wav",
+      "segundos": 3.714,
+      "texto": "E o que você errou volta pra revisão, até fixar."
+    }
+  ],
+  "cresce": [
     {
-      "arquivo": "audio/v38/voz-mesa-4.wav",
-      "segundos": 6.089,
-      "texto": "Dá, sim. Cada questão vem com a explicação do tema, do zero. E o que errou volta pra revisão."
-    },
+      "arquivo": "audio/v38/voz-cresce-1.wav",
+      "segundos": 2.382,
+      "texto": "Um pouco por dia, você evolui."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v38/voz-mesa-5.wav",
-      "segundos": 5.732,
-      "texto": "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão."
-    },
+      "arquivo": "audio/v38/voz-oferta-1.wav",
+      "segundos": 5.219,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v38/voz-mesa-6.wav",
-      "segundos": 1.115,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v38/voz-fecho-1.wav",
+      "segundos": 0.944,
+      "texto": "Link na bio."
     }
   ]
 }

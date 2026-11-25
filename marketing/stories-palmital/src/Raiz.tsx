@@ -39,6 +39,8 @@ import * as v33 from './v33';
 import * as v34 from './v34';
 import * as v35 from './v35';
 import * as v36 from './v36';
+import * as v37 from './v37';
+import * as v38 from './v38';
 import * as aula1 from './aula1';
 import * as aula2 from './aula2';
 import * as videoaula1 from './videoaula1';
@@ -82,6 +84,8 @@ const videos = [
   { id: 'v34', ...v34 },
   { id: 'v35', ...v35 },
   { id: 'v36', ...v36 },
+  { id: 'v37', ...v37 },
+  { id: 'v38', ...v38 },
   { id: 'aula1', ...aula1 },
   { id: 'aula2', ...aula2 },
   { id: 'videoaula1', ...videoaula1 },
