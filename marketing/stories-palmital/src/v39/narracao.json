@@ -1,29 +1,37 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v39/voz-mesa-1.wav",
-      "segundos": 2.404,
-      "texto": "Faltam quatro dias pra uma coisa acabar."
-    },
+      "arquivo": "audio/v39/voz-gancho-1.wav",
+      "segundos": 1.727,
+      "texto": "Faltam quatro dias."
+    }
+  ],
+  "acaba": [
     {
-      "arquivo": "audio/v39/voz-mesa-2.wav",
-      "segundos": 2.894,
-      "texto": "E ela é pra quem vai fazer o concurso de Palmital."
-    },
+      "arquivo": "audio/v39/voz-acaba-1.wav",
+      "segundos": 4.169,
+      "texto": "Pro preço de cento e noventa e sete reais do Fuse Aprova acabar."
+    }
+  ],
+  "inclui": [
     {
-      "arquivo": "audio/v39/voz-mesa-3.wav",
-      "segundos": 4.059,
-      "texto": "Trilha do cargo, questões no estilo da FAU, simulado oficial."
-    },
+      "arquivo": "audio/v39/voz-inclui-1.wav",
+      "segundos": 4.731,
+      "texto": "Trilha do seu cargo, questões no estilo da FAU e simulado oficial."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v39/voz-mesa-4.wav",
-      "segundos": 6.213,
-      "texto": "O que acaba é o preço de cento e noventa e sete reais, em até seis vezes de trinta e dois e oitenta e três."
-    },
+      "arquivo": "audio/v39/voz-oferta-1.wav",
+      "segundos": 4.445,
+      "texto": "Em até seis vezes de trinta e dois e oitenta e três, sem juros."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v39/voz-mesa-5.wav",
-      "segundos": 2.794,
-      "texto": "Sábado é o último dia. O link tá na bio."
+      "arquivo": "audio/v39/voz-fecho-1.wav",
+      "segundos": 2.826,
+      "texto": "Sábado é o último dia. Link na bio."
     }
   ]
 }
