@@ -1,0 +1,39 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v40/voz-mesa-1.wav",
+      "segundos": 5.187,
+      "texto": "São quatro passos do zero até a prova. E o último, quase ninguém faz."
+    },
+    {
+      "arquivo": "audio/v40/voz-mesa-2.wav",
+      "segundos": 2.061,
+      "texto": "Um: descubra o seu cargo."
+    },
+    {
+      "arquivo": "audio/v40/voz-mesa-3.wav",
+      "segundos": 2.058,
+      "texto": "Dois: um treino por dia."
+    },
+    {
+      "arquivo": "audio/v40/voz-mesa-4.wav",
+      "segundos": 2.079,
+      "texto": "Três: revise o que errou."
+    },
+    {
+      "arquivo": "audio/v40/voz-mesa-5.wav",
+      "segundos": 6.393,
+      "texto": "Quatro, o que quase ninguém faz: simulado no formato oficial, quarenta questões em quatro horas."
+    },
+    {
+      "arquivo": "audio/v40/voz-mesa-6.wav",
+      "segundos": 4.47,
+      "texto": "Tudo isso no Fuse Aprova, por cento e noventa e sete reais, até sábado."
+    },
+    {
+      "arquivo": "audio/v40/voz-mesa-7.wav",
+      "segundos": 1.107,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+[
+  {
+    "legenda": "Um *número* que você devia saber",
+    "tipo": "texto",
+    "linhas": [
+      "?"
+    ],
+    "cor": "#1D6FE0",
+    "capi": "constancia"
+  },
+  {
+    "legenda": "Não é *vagas*. Nem *nota*",
+    "tipo": "texto",
+    "linhas": [
+      "nem vagas",
+      "nem nota"
+    ],
+    "cor": "#7C3AED",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "*80 dias* até a prova",
+    "tipo": "texto",
+    "linhas": [
+      "80 dias",
+      "até 21/02"
+    ],
+    "cor": "#D92D20",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "1 por dia = *80 treinos*",
+    "tipo": "licao",
+    "capi": "incentivando"
+  },
+  {
+    "legenda": "*R$ 197* acaba *sábado*",
+    "tipo": "oferta",
+    "capi": "incentivando"
+  },
+  {
+    "legenda": "*Link na bio*",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v43/voz-mesa-1.wav",
+      "segundos": 3.708,
+      "texto": "Amanhã, à meia-noite, uma coisa acaba no Fuse Aprova."
+    },
+    {
+      "arquivo": "audio/v43/voz-mesa-2.wav",
+      "segundos": 3.108,
+      "texto": "Não é o acesso: ele vale até o dia da prova."
+    },
+    {
+      "arquivo": "audio/v43/voz-mesa-3.wav",
+      "segundos": 2.176,
+      "texto": "E não é a garantia de sete dias."
+    },
+    {
+      "arquivo": "audio/v43/voz-mesa-4.wav",
+      "segundos": 7.438,
+      "texto": "É o preço de cento e noventa e sete reais e o parcelamento em seis vezes sem juros. Domingo, sobe pra duzentos e noventa e sete."
+    },
+    {
+      "arquivo": "audio/v43/voz-mesa-5.wav",
+      "segundos": 1.069,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

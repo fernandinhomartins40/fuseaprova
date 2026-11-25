@@ -1,0 +1,34 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v44/voz-mesa-1.wav",
+      "segundos": 3.153,
+      "texto": "Quanto custa por dia se preparar pro concurso de Palmital?"
+    },
+    {
+      "arquivo": "audio/v44/voz-mesa-2.wav",
+      "segundos": 3.744,
+      "texto": "Com trilha do cargo, mais de dez mil questões e simulados."
+    },
+    {
+      "arquivo": "audio/v44/voz-mesa-3.wav",
+      "segundos": 2.063,
+      "texto": "Até o dia da prova, em fevereiro."
+    },
+    {
+      "arquivo": "audio/v44/voz-mesa-4.wav",
+      "segundos": 5.846,
+      "texto": "Uns dois reais e cinquenta por dia. Cento e noventa e sete reais, em até seis vezes sem juros."
+    },
+    {
+      "arquivo": "audio/v44/voz-mesa-5.wav",
+      "segundos": 1.944,
+      "texto": "Esse preço vai só até amanhã."
+    },
+    {
+      "arquivo": "audio/v44/voz-mesa-6.wav",
+      "segundos": 0.982,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v37/voz-mesa-1.wav",
+      "segundos": 3.747,
+      "texto": "Dezembro tem uma armadilha pra quem vai fazer o concurso de Palmital."
+    },
+    {
+      "arquivo": "audio/v37/voz-mesa-2.wav",
+      "segundos": 3.067,
+      "texto": "A prova é em fevereiro, e parece longe."
+    },
+    {
+      "arquivo": "audio/v37/voz-mesa-3.wav",
+      "segundos": 4.092,
+      "texto": "Aí vêm as festas, as férias, e janeiro passa voando."
+    },
+    {
+      "arquivo": "audio/v37/voz-mesa-4.wav",
+      "segundos": 6.561,
+      "texto": "A armadilha é deixar pra começar depois. Cinco minutos por dia, a partir de hoje, já fazem diferença."
+    },
+    {
+      "arquivo": "audio/v37/voz-mesa-5.wav",
+      "segundos": 3.668,
+      "texto": "E o preço de cento e noventa e sete reais vai só até sábado."
+    },
+    {
+      "arquivo": "audio/v37/voz-mesa-6.wav",
+      "segundos": 1.057,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

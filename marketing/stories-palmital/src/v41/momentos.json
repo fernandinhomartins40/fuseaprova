@@ -1,0 +1,42 @@
+[
+  {
+    "legenda": "A *desculpa mais comum*",
+    "tipo": "texto",
+    "linhas": [
+      "a desculpa",
+      "mais comum"
+    ],
+    "cor": "#1D6FE0",
+    "capi": "constancia"
+  },
+  {
+    "legenda": "Você *já falou ela*",
+    "tipo": "texto",
+    "linhas": [
+      "parece",
+      "verdade"
+    ],
+    "cor": "#D92D20",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "Não tenho *tempo*? *5 min*",
+    "tipo": "trilha",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "*5 questões* no estilo FAU",
+    "tipo": "questao",
+    "capi": "estudando"
+  },
+  {
+    "legenda": "*R$ 197* em até *6x sem juros*",
+    "tipo": "oferta",
+    "capi": "incentivando"
+  },
+  {
+    "legenda": "*Link na bio*",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]

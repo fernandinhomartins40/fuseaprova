@@ -1,0 +1,34 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v42/voz-mesa-1.wav",
+      "segundos": 4.243,
+      "texto": "Tem um número que todo candidato do concurso de Palmital devia saber hoje."
+    },
+    {
+      "arquivo": "audio/v42/voz-mesa-2.wav",
+      "segundos": 3.013,
+      "texto": "Não é o número de vagas. Nem a nota mínima."
+    },
+    {
+      "arquivo": "audio/v42/voz-mesa-3.wav",
+      "segundos": 4.838,
+      "texto": "É oitenta: os dias que faltam pra prova objetiva, em vinte e um de fevereiro."
+    },
+    {
+      "arquivo": "audio/v42/voz-mesa-4.wav",
+      "segundos": 2.632,
+      "texto": "Um treino por dia são oitenta treinos."
+    },
+    {
+      "arquivo": "audio/v42/voz-mesa-5.wav",
+      "segundos": 3.444,
+      "texto": "E o preço de cento e noventa e sete reais acaba no sábado."
+    },
+    {
+      "arquivo": "audio/v42/voz-mesa-6.wav",
+      "segundos": 1.075,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

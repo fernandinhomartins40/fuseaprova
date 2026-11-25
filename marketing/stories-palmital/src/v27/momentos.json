@@ -1,0 +1,42 @@
+[
+  {
+    "legenda": "Uma resposta *escondida no edital*",
+    "tipo": "texto",
+    "linhas": [
+      "Edital",
+      "nº 01/2026"
+    ],
+    "cor": "#0f6e70",
+    "capi": "constancia"
+  },
+  {
+    "legenda": "Não tá na *1ª página*",
+    "tipo": "texto",
+    "linhas": [
+      "nem na",
+      "1ª página"
+    ],
+    "cor": "#1D6FE0",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "Tá *nos anexos*, cargo por cargo",
+    "tipo": "datas",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "O que *o seu cargo* pede",
+    "tipo": "edital",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "Trilha do cargo por *R$ 197*",
+    "tipo": "oferta",
+    "capi": "incentivando"
+  },
+  {
+    "legenda": "*Link na bio*",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]

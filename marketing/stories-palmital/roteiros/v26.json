@@ -1,0 +1,29 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 303,
+  "titulo": "Quanto custa?",
+  "dia": "25/11",
+  "falas": {
+    "mesa": [
+      "Quanto você acha que custa se preparar pro concurso da Prefeitura de Palmital?",
+      "Com a trilha do seu cargo e mais de dez mil questões no estilo da FAU.",
+      "Com revisão dos erros e simulado no formato oficial, até o dia da prova.",
+      "Trinta e dois reais e oitenta e três por mês, em até seis vezes sem juros.",
+      "São cento e noventa e sete reais, só até cinco de dezembro.",
+      "O link tá na bio."
+    ]
+  }
+}

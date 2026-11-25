@@ -1,0 +1,29 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 311,
+  "titulo": "O hábito de domingo",
+  "dia": "29/11",
+  "falas": {
+    "mesa": [
+      "Tem um hábito de domingo que muda a semana inteira de estudo.",
+      "Segunda a sexta, um treino curto por dia.",
+      "Todo dia, a revisão do que errou. E no sábado, um simulado.",
+      "O hábito é planejar a semana. E o Fuse Aprova já entrega esse plano pronto.",
+      "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão.",
+      "O link tá na bio."
+    ]
+  }
+}

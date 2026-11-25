@@ -1,0 +1,41 @@
+[
+  {
+    "legenda": "Uma palavra de *1 letra* derruba muita gente",
+    "tipo": "texto",
+    "linhas": [
+      "1 letra"
+    ],
+    "cor": "#D92D20",
+    "capi": "constancia"
+  },
+  {
+    "legenda": "Olha *essa questão*",
+    "tipo": "questao",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "Marcou a A? *Pegadinha*",
+    "tipo": "erro",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "É a *crase*. Volta *de* Curitiba? Sem crase",
+    "tipo": "texto",
+    "linhas": [
+      "À ou A?",
+      "volta DE: sem crase"
+    ],
+    "cor": "#0f6e70",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "Explicação em cada erro. *R$ 197* até *5/12*",
+    "tipo": "oferta",
+    "capi": "incentivando"
+  },
+  {
+    "legenda": "*Link na bio*",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]

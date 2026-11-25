@@ -1,0 +1,29 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 301,
+  "titulo": "A palavra de uma letra",
+  "dia": "25/11",
+  "falas": {
+    "mesa": [
+      "Tem uma palavrinha de uma letra só que derruba muita gente em prova de concurso.",
+      "Ela cai em Português, que é matéria de todos os cargos. Olha essa questão.",
+      "Quem marcou a letra A caiu na pegadinha.",
+      "A palavrinha é a crase. Cidade sem artigo não leva crase: vai a Curitiba, volta de Curitiba.",
+      "No Fuse Aprova, cada erro vem com explicação. Cento e noventa e sete reais, em até seis vezes, até cinco de dezembro.",
+      "O link tá na bio."
+    ]
+  }
+}

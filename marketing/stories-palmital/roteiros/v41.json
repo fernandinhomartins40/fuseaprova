@@ -1,0 +1,29 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 318,
+  "titulo": "A desculpa mais comum",
+  "dia": "03/12",
+  "falas": {
+    "mesa": [
+      "A desculpa mais comum pra não estudar pra concurso tem solução em cinco minutos.",
+      "Você provavelmente já falou ela. E parece verdade.",
+      "É o não tenho tempo. Um treino no Fuse Aprova leva cinco minutos.",
+      "Cinco questões no estilo da FAU, com explicação.",
+      "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão.",
+      "O link tá na bio."
+    ]
+  }
+}

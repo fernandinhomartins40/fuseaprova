@@ -1,0 +1,42 @@
+[
+  {
+    "legenda": "A pergunta que *quase ninguém faz*",
+    "tipo": "texto",
+    "linhas": [
+      "1 pergunta",
+      "antes de estudar"
+    ],
+    "cor": "#1D6FE0",
+    "capi": "constancia"
+  },
+  {
+    "legenda": "Pode jogar *meses de estudo* fora",
+    "tipo": "texto",
+    "linhas": [
+      "meses",
+      "de estudo"
+    ],
+    "cor": "#D92D20",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "Cargo que exige *CNH*. Que exige *experiência*",
+    "tipo": "edital",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "Eu atendo *aos requisitos*?",
+    "tipo": "cargo",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "Trilha do cargo por *R$ 197*",
+    "tipo": "oferta",
+    "capi": "incentivando"
+  },
+  {
+    "legenda": "*Link na bio*",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]

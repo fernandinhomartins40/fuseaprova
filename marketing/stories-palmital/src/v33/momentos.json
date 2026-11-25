@@ -1,0 +1,37 @@
+[
+  {
+    "legenda": "Testar *sem arriscar* dinheiro",
+    "tipo": "texto",
+    "linhas": [
+      "sem",
+      "arriscar"
+    ],
+    "cor": "#15803D",
+    "capi": "acenando"
+  },
+  {
+    "legenda": "Faça *os treinos*...",
+    "tipo": "trilha",
+    "capi": "estudando"
+  },
+  {
+    "legenda": "...um simulado, e *veja se é pra você*",
+    "tipo": "simulado",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "*7 dias* de garantia",
+    "tipo": "garantia",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "*R$ 197* em até *6x sem juros*",
+    "tipo": "oferta",
+    "capi": "incentivando"
+  },
+  {
+    "legenda": "*Link na bio*",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 313,
+  "titulo": "A matéria de todos",
+  "dia": "30/11",
+  "falas": {
+    "mesa": [
+      "Uma matéria cai pra todos os quarenta e nove cargos do concurso de Palmital.",
+      "Quem vai bem nela já sai na frente. Quem vai mal, sente em qualquer cargo.",
+      "É Português. E a sua trilha no Fuse Aprova começa por ela.",
+      "Com treinos de cinco minutos no estilo da FAU, e explicação em cada questão.",
+      "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão.",
+      "O link tá na bio."
+    ]
+  }
+}

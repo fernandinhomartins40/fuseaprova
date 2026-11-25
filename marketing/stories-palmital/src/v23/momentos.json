@@ -1,0 +1,43 @@
+[
+  {
+    "legenda": "Uma notícia pra quem *deixou pra depois*",
+    "tipo": "texto",
+    "linhas": [
+      "Notícia",
+      "pra quem deixou",
+      "pra depois"
+    ],
+    "cor": "#E8590C",
+    "capi": "acenando"
+  },
+  {
+    "legenda": "Ontem era *o último dia*...",
+    "tipo": "texto",
+    "linhas": [
+      "Ontem era",
+      "o último dia"
+    ],
+    "cor": "#1D6FE0",
+    "capi": "constancia"
+  },
+  {
+    "legenda": "...de algo *no preparatório*",
+    "tipo": "trilha",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "Trilha, questões e *simulado oficial*",
+    "tipo": "simulado",
+    "capi": "estudando"
+  },
+  {
+    "legenda": "*Prorrogamos!* R$ 197 até *5/12*",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "Dia 6, *R$ 297*. Link na bio",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]

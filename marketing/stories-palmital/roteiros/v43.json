@@ -1,0 +1,28 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 320,
+  "titulo": "Amanhã acaba",
+  "dia": "04/12",
+  "falas": {
+    "mesa": [
+      "Amanhã, à meia-noite, uma coisa acaba no Fuse Aprova.",
+      "Não é o acesso: ele vale até o dia da prova.",
+      "E não é a garantia de sete dias.",
+      "É o preço de cento e noventa e sete reais e o parcelamento em seis vezes sem juros. Domingo, sobe pra duzentos e noventa e sete.",
+      "O link tá na bio."
+    ]
+  }
+}

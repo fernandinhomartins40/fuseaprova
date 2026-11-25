@@ -1,0 +1,34 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v24/voz-mesa-1.wav",
+      "segundos": 4.688,
+      "texto": "Tem uma palavrinha de uma letra só que derruba muita gente em prova de concurso."
+    },
+    {
+      "arquivo": "audio/v24/voz-mesa-2.wav",
+      "segundos": 4.262,
+      "texto": "Ela cai em Português, que é matéria de todos os cargos. Olha essa questão."
+    },
+    {
+      "arquivo": "audio/v24/voz-mesa-3.wav",
+      "segundos": 2.628,
+      "texto": "Quem marcou a letra A caiu na pegadinha."
+    },
+    {
+      "arquivo": "audio/v24/voz-mesa-4.wav",
+      "segundos": 7.427,
+      "texto": "A palavrinha é a crase. Cidade sem artigo não leva crase: vai a Curitiba, volta de Curitiba."
+    },
+    {
+      "arquivo": "audio/v24/voz-mesa-5.wav",
+      "segundos": 7.102,
+      "texto": "No Fuse Aprova, cada erro vem com explicação. Cento e noventa e sete reais, em até seis vezes, até cinco de dezembro."
+    },
+    {
+      "arquivo": "audio/v24/voz-mesa-6.wav",
+      "segundos": 1.181,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

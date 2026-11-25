@@ -1,0 +1,42 @@
+[
+  {
+    "legenda": "1 matéria, *49 cargos*",
+    "tipo": "texto",
+    "linhas": [
+      "1 matéria",
+      "49 cargos"
+    ],
+    "cor": "#1D6FE0",
+    "capi": "constancia"
+  },
+  {
+    "legenda": "Pesa em *qualquer cargo*",
+    "tipo": "texto",
+    "linhas": [
+      "pesa em",
+      "todo cargo"
+    ],
+    "cor": "#D92D20",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "É *Português*",
+    "tipo": "trilha",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "Treinos no *estilo FAU*",
+    "tipo": "questao",
+    "capi": "estudando"
+  },
+  {
+    "legenda": "*R$ 197* em até *6x sem juros*",
+    "tipo": "oferta",
+    "capi": "incentivando"
+  },
+  {
+    "legenda": "*Link na bio*",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]

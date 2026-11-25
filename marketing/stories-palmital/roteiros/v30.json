@@ -1,0 +1,29 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 307,
+  "titulo": "O que você esquece",
+  "dia": "27/11",
+  "falas": {
+    "mesa": [
+      "Você esquece boa parte do que estuda em poucos dias. A não ser que faça uma coisa.",
+      "E não é estudar mais horas.",
+      "Nem reler o resumo.",
+      "É rever o que errou no tempo certo: um, três, sete e quinze dias depois. O Fuse Aprova faz isso sozinho.",
+      "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão.",
+      "O link tá na bio."
+    ]
+  }
+}

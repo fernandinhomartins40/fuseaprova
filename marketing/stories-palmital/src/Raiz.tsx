@@ -2,6 +2,7 @@ import './fontes';
 import React from 'react';
 import { Composition, Still } from 'remotion';
 import { Arte } from './arte/Arte';
+import { vendas } from './venda/registro';
 import { ALTURA, FPS, LARGURA } from './tema';
 import * as v1 from './v1';
 import * as v2 from './v2';
@@ -59,6 +60,7 @@ const videos = [
   { id: 'videoaula1', ...videoaula1 },
   { id: 'videoaula2', ...videoaula2 },
   ...videoaulas,
+  ...vendas,
 ];
 
 export const Raiz: React.FC = () => (

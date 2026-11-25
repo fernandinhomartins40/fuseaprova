@@ -1,0 +1,29 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 306,
+  "titulo": "O padrão da banca",
+  "dia": "27/11",
+  "falas": {
+    "mesa": [
+      "A banca do concurso de Palmital tem um padrão. E quem percebe, chega mais preparado.",
+      "Não é sorte. É repetição.",
+      "Olha como ela pergunta.",
+      "O padrão é o jeito FAU de perguntar. No Fuse Aprova, são mais de dez mil questões nesse estilo, com explicação.",
+      "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão.",
+      "O link tá na bio."
+    ]
+  }
+}

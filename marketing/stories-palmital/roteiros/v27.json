@@ -1,0 +1,29 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 304,
+  "titulo": "A resposta escondida no edital",
+  "dia": "26/11",
+  "falas": {
+    "mesa": [
+      "Tem uma resposta escondida no edital que muda o que você vai estudar.",
+      "Ela não tá na primeira página. Nem na segunda.",
+      "Ela fica nos anexos, cargo por cargo.",
+      "É o que o edital pede pro seu cargo. No Fuse Aprova, você pergunta, e a resposta vem com o item citado.",
+      "E a trilha foca nisso. Cento e noventa e sete reais, em até seis vezes, até cinco de dezembro.",
+      "O link tá na bio."
+    ]
+  }
+}

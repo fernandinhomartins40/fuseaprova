@@ -1,0 +1,42 @@
+[
+  {
+    "legenda": "Estudar *na fila do banco*?",
+    "tipo": "texto",
+    "linhas": [
+      "na fila",
+      "do banco"
+    ],
+    "cor": "#E8590C",
+    "capi": "acenando"
+  },
+  {
+    "legenda": "Sem apostila. *Sem 2 horas livres*",
+    "tipo": "texto",
+    "linhas": [
+      "sem",
+      "apostila"
+    ],
+    "cor": "#1D6FE0",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "Errou? *Explicação na hora*",
+    "tipo": "erro",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "Treino de *5 minutos*",
+    "tipo": "trilha",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "*R$ 197* em até *6x sem juros*",
+    "tipo": "oferta",
+    "capi": "incentivando"
+  },
+  {
+    "legenda": "*Link na bio*",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]

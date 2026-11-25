@@ -1,0 +1,34 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v29/voz-mesa-1.wav",
+      "segundos": 5.037,
+      "texto": "A banca do concurso de Palmital tem um padrão. E quem percebe, chega mais preparado."
+    },
+    {
+      "arquivo": "audio/v29/voz-mesa-2.wav",
+      "segundos": 2.301,
+      "texto": "Não é sorte. É repetição."
+    },
+    {
+      "arquivo": "audio/v29/voz-mesa-3.wav",
+      "segundos": 1.345,
+      "texto": "Olha como ela pergunta."
+    },
+    {
+      "arquivo": "audio/v29/voz-mesa-4.wav",
+      "segundos": 7.025,
+      "texto": "O padrão é o jeito FAU de perguntar. No Fuse Aprova, são mais de dez mil questões nesse estilo, com explicação."
+    },
+    {
+      "arquivo": "audio/v29/voz-mesa-5.wav",
+      "segundos": 5.75,
+      "texto": "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão."
+    },
+    {
+      "arquivo": "audio/v29/voz-mesa-6.wav",
+      "segundos": 1.061,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "legenda": "Hoje, *meia-noite*, acaba",
+    "tipo": "texto",
+    "linhas": [
+      "hoje",
+      "meia-noite"
+    ],
+    "cor": "#D92D20",
+    "capi": "constancia"
+  },
+  {
+    "legenda": "Esperando *a hora certa*?",
+    "tipo": "trilha",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "...trilha e *simulado oficial*...",
+    "tipo": "simulado",
+    "capi": "estudando"
+  },
+  {
+    "legenda": "Acaba hoje: *R$ 197*",
+    "tipo": "oferta",
+    "rodape": "Só hoje, 5/12. Amanhã, R$ 297.",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "*Link na bio*",
+    "tipo": "oferta",
+    "capi": "celebrando",
+    "rodape": "Só hoje, 5/12. Amanhã, R$ 297."
+  }
+]

@@ -1,0 +1,34 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v31/voz-mesa-1.wav",
+      "segundos": 3.663,
+      "texto": "No dia da prova, o que mais pesa nem sempre é o conteúdo."
+    },
+    {
+      "arquivo": "audio/v31/voz-mesa-2.wav",
+      "segundos": 3.099,
+      "texto": "Tem gente que sabe a matéria e se perde mesmo assim."
+    },
+    {
+      "arquivo": "audio/v31/voz-mesa-3.wav",
+      "segundos": 2.376,
+      "texto": "Quarenta questões. Quatro horas."
+    },
+    {
+      "arquivo": "audio/v31/voz-mesa-4.wav",
+      "segundos": 6.151,
+      "texto": "O que pesa é o ritmo. E ritmo se treina com simulado no formato oficial, quantas vezes quiser."
+    },
+    {
+      "arquivo": "audio/v31/voz-mesa-5.wav",
+      "segundos": 5.663,
+      "texto": "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão."
+    },
+    {
+      "arquivo": "audio/v31/voz-mesa-6.wav",
+      "segundos": 1.021,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

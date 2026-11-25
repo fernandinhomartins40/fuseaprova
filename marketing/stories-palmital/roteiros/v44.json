@@ -1,0 +1,29 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 321,
+  "titulo": "Quanto custa por dia",
+  "dia": "04/12",
+  "falas": {
+    "mesa": [
+      "Quanto custa por dia se preparar pro concurso de Palmital?",
+      "Com trilha do cargo, mais de dez mil questões e simulados.",
+      "Até o dia da prova, em fevereiro.",
+      "Uns dois reais e cinquenta por dia. Cento e noventa e sete reais, em até seis vezes sem juros.",
+      "Esse preço vai só até amanhã.",
+      "O link tá na bio."
+    ]
+  }
+}

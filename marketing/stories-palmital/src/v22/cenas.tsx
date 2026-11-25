@@ -12,14 +12,14 @@ import { cor, fonte } from '../tema';
 // holograma, e a Capi, em pé na mesa, reage. Voz Davi Andrei.
 
 /* ------------------------------------------------------------------ texturas */
-const TELAS = ['edital-inicio', 'edital-resultado', 'real-trilha', '05-Pergunta', '07-Erro', '11-Simulado'] as const;
-type Tela = (typeof TELAS)[number];
-const CAPIS = ['acenando', 'explicando', 'estudando', 'incentivando', 'celebrando'] as const;
-type Capi = (typeof CAPIS)[number];
+export const TELAS = ['edital-inicio', 'edital-resultado', 'real-trilha', '05-Pergunta', '07-Erro', '11-Simulado', 'real-inicio', 'real-revisao', 'real-simulado', 'edital-pergunta', '08-Fim', 'real-acerto'] as const;
+export type Tela = (typeof TELAS)[number];
+export const CAPIS = ['acenando', 'explicando', 'estudando', 'incentivando', 'celebrando', 'boas-vindas', 'constancia'] as const;
+export type Capi = (typeof CAPIS)[number];
 const PX_W = 1170;
 const PX_H = 2532;
 
-const useTexturas = () => {
+export const useTexturas = () => {
   const [tex, setTex] = useState<Record<string, THREE.Texture> | null>(null);
   const [h] = useState(() => delayRender('texturas do V22'));
   useEffect(() => {
@@ -145,16 +145,16 @@ const placa = (w: number, h: number, r: number) => {
 
 /* ------------------------------------------------------------ animação base */
 const suave = Easing.bezier(0.45, 0, 0.2, 1);
-const sai = Easing.bezier(0.16, 1, 0.3, 1);
+export const sai = Easing.bezier(0.16, 1, 0.3, 1);
 /** 0→1 entre `de` e `ate`, com curva. */
-const p = (f: number, de: number, ate: number, e = suave) => interpolate(f, [de, ate], [0, 1], { ...limita, easing: e });
+export const p = (f: number, de: number, ate: number, e = suave) => interpolate(f, [de, ate], [0, 1], { ...limita, easing: e });
 
 type V3 = [number, number, number];
-type Chave = { t: number; pos: V3; alvo: V3 };
+export type Chave = { t: number; pos: V3; alvo: V3 };
 const mistura = (a: V3, b: V3, k: number): V3 => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
 
 /** Câmera em trilho: interpola posição e alvo entre as chaves, com um respiro de mão. */
-const Camera: React.FC<{ chaves: Chave[] }> = ({ chaves }) => {
+export const Camera: React.FC<{ chaves: Chave[] }> = ({ chaves }) => {
   const frame = useCurrentFrame();
   const { camera } = useThree();
   let i = 0;
@@ -168,10 +168,10 @@ const Camera: React.FC<{ chaves: Chave[] }> = ({ chaves }) => {
 };
 
 /* ------------------------------------------------------------------ cenário */
-const TELA_Y = 0.13; // altura da tela do celular deitado
-const CEL_Z = 0.35;
+export const TELA_Y = 0.13; // altura da tela do celular deitado
+export const CEL_Z = 0.35;
 
-const Mesa: React.FC = () => {
+export const Mesa: React.FC = () => {
   const frame = useCurrentFrame();
   const madeiraTex = useMemo(madeira, []);
   const edital = useMemo(papelEdital, []);
@@ -258,7 +258,7 @@ const Mesa: React.FC = () => {
 };
 
 /** Celular deitado na mesa; a tela troca com um clarão quando a voz muda de assunto. */
-const Celular: React.FC<{ tex: Record<string, THREE.Texture>; trocas: { t: number; tela: Tela }[] }> = ({ tex, trocas }) => {
+export const Celular: React.FC<{ tex: Record<string, THREE.Texture>; trocas: { t: number; tela: Tela }[] }> = ({ tex, trocas }) => {
   const frame = useCurrentFrame();
   const W = 1;
   const H = 2.16;
@@ -368,7 +368,7 @@ const Holograma: React.FC<{
 
 /* ---------------------------------------------------------------------- Capi */
 /** A Capi em pé na mesa, sempre de frente para a câmera; troca de pose com um pulinho. */
-const CapiNaMesa: React.FC<{ tex: Record<string, THREE.Texture>; poses: { t: number; capi: Capi }[]; entra: number }> = ({ tex, poses, entra }) => {
+export const CapiNaMesa: React.FC<{ tex: Record<string, THREE.Texture>; poses: { t: number; capi: Capi }[]; entra: number }> = ({ tex, poses, entra }) => {
   const frame = useCurrentFrame();
   const { camera } = useThree();
   const geo = useMemo(() => new THREE.PlaneGeometry(1, 1.4), []);

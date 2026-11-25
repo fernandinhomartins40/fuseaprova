@@ -1,0 +1,28 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 323,
+  "titulo": "Últimas horas",
+  "dia": "05/12",
+  "falas": {
+    "mesa": [
+      "Últimas horas pra uma decisão.",
+      "Estudar pro concurso de Palmital sozinho, ou com um plano.",
+      "Plano com revisão dos erros...",
+      "Até a meia-noite, o Fuse Aprova sai por cento e noventa e sete reais. Depois, duzentos e noventa e sete.",
+      "O link tá na bio."
+    ]
+  }
+}

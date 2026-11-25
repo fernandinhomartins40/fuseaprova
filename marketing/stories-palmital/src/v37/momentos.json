@@ -1,0 +1,42 @@
+[
+  {
+    "legenda": "A *armadilha* de dezembro",
+    "tipo": "texto",
+    "linhas": [
+      "A armadilha",
+      "de dezembro"
+    ],
+    "cor": "#D92D20",
+    "capi": "constancia"
+  },
+  {
+    "legenda": "A prova é em *fevereiro*",
+    "tipo": "datas",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "Festas, férias... *janeiro voa*",
+    "tipo": "texto",
+    "linhas": [
+      "festas",
+      "férias"
+    ],
+    "cor": "#1D6FE0",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "É *deixar pra depois*",
+    "tipo": "trilha",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "*R$ 197* só até *sábado*",
+    "tipo": "oferta",
+    "capi": "incentivando"
+  },
+  {
+    "legenda": "*Link na bio*",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]

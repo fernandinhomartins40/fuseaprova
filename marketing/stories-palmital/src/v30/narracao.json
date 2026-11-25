@@ -1,0 +1,34 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v30/voz-mesa-1.wav",
+      "segundos": 5.333,
+      "texto": "Você esquece boa parte do que estuda em poucos dias. A não ser que faça uma coisa."
+    },
+    {
+      "arquivo": "audio/v30/voz-mesa-2.wav",
+      "segundos": 1.909,
+      "texto": "E não é estudar mais horas."
+    },
+    {
+      "arquivo": "audio/v30/voz-mesa-3.wav",
+      "segundos": 1.447,
+      "texto": "Nem reler o resumo."
+    },
+    {
+      "arquivo": "audio/v30/voz-mesa-4.wav",
+      "segundos": 7.674,
+      "texto": "É rever o que errou no tempo certo: um, três, sete e quinze dias depois. O Fuse Aprova faz isso sozinho."
+    },
+    {
+      "arquivo": "audio/v30/voz-mesa-5.wav",
+      "segundos": 5.671,
+      "texto": "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão."
+    },
+    {
+      "arquivo": "audio/v30/voz-mesa-6.wav",
+      "segundos": 1.0,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

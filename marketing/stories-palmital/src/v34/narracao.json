@@ -1,0 +1,34 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v34/voz-mesa-1.wav",
+      "segundos": 3.592,
+      "texto": "Tem um hábito de domingo que muda a semana inteira de estudo."
+    },
+    {
+      "arquivo": "audio/v34/voz-mesa-2.wav",
+      "segundos": 2.789,
+      "texto": "Segunda a sexta, um treino curto por dia."
+    },
+    {
+      "arquivo": "audio/v34/voz-mesa-3.wav",
+      "segundos": 3.774,
+      "texto": "Todo dia, a revisão do que errou. E no sábado, um simulado."
+    },
+    {
+      "arquivo": "audio/v34/voz-mesa-4.wav",
+      "segundos": 4.873,
+      "texto": "O hábito é planejar a semana. E o Fuse Aprova já entrega esse plano pronto."
+    },
+    {
+      "arquivo": "audio/v34/voz-mesa-5.wav",
+      "segundos": 5.529,
+      "texto": "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão."
+    },
+    {
+      "arquivo": "audio/v34/voz-mesa-6.wav",
+      "segundos": 1.04,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

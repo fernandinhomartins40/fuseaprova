@@ -1,0 +1,29 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 314,
+  "titulo": "A armadilha de dezembro",
+  "dia": "01/12",
+  "falas": {
+    "mesa": [
+      "Dezembro tem uma armadilha pra quem vai fazer o concurso de Palmital.",
+      "A prova é em fevereiro, e parece longe.",
+      "Aí vêm as festas, as férias, e janeiro passa voando.",
+      "A armadilha é deixar pra começar depois. Cinco minutos por dia, a partir de hoje, já fazem diferença.",
+      "E o preço de cento e noventa e sete reais vai só até sábado.",
+      "O link tá na bio."
+    ]
+  }
+}

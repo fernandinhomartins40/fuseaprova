@@ -1,0 +1,31 @@
+[
+  {
+    "legenda": "Faltam *4 dias*...",
+    "tipo": "texto",
+    "linhas": [
+      "4 dias"
+    ],
+    "cor": "#D92D20",
+    "capi": "constancia"
+  },
+  {
+    "legenda": "Pra quem vai fazer *Palmital*",
+    "tipo": "trilha",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "Trilha, questões e *simulado*",
+    "tipo": "simulado",
+    "capi": "estudando"
+  },
+  {
+    "legenda": "Acaba o *R$ 197* em 6x",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "Último dia: *sábado*. Link na bio",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 322,
+  "titulo": "Hoje à meia-noite",
+  "dia": "05/12",
+  "falas": {
+    "mesa": [
+      "Hoje, à meia-noite, acaba.",
+      "Se você tava esperando a hora certa pra começar a estudar pro concurso de Palmital...",
+      "...com a trilha do seu cargo e simulado oficial...",
+      "Acaba hoje o preço de cento e noventa e sete reais, em até seis vezes sem juros. Amanhã, duzentos e noventa e sete.",
+      "O link tá na bio."
+    ]
+  }
+}

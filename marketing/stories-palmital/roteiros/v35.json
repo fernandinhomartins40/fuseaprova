@@ -1,0 +1,28 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 312,
+  "titulo": "Daqui a 6 dias",
+  "dia": "30/11",
+  "falas": {
+    "mesa": [
+      "Daqui a seis dias, uma coisa muda no Fuse Aprova.",
+      "Não é o conteúdo: a trilha, as questões e os simulados continuam iguais.",
+      "E o acesso continua valendo até o dia da prova.",
+      "O que muda é o preço. Até sábado, cento e noventa e sete reais, em até seis vezes sem juros.",
+      "No dia seis, sobe pra duzentos e noventa e sete. O link tá na bio."
+    ]
+  }
+}

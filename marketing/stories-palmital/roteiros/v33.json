@@ -1,0 +1,29 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 310,
+  "titulo": "Testar sem arriscar",
+  "dia": "29/11",
+  "falas": {
+    "mesa": [
+      "Tem um jeito de testar o Fuse Aprova sem arriscar o seu dinheiro.",
+      "Você entra e faz os treinos...",
+      "...faz um simulado, e vê se é pra você.",
+      "São sete dias de garantia. Não gostou? Devolvemos cem por cento do valor.",
+      "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão.",
+      "O link tá na bio."
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v25/voz-mesa-1.wav",
+      "segundos": 4.72,
+      "texto": "Antes de estudar pro concurso de Palmital, tem uma pergunta que quase ninguém faz."
+    },
+    {
+      "arquivo": "audio/v25/voz-mesa-2.wav",
+      "segundos": 2.787,
+      "texto": "E ela pode jogar meses de estudo no lixo."
+    },
+    {
+      "arquivo": "audio/v25/voz-mesa-3.wav",
+      "segundos": 4.469,
+      "texto": "Tem cargo que exige CNH. Tem cargo que exige experiência."
+    },
+    {
+      "arquivo": "audio/v25/voz-mesa-4.wav",
+      "segundos": 5.842,
+      "texto": "A pergunta é: eu atendo aos requisitos do meu cargo? No Fuse Aprova, você descobre pelo edital."
+    },
+    {
+      "arquivo": "audio/v25/voz-mesa-5.wav",
+      "segundos": 6.291,
+      "texto": "E estuda pela trilha do seu cargo. Cento e noventa e sete reais, em até seis vezes, até cinco de dezembro."
+    },
+    {
+      "arquivo": "audio/v25/voz-mesa-6.wav",
+      "segundos": 1.04,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

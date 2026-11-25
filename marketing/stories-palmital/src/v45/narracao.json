@@ -1,0 +1,29 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v45/voz-mesa-1.wav",
+      "segundos": 2.229,
+      "texto": "Hoje, à meia-noite, acaba."
+    },
+    {
+      "arquivo": "audio/v45/voz-mesa-2.wav",
+      "segundos": 4.09,
+      "texto": "Se você tava esperando a hora certa pra começar a estudar pro concurso de Palmital..."
+    },
+    {
+      "arquivo": "audio/v45/voz-mesa-3.wav",
+      "segundos": 2.907,
+      "texto": "...com a trilha do seu cargo e simulado oficial..."
+    },
+    {
+      "arquivo": "audio/v45/voz-mesa-4.wav",
+      "segundos": 6.927,
+      "texto": "Acaba hoje o preço de cento e noventa e sete reais, em até seis vezes sem juros. Amanhã, duzentos e noventa e sete."
+    },
+    {
+      "arquivo": "audio/v45/voz-mesa-5.wav",
+      "segundos": 1.007,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

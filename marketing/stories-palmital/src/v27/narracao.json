@@ -1,0 +1,34 @@
+{
+  "mesa": [
+    {
+      "arquivo": "audio/v27/voz-mesa-1.wav",
+      "segundos": 3.897,
+      "texto": "Tem uma resposta escondida no edital que muda o que você vai estudar."
+    },
+    {
+      "arquivo": "audio/v27/voz-mesa-2.wav",
+      "segundos": 2.972,
+      "texto": "Ela não tá na primeira página. Nem na segunda."
+    },
+    {
+      "arquivo": "audio/v27/voz-mesa-3.wav",
+      "segundos": 2.583,
+      "texto": "Ela fica nos anexos, cargo por cargo."
+    },
+    {
+      "arquivo": "audio/v27/voz-mesa-4.wav",
+      "segundos": 6.159,
+      "texto": "É o que o edital pede pro seu cargo. No Fuse Aprova, você pergunta, e a resposta vem com o item citado."
+    },
+    {
+      "arquivo": "audio/v27/voz-mesa-5.wav",
+      "segundos": 5.86,
+      "texto": "E a trilha foca nisso. Cento e noventa e sete reais, em até seis vezes, até cinco de dezembro."
+    },
+    {
+      "arquivo": "audio/v27/voz-mesa-6.wav",
+      "segundos": 1.065,
+      "texto": "O link tá na bio."
+    }
+  ]
+}

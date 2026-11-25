@@ -1,0 +1,42 @@
+[
+  {
+    "legenda": "A banca tem *um padrão*",
+    "tipo": "texto",
+    "linhas": [
+      "A banca",
+      "tem um padrão"
+    ],
+    "cor": "#0f6e70",
+    "capi": "constancia"
+  },
+  {
+    "legenda": "Não é sorte. *É repetição*",
+    "tipo": "texto",
+    "linhas": [
+      "não é",
+      "sorte"
+    ],
+    "cor": "#1D6FE0",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "Olha *como ela pergunta*",
+    "tipo": "questao",
+    "capi": "estudando"
+  },
+  {
+    "legenda": "O *jeito FAU*: +10 mil questões",
+    "tipo": "erro",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "*R$ 197* em até *6x sem juros*",
+    "tipo": "oferta",
+    "capi": "incentivando"
+  },
+  {
+    "legenda": "*Link na bio*",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]

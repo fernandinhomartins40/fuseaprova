@@ -1,0 +1,28 @@
+{
+  "voz": "2CECaLAGTS5NRGxgbcxr",
+  "nomeVoz": "Davi Andrei",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.08
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 316,
+  "titulo": "Faltam 4 dias",
+  "dia": "02/12",
+  "falas": {
+    "mesa": [
+      "Faltam quatro dias pra uma coisa acabar.",
+      "E ela é pra quem vai fazer o concurso de Palmital.",
+      "Trilha do cargo, questões no estilo da FAU, simulado oficial.",
+      "O que acaba é o preço de cento e noventa e sete reais, em até seis vezes de trinta e dois e oitenta e três.",
+      "Sábado é o último dia. O link tá na bio."
+    ]
+  }
+}

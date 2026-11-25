@@ -1,0 +1,36 @@
+[
+  {
+    "legenda": "Um hábito de *domingo*",
+    "tipo": "texto",
+    "linhas": [
+      "domingo"
+    ],
+    "cor": "#0f6e70",
+    "capi": "constancia"
+  },
+  {
+    "legenda": "Seg a sex: *1 treino por dia*",
+    "tipo": "trilha",
+    "capi": "estudando"
+  },
+  {
+    "legenda": "Revisão todo dia. *Sábado: simulado*",
+    "tipo": "revisao",
+    "capi": "explicando"
+  },
+  {
+    "legenda": "*Planejar a semana*",
+    "tipo": "licao",
+    "capi": "celebrando"
+  },
+  {
+    "legenda": "*R$ 197* em até *6x sem juros*",
+    "tipo": "oferta",
+    "capi": "incentivando"
+  },
+  {
+    "legenda": "*Link na bio*",
+    "tipo": "oferta",
+    "capi": "celebrando"
+  }
+]
