@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   calcularNota,
+  minimoRespondidas,
+  msRestantesDoModo,
+  prazoDoSimulado,
+  somarTempoTreino,
   DISTRIBUICAO_PADRAO,
   montarSimulado,
   msRestantesSimulado,
@@ -103,5 +107,31 @@ describe('montagem do simulado', () => {
 
   it('conta as questões em branco', () => {
     expect(questoesEmBranco(['a', 'b', 'c'], { a: { letra: 'A' }, b: { letra: null } })).toBe(2);
+  });
+});
+
+describe('modos do simulado (D48)', () => {
+  const ini = new Date('2026-12-01T08:00:00-03:00');
+  it('prazo: 4 h na prova e 7 dias no treino', () => {
+    expect(prazoDoSimulado('prova', ini).getTime() - ini.getTime()).toBe(4 * 3600_000);
+    expect(prazoDoSimulado('treino', ini).getTime() - ini.getTime()).toBe(7 * 24 * 3600_000);
+  });
+  it('treino só soma o tempo entre sinais próximos', () => {
+    const t = (s: number) => new Date(ini.getTime() + s * 1000);
+    expect(somarTempoTreino(0, null, t(10))).toBe(0);
+    expect(somarTempoTreino(5000, t(0), t(30))).toBe(35_000);
+    expect(somarTempoTreino(5000, t(0), t(91))).toBe(5000);
+    expect(somarTempoTreino(5000, t(30), t(0))).toBe(5000);
+  });
+  it('tempo restante por modo', () => {
+    const fim = prazoDoSimulado('treino', ini);
+    expect(msRestantesDoModo('treino', fim, 3600_000, ini)).toBe(3 * 3600_000);
+    expect(msRestantesDoModo('treino', fim, 5 * 3600_000, ini)).toBe(0);
+    expect(msRestantesDoModo('treino', fim, 0, new Date(fim.getTime() - 1000))).toBe(1000);
+    expect(msRestantesDoModo('prova', prazoDoSimulado('prova', ini), 0, ini)).toBe(4 * 3600_000);
+  });
+  it('mínimo de respondidas: metade, arredondada para cima', () => {
+    expect(minimoRespondidas(40)).toBe(20);
+    expect(minimoRespondidas(45)).toBe(23);
   });
 });

@@ -11,9 +11,17 @@ import {
   ZLetra,
   ZSlugDisciplina,
 } from './comum.js';
+import { MODOS_SIMULADO, SITUACOES_SIMULADO } from '../simulado.js';
+
+export const ZModoSimulado = z.enum(MODOS_SIMULADO);
+export const ZSituacaoSimulado = z.enum(SITUACOES_SIMULADO);
 
 /** POST /simulados */
-export const CriarSimuladoEntrada = z.object({ cargoId: Uuid });
+export const CriarSimuladoEntrada = z.object({
+  cargoId: Uuid,
+  /** D48. Sem o campo (apps antigos), vale "prova". */
+  modo: ZModoSimulado.optional(),
+});
 export type CriarSimuladoEntrada = z.infer<typeof CriarSimuladoEntrada>;
 
 export const RespostaSimulado = z.object({
@@ -36,10 +44,13 @@ export const SimuladoAndamento = z.object({
   estado: z.literal('andamento'),
   id: Uuid,
   cargo: CargoDoSimulado,
+  modo: ZModoSimulado,
   iniciadoEm: DataHora,
+  /** Fim do prazo: 4 h na prova, 7 dias no treino. */
   terminaEm: DataHora,
   /** Relógio do servidor, para o cronômetro corrigir a diferença do aparelho. */
   agora: DataHora,
+  /** Na prova, até terminaEm; no treino, o que sobra das 4 h de tela (pausa fora da prova). */
   msRestantes: z.number().int(),
   distribuicao: Distribuicao,
   questoes: z.array(QuestaoDoSimulado),
@@ -64,11 +75,19 @@ export const QuestaoCorrigida = QuestaoDoSimulado.extend({
   anulada: z.boolean(),
 }).merge(CorrecaoQuestao);
 
-/** Resultado (resposta de POST /simulados/:id/entregar e de GET /simulados/:id depois da entrega). */
+/**
+ * Resultado (resposta de POST /simulados/:id/entregar e de GET /simulados/:id depois da entrega).
+ * D48: "nao_concluido" e "descartado" vêm sem nota e sem questões (o gabarito não é revelado).
+ */
 export const SimuladoResultado = z.object({
   estado: z.literal('entregue'),
   id: Uuid,
   cargo: CargoDoSimulado,
+  modo: ZModoSimulado,
+  situacao: ZSituacaoSimulado,
+  respondidas: z.number().int(),
+  /** Valeu XP, ofensiva e conquistas (50% ou mais respondidas). */
+  recompensa: z.boolean(),
   iniciadoEm: DataHora,
   entregueEm: DataHora,
   /** Entregue sozinho quando o tempo acabou. */
@@ -97,11 +116,22 @@ export type SimuladoDetalheResposta = z.infer<typeof SimuladoDetalheResposta>;
 
 /** GET /simulados — histórico ("Seus simulados"). */
 export const SimuladosHistoricoResposta = z.object({
-  emAndamento: z.object({ id: Uuid, terminaEm: DataHora, cargo: CargoDoSimulado }).nullable(),
+  emAndamento: z
+    .object({
+      id: Uuid,
+      terminaEm: DataHora,
+      cargo: CargoDoSimulado,
+      modo: ZModoSimulado,
+      msRestantes: z.number().int(),
+    })
+    .nullable(),
   itens: z.array(
     z.object({
       id: Uuid,
       cargo: CargoDoSimulado,
+      modo: ZModoSimulado,
+      situacao: ZSituacaoSimulado,
+      respondidas: z.number().int(),
       iniciadoEm: DataHora,
       entregueEm: DataHora,
       pontos: z.number(),
@@ -130,6 +160,10 @@ export const SalvarRespostaSimuladoResposta = z.object({
 });
 export type SalvarRespostaSimuladoResposta = z.infer<typeof SalvarRespostaSimuladoResposta>;
 
+/** POST /simulados/:id/sinal — o treino está na tela (a cada 30 s); devolve o tempo que falta. */
+export const SinalSimuladoResposta = z.object({ msRestantes: z.number().int() });
+export type SinalSimuladoResposta = z.infer<typeof SinalSimuladoResposta>;
+
 /** POST /simulados/:id/entregar — sem corpo; responde SimuladoResultado. */
 export const EntregarSimuladoResposta = SimuladoResultado;
 export type EntregarSimuladoResposta = SimuladoResultado;
@@ -140,3 +174,4 @@ export const NOTA_SIMULADO_LEGISLACAO =
 export function seloSimulado(aprovado: boolean): string {
   return aprovado ? 'APROVADO' : 'ABAIXO DO MÍNIMO';
 }
+export const SELO_SITUACAO = { nao_concluido: 'NÃO CONCLUÍDO', descartado: 'DESCARTADO' } as const;

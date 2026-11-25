@@ -222,7 +222,12 @@ export async function atividadeDoDia(tx: Db, usuarioId: string, dia: Dia): Promi
     .select({ n: count() })
     .from(simulados)
     .where(
-      and(eq(simulados.usuarioId, usuarioId), gte(simulados.entregueEm, ini), lt(simulados.entregueEm, fim)),
+      and(
+        eq(simulados.usuarioId, usuarioId),
+        eq(simulados.recompensa, true),
+        gte(simulados.entregueEm, ini),
+        lt(simulados.entregueEm, fim),
+      ),
     );
   return { licoesTrilha: contar(lic?.n), questoesRevisao: contar(rev?.n), simulados: contar(sim?.n) };
 }
@@ -307,7 +312,14 @@ export async function semanaDaOfensiva(tx: Db, usuarioId: string, agora: Date) {
     tx
       .select({ em: simulados.entregueEm })
       .from(simulados)
-      .where(and(eq(simulados.usuarioId, usuarioId), gte(simulados.entregueEm, ini), lt(simulados.entregueEm, fim))),
+      .where(
+        and(
+          eq(simulados.usuarioId, usuarioId),
+          eq(simulados.recompensa, true),
+          gte(simulados.entregueEm, ini),
+          lt(simulados.entregueEm, fim),
+        ),
+      ),
   ]);
   const porDia = (l: { em: Date | null }[]) => agrupar(l.filter((x) => x.em), (x) => diaSP(x.em!));
   const s = porDia(sess);
@@ -345,7 +357,7 @@ export async function verificarConquistas(
   const [sims] = await tx
     .select({ n: count() })
     .from(simulados)
-    .where(and(eq(simulados.usuarioId, u.id), isNotNull(simulados.entregueEm)));
+    .where(and(eq(simulados.usuarioId, u.id), eq(simulados.recompensa, true)));
   const [aprov] = await tx
     .select({ n: count() })
     .from(xpEventos)

@@ -162,7 +162,7 @@ async function ficha(db: Db, id: string, agora: Date): Promise<FichaUsuarioRespo
     selUsuarios(db).where(eq(usuarios.id, id)),
     db.select({ n: count() }).from(progressoLicoes).where(and(eq(progressoLicoes.usuarioId, id), isNotNull(progressoLicoes.concluidaEm))),
     db.select({ n: count(), a: sql<number>`count(*) filter (where ${tentativas.acertou})::int` }).from(tentativas).where(eq(tentativas.usuarioId, id)),
-    db.select({ n: count() }).from(simulados).where(and(eq(simulados.usuarioId, id), isNotNull(simulados.entregueEm))),
+    db.select({ n: count() }).from(simulados).where(and(eq(simulados.usuarioId, id), eq(simulados.situacao, 'corrigido'))),
     db.select({ n: count() }).from(sessoesEstudo).where(eq(sessoesEstudo.usuarioId, id)),
     db.select().from(pedidos).where(eq(pedidos.usuarioId, id)).orderBy(desc(pedidos.criadoEm)),
     db.select().from(sessoes).where(and(eq(sessoes.usuarioId, id), sql`${sessoes.expiraEm} > ${dataSql(agora)}`)).orderBy(desc(sessoes.ultimoUsoEm)),

@@ -1,10 +1,23 @@
 import type { Registrador } from '../http/registrar.js';
-import { criarSimulado, entregar, historico, obterSimulado, resultado, salvarResposta } from '../servicos/simulado.js';
+import {
+  criarSimulado,
+  descartar,
+  entregar,
+  historico,
+  obterSimulado,
+  resultado,
+  salvarResposta,
+  sinalSimulado,
+} from '../servicos/simulado.js';
 
 export function rotasSimulados(r: Registrador): void {
-  r.rota('simuladoCriar', async ({ usuario, corpo, deps, agora }) => criarSimulado(deps, usuario, corpo.cargoId, agora));
+  r.rota('simuladoCriar', async ({ usuario, corpo, deps, agora }) =>
+    criarSimulado(deps, usuario, corpo.cargoId, agora, corpo.modo),
+  );
   r.rota('simuladosListar', async ({ usuario, deps, agora }) => historico(deps, usuario, agora));
-  r.rota('simuladoObter', async ({ usuario, params, deps, agora }) => obterSimulado(deps, usuario, params.id, agora));
+  r.rota('simuladoObter', async ({ usuario, params, deps, agora }) =>
+    obterSimulado(deps, usuario, params.id, agora),
+  );
   r.rota('simuladoResposta', async ({ usuario, params, corpo, deps, agora }) =>
     salvarResposta(deps, usuario, params.id, corpo, agora),
   );
@@ -12,4 +25,10 @@ export function rotasSimulados(r: Registrador): void {
     const s = await entregar(deps, usuario.id, params.id, agora, false);
     return resultado(deps.db, s);
   });
+  r.rota('simuladoSinal', async ({ usuario, params, deps, agora }) =>
+    sinalSimulado(deps, usuario, params.id, agora),
+  );
+  r.rota('simuladoDescartar', async ({ usuario, params, deps, agora }) =>
+    resultado(deps.db, await descartar(deps, usuario.id, params.id, agora)),
+  );
 }

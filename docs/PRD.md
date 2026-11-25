@@ -199,8 +199,11 @@ As telas marcadas com ✅ têm desenho final em `design/png` e `design/html`. As
   - navegação por número de questão numa grade de 1–40, com as marcadas e as "para revisar depois";
   - sem feedback por questão;
   - o botão ENTREGAR PROVA pede confirmação e mostra quantas questões estão em branco;
-  - se o tempo acabar, a prova é entregue automaticamente;
-  - o aluno pode sair e voltar enquanto o tempo não acabar, porque o tempo é contado no servidor.
+  - dois modos (D48), escolhidos antes de começar: **Treino** (padrão: o tempo só corre com a prova na tela, e o aluno tem até 7 dias para terminar) e **Prova real** (4 h corridas);
+  - o aluno pode sair e voltar enquanto o tempo não acabar, porque o tempo é contado no servidor;
+  - se o tempo acabar com metade ou mais respondida, a prova é corrigida automaticamente; com menos da metade, fica **não concluída**, sem nota e sem mostrar o gabarito;
+  - **Descartar simulado** fecha sem nota, sem XP e sem gabarito;
+  - entregar com menos da metade respondida corrige, mas não dá XP, ofensiva nem conquista.
 - ✏️ **Resultado do simulado:**
   - nota em pontos (2,0 por questão nos blocos comuns, 2,8 nos específicos) e percentual;
   - selo APROVADO (≥ 50) ou ABAIXO DO MÍNIMO;

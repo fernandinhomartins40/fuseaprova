@@ -1,6 +1,11 @@
 /**
- * Simulado no padrão FAU (PRD 5.14): relógio no servidor, entrega automática ao fim das 4 h
- * (verificada em toda leitura e por uma varredura periódica da API).
+ * Simulado no padrão FAU (PRD 5.14): relógio no servidor, fechamento automático ao fim do tempo
+ * (verificado em toda leitura e por uma varredura periódica da API).
+ *
+ * D48: dois modos. "prova" tem 4 h corridas; no "treino" o tempo só corre com a prova na tela
+ * (sinal do app a cada 30 s) e o prazo é de 7 dias. Se o tempo acaba com menos da metade
+ * respondida, o simulado fica "não concluído": sem nota e sem revelar o gabarito. Entregar com
+ * menos da metade corrige, mas não dá XP, ofensiva nem conquista. O aluno pode descartar.
  */
 import { and, asc, desc, eq, inArray, isNull, lte, sql } from 'drizzle-orm';
 import { schema } from '@fuse/db';
@@ -8,18 +13,27 @@ import {
   calcularNota,
   diaSP,
   DISTRIBUICAO_PADRAO,
+  DURACAO_SIMULADO_MS,
+  minimoRespondidas,
   montarSimulado,
-  msRestantesSimulado,
+  msRestantesDoModo,
   NOMES_DISCIPLINA,
   ORDEM_BLOCOS,
   PESOS_PADRAO,
+  prazoDoSimulado,
   questoesEmBranco,
   simuladoExpirado,
-  terminoDoSimulado,
+  somarTempoTreino,
   xpDoSimulado,
+  type ModoSimulado,
   type SlugDisciplina,
 } from '@fuse/shared';
-import { seloSimulado, type SimuladoAndamento, type SimuladoResultado } from '@fuse/shared/api';
+import {
+  SELO_SITUACAO,
+  seloSimulado,
+  type SimuladoAndamento,
+  type SimuladoResultado,
+} from '@fuse/shared/api';
 import type { Deps, Usuario } from '../contexto.js';
 import { falha } from '../http/erros.js';
 import { iso, type Db } from '../util.js';
@@ -60,6 +74,27 @@ function distribuicaoDe(s: Simulado) {
   };
 }
 
+const respondidasDe = (s: Simulado) => s.questoes.filter((id) => s.respostas[id]?.letra).length;
+
+/** Tempo de tela do treino até agora (limitado às 4 h). */
+const usadosAte = (s: Simulado, agora: Date) =>
+  s.modo === 'treino'
+    ? Math.min(DURACAO_SIMULADO_MS, somarTempoTreino(s.msUsados, s.ultimoSinalEm, agora))
+    : s.msUsados;
+
+const restantesDe = (s: Simulado, agora: Date) =>
+  msRestantesDoModo(s.modo, s.terminaEm, s.msUsados, agora);
+
+/** Acabou o prazo (4 h na prova, 7 dias no treino) ou as 4 h de tela do treino. */
+const acabouOTempo = (s: Simulado, agora: Date) =>
+  simuladoExpirado(s.terminaEm, agora) || restantesDe(s, agora) <= 0;
+
+function tempoGastoDe(s: Simulado): number {
+  if (s.modo === 'treino') return s.msUsados;
+  const fim = s.entregueEm ?? s.terminaEm;
+  return Math.max(0, Math.min(fim.getTime(), s.terminaEm.getTime()) - s.iniciadoEm.getTime());
+}
+
 /** Assuntos que saem do simulado no modo edital (só aparecem em seções "Fora do edital"). */
 async function assuntosForaDoEdital(db: Db, concursoId: string): Promise<string[]> {
   const rows = await db
@@ -79,6 +114,7 @@ export async function criarSimulado(
   u: Usuario,
   cargoId: string,
   agora: Date,
+  modo: ModoSimulado = 'prova',
 ): Promise<SimuladoAndamento> {
   await entregarExpirados(deps, u.id, agora);
   // Linha do aluno travada: dois toques em COMEÇAR não abrem 2 simulados (auditoria PIE R3-06).
@@ -160,7 +196,9 @@ export async function criarSimulado(
         distribuicao: dist,
         respostas: {},
         iniciadoEm: agora,
-        terminaEm: terminoDoSimulado(agora),
+        terminaEm: prazoDoSimulado(modo, agora),
+        modo,
+        ultimoSinalEm: modo === 'treino' ? agora : null,
       })
       .returning();
     return andamento(db, s!, agora);
@@ -174,10 +212,11 @@ export async function andamento(db: Db, s: Simulado, agora: Date): Promise<Simul
     estado: 'andamento',
     id: s.id,
     cargo: await cargoDoSimulado(db, s.cargoId),
+    modo: s.modo,
     iniciadoEm: iso(s.iniciadoEm),
     terminaEm: iso(s.terminaEm),
     agora: iso(agora),
-    msRestantes: msRestantesSimulado(s.terminaEm, agora),
+    msRestantes: restantesDe(s, agora),
     distribuicao: dist,
     questoes: emOrdem(s.questoes, mapa).map((q, i) => ({
       numero: i + 1,
@@ -189,8 +228,39 @@ export async function andamento(db: Db, s: Simulado, agora: Date): Promise<Simul
 }
 
 export async function resultado(db: Db, s: Simulado): Promise<SimuladoResultado> {
-  const mapa = await carregarQuestoes(db, s.questoes);
   const { dist, pesos } = distribuicaoDe(s);
+  const situacao = s.situacao ?? 'corrigido';
+  const base = {
+    estado: 'entregue' as const,
+    id: s.id,
+    cargo: await cargoDoSimulado(db, s.cargoId),
+    modo: s.modo,
+    situacao,
+    respondidas: respondidasDe(s),
+    recompensa: s.recompensa,
+    iniciadoEm: iso(s.iniciadoEm),
+    entregueEm: iso(s.entregueEm ?? s.terminaEm),
+    entregaAutomatica: s.entregaAutomatica,
+    tempoGastoMs: tempoGastoDe(s),
+    xpGanho: s.xpGanho,
+  };
+  if (situacao !== 'corrigido') {
+    // Sem nota e sem as questões: o gabarito do que ficou sem fazer não é revelado.
+    const vazia = calcularNota({}, dist, pesos);
+    return {
+      ...base,
+      pontos: 0,
+      pontosMaximos: vazia.pontosMaximos,
+      percentual: 0,
+      aprovado: false,
+      selo: SELO_SITUACAO[situacao],
+      acertos: 0,
+      totalQuestoes: vazia.totalQuestoes,
+      porBloco: [],
+      questoes: [],
+    };
+  }
+  const mapa = await carregarQuestoes(db, s.questoes);
   const lista = emOrdem(s.questoes, mapa).map((q, i) => {
     const letra = s.respostas[q.aluno.id]?.letra ?? null;
     const anulada = q.status === 'anulada';
@@ -208,18 +278,8 @@ export async function resultado(db: Db, s: Simulado): Promise<SimuladoResultado>
   });
   const acertosPorBloco = s.acertosPorBloco ?? contarPorBloco(lista);
   const nota = calcularNota(acertosPorBloco, dist, pesos);
-  const fim = s.entregueEm ?? s.terminaEm;
   return {
-    estado: 'entregue',
-    id: s.id,
-    cargo: await cargoDoSimulado(db, s.cargoId),
-    iniciadoEm: iso(s.iniciadoEm),
-    entregueEm: iso(fim),
-    entregaAutomatica: s.entregaAutomatica,
-    tempoGastoMs: Math.max(
-      0,
-      Math.min(fim.getTime(), s.terminaEm.getTime()) - s.iniciadoEm.getTime(),
-    ),
+    ...base,
     pontos: s.pontos ?? nota.pontos,
     pontosMaximos: nota.pontosMaximos,
     percentual: nota.percentual,
@@ -228,7 +288,6 @@ export async function resultado(db: Db, s: Simulado): Promise<SimuladoResultado>
     acertos: nota.acertos,
     totalQuestoes: nota.totalQuestoes,
     porBloco: nota.porBloco.map((b) => ({ ...b, nome: NOMES_DISCIPLINA[b.bloco] })),
-    xpGanho: s.xpGanho,
     questoes: lista,
   };
 }
@@ -239,7 +298,11 @@ function contarPorBloco(lista: { bloco: SlugDisciplina; acertou: boolean }[]) {
   return r;
 }
 
-/** Corrige e fecha o simulado: nota 2,0/2,8, XP, erros na revisão, ofensiva. Idempotente. */
+/**
+ * Fecha o simulado. Idempotente. Se o tempo acabou (automática, ou entrega pedida depois do fim)
+ * com menos da metade respondida: "não concluído", sem nota. Senão corrige (nota 2,0/2,8, erros
+ * na revisão) e, com metade ou mais respondida, dá XP, ofensiva e conquistas.
+ */
 export async function entregar(
   deps: Deps,
   usuarioId: string,
@@ -256,8 +319,24 @@ export async function entregar(
     if (!s) throw falha('nao_encontrado', 'Simulado não encontrado.');
     if (s.entregueEm) return s;
     const u = await travarUsuario(tx, usuarioId);
-    // Entrega automática registra o fim no término das 4 h.
-    const entregueEm = automatica ? s.terminaEm : agora;
+    const auto = automatica || acabouOTempo(s, agora);
+    const msUsados = usadosAte(s, agora);
+    // Fim pelo tempo: a prova registra o término das 4 h; o treino, o momento (até o prazo).
+    const entregueEm = !auto
+      ? agora
+      : s.modo === 'prova' || s.terminaEm < agora
+        ? s.terminaEm
+        : agora;
+    const fechamento = { entregueEm, entregaAutomatica: auto, msUsados };
+    const recompensa = respondidasDe(s) >= minimoRespondidas(s.questoes.length);
+    if (auto && !recompensa) {
+      const [fechado] = await tx
+        .update(simulados)
+        .set({ ...fechamento, situacao: 'nao_concluido', recompensa: false })
+        .where(eq(simulados.id, s.id))
+        .returning();
+      return fechado!;
+    }
     const mapa = await carregarQuestoes(tx, s.questoes);
     const { dist, pesos } = distribuicaoDe(s);
     const corrigidas = emOrdem(s.questoes, mapa).map((q) => {
@@ -267,7 +346,7 @@ export async function entregar(
     });
     const acertosPorBloco = contarPorBloco(corrigidas);
     const nota = calcularNota(acertosPorBloco, dist, pesos);
-    const xp = xpDoSimulado(nota.acertos, nota.aprovado);
+    const xp = recompensa ? xpDoSimulado(nota.acertos, nota.aprovado) : { total: 0, itens: [] };
 
     // As respostas viram tentativas (domínio, estatísticas) numa sessão de estudo do tipo simulado.
     const respondidas = corrigidas.filter((c) => c.letra && !c.anulada);
@@ -303,19 +382,76 @@ export async function entregar(
     const [atualizado] = await tx
       .update(simulados)
       .set({
-        entregueEm,
-        entregaAutomatica: automatica,
+        ...fechamento,
+        situacao: 'corrigido',
+        recompensa,
         pontos: nota.pontos,
         acertosPorBloco,
         xpGanho: xp.total,
       })
       .where(eq(simulados.id, s.id))
       .returning();
-    await creditarXp(tx, u, xp.itens, agora, { simuladoId: s.id });
-    await registrarOfensivaSeContou(tx, u, diaSP(entregueEm));
-    await verificarConquistas(tx, u, agora);
+    if (recompensa) {
+      await creditarXp(tx, u, xp.itens, agora, { simuladoId: s.id });
+      await registrarOfensivaSeContou(tx, u, diaSP(entregueEm));
+      await verificarConquistas(tx, u, agora);
+    }
     return atualizado!;
   });
+}
+
+/** Fecha sem nota, sem XP e sem revelar o gabarito (D48). Idempotente. */
+export async function descartar(
+  deps: Deps,
+  usuarioId: string,
+  simuladoId: string,
+  agora: Date,
+): Promise<Simulado> {
+  return deps.db.transaction(async (tx) => {
+    const [s] = await tx
+      .select()
+      .from(simulados)
+      .where(and(eq(simulados.id, simuladoId), eq(simulados.usuarioId, usuarioId)))
+      .for('update');
+    if (!s) throw falha('nao_encontrado', 'Simulado não encontrado.');
+    if (s.entregueEm) return s;
+    const [fechado] = await tx
+      .update(simulados)
+      .set({
+        entregueEm: agora,
+        situacao: 'descartado',
+        recompensa: false,
+        msUsados: usadosAte(s, agora),
+      })
+      .where(eq(simulados.id, s.id))
+      .returning();
+    return fechado!;
+  });
+}
+
+/** O treino está na tela: soma o tempo de tela e fecha se as 4 h acabaram. */
+export async function sinalSimulado(deps: Deps, u: Usuario, id: string, agora: Date) {
+  const r = await deps.db.transaction(async (tx) => {
+    const [s] = await tx
+      .select()
+      .from(simulados)
+      .where(and(eq(simulados.id, id), eq(simulados.usuarioId, u.id)))
+      .for('update');
+    if (!s) throw falha('nao_encontrado', 'Simulado não encontrado.');
+    if (s.entregueEm) throw falha('simulado_encerrado');
+    const atual = { ...s, msUsados: usadosAte(s, agora) };
+    if (s.modo === 'treino')
+      await tx
+        .update(simulados)
+        .set({ msUsados: atual.msUsados, ultimoSinalEm: agora })
+        .where(eq(simulados.id, s.id));
+    return { expirou: acabouOTempo(atual, agora), msRestantes: restantesDe(atual, agora) };
+  });
+  if (r.expirou) {
+    await entregar(deps, u.id, id, agora, true);
+    throw falha('simulado_encerrado');
+  }
+  return { msRestantes: r.msRestantes };
 }
 
 /** Entrega os simulados do aluno (ou de todos) cujo tempo acabou. */
@@ -344,7 +480,7 @@ export async function obterSimulado(deps: Deps, u: Usuario, id: string, agora: D
     .from(simulados)
     .where(and(eq(simulados.id, id), eq(simulados.usuarioId, u.id)));
   if (!s) throw falha('nao_encontrado', 'Simulado não encontrado.');
-  if (!s.entregueEm && simuladoExpirado(s.terminaEm, agora)) {
+  if (!s.entregueEm && acabouOTempo(s, agora)) {
     return resultado(deps.db, await entregar(deps, u.id, id, agora, true));
   }
   return s.entregueEm ? resultado(deps.db, s) : andamento(deps.db, s, agora);
@@ -369,7 +505,8 @@ export async function salvarResposta(
       .for('update');
     if (!s) throw falha('nao_encontrado', 'Simulado não encontrado.');
     if (s.entregueEm) throw falha('simulado_encerrado');
-    if (simuladoExpirado(s.terminaEm, agora)) return true;
+    const msUsados = usadosAte(s, agora);
+    if (acabouOTempo({ ...s, msUsados }, agora)) return true;
     if (!s.questoes.includes(e.questaoId))
       throw falha('validacao', 'Essa questão não é deste simulado.');
     const anterior = s.respostas[e.questaoId];
@@ -380,10 +517,13 @@ export async function salvarResposta(
         revisarDepois: e.revisarDepois ?? anterior?.revisarDepois ?? false,
       },
     };
-    await tx.update(simulados).set({ respostas }).where(eq(simulados.id, s.id));
+    await tx
+      .update(simulados)
+      .set({ respostas, ...(s.modo === 'treino' ? { msUsados, ultimoSinalEm: agora } : {}) })
+      .where(eq(simulados.id, s.id));
     return {
       ok: true as const,
-      msRestantes: msRestantesSimulado(s.terminaEm, agora),
+      msRestantes: restantesDe({ ...s, msUsados }, agora),
       emBranco: questoesEmBranco(s.questoes, respostas),
     };
   });
@@ -416,7 +556,13 @@ export async function historico(deps: Deps, u: Usuario, agora: Date) {
   const cargoDe = (id: string) => ({ id, nome: nomes.get(id) ?? 'Cargo' });
   return {
     emAndamento: aberto
-      ? { id: aberto.id, terminaEm: iso(aberto.terminaEm), cargo: cargoDe(aberto.cargoId) }
+      ? {
+          id: aberto.id,
+          terminaEm: iso(aberto.terminaEm),
+          cargo: cargoDe(aberto.cargoId),
+          modo: aberto.modo,
+          msRestantes: restantesDe(aberto, agora),
+        }
       : null,
     itens: lista
       .filter((s) => s.entregueEm)
@@ -426,6 +572,9 @@ export async function historico(deps: Deps, u: Usuario, agora: Date) {
         return {
           id: s.id,
           cargo: cargoDe(s.cargoId),
+          modo: s.modo,
+          situacao: s.situacao ?? 'corrigido',
+          respondidas: respondidasDe(s),
           iniciadoEm: iso(s.iniciadoEm),
           entregueEm: iso(s.entregueEm!),
           pontos: nota.pontos,
@@ -433,10 +582,7 @@ export async function historico(deps: Deps, u: Usuario, agora: Date) {
           aprovado: nota.aprovado,
           acertos: nota.acertos,
           totalQuestoes: nota.totalQuestoes,
-          tempoGastoMs: Math.max(
-            0,
-            Math.min(s.entregueEm!.getTime(), s.terminaEm.getTime()) - s.iniciadoEm.getTime(),
-          ),
+          tempoGastoMs: tempoGastoDe(s),
         };
       }),
   };

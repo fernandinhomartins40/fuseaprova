@@ -91,9 +91,12 @@ test.describe('Simulado', () => {
     await expect(page.getByText(/3\/5 · 6,0 pts/)).toBeVisible();
   });
 
-  test('o cronômetro é do servidor e a entrega é automática ao fim das 4 h', async ({ page }) => {
+  test('prova real: o tempo acaba em 4 h e, com menos da metade respondida, fica não concluído', async ({
+    page,
+  }) => {
     await alunoPago(page, novaConta('simauto'));
     await page.goto('/simulado');
+    await page.getByRole('radio', { name: /Prova real/ }).check();
     await page.getByRole('button', { name: 'COMEÇAR SIMULADO' }).click();
     await expect(page.getByRole('timer')).toBeVisible();
     await responder(page, true);
@@ -101,8 +104,21 @@ test.describe('Simulado', () => {
 
     await avancarRelogio(page, 4 * 3600_000 + 60_000);
     await page.goto(url);
-    await expect(page.getByText('Entregue automaticamente quando o tempo acabou.')).toBeVisible();
-    await expect(page.getByText(/1 de 40 acertos/)).toBeVisible();
+    await expect(page.getByText('NÃO CONCLUÍDO')).toBeVisible();
+    await expect(page.getByText(/O tempo acabou com 1 de 40 questões respondidas/)).toBeVisible();
     expect((await detalhe(page)).estado).toBe('entregue');
+    expect((await detalhe(page)).questoes).toHaveLength(0);
+  });
+
+  test('descartar fecha o simulado sem nota', async ({ page }) => {
+    await alunoPago(page, novaConta('simdesc'));
+    await page.goto('/simulado');
+    await page.getByRole('button', { name: 'COMEÇAR SIMULADO' }).click();
+    await expect(page.getByRole('timer')).toBeVisible();
+    await page.getByRole('button', { name: 'Descartar simulado' }).click();
+    await page.getByRole('button', { name: 'DESCARTAR', exact: true }).click();
+    await expect(page.getByText('DESCARTADO')).toBeVisible();
+    await page.getByRole('button', { name: 'FAZER OUTRO SIMULADO' }).click();
+    await expect(page.getByRole('button', { name: 'COMEÇAR SIMULADO' })).toBeEnabled();
   });
 });

@@ -798,6 +798,15 @@ export const simulados = pgTable(
     acertosPorBloco: jsonb('acertos_por_bloco').$type<AcertosPorBlocoJson>(),
     /** extra */
     xpGanho: integer('xp_ganho').notNull().default(0),
+    /** D48: "prova" (4 h corridas) ou "treino" (o tempo pausa fora da prova; prazo de 7 dias). */
+    modo: text('modo').$type<'prova' | 'treino'>().notNull().default('prova'),
+    /** D48: null enquanto aberto; "corrigido", "nao_concluido" ou "descartado" ao fechar. */
+    situacao: text('situacao').$type<'corrigido' | 'nao_concluido' | 'descartado'>(),
+    /** D48: valeu XP, ofensiva e conquistas (50% ou mais respondidas). */
+    recompensa: boolean('recompensa').notNull().default(false),
+    /** D48: tempo de tela do treino. */
+    msUsados: integer('ms_usados').notNull().default(0),
+    ultimoSinalEm: ts('ultimo_sinal_em'),
   },
   (t) => [
     index('simulados_usuario_iniciado_idx').on(t.usuarioId, t.iniciadoEm),

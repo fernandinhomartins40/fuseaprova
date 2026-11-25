@@ -524,3 +524,18 @@ O cadastro continua sem teste (D35). O dono libera, aluno por aluno, um teste de
 - **Carne bovina:** a aula agora diz que o Brasil é o 1º exportador mundial.
 
 Em 75 questões do tipo EXCETO ou INCORRETA, o campo "Atenção" negava diretamente a alternativa que era o gabarito. Nessas questões ele passou a trazer uma orientação neutra. O backup das aulas anteriores está em `Backups/fuseaprova/2026-11-23/aulas_antes_correcoes*_revisao.json`.
+
+## D48. Simulado com modo treino, "não concluído" e descarte (24/11/2026, pedido do dono)
+
+Uma aluna relatou que, quando não termina o simulado, ele "preenche as outras". Na verdade, a prova era entregue sozinha ao fim das 4 h corridas, mesmo com o app fechado. A correção mostrava então o gabarito das 40 questões e dava XP e ofensiva, mesmo com 0 respondidas. Em produção, 11 de 26 simulados tinham terminado assim, todos com menos da metade respondida.
+
+Regras escolhidas pelo dono:
+
+- **Dois modos.** **Treino** é o padrão: o tempo só conta com a prova na tela. O app manda um sinal a cada 30 s, e um intervalo maior que 90 s não é descontado. O prazo é de 7 dias. **Prova real** tem as 4 h corridas, como antes. Apps antigos, que não mandam o modo, abrem em Prova real.
+- **Fim do tempo.** Com menos da metade respondida (menos de 20 de 40), o simulado fica **não concluído**: sem nota, sem XP e sem mostrar o gabarito. As respostas não viram tentativas e as questões podem voltar num próximo sorteio. Com metade ou mais respondida, ele é corrigido como antes.
+- **Descartar.** O botão "Descartar simulado", com confirmação, fecha sem nota, sem XP e sem gabarito.
+- **Recompensa.** Entregar com menos da metade respondida corrige e mostra o gabarito, mas não dá XP, ofensiva nem conquista. Só os simulados com recompensa contam para a ofensiva e para as conquistas.
+- **Simulados antigos.** Os já fechados ficaram como estavam: corrigidos e com a recompensa que já tinham recebido (migração 0020).
+
+Colunas novas em `simulados`: `modo`, `situacao` (corrigido, nao_concluido ou descartado), `recompensa`, `ms_usados` e `ultimo_sinal_em`. Rotas novas: `POST /simulados/:id/sinal` e `POST /simulados/:id/descartar`. O resultado "não concluído" ou "descartado" vem sem as questões, e os apps antigos mostram uma tela de 0 ponto com o selo, sem quebrar.
+

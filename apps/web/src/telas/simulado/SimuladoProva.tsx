@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { formatarCronometro, type Letra } from '@fuse/shared';
+import { formatarCronometro, minimoRespondidas, type Letra } from '@fuse/shared';
 import type { RespostaSimulado, SimuladoAndamento, SimuladoResultado } from '@fuse/shared/api';
 import { chamar, ErroApi, mensagemDeErro } from '../../api/cliente';
 import { CHAVES, useSimulado } from '../../api/consultas';
@@ -50,68 +50,102 @@ function Prova({ sim }: { sim: SimuladoAndamento }) {
   const [gradeAberta, setGradeAberta] = useState(false);
   const [confirmar, setConfirmar] = useState(false);
   const [entregando, setEntregando] = useState(false);
-  // Diferença entre o relógio do servidor e o do aparelho: o tempo é do servidor.
-  const desvio = useMemo(() => new Date(sim.agora).getTime() - Date.now(), [sim.agora]);
-  const fim = new Date(sim.terminaEm).getTime();
-  const [restante, setRestante] = useState(() => fim - (Date.now() + desvio));
-  const entregue = useRef(false);
-  /** Entrega automática que falhou (sem rede): tenta de novo a cada 10 s, com um aviso só. */
+  const [confirmarDescarte, setConfirmarDescarte] = useState(false);
+  const [descartando, setDescartando] = useState(false);
+  const treino = sim.modo === 'treino';
+  // O servidor manda o tempo que falta; o aparelho só desconta. No treino, a aba escondida não conta.
+  const restanteRef = useRef(sim.msRestantes);
+  const ultimoTic = useRef(Date.now());
+  const [restante, setRestante] = useState(sim.msRestantes);
+  useEffect(() => {
+    restanteRef.current = sim.msRestantes;
+    ultimoTic.current = Date.now();
+  }, [sim.msRestantes, sim.agora]);
+  /** Fim do tempo: pede o simulado de novo e o servidor fecha. Sem rede, tenta a cada 10 s. */
   const proximaTentativa = useRef(0);
   const avisouFalha = useRef(false);
 
-  const entregar = useCallback(
-    async (automatica: boolean) => {
-      if (entregue.current) return;
-      if (automatica && Date.now() < proximaTentativa.current) return;
-      entregue.current = true;
-      setEntregando(true);
-      let ok = true;
-      try {
-        const r = await chamar('simuladoEntregar', { params: { id: sim.id } });
-        qc.setQueryData(CHAVES.simulado(sim.id), r);
-      } catch (e) {
-        if (e instanceof ErroApi && e.codigo === 'simulado_encerrado') {
-          await qc.invalidateQueries({ queryKey: CHAVES.simulado(sim.id) });
-        } else {
-          ok = false;
-          entregue.current = false;
-          const semRede = e instanceof ErroApi && e.semConexao;
-          // Sem rede: tenta de novo a cada 10 s. Outro erro: para de insistir (o servidor
-          // entrega sozinho quando o tempo acaba; as respostas já salvas estão lá).
-          proximaTentativa.current = semRede ? Date.now() + 10_000 : Number.POSITIVE_INFINITY;
-          if (!automatica) toast(mensagemDeErro(e), 'erro');
-          else if (!avisouFalha.current) {
-            avisouFalha.current = true;
-            toast(
-              semRede
-                ? 'O tempo acabou. Sem conexão agora: a prova será entregue assim que a internet voltar.'
-                : `O tempo acabou. ${mensagemDeErro(e)} Suas respostas salvas serão entregues pelo servidor.`,
-              'erro',
-            );
-          }
-        }
-      } finally {
-        setEntregando(false);
-        setConfirmar(false);
-        void qc.invalidateQueries({ queryKey: CHAVES.simulados });
-        void qc.invalidateQueries({ queryKey: CHAVES.me });
-        void qc.invalidateQueries({ queryKey: CHAVES.revisao });
+  const atualizarListas = useCallback(() => {
+    void qc.invalidateQueries({ queryKey: CHAVES.simulados });
+    void qc.invalidateQueries({ queryKey: CHAVES.me });
+    void qc.invalidateQueries({ queryKey: CHAVES.revisao });
+  }, [qc]);
+
+  const tempoAcabou = useCallback(async () => {
+    if (Date.now() < proximaTentativa.current) return;
+    proximaTentativa.current = Date.now() + 10_000;
+    try {
+      const r = await chamar('simuladoObter', { params: { id: sim.id } });
+      qc.setQueryData(CHAVES.simulado(sim.id), r);
+      if (r.estado === 'entregue') {
+        atualizarListas();
+        toast('O tempo acabou.', 'info');
       }
-      if (automatica && ok) toast('O tempo acabou e a prova foi entregue.', 'info');
-    },
-    [qc, sim.id, toast],
-  );
+    } catch (e) {
+      if (!avisouFalha.current) {
+        avisouFalha.current = true;
+        toast(
+          e instanceof ErroApi && e.semConexao
+            ? 'O tempo acabou. Sem conexão agora: tentamos de novo assim que a internet voltar.'
+            : `O tempo acabou. ${mensagemDeErro(e)}`,
+          'erro',
+        );
+      }
+    }
+  }, [atualizarListas, qc, sim.id, toast]);
 
   useEffect(() => {
     const tic = () => {
-      const ms = fim - (Date.now() + desvio);
-      setRestante(ms);
-      if (ms <= 0) void entregar(true);
+      const agora = Date.now();
+      const passou = agora - ultimoTic.current;
+      ultimoTic.current = agora;
+      if (!treino || document.visibilityState !== 'hidden') restanteRef.current -= passou;
+      setRestante(restanteRef.current);
+      if (restanteRef.current <= 0) void tempoAcabou();
     };
-    tic();
     const t = window.setInterval(tic, 1000);
     return () => window.clearInterval(t);
-  }, [fim, desvio, entregar]);
+  }, [treino, tempoAcabou]);
+
+  // Treino: avisa o servidor a cada 30 s que a prova está na tela (é o que conta o tempo).
+  useEffect(() => {
+    if (!treino) return;
+    const enviar = () => {
+      if (document.visibilityState === 'hidden') return;
+      chamar('simuladoSinal', { params: { id: sim.id } })
+        .then((r) => {
+          restanteRef.current = r.msRestantes;
+        })
+        .catch((e: unknown) => {
+          if (e instanceof ErroApi && e.codigo === 'simulado_encerrado') void tempoAcabou();
+        });
+    };
+    enviar();
+    const t = window.setInterval(enviar, 30_000);
+    document.addEventListener('visibilitychange', enviar);
+    return () => {
+      window.clearInterval(t);
+      document.removeEventListener('visibilitychange', enviar);
+    };
+  }, [treino, sim.id, tempoAcabou]);
+
+  async function fechar(rota: 'simuladoEntregar' | 'simuladoDescartar') {
+    const marcar = rota === 'simuladoEntregar' ? setEntregando : setDescartando;
+    marcar(true);
+    try {
+      const r = await chamar(rota, { params: { id: sim.id } });
+      qc.setQueryData(CHAVES.simulado(sim.id), r);
+    } catch (e) {
+      if (e instanceof ErroApi && e.codigo === 'simulado_encerrado') {
+        await qc.invalidateQueries({ queryKey: CHAVES.simulado(sim.id) });
+      } else toast(mensagemDeErro(e), 'erro');
+    } finally {
+      marcar(false);
+      setConfirmar(false);
+      setConfirmarDescarte(false);
+      atualizarListas();
+    }
+  }
 
   const item = sim.questoes[atual]!;
   const resp = respostas[item.questao.id] ?? { letra: null, revisarDepois: false };
@@ -132,12 +166,14 @@ function Prova({ sim }: { sim: SimuladoAndamento }) {
         else delete c[item.questao.id];
         return c;
       });
-      if (e instanceof ErroApi && e.codigo === 'simulado_encerrado') void entregar(true);
+      if (e instanceof ErroApi && e.codigo === 'simulado_encerrado') void tempoAcabou();
       else toast(mensagemDeErro(e), 'erro');
     }
   }
 
   const poucoTempo = restante < 10 * 60_000;
+  const minimo = minimoRespondidas(sim.questoes.length);
+  const respondidas = sim.questoes.length - emBranco;
 
   return (
     <Pagina comRodapeFixo className={s.pagina}>
@@ -145,7 +181,9 @@ function Prova({ sim }: { sim: SimuladoAndamento }) {
         <button
           type="button"
           className={s.voltar}
-          aria-label="Sair do simulado (o tempo continua)"
+          aria-label={
+            treino ? 'Sair do treino (o tempo pausa)' : 'Sair do simulado (o tempo continua)'
+          }
           onClick={() => navegar('/simulado')}
         >
           <IconeTraco nome="voltar" tamanho={26} espessura={2.6} />
@@ -257,23 +295,39 @@ function Prova({ sim }: { sim: SimuladoAndamento }) {
         <Botao3D variante="roxo" onClick={() => setConfirmar(true)}>
           ENTREGAR PROVA
         </Botao3D>
+        <button type="button" className={s.descartar} onClick={() => setConfirmarDescarte(true)}>
+          Descartar simulado
+        </button>
       </div>
 
       <Confirmacao
         aberto={confirmar}
         titulo="Entregar a prova?"
         texto={
-          emBranco > 0
+          (emBranco > 0
             ? `Você deixou ${emBranco} ${emBranco === 1 ? 'questão' : 'questões'} em branco. Depois de entregar não dá para mudar.`
-            : 'Todas as questões estão respondidas. Depois de entregar não dá para mudar.'
+            : 'Todas as questões estão respondidas. Depois de entregar não dá para mudar.') +
+          (respondidas < minimo
+            ? ` Com menos de ${minimo} respondidas, o simulado não vale XP nem ofensiva.`
+            : '')
         }
         textoConfirmar="ENTREGAR"
         textoCancelar="VOLTAR PARA A PROVA"
         varianteConfirmar="roxo"
         confirmarPrincipal
         carregando={entregando}
-        onConfirmar={() => void entregar(false)}
+        onConfirmar={() => void fechar('simuladoEntregar')}
         onCancelar={() => setConfirmar(false)}
+      />
+      <Confirmacao
+        aberto={confirmarDescarte}
+        titulo="Descartar o simulado?"
+        texto="Ele fecha sem nota, sem XP e sem mostrar o gabarito. As respostas marcadas são perdidas."
+        textoConfirmar="DESCARTAR"
+        textoCancelar="VOLTAR PARA A PROVA"
+        carregando={descartando}
+        onConfirmar={() => void fechar('simuladoDescartar')}
+        onCancelar={() => setConfirmarDescarte(false)}
       />
     </Pagina>
   );
@@ -285,7 +339,37 @@ function formatarPontos(p: number): string {
   return p.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
 
+function Encerrado({ r }: { r: SimuladoResultado }) {
+  const navegar = useNavigate();
+  const texto =
+    r.situacao === 'descartado'
+      ? `Você descartou este simulado com ${r.respondidas} de ${r.totalQuestoes} questões respondidas.`
+      : `O tempo acabou com ${r.respondidas} de ${r.totalQuestoes} questões respondidas. Para ter nota, é preciso responder pelo menos ${minimoRespondidas(r.totalQuestoes)}.`;
+  return (
+    <Pagina>
+      <CabecalhoVoltar para="/simulado" titulo="Simulado" />
+      <section className={s.res}>
+        <Capi pose="incentivando" tamanho={150} carregamento="eager" />
+        <Chip grande>{r.selo}</Chip>
+        <p className={s.resInfo}>{texto}</p>
+        <p className={s.resInfo}>
+          Ele fica sem nota e sem XP, e o gabarito não foi mostrado: essas questões podem cair num
+          próximo simulado.
+        </p>
+      </section>
+      <Botao3D variante="roxo" onClick={() => navegar('/simulado')}>
+        FAZER OUTRO SIMULADO
+      </Botao3D>
+    </Pagina>
+  );
+}
+
 function Resultado({ r }: { r: SimuladoResultado }) {
+  if (r.situacao !== 'corrigido') return <Encerrado r={r} />;
+  return <Corrigido r={r} />;
+}
+
+function Corrigido({ r }: { r: SimuladoResultado }) {
   const navegar = useNavigate();
   const [soErradas, setSoErradas] = useState(false);
   const lista = soErradas ? r.questoes.filter((q) => !q.acertou) : r.questoes;
@@ -312,6 +396,11 @@ function Resultado({ r }: { r: SimuladoResultado }) {
         </p>
         {r.entregaAutomatica ? (
           <p className={s.resInfo}>Entregue automaticamente quando o tempo acabou.</p>
+        ) : null}
+        {!r.recompensa ? (
+          <p className={s.resInfo}>
+            Menos da metade respondida: este simulado não valeu XP nem ofensiva.
+          </p>
         ) : null}
       </section>
 

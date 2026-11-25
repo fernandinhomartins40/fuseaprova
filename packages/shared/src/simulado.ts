@@ -149,6 +149,54 @@ export function simuladoExpirado(terminaEm: Date, agora: Date): boolean {
   return agora.getTime() >= terminaEm.getTime();
 }
 
+/* ------------------------------------------------- modos e encerramento (D48) */
+
+/** "prova": 4 h corridas, como na prova real. "treino": o tempo só corre com a prova na tela. */
+export const MODOS_SIMULADO = ['prova', 'treino'] as const;
+export type ModoSimulado = (typeof MODOS_SIMULADO)[number];
+/** Como o simulado foi fechado. */
+export const SITUACOES_SIMULADO = ['corrigido', 'nao_concluido', 'descartado'] as const;
+export type SituacaoSimulado = (typeof SITUACOES_SIMULADO)[number];
+
+/** No treino, a prova fica aberta por até 7 dias corridos. */
+export const PRAZO_TREINO_MS = 7 * 24 * MS_HORA;
+/** O app manda um sinal a cada 30 s com a prova na tela; um intervalo maior que este não conta. */
+export const INTERVALO_MAX_SINAL_MS = 90_000;
+/** Mínimo de questões respondidas para corrigir no fim do tempo e para ganhar XP e ofensiva. */
+export const MINIMO_RESPONDIDAS_PERCENTUAL = 50;
+
+/** Fim do prazo do simulado: 4 h na prova, 7 dias no treino. */
+export function prazoDoSimulado(modo: ModoSimulado, iniciadoEm: Date): Date {
+  return terminoDoSimulado(iniciadoEm, modo === 'treino' ? PRAZO_TREINO_MS : DURACAO_SIMULADO_MS);
+}
+
+/** Soma ao tempo de treino o intervalo desde o último sinal, se a prova seguia na tela. */
+export function somarTempoTreino(
+  msUsados: number,
+  ultimoSinalEm: Date | null,
+  agora: Date,
+): number {
+  if (!ultimoSinalEm) return msUsados;
+  const delta = agora.getTime() - ultimoSinalEm.getTime();
+  return delta > 0 && delta <= INTERVALO_MAX_SINAL_MS ? msUsados + delta : msUsados;
+}
+
+/** Tempo que falta: na prova, até o término; no treino, o menor entre as 4 h de tela e o prazo. */
+export function msRestantesDoModo(
+  modo: ModoSimulado,
+  terminaEm: Date,
+  msUsados: number,
+  agora: Date,
+): number {
+  const prazo = msRestantesSimulado(terminaEm, agora);
+  return modo === 'treino' ? Math.min(prazo, Math.max(0, DURACAO_SIMULADO_MS - msUsados)) : prazo;
+}
+
+/** Quantas respostas são o mínimo (50% de 40 = 20). */
+export function minimoRespondidas(totalQuestoes: number): number {
+  return Math.ceil((totalQuestoes * MINIMO_RESPONDIDAS_PERCENTUAL) / 100);
+}
+
 /** Quantas questões ficaram sem resposta. */
 export function questoesEmBranco(
   questoes: readonly string[],

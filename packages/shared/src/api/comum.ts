@@ -78,7 +78,7 @@ export const MENSAGENS_ERRO: Record<CodigoErro, string> = {
   gemas_insuficientes: 'Você não tem gemas suficientes.',
   limite_protetores: 'Você já tem 2 protetores guardados, que é o máximo.',
   sessao_encerrada: 'Esta sessão de estudo já foi encerrada.',
-  simulado_encerrado: 'O tempo deste simulado acabou e a prova foi entregue.',
+  simulado_encerrado: 'Este simulado já foi encerrado.',
   questoes_insuficientes: 'Ainda não há questões suficientes para montar isso.',
   fora_do_prazo: 'O prazo para essa ação já passou.',
   assunto_a_classificar:

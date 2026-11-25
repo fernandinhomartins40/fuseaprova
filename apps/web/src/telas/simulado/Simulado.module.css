@@ -190,3 +190,54 @@
 .seloBaixo {
   color: var(--fa-red-shade);
 }
+.pctNeutro {
+  background: var(--fa-line);
+  color: var(--fa-ink-2);
+}
+.seloNeutro {
+  color: var(--fa-ink-2);
+}
+.modos {
+  border: 0;
+  margin: 0 0 14px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.modos legend {
+  margin-bottom: 6px;
+}
+.modo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1.5px solid var(--fa-line-forte);
+  background: var(--fa-surface);
+  cursor: pointer;
+}
+.modo input {
+  margin-top: 3px;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--fa-purple);
+}
+.modo span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.modo small {
+  font-size: 13.5px;
+  color: var(--fa-ink-2);
+  font-weight: 700;
+}
+.modoAtivo {
+  border-color: var(--fa-purple);
+  background: var(--fa-purple-soft);
+}
+.modos:disabled .modo {
+  opacity: 0.6;
+  cursor: default;
+}

@@ -515,6 +515,22 @@ export const ROTAS = {
     params: IdParams,
     resposta: sim.EntregarSimuladoResposta,
   }),
+  simuladoSinal: rota({
+    metodo: 'POST',
+    caminho: '/simulados/:id/sinal',
+    guarda: 'acesso',
+    descricao: 'Treino na tela: conta o tempo de tela (D48).',
+    params: IdParams,
+    resposta: sim.SinalSimuladoResposta,
+  }),
+  simuladoDescartar: rota({
+    metodo: 'POST',
+    caminho: '/simulados/:id/descartar',
+    guarda: 'acesso',
+    descricao: 'Fecha o simulado sem nota, sem XP e sem gabarito (D48).',
+    params: IdParams,
+    resposta: sim.SimuladoResultado,
+  }),
 
   /* ------------------------------------------------- liga, perfil, push */
   liga: rota({

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { formatarCronometro, formatarDiaMes, diaSP } from '@fuse/shared';
+import { formatarCronometro, formatarDiaMes, diaSP, type ModoSimulado } from '@fuse/shared';
 import { NOTA_SIMULADO_LEGISLACAO, type Distribuicao } from '@fuse/shared/api';
 import { chamar, mensagemDeErro } from '../../api/cliente';
 import { CHAVES, useConcurso, useMe, useSimulados } from '../../api/consultas';
@@ -17,6 +17,16 @@ import {
   TituloSecao,
 } from '../../ui';
 import s from './Simulado.module.css';
+
+/** D48: treino (pausa fora da prova) ou prova real (4 h corridas). */
+const MODOS: { modo: ModoSimulado; titulo: string; texto: string }[] = [
+  {
+    modo: 'treino',
+    titulo: 'Treino',
+    texto: 'O tempo pausa quando você sai. Até 7 dias para terminar.',
+  },
+  { modo: 'prova', titulo: 'Prova real', texto: '4 horas corridas, como no dia da prova.' },
+];
 
 const PADRAO: Distribuicao = { portugues: 5, matematica: 5, gerais: 5, especificos: 25 };
 
@@ -35,6 +45,7 @@ export default function Simulado() {
   const navegar = useNavigate();
   const qc = useQueryClient();
   const [cargoId, setCargoId] = useState<string | null>(null);
+  const [modo, setModo] = useState<ModoSimulado>('treino');
 
   const cargos = (concurso.data?.cargos ?? []).filter((c) =>
     concurso.data?.modoEdital ? !c.generico : true,
@@ -45,7 +56,7 @@ export default function Simulado() {
   const totalQ = dist.portugues + dist.matematica + dist.gerais + dist.especificos;
 
   const criar = useMutation({
-    mutationFn: (id: string) => chamar('simuladoCriar', { corpo: { cargoId: id } }),
+    mutationFn: (id: string) => chamar('simuladoCriar', { corpo: { cargoId: id, modo } }),
     onSuccess: (sim) => {
       qc.setQueryData(CHAVES.simulado(sim.id), sim);
       void qc.invalidateQueries({ queryKey: CHAVES.simulados });
@@ -90,10 +101,15 @@ export default function Simulado() {
       {emAndamento ? (
         <section className={s.andamento}>
           <div>
-            <p className={s.andamentoTitulo}>Simulado em andamento</p>
+            <p className={s.andamentoTitulo}>
+              {emAndamento.modo === 'treino' ? 'Treino em andamento' : 'Simulado em andamento'}
+            </p>
             <p className={s.andamentoSub}>
               {emAndamento.cargo.nome} · tempo restante{' '}
-              {formatarCronometro(new Date(emAndamento.terminaEm).getTime() - Date.now())}
+              {formatarCronometro(emAndamento.msRestantes)}
+              {emAndamento.modo === 'treino'
+                ? ` · pausado até ${formatarDiaMes(diaSP(new Date(emAndamento.terminaEm)))}`
+                : ''}
             </p>
           </div>
           <Botao3D
@@ -125,6 +141,25 @@ export default function Simulado() {
         </span>
       </label>
 
+      <fieldset className={s.modos} disabled={!!emAndamento}>
+        <legend className={s.cargoRotulo}>Modo</legend>
+        {MODOS.map((m) => (
+          <label key={m.modo} className={[s.modo, modo === m.modo ? s.modoAtivo : ''].join(' ')}>
+            <input
+              type="radio"
+              name="modo"
+              value={m.modo}
+              checked={modo === m.modo}
+              onChange={() => setModo(m.modo)}
+            />
+            <span>
+              <strong>{m.titulo}</strong>
+              <small>{m.texto}</small>
+            </span>
+          </label>
+        ))}
+      </fieldset>
+
       {criar.isError ? (
         <p className={s.erro} role="alert">
           {mensagemDeErro(criar.error)}
@@ -148,35 +183,58 @@ export default function Simulado() {
         <Capi
           pose="estudando"
           tamanho={110}
-          fala="Seu primeiro simulado mostra onde focar. Reserve 4 horas e bora!"
+          fala="Seu primeiro simulado mostra onde focar. No treino, dá para fazer aos poucos!"
         />
       ) : (
         <ul className={s.historico}>
-          {lista.data.itens.map((it, i) => (
-            <li key={it.id}>
-              <button
-                type="button"
-                className={s.item}
-                onClick={() => navegar(`/simulado/${it.id}`)}
-              >
-                <span className={[s.pct, it.aprovado ? s.pctOk : s.pctBaixo].join(' ')}>
-                  {Math.round(it.percentual)}%
-                </span>
-                <span className={s.itemTextos}>
-                  <span className={s.itemTitulo}>
-                    Simulado {lista.data.itens.length - i} · {it.cargo.nome}
+          {lista.data.itens.map((it, i) => {
+            const fechado = it.situacao !== 'corrigido';
+            return (
+              <li key={it.id}>
+                <button
+                  type="button"
+                  className={s.item}
+                  onClick={() => navegar(`/simulado/${it.id}`)}
+                >
+                  <span
+                    className={[
+                      s.pct,
+                      fechado ? s.pctNeutro : it.aprovado ? s.pctOk : s.pctBaixo,
+                    ].join(' ')}
+                  >
+                    {fechado ? '—' : `${Math.round(it.percentual)}%`}
                   </span>
-                  <span className={s.itemSub}>
-                    {formatarDiaMes(diaSP(new Date(it.entregueEm)))} · {it.acertos} de{' '}
-                    {it.totalQuestoes} · {duracaoCurta(it.tempoGastoMs)}
+                  <span className={s.itemTextos}>
+                    <span className={s.itemTitulo}>
+                      Simulado {lista.data.itens.length - i} · {it.cargo.nome}
+                    </span>
+                    <span className={s.itemSub}>
+                      {formatarDiaMes(diaSP(new Date(it.entregueEm)))} ·{' '}
+                      {fechado
+                        ? `${it.respondidas} de ${it.totalQuestoes} respondidas`
+                        : `${it.acertos} de ${it.totalQuestoes}`}{' '}
+                      · {duracaoCurta(it.tempoGastoMs)}
+                      {it.modo === 'treino' ? ' · treino' : ''}
+                    </span>
                   </span>
-                </span>
-                <span className={[s.selo, it.aprovado ? s.seloOk : s.seloBaixo].join(' ')}>
-                  {it.aprovado ? 'APROVADO' : 'ABAIXO'}
-                </span>
-              </button>
-            </li>
-          ))}
+                  <span
+                    className={[
+                      s.selo,
+                      fechado ? s.seloNeutro : it.aprovado ? s.seloOk : s.seloBaixo,
+                    ].join(' ')}
+                  >
+                    {it.situacao === 'nao_concluido'
+                      ? 'NÃO CONCLUÍDO'
+                      : it.situacao === 'descartado'
+                        ? 'DESCARTADO'
+                        : it.aprovado
+                          ? 'APROVADO'
+                          : 'ABAIXO'}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </Pagina>

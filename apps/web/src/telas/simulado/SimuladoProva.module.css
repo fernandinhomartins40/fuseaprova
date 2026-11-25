@@ -1,6 +1,6 @@
 .pagina {
   padding-top: calc(6px + env(safe-area-inset-top));
-  padding-bottom: 200px;
+  padding-bottom: 250px;
 }
 .topo {
   position: sticky;
@@ -346,4 +346,14 @@
 .qDica {
   font-weight: 800;
   color: var(--fa-petroleo);
+}
+.descartar {
+  align-self: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  background: transparent;
+  font-weight: 800;
+  color: var(--fa-ink-2);
+  text-decoration: underline;
 }
