@@ -3,10 +3,10 @@ import { interpolate, useCurrentFrame } from 'remotion';
 import { Aviso, limita, PropsCena } from '../comum';
 import { Efeito, useMola } from '../componentes';
 import { cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { CelularApp } from '../campanha/CelularApp';
 import { cor, fonte } from '../tema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V38 · terça 01/12 · "Do zero" — semente que cai no vaso (0%); o broto ao lado da explicação no app; o regador
 // (revisão) faz a planta crescer; barra sobe e a planta floresce; plaquinha de jardim com o preço. Voz Raquel.
@@ -163,7 +163,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.coral} duracao={duracao}>
-      <FechoVivo manchete="Comece / *do zero.*" em={a.ini} len={40} />
+      <FechoPalmital manchete="Comece / *do zero.*" em={a.ini} len={40} />
     </FundoVivo>
   );
 };

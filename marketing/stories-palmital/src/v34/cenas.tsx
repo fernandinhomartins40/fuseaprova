@@ -3,10 +3,10 @@ import { interpolate, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Efeito, useMola } from '../componentes';
 import { ChipData, cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { CelularApp } from '../campanha/CelularApp';
 import { cor, fonte } from '../tema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V34 · domingo 29/11 · "O plano da semana" — quadro de cortiça SEG–SÁB; post-its de treino voando para os dias;
 // revisão em todo dia e simulado no sábado; plano pronto no app; o preço num post-it gigante. Voz Ana Alice.
@@ -142,7 +142,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.rosa} duracao={duracao}>
-      <FechoVivo manchete="Comece / *na segunda.*" em={a.ini} len={40} />
+      <FechoPalmital manchete="Comece / *na segunda.*" em={a.ini} len={40} />
     </FundoVivo>
   );
 };

@@ -3,11 +3,11 @@ import { interpolate, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Efeito, useMola } from '../componentes';
 import { ChipData, cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { CelularApp } from '../campanha/CelularApp';
 import { cor, fonte } from '../tema';
 import { FundoCinema, paletas } from '../v8/cinema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V37 · terça 01/12 · "A armadilha de dezembro" — ratoeira com o queijo "Começo depois" que fecha; festas, férias e
 // janeiro passando voando; FEV 21 batendo na tela; 5 minutos por dia no app; caixa de presente com o preço. Voz Lucas.
@@ -178,7 +178,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.sol} duracao={duracao}>
-      <FechoVivo manchete="Não caia na / *armadilha.*" em={a.ini} len={40} tinta={cor.tinta} />
+      <FechoPalmital manchete="Não caia na / *armadilha.*" em={a.ini} len={40} tinta={cor.tinta} />
     </FundoVivo>
   );
 };

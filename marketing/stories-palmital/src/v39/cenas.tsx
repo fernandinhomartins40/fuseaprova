@@ -3,10 +3,10 @@ import { interpolate, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Efeito, Icone, useMola } from '../componentes';
 import { ChipData, cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { cor, fonte } from '../tema';
 import { FundoCinema, paletas } from '../v8/cinema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V39 · quarta 02/12 · "Faltam 4 dias" — bateria com quatro barras (QUA, QUI, SEX, SÁB) que pisca; o preço que
 // acaba; tela inicial de celular com os ícones do app; a bateria recarrega com seis barras de R$ 32,83. Voz Roberta.
@@ -132,7 +132,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.coral} duracao={duracao}>
-      <FechoVivo manchete="Sábado é o / *último dia.*" em={a.ini} len={a.fim - a.ini} />
+      <FechoPalmital manchete="Sábado é o / *último dia.*" em={a.ini} len={a.fim - a.ini} />
     </FundoVivo>
   );
 };

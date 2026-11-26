@@ -3,11 +3,11 @@ import { Img, interpolate, staticFile, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Efeito, useMola } from '../componentes';
 import { cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { CelularApp } from '../campanha/CelularApp';
 import { cor, fonte } from '../tema';
 import { Surge } from '../v8/cinema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V25 · quarta 25/11 · "A pergunta que ninguém faz" — balão de pergunta com a Capi; prancheta de requisitos em branco;
 // cartões de CNH e de experiência; folhas de calendário caindo na lixeira; o cargo no app; etiqueta de preço. Voz Lucas.
@@ -222,7 +222,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.azul} duracao={duracao}>
-      <FechoVivo manchete="Confira o / *seu cargo.*" em={a.ini} len={40} />
+      <FechoPalmital manchete="Confira o / *seu cargo.*" em={a.ini} len={40} />
     </FundoVivo>
   );
 };

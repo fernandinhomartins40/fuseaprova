@@ -3,11 +3,11 @@ import { Img, interpolate, staticFile, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Confetes, Efeito, Icone, useMola } from '../componentes';
 import { ChipData, cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { CelularApp } from '../campanha/CelularApp';
 import { cor, fonte } from '../tema';
 import { FundoCinema, paletas, Surge } from '../v8/cinema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V36 · segunda 30/11 · "A matéria de todos" — parede de 49 portas com fechadura e a chave misteriosa; a chave
 // dourada PORTUGUÊS abre todas; pódio; a trilha no app; livro que folheia até a página do preço. Voz Keren.
@@ -189,7 +189,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.roxo} duracao={duracao}>
-      <FechoVivo manchete="Domine o / *Português.*" em={a.ini} len={40} />
+      <FechoPalmital manchete="Domine o / *Português.*" em={a.ini} len={40} />
     </FundoVivo>
   );
 };

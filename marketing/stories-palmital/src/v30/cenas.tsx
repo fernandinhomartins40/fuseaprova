@@ -3,11 +3,11 @@ import { interpolate, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Efeito, useMola } from '../componentes';
 import { ChipData, cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { CelularApp } from '../campanha/CelularApp';
 import { cor, fonte } from '../tema';
 import { FundoCinema, paletas } from '../v8/cinema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V30 · sexta 27/11 · "O que você esquece" — gráfico da memória despencando; resumo grifado de novo e de novo; o
 // mesmo gráfico com as revisões de 1, 3, 7 e 15 dias; a revisão no app; fita de dias até 05/12. Voz Keren.
@@ -200,7 +200,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.lima} duracao={duracao}>
-      <FechoVivo manchete="Pare de / *esquecer.*" em={a.ini} len={40} tinta={cor.tinta} />
+      <FechoPalmital manchete="Pare de / *esquecer.*" em={a.ini} len={40} tinta={cor.tinta} />
     </FundoVivo>
   );
 };

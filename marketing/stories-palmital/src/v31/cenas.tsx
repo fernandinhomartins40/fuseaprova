@@ -3,12 +3,12 @@ import { interpolate, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Efeito, useMola } from '../componentes';
 import { ChipData, cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { CelularApp } from '../campanha/CelularApp';
 import { cor, fonte } from '../tema';
 import { Quica } from '../v15/cenas';
 import { FundoCinema, paletas } from '../v8/cinema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V31 · sábado 28/11 · "O ritmo da prova" — velocímetro entrando no vermelho; 40 | 4h; grade de 40 questões que fica
 // vermelha no fim ("chute"); o simulado no app; bandeira quadriculada de chegada com o preço. Voz Lucas.
@@ -166,7 +166,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.coral} duracao={duracao}>
-      <FechoVivo manchete="Treine / *o ritmo.*" em={a.ini} len={40} />
+      <FechoPalmital manchete="Treine / *o ritmo.*" em={a.ini} len={40} />
     </FundoVivo>
   );
 };

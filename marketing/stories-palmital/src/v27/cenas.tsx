@@ -3,11 +3,11 @@ import { interpolate, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Efeito, Icone, useMola } from '../componentes';
 import { cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { CelularApp } from '../campanha/CelularApp';
 import { cor, fonte } from '../tema';
 import { FundoCinema, paletas } from '../v8/cinema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V27 · quinta 26/11 · "A resposta no edital" — lupa que revela a linha certa numa página borrada; gaveta de arquivo
 // com as fichas do cargo; ampulheta virando; "Pergunte ao edital" no celular; cupom saindo da impressora. Voz Roberta.
@@ -197,7 +197,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.turquesa} duracao={duracao}>
-      <FechoVivo manchete="Pergunte / *ao edital.*" em={a.ini} len={40} />
+      <FechoPalmital manchete="Pergunte / *ao edital.*" em={a.ini} len={40} />
     </FundoVivo>
   );
 };

@@ -3,11 +3,11 @@ import { interpolate, random, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Confetes, Efeito, Icone, useMola } from '../componentes';
 import { ChipData, cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { cor, fonte } from '../tema';
 import { Calculadora } from '../v15/cenas';
 import { FundoCinema, paletas, Surge } from '../v8/cinema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V26 · quarta 25/11 · "Quanto custa?" — caça-níquel num palco escuro girando "?"; os recursos caem numa sacola;
 // a ponte até 21/02; os rolos param em 32,83 com luzes; a calculadora fecha a conta em 6x. Voz Raquel.
@@ -208,7 +208,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.magenta} duracao={duracao}>
-      <FechoVivo manchete="*R$ 32,83* / por mês." em={a.ini} len={40} />
+      <FechoPalmital manchete="*R$ 32,83* / por mês." em={a.ini} len={40} />
     </FundoVivo>
   );
 };

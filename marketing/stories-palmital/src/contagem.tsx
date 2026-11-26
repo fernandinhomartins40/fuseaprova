@@ -162,16 +162,22 @@ export const OfertaDupla: React.FC<{ rotuloHoje: string; rotuloDepois: string; t
       <Em y={topo}>
         <div
           style={{
+            position: 'relative',
             width: 860,
             borderRadius: 52,
-            background: cor.branco,
-            boxShadow: '0 40px 70px rgba(0,0,0,0.3)',
+            background: 'linear-gradient(180deg, #FFFFFF 0%, #FFF8F1 100%)',
+            boxShadow: 'inset 0 -10px 0 rgba(0,0,0,0.05), 0 50px 80px rgba(0,0,0,0.32), 0 14px 24px rgba(0,0,0,0.18)',
             overflow: 'hidden',
-            transform: `scale(${interpolate(bilhete, [0, 1], [0.3, 1])}) rotate(${-3 + Math.sin(frame / 28) * 0.8}deg)`,
+            transform: `perspective(1600px) rotateX(${(1 - bilhete) * 40 + 6}deg) scale(${interpolate(bilhete, [0, 1], [0.3, 1])}) rotate(${-3 + Math.sin(frame / 28) * 0.8}deg)`,
             opacity: Math.min(1, bilhete * 2),
+            WebkitMaskImage: 'radial-gradient(circle 34px at 0 128px, transparent 33px, #000 34px), radial-gradient(circle 34px at 100% 128px, transparent 33px, #000 34px)',
+            WebkitMaskComposite: 'source-in',
+            maskComposite: 'intersect',
           }}
         >
-          <div style={{ background: cor.laranjaVivo, color: cor.branco, fontFamily: fonte.corpo, fontWeight: 900, fontSize: 40, letterSpacing: 4, textTransform: 'uppercase', textAlign: 'center', padding: '20px 0' }}>{rotuloHoje}</div>
+          <div style={{ background: `linear-gradient(180deg, ${cor.laranjaVivo}, ${cor.laranja})`, color: cor.branco, fontFamily: fonte.corpo, fontWeight: 900, fontSize: 40, letterSpacing: 4, textTransform: 'uppercase', textAlign: 'center', padding: '22px 0', boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.35)', textShadow: '0 2px 0 rgba(0,0,0,0.2)' }}>{rotuloHoje}</div>
+          <div style={{ margin: '24px 50px 0', borderTop: '5px dashed rgba(45,47,54,0.18)' }} />
+          <div style={{ position: 'absolute', top: 0, bottom: 0, left: `${interpolate(frame, [tPreco + 10, tPreco + 40], [-30, 130], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}%`, width: 120, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.65), transparent)', transform: 'skewX(-20deg)', pointerEvents: 'none' }} />
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', gap: 12, padding: '20px 0 0' }}>
             <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 90, color: cor.laranja, marginTop: 40 }}>R$</div>
             <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 280, lineHeight: 1, color: cor.tinta }}>197</div>
@@ -191,13 +197,13 @@ export const OfertaDupla: React.FC<{ rotuloHoje: string; rotuloDepois: string; t
             gap: 26,
             padding: '22px 40px',
             borderRadius: 32,
-            background: 'rgba(255,255,255,0.92)',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
+            background: 'linear-gradient(180deg, #FFFFFF, #F2F3F5)',
+            boxShadow: 'inset 0 -6px 0 rgba(0,0,0,0.06), 0 24px 44px rgba(0,0,0,0.28)',
             transform: `translateY(${(1 - depois) * 300}px)`,
             opacity: Math.min(1, depois * 2),
           }}
         >
-          <div style={{ width: 84, height: 84, borderRadius: '50%', background: cor.vermelho, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `translateY(${Math.sin(frame / 7) * 4}px)` }}>
+          <div style={{ width: 84, height: 84, borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%, #FF6B6B, #C81E1E)', boxShadow: 'inset 0 -4px 0 rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `translateY(${Math.sin(frame / 7) * 4}px)` }}>
             <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 19V5M5 12l7-7 7 7" />
             </svg>

@@ -3,10 +3,10 @@ import { interpolate, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Confetes, Efeito, useMola } from '../componentes';
 import { ChipData, cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { CelularApp } from '../campanha/CelularApp';
 import { cor, fonte } from '../tema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V40 · quarta 02/12 · "Os 4 passos" — tabuleiro com quatro casas e um peão que pula; a casa 4 dourada ("quase ninguém
 // faz"); os passos no app; um dado que rola e para no 6 (6x sem juros). Voz Ana Alice.
@@ -184,7 +184,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.magenta} duracao={duracao}>
-      <FechoVivo manchete="Dê o / *primeiro passo.*" em={a.ini} len={40} />
+      <FechoPalmital manchete="Dê o / *primeiro passo.*" em={a.ini} len={40} />
     </FundoVivo>
   );
 };

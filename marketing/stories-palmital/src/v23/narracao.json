@@ -16,8 +16,8 @@
   "app": [
     {
       "arquivo": "audio/v23/voz-app-1.wav",
-      "segundos": 6.902,
-      "texto": "Preparatório completo pro concurso de Palmital: trilha do seu cargo, questões no estilo da FAU e simulado oficial."
+      "segundos": 7.657,
+      "texto": "Preparatório completo pro concurso da Prefeitura de Palmital: trilha do seu cargo, questões no estilo da FAU e simulado oficial."
     }
   ],
   "revela": [
@@ -42,8 +42,8 @@
   "fecho": [
     {
       "arquivo": "audio/v23/voz-fecho-1.wav",
-      "segundos": 0.885,
-      "texto": "Link na bio."
+      "segundos": 4.858,
+      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
     }
   ]
 }

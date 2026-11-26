@@ -23,10 +23,27 @@ export const CelularApp: React.FC<{
   const atual = telas[i];
   const ate = i < telas.length - 1 ? telas[i + 1].em : fim;
   const T = TELAS_HTML[atual.tipo];
+  const botao = (lado: 'esq' | 'dir', topo: number, alto: number) => (
+    <div style={{ position: 'absolute', [lado === 'esq' ? 'left' : 'right']: -largura * 0.012, top: topo, width: largura * 0.016, height: alto, borderRadius: 4, background: 'linear-gradient(90deg, #5b606b, #2a2d33)' }} />
+  );
   return (
-    <div style={{ position: 'relative', width: largura, height: altura, borderRadius: largura * 0.13, background: '#15161A', padding: borda, boxShadow: '0 40px 80px rgba(0,0,0,0.35), 0 0 0 4px rgba(255,255,255,0.12) inset', ...style }}>
+    <div
+      style={{
+        position: 'relative',
+        width: largura,
+        height: altura,
+        borderRadius: largura * 0.13,
+        padding: borda,
+        background: 'linear-gradient(145deg, #5a5f69 0%, #1d1f24 38%, #0e0f12 62%, #3d414a 100%)',
+        boxShadow: `0 0 0 2px rgba(255,255,255,0.18) inset, 0 0 0 ${largura * 0.008}px #08090b inset, 0 ${largura * 0.06}px ${largura * 0.12}px rgba(0,0,0,0.38), 0 ${largura * 0.02}px ${largura * 0.03}px rgba(0,0,0,0.3)`,
+        ...style,
+      }}
+    >
       <style>{CONGELA}</style>
-      <div style={{ width: '100%', height: '100%', borderRadius: largura * 0.1, overflow: 'hidden', position: 'relative', background: 'var(--fa-bg)' }}>
+      {botao('esq', altura * 0.18, altura * 0.06)}
+      {botao('esq', altura * 0.27, altura * 0.1)}
+      {botao('dir', altura * 0.24, altura * 0.14)}
+      <div style={{ width: '100%', height: '100%', borderRadius: largura * 0.1, overflow: 'hidden', position: 'relative', background: 'var(--fa-bg)', boxShadow: '0 0 0 3px #000' }}>
         <div
           className="tela-app"
           style={{
@@ -42,7 +59,9 @@ export const CelularApp: React.FC<{
         >
           <T key={i} t={Math.max(0, frame - atual.em) * Math.max(1, 64 / Math.max(1, ate - atual.em))} d={Math.max(64, ate - atual.em)} linhas={atual.linhas} cor={atual.cor} rodape={atual.rodape} />
         </div>
-        <div style={{ position: 'absolute', top: largura * 0.025, left: '50%', width: largura * 0.28, height: largura * 0.07, marginLeft: -largura * 0.14, borderRadius: 999, background: '#15161A' }} />
+        <div style={{ position: 'absolute', top: largura * 0.025, left: '50%', width: largura * 0.28, height: largura * 0.07, marginLeft: -largura * 0.14, borderRadius: 999, background: '#0b0b0d' }} />
+        {/* reflexo do vidro: faixa diagonal suave que desliza devagar */}
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `linear-gradient(115deg, transparent ${20 + Math.sin(frame / 60) * 6}%, rgba(255,255,255,0.16) ${32 + Math.sin(frame / 60) * 6}%, transparent ${44 + Math.sin(frame / 60) * 6}%)` }} />
       </div>
     </div>
   );

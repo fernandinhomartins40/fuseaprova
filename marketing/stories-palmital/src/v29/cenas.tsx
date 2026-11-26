@@ -3,10 +3,10 @@ import { interpolate, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Efeito, useMola } from '../componentes';
 import { ChipData, cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { cor, fonte } from '../tema';
 import { FundoCinema, paletas, Surge } from '../v8/cinema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V29 · sexta 27/11 · "O padrão da banca" — impressão digital escaneada; SORTE × TREINO; dardo no alvo; contador
 // +10.000 com leque de cartas; seis moedas de R$ 32,83 empilhando até R$ 197. Voz Davi Andrei.
@@ -190,7 +190,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.roxo} duracao={duracao}>
-      <FechoVivo manchete="Treine o / *jeito FAU.*" em={a.ini} len={40} />
+      <FechoPalmital manchete="Treine o / *jeito FAU.*" em={a.ini} len={40} />
     </FundoVivo>
   );
 };

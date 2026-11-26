@@ -1,34 +1,44 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v41/voz-mesa-1.wav",
-      "segundos": 4.588,
-      "texto": "A desculpa mais comum pra não estudar pra concurso tem solução em cinco minutos."
-    },
+      "arquivo": "audio/v41/voz-gancho-1.wav",
+      "segundos": 3.377,
+      "texto": "Não tenho tempo. Essa desculpa acaba agora."
+    }
+  ],
+  "dia": [
     {
-      "arquivo": "audio/v41/voz-mesa-2.wav",
-      "segundos": 3.52,
-      "texto": "Você provavelmente já falou ela. E parece verdade."
-    },
+      "arquivo": "audio/v41/voz-dia-1.wav",
+      "segundos": 3.109,
+      "texto": "O seu dia tem mil quatrocentos e quarenta minutos."
+    }
+  ],
+  "cinco": [
     {
-      "arquivo": "audio/v41/voz-mesa-3.wav",
-      "segundos": 4.405,
-      "texto": "É o não tenho tempo. Um treino no Fuse Aprova leva cinco minutos."
-    },
+      "arquivo": "audio/v41/voz-cinco-1.wav",
+      "segundos": 2.426,
+      "texto": "Um treino no Fuse Aprova leva cinco."
+    }
+  ],
+  "app": [
     {
-      "arquivo": "audio/v41/voz-mesa-4.wav",
-      "segundos": 2.961,
+      "arquivo": "audio/v41/voz-app-1.wav",
+      "segundos": 3.028,
       "texto": "Cinco questões no estilo da FAU, com explicação."
-    },
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v41/voz-mesa-5.wav",
-      "segundos": 5.596,
-      "texto": "Até cinco de dezembro, sai por cento e noventa e sete reais, em até seis vezes sem juros no cartão."
-    },
+      "arquivo": "audio/v41/voz-oferta-1.wav",
+      "segundos": 4.48,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até sábado."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v41/voz-mesa-6.wav",
-      "segundos": 1.198,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v41/voz-fecho-1.wav",
+      "segundos": 0.889,
+      "texto": "Link na bio."
     }
   ]
 }

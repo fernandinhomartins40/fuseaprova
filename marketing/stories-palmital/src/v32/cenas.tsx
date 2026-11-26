@@ -3,12 +3,12 @@ import { Img, interpolate, random, staticFile, useCurrentFrame } from 'remotion'
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Efeito, useMola } from '../componentes';
 import { cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { CelularApp } from '../campanha/CelularApp';
 import { cor, fonte } from '../tema';
 import { Surge } from '../v8/cinema';
 import { Pessoa } from '../v8/pecas';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V32 · sábado 28/11 · "Dois candidatos" — dois rostos que se separam; pista vista de cima (pilha de livros × bandeira
 // da trilha); grade dos 49 cargos que acende até sobrar "o seu"; a trilha no app; escada de dois degraus. Voz Raquel.
@@ -179,7 +179,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.azul} duracao={duracao}>
-      <FechoVivo manchete="Estude *o que cai.*" em={a.ini} len={40} />
+      <FechoPalmital manchete="Estude *o que cai.*" em={a.ini} len={40} />
     </FundoVivo>
   );
 };

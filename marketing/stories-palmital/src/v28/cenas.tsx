@@ -3,12 +3,12 @@ import { interpolate, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Efeito, useMola } from '../componentes';
 import { ChipData, cores, Placa } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { CelularApp } from '../campanha/CelularApp';
 import { cor, fonte } from '../tema';
 import { Surge } from '../v8/cinema';
 import { Pessoa } from '../v8/pecas';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V28 · quinta 26/11 · "Na fila do banco" — a fila anda sob o painel de senha e a última pessoa estuda no celular;
 // apostila e "2h" riscados; cronômetro de 5:00 com cinco bolinhas; a questão no app; preço no painel de senha. Voz Ana Alice.
@@ -179,7 +179,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.sol} duracao={duracao}>
-      <FechoVivo manchete="Estude *na fila.*" em={a.ini} len={40} tinta={cor.tinta} />
+      <FechoPalmital manchete="Estude *na fila.*" em={a.ini} len={40} tinta={cor.tinta} />
     </FundoVivo>
   );
 };

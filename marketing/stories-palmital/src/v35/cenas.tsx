@@ -3,10 +3,10 @@ import { interpolate, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Efeito, useMola } from '../componentes';
 import { ChipData, cores } from '../contagem';
-import { Cabeca, em } from '../campanha/Cabeca';
+import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { cor, fonte } from '../tema';
 import { FundoCinema, paletas, Surge } from '../v8/cinema';
-import { FechoVivo, FundoVivo } from '../vivo';
+import { FundoVivo } from '../vivo';
 
 // V35 · segunda 30/11 · "Faltam 6 dias" — seis dominós (o primeiro cai); três cartões com cadeado e o ingresso
 // "acesso até a prova"; o painel do elevador sobe de 197 para 297; as portas abrem com o R$ 197 lá dentro. Voz Davi Andrei.
@@ -154,7 +154,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.azul} duracao={duracao}>
-      <FechoVivo manchete="Entre *antes* / de subir." em={a.ini} len={40} />
+      <FechoPalmital manchete="Entre *antes* / de subir." em={a.ini} len={40} />
     </FundoVivo>
   );
 };
