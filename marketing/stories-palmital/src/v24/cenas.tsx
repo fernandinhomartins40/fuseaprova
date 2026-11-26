@@ -205,9 +205,9 @@ export const CenaRegra: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoVivo paleta={cores.lima} duracao={duracao}>
       <Cabeca texto="O truque: / *volto de, vou a.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.branco} tamanho={104} />
       <div style={{ position: 'absolute', left: 0, top: 760, width: 1080, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 70 }}>
-        <Par quando={em(a, 0.45)} volto="Volto de" vou="Vou |a| Curitiba" crase={false} />
-        <Par quando={em(a, 0.75)} volto="Volto da" vou="Vou |à| Bahia" crase />
-        <Surge em={em(a, 0.9)}>
+        <Par quando={em(a, 0.12)} volto="Volto de" vou="Vou |a| Curitiba" crase={false} />
+        <Par quando={em(a, 0.55)} volto="Volto da" vou="Vou |à| Bahia" crase />
+        <Surge em={em(a, 0.85)}>
           <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 64, color: cor.tinta, textAlign: 'center', background: 'linear-gradient(180deg, #FFE27A, #FFC233)', boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.6), 0 9px 0 #D99A00, 0 20px 30px rgba(0,0,0,0.22)', padding: '14px 36px', borderRadius: 26 }}>
             Voltou <u>da</u>? Tem crase.
           </div>
@@ -239,7 +239,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.laranja} duracao={duracao}>
-      <Cabeca texto="*R$ 197* / até 5/12." em={a.ini} tamanho={130} />
+      <Cabeca texto="+10 mil questões / *por R$ 197.*" em={a.ini} tamanho={100} />
       <Em x={560} y={700}>
         <Cartao em={a.ini + 4} />
       </Em>
