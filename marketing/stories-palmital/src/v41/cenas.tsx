@@ -29,8 +29,8 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
         <div style={{ position: 'relative', width: 820, height: 460, transform: `scale(${entra}) translateX(${treme}px)` }}>
           {frame < quebra ? (
             <>
-              <div style={{ position: 'absolute', inset: 0, borderRadius: 100, background: cor.branco, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 104, lineHeight: 1.05, textAlign: 'center', padding: '0 50px', color: cor.tinta, boxShadow: '0 30px 60px rgba(0,0,0,0.4)' }}>"Não tenho tempo."</div>
-              <div style={{ position: 'absolute', left: 130, bottom: -70, width: 0, height: 0, borderLeft: '50px solid transparent', borderRight: '50px solid transparent', borderTop: `90px solid ${cor.branco}` }} />
+              <div style={{ position: 'absolute', inset: 0, borderRadius: 100, background: 'linear-gradient(180deg, #FFFFFF, #ECEFF3)', border: '4px solid rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 104, lineHeight: 1.05, textAlign: 'center', padding: '0 50px', color: cor.tinta, boxShadow: 'inset 0 -14px 24px rgba(0,0,0,0.08), 0 40px 70px rgba(0,0,0,0.5), 0 0 60px rgba(240,72,77,0.25)' }}>"Não tenho tempo."</div>
+              <div style={{ position: 'absolute', left: 130, bottom: -70, width: 0, height: 0, borderLeft: '50px solid transparent', borderRight: '50px solid transparent', borderTop: '90px solid #ECEFF3' }} />
               <svg width="820" height="460" style={{ position: 'absolute', inset: 0 }}>
                 <path d="M410 0 L380 120 L450 200 L360 300 L430 460 M380 120 L260 160 M450 200 L600 230" stroke={cor.tinta} strokeWidth="6" fill="none" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - racha} />
               </svg>
@@ -59,10 +59,15 @@ const Disco: React.FC<{ cheio: number; fatia: number; destaque: number }> = ({ c
   return (
     <div style={{ position: 'relative', width: 2 * R, height: 2 * R }}>
       <svg width={2 * R} height={2 * R} style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx={R} cy={R} r={R - 4} fill="rgba(255,255,255,0.2)" />
+        <circle cx={R} cy={R} r={R - 4} fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.6)" strokeWidth="8" />
+        {Array.from({ length: 24 }, (_, k) => (
+          <line key={k} x1={R} y1={10} x2={R} y2={k % 6 ? 34 : 50} stroke="rgba(45,47,54,0.35)" strokeWidth={k % 6 ? 4 : 8} strokeLinecap="round" transform={`rotate(${k * 15} ${R} ${R})`} />
+        ))}
         <circle cx={R} cy={R} r={R / 2} fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth={R} strokeDasharray={`${C * cheio} ${C}`} />
         <circle cx={R} cy={R} r={R / 2} fill="none" stroke={cor.laranjaVivo} strokeWidth={R} strokeDasharray={`${C * fatia} ${C}`} />
       </svg>
+      <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'radial-gradient(circle at 35% 28%, rgba(255,255,255,0.45), transparent 45%)', boxShadow: '0 40px 70px rgba(0,0,0,0.3)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', left: R - 36, top: R - 36, width: 72, height: 72, borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%, #FFFFFF, #9CA3AF 55%, #4B5563)', boxShadow: '0 6px 12px rgba(0,0,0,0.35)' }} />
       {destaque > 0 ? (
         <div style={{ position: 'absolute', left: R - 20, top: -20, width: 40, height: R + 20, transformOrigin: '50% 100%', transform: `rotate(${(fatia * 360) / 2}deg)` }}>
           <div style={{ position: 'absolute', left: -60, top: -110 * destaque, width: 160, padding: '10px 0', borderRadius: 20, background: cor.laranjaVivo, color: cor.branco, textAlign: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 50, opacity: destaque, boxShadow: '0 10px 20px rgba(0,0,0,0.25)' }}>5 min</div>
@@ -80,10 +85,10 @@ export const CenaDia: React.FC<PropsCena> = ({ falas, duracao }) => {
   return (
     <FundoVivo paleta={cores.azul} duracao={duracao}>
       <Cabeca texto="O seu dia tem / *1.440 minutos.*" em={a.ini} tamanho={110} />
-      <Em y={720}>
+      <Em y={800}>
         <Disco cheio={cheio} fatia={0} destaque={0} />
       </Em>
-      <Em y={1380}>
+      <Em y={1460}>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 110, color: cor.branco, fontVariantNumeric: 'tabular-nums' }}>{Math.round(cheio * 1440).toLocaleString('pt-BR')} min</div>
       </Em>
       <Aviso />
@@ -100,10 +105,10 @@ export const CenaCinco: React.FC<PropsCena> = ({ falas, duracao }) => {
   return (
     <FundoVivo paleta={cores.azul} duracao={duracao}>
       <Cabeca texto="O treino / *leva 5.*" em={a.ini} tamanho={140} faixa={cor.laranjaVivo} corFaixa={cor.branco} />
-      <Em y={720}>
+      <Em y={800}>
         <Disco cheio={1} fatia={fatia} destaque={destaque} />
       </Em>
-      <Em y={1380}>
+      <Em y={1460}>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 90, color: cor.branco, opacity: destaque }}>
           <span style={{ color: cor.ouro }}>5</span> de 1.440
         </div>
@@ -117,11 +122,12 @@ export const CenaCinco: React.FC<PropsCena> = ({ falas, duracao }) => {
 /* 4. Cinco questões com explicação ----------------------------------------- */
 export const CenaApp: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
+  const frame = useCurrentFrame();
   const cel = useMola(a.ini - 8, { damping: 14, stiffness: 110 });
   return (
     <FundoVivo paleta={cores.rosa} duracao={duracao}>
       <Cabeca texto="5 questões, / *com explicação.*" em={a.ini} sobre="No Fuse Aprova" tamanho={110} />
-      <div style={{ position: 'absolute', left: 300, top: 660, transform: `translateX(${(1 - cel) * 1100}px) rotate(-3deg)` }}>
+      <div style={{ position: 'absolute', left: 300, top: 660, transform: `translateX(${(1 - cel) * 1100}px) translateY(${Math.sin(frame / 22) * 8}px) perspective(1600px) rotateY(${-14 + (1 - cel) * 20}deg) rotateX(4deg) rotate(-3deg)` }}>
         <CelularApp largura={480} fim={duracao + 20} telas={[{ tipo: 'questao', em: a.ini - 8 }]} />
       </div>
       <Aviso />
@@ -139,7 +145,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   return (
     <FundoVivo paleta={cores.petroleo} duracao={duracao}>
       <Cabeca texto="*R$ 197* / até sábado." em={a.ini} tamanho={130} />
-      <div style={{ position: 'absolute', left: 540, top: 560, transformOrigin: '0 0', transform: `rotate(${balanca}deg)` }}>
+      <div style={{ position: 'absolute', left: 540, top: 640, transformOrigin: '0 0', transform: `rotate(${balanca}deg)` }}>
         <div style={{ position: 'absolute', left: -4, top: 0, width: 8, height: 160, background: cor.ouro }} />
         <div style={{ position: 'absolute', left: -310, top: 150, width: 620, height: 620, transform: `scale(${entra})`, perspective: 1600 }}>
           <div style={{ position: 'absolute', left: 270, top: -40, width: 80, height: 60, borderRadius: 20, background: cor.ouroSombra }} />
