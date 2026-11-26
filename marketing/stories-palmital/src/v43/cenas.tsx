@@ -56,7 +56,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const altura = interpolate(frame, [0, duracao], [520, 470], limita);
   return (
     <FundoCinema paleta={paletas.palco} duracao={duracao}>
-      <Cabeca texto="Último dia do R$ 197: / *amanhã.*" em={a.ini} tamanho={116} />
+      <Cabeca texto="A promoção / *termina amanhã.*" em={a.ini} tamanho={110} />
       <Em y={680}>
         <div style={{ transform: `translateY(${(1 - p) * 900}px)` }}>
           <Vela altura={altura} />
@@ -92,10 +92,10 @@ export const CenaNao: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.turquesa} duracao={duracao}>
-      <Cabeca texto="Seu acesso / *não muda:*" em={a.ini} tamanho={130} />
+      <Cabeca texto="Garantindo agora, / *você leva:*" em={a.ini} tamanho={104} />
       <div style={{ position: 'absolute', left: 0, top: 720, width: 1080, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 50 }}>
-        <Continua em={a.ini + 4} titulo="Acesso até a prova" sub="continua valendo" />
-        <Continua em={em(a, 0.55)} titulo="Garantia de 7 dias" sub="continua valendo" />
+        <Continua em={a.ini + 4} titulo="Acesso até a prova" sub="até 21/02/2027" />
+        <Continua em={em(a, 0.6)} titulo="Garantia de 7 dias" sub="100% do valor de volta" />
       </div>
       <Aviso />
     </FundoVivo>
@@ -110,7 +110,7 @@ export const CenaRevela: React.FC<PropsCena> = ({ falas, duracao }) => {
   const preco = useMola(em(a, 0.25), { damping: 12, stiffness: 140 });
   return (
     <FundoCinema paleta={paletas.oferta} duracao={duracao}>
-      <Cabeca texto="Termina só / *o valor de R$ 197.*" em={a.ini} tamanho={116} />
+      <Cabeca texto="Por *R$ 197* / em até 6x." em={a.ini} tamanho={116} />
       <div style={{ position: 'absolute', left: 90, top: 1450 - altura - 360 }}>
         <Vela altura={altura} />
       </div>

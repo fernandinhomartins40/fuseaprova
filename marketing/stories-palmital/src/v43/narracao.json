@@ -2,36 +2,36 @@
   "gancho": [
     {
       "arquivo": "audio/v43/voz-gancho-1.wav",
-      "segundos": 5.724,
-      "texto": "Amanhã, à meia-noite, acaba a condição especial do preparatório do concurso da Prefeitura de Palmital."
+      "segundos": 4.291,
+      "texto": "Amanhã termina a promoção do preparatório do concurso da Prefeitura de Palmital."
     }
   ],
   "nao": [
     {
       "arquivo": "audio/v43/voz-nao-1.wav",
-      "segundos": 5.992,
-      "texto": "Não é o acesso: ele vale até a prova da Prefeitura de Palmital. E não é a garantia de sete dias."
+      "segundos": 5.606,
+      "texto": "Quem garantir até amanhã leva acesso até a prova de vinte e um de fevereiro, com sete dias de garantia."
     }
   ],
   "revela": [
     {
       "arquivo": "audio/v43/voz-revela-1.wav",
-      "segundos": 5.031,
-      "texto": "O que acaba é o preço: cento e noventa e sete reais, em até seis vezes sem juros."
+      "segundos": 3.739,
+      "texto": "Por cento e noventa e sete reais, em até seis vezes sem juros."
     }
   ],
   "sobe": [
     {
       "arquivo": "audio/v43/voz-sobe-1.wav",
-      "segundos": 2.918,
-      "texto": "Domingo, sobe pra duzentos e noventa e sete."
+      "segundos": 3.27,
+      "texto": "Domingo, o valor passa pra duzentos e noventa e sete."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v43/voz-fecho-1.wav",
-      "segundos": 4.899,
-      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 5.757,
+      "texto": "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }
