@@ -140,6 +140,7 @@ export const CenaRevela: React.FC<PropsCena> = ({ falas, duracao }) => {
           </div>
         </div>
       </Em>
+      <ChipData em={em(a, 0.6)} y={1290} texto="Menos que um cafezinho" fundo={cor.tinta} tamanho={44} />
       <Efeito nome="ding" em={a.ini + 4} volume={0.55} />
       <Aviso corTexto="rgba(45,47,54,0.85)" />
     </FundoVivo>
@@ -151,13 +152,13 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.coral} duracao={duracao}>
-      <Cabeca texto="Em até 6x. / *R$ 197 até amanhã.*" em={a.ini} tamanho={116} faixa={cor.branco} corFaixa={cor.coral} />
+      <Cabeca texto="R$ 197 / *só até amanhã.*" em={a.ini} tamanho={116} faixa={cor.branco} corFaixa={cor.coral} />
       <Em y={820}>
         <div style={{ filter: 'drop-shadow(0 20px 0 rgba(0,0,0,0.15))' }}>
           <SeisVezes em={a.ini + 4} />
         </div>
       </Em>
-      <ChipData em={em(a, 0.6)} y={1180} texto="R$ 197 · sem juros no cartão" fundo={cor.branco} tinta={cor.laranja} tamanho={44} />
+      <ChipData em={em(a, 0.6)} y={1180} texto="Ou à vista no Pix" fundo={cor.branco} tinta={cor.laranja} tamanho={44} />
       <ChipData em={em(a, 0.8)} y={1310} texto="Sábado, 05/12 · depois, R$ 297" fundo={cor.tinta} />
       <Efeito nome="ding" em={a.ini + 4} volume={0.45} />
       <Aviso />

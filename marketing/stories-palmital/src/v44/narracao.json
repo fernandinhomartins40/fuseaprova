@@ -2,43 +2,43 @@
   "gancho": [
     {
       "arquivo": "audio/v44/voz-gancho-1.wav",
-      "segundos": 4.456,
+      "segundos": 4.468,
       "texto": "Quanto custa, por dia, se preparar pro concurso da Prefeitura de Palmital?"
     }
   ],
   "total": [
     {
       "arquivo": "audio/v44/voz-total-1.wav",
-      "segundos": 6.558,
-      "texto": "São cento e noventa e sete reais, com acesso até a prova da Prefeitura de Palmital, em vinte e um de fevereiro."
+      "segundos": 6.886,
+      "texto": "O preparatório completo sai por cento e noventa e sete reais, com acesso até a prova, em vinte e um de fevereiro."
     }
   ],
   "divide": [
     {
       "arquivo": "audio/v44/voz-divide-1.wav",
-      "segundos": 2.679,
+      "segundos": 2.668,
       "texto": "Dividindo pelos dias que faltam pra prova..."
     }
   ],
   "revela": [
     {
       "arquivo": "audio/v44/voz-revela-1.wav",
-      "segundos": 2.564,
-      "texto": "...dá menos de dois e cinquenta por dia."
+      "segundos": 4.33,
+      "texto": "...dá menos de dois e cinquenta por dia. Menos que um cafezinho."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v44/voz-oferta-1.wav",
-      "segundos": 4.361,
-      "texto": "Em até seis vezes sem juros. E esse preço acaba amanhã."
+      "segundos": 7.646,
+      "texto": "E dá pra pagar em até seis vezes sem juros. Mas esse valor é só até amanhã. Depois, duzentos e noventa e sete."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v44/voz-fecho-1.wav",
-      "segundos": 5.437,
-      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 6.281,
+      "texto": "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }
