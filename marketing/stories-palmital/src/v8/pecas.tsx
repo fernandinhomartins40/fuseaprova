@@ -20,22 +20,56 @@ export const Pessoa: React.FC<{ cabelo: string; camisa: string; pele?: string; l
   humor = 'neutro',
   tamanho = 200,
 }) => {
-  const boca = { neutro: 'M88 108 L112 108', triste: 'M86 113 Q100 101 114 113', feliz: 'M84 103 Q100 120 116 103' }[humor];
+  const id = React.useId().replace(/:/g, '');
+  const boca = { neutro: 'M89 109 Q100 112 111 109', triste: 'M86 114 Q100 102 114 114', feliz: 'M84 103 Q100 122 116 103' }[humor];
   return (
     <svg width={tamanho} height={tamanho} viewBox="0 0 200 200">
-      {longo ? <path d="M60 78 L52 150 L78 150 L74 92 Z M140 78 L148 150 L122 150 L126 92 Z" fill={cabelo} /> : null}
+      <defs>
+        <radialGradient id={`pele${id}`} cx="0.38" cy="0.32" r="0.75">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0.35" />
+          <stop offset="0.45" stopColor={pele} stopOpacity="0" />
+          <stop offset="1" stopColor="#000000" stopOpacity="0.22" />
+        </radialGradient>
+        <linearGradient id={`camisa${id}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0.22" />
+          <stop offset="0.5" stopColor="#ffffff" stopOpacity="0" />
+          <stop offset="1" stopColor="#000000" stopOpacity="0.25" />
+        </linearGradient>
+        <linearGradient id={`cabelo${id}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#ffffff" stopOpacity="0.28" />
+          <stop offset="0.4" stopColor="#ffffff" stopOpacity="0" />
+          <stop offset="1" stopColor="#000000" stopOpacity="0.2" />
+        </linearGradient>
+      </defs>
+      {longo ? (
+        <>
+          <path d="M60 78 C 50 110, 48 140, 56 156 L80 152 L74 92 Z M140 78 C 150 110, 152 140, 144 156 L120 152 L126 92 Z" fill={cabelo} />
+          <path d="M60 78 C 50 110, 48 140, 56 156 L80 152 L74 92 Z M140 78 C 150 110, 152 140, 144 156 L120 152 L126 92 Z" fill={`url(#cabelo${id})`} />
+        </>
+      ) : null}
       <path d="M28 200 C30 152 62 136 100 136 C138 136 170 152 172 200 Z" fill={camisa} />
+      <path d="M28 200 C30 152 62 136 100 136 C138 136 170 152 172 200 Z" fill={`url(#camisa${id})`} />
+      <path d="M84 138 L100 156 L116 138" fill="none" stroke="rgba(0,0,0,0.22)" strokeWidth="4" strokeLinejoin="round" />
       <rect x="88" y="112" width="24" height="30" rx="8" fill={pele} />
+      <rect x="88" y="112" width="24" height="16" rx="6" fill="rgba(0,0,0,0.18)" />
+      <ellipse cx="58" cy="90" rx="7" ry="10" fill={pele} />
+      <ellipse cx="142" cy="90" rx="7" ry="10" fill={pele} />
       <circle cx="100" cy="86" r="42" fill={pele} />
+      <circle cx="100" cy="86" r="42" fill={`url(#pele${id})`} />
+      <ellipse cx="78" cy="102" rx="8" ry="5" fill="#FF7A7A" opacity={humor === 'feliz' ? 0.45 : 0.22} />
+      <ellipse cx="122" cy="102" rx="8" ry="5" fill="#FF7A7A" opacity={humor === 'feliz' ? 0.45 : 0.22} />
       <path d="M57 86 C55 52 78 38 100 38 C124 38 146 52 143 86 C132 66 114 60 100 60 C86 60 68 66 57 86 Z" fill={cabelo} />
-      <circle cx="85" cy="90" r="4.5" fill={cor.tinta} />
-      <circle cx="115" cy="90" r="4.5" fill={cor.tinta} />
-      {humor === 'triste' ? <path d="M77 78 L92 82 M123 78 L108 82" stroke={cor.tinta} strokeWidth="4" strokeLinecap="round" /> : null}
-      <path d={boca} stroke={cor.tinta} strokeWidth="4.5" strokeLinecap="round" fill="none" />
+      <path d="M57 86 C55 52 78 38 100 38 C124 38 146 52 143 86 C132 66 114 60 100 60 C86 60 68 66 57 86 Z" fill={`url(#cabelo${id})`} />
+      <path d="M78 50 C 88 44, 104 42, 116 46" stroke="rgba(255,255,255,0.25)" strokeWidth="4" strokeLinecap="round" fill="none" />
+      <ellipse cx="85" cy="90" rx="5" ry="6" fill={cor.tinta} />
+      <ellipse cx="115" cy="90" rx="5" ry="6" fill={cor.tinta} />
+      <circle cx="87" cy="88" r="1.7" fill="#fff" />
+      <circle cx="117" cy="88" r="1.7" fill="#fff" />
+      <path d={humor === 'triste' ? 'M77 78 L92 82 M123 78 L108 82' : 'M77 76 Q85 72 93 76 M107 76 Q115 72 123 76'} stroke={cor.tinta} strokeWidth="3.5" strokeLinecap="round" fill="none" opacity={0.85} />
+      <path d={boca} stroke={cor.tinta} strokeWidth="4.5" strokeLinecap="round" fill={humor === 'feliz' ? '#fff' : 'none'} />
     </svg>
   );
 };
-
 /** Avatar em círculo com nome e o aviso de que é personagem. */
 export const Personagem: React.FC<{
   nome: string;
