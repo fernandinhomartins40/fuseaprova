@@ -1,39 +1,44 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v40/voz-mesa-1.wav",
-      "segundos": 5.187,
-      "texto": "São quatro passos do zero até a prova. E o último, quase ninguém faz."
-    },
+      "arquivo": "audio/v40/voz-gancho-1.wav",
+      "segundos": 5.002,
+      "texto": "São quatro passos até a prova. O último, quase ninguém faz."
+    }
+  ],
+  "passos": [
     {
-      "arquivo": "audio/v40/voz-mesa-2.wav",
-      "segundos": 2.061,
-      "texto": "Um: descubra o seu cargo."
-    },
+      "arquivo": "audio/v40/voz-passos-1.wav",
+      "segundos": 7.404,
+      "texto": "Um: descubra o seu cargo. Dois: um treino por dia. Três: revise o que errou."
+    }
+  ],
+  "quatro": [
     {
-      "arquivo": "audio/v40/voz-mesa-3.wav",
-      "segundos": 2.058,
-      "texto": "Dois: um treino por dia."
-    },
+      "arquivo": "audio/v40/voz-quatro-1.wav",
+      "segundos": 5.431,
+      "texto": "Quatro: simulado no formato oficial, quarenta questões em quatro horas."
+    }
+  ],
+  "app": [
     {
-      "arquivo": "audio/v40/voz-mesa-4.wav",
-      "segundos": 2.079,
-      "texto": "Três: revise o que errou."
-    },
+      "arquivo": "audio/v40/voz-app-1.wav",
+      "segundos": 2.633,
+      "texto": "Os quatro passos estão no Fuse Aprova."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v40/voz-mesa-5.wav",
-      "segundos": 6.393,
-      "texto": "Quatro, o que quase ninguém faz: simulado no formato oficial, quarenta questões em quatro horas."
-    },
+      "arquivo": "audio/v40/voz-oferta-1.wav",
+      "segundos": 5.202,
+      "texto": "Por cento e noventa e sete reais, em até seis vezes sem juros, até sábado."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v40/voz-mesa-6.wav",
-      "segundos": 4.47,
-      "texto": "Tudo isso no Fuse Aprova, por cento e noventa e sete reais, até sábado."
-    },
-    {
-      "arquivo": "audio/v40/voz-mesa-7.wav",
-      "segundos": 1.107,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v40/voz-fecho-1.wav",
+      "segundos": 0.912,
+      "texto": "Link na bio."
     }
   ]
 }

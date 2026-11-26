@@ -1,30 +1,16 @@
 {
-  "voz": "2CECaLAGTS5NRGxgbcxr",
-  "nomeVoz": "Davi Andrei",
+  "voz": "ORgG8rwdAiMYRug8RJwR",
+  "nomeVoz": "Ana Alice",
   "modelo": "eleven_v4",
-  "ajustes": {
-    "stability": 0.4,
-    "similarity_boost": 0.8,
-    "use_speaker_boost": true,
-    "speed": 1.08
-  },
-  "pronuncia": {
-    "Fuse": "Fúzi",
-    "Aprova": "Aprôva",
-    "FAU": "Fáu"
-  },
-  "semente": 317,
-  "titulo": "O passo que ninguém faz",
-  "dia": "02/12",
+  "semente": 401,
+  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
+  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
   "falas": {
-    "mesa": [
-      "São quatro passos do zero até a prova. E o último, quase ninguém faz.",
-      "Um: descubra o seu cargo.",
-      "Dois: um treino por dia.",
-      "Três: revise o que errou.",
-      "Quatro, o que quase ninguém faz: simulado no formato oficial, quarenta questões em quatro horas.",
-      "Tudo isso no Fuse Aprova, por cento e noventa e sete reais, até sábado.",
-      "O link tá na bio."
-    ]
+    "gancho": ["São quatro passos até a prova. O último, quase ninguém faz."],
+    "passos": ["Um: descubra o seu cargo. Dois: um treino por dia. Três: revise o que errou."],
+    "quatro": ["Quatro: simulado no formato oficial, quarenta questões em quatro horas."],
+    "app": ["Os quatro passos estão no Fuse Aprova."],
+    "oferta": ["Por cento e noventa e sete reais, em até seis vezes sem juros, até sábado."],
+    "fecho": ["Link na bio."]
   }
 }
