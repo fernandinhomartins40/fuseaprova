@@ -1,29 +1,16 @@
 {
-  "voz": "2CECaLAGTS5NRGxgbcxr",
-  "nomeVoz": "Davi Andrei",
+  "voz": "33B4UnXyTNbgLmdEDh5P",
+  "nomeVoz": "Keren",
   "modelo": "eleven_v4",
-  "ajustes": {
-    "stability": 0.4,
-    "similarity_boost": 0.8,
-    "use_speaker_boost": true,
-    "speed": 1.08
-  },
-  "pronuncia": {
-    "Fuse": "Fúzi",
-    "Aprova": "Aprôva",
-    "FAU": "Fáu"
-  },
-  "semente": 319,
-  "titulo": "O número",
-  "dia": "03/12",
+  "semente": 421,
+  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
+  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
   "falas": {
-    "mesa": [
-      "Tem um número que todo candidato do concurso de Palmital devia saber hoje.",
-      "Não é o número de vagas. Nem a nota mínima.",
-      "É oitenta: os dias que faltam pra prova objetiva, em vinte e um de fevereiro.",
-      "Um treino por dia são oitenta treinos.",
-      "E o preço de cento e noventa e sete reais acaba no sábado.",
-      "O link tá na bio."
-    ]
+    "gancho": ["Oitenta. Guarde esse número."],
+    "dias": ["São os dias até a prova do concurso da Prefeitura de Palmital, em vinte e um de fevereiro."],
+    "treinos": ["Um treino por dia são oitenta treinos."],
+    "app": ["E cada treino leva cinco minutos no Fuse Aprova."],
+    "oferta": ["O preço de cento e noventa e sete reais, em até seis vezes, acaba no sábado."],
+    "fecho": ["Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."]
   }
 }
