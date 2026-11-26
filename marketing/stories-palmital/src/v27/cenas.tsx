@@ -44,7 +44,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const R = 180;
   return (
     <FundoCinema paleta={paletas.petroleo} duracao={duracao}>
-      <Cabeca texto="Regras *escondidas* / no edital." em={a.ini} sobre="Concurso · Prefeitura de Palmital" tamanho={110} />
+      <Cabeca texto="Uma linha do edital / *muda seu estudo.*" em={a.ini} tamanho={96} />
       <div style={{ position: 'absolute', left: 160, top: 640, transform: `translateY(${(1 - folha) * 1300}px) perspective(1800px) rotateX(10deg) rotate(-2deg)`, borderRadius: 16 }}>
         {[3, 2, 1].map((k) => (
           <div key={k} style={{ position: 'absolute', inset: 0, borderRadius: 16, background: '#ECE9DF', transform: `translate(${k * 10}px, ${k * 12}px) rotate(${k * 1.2}deg)`, boxShadow: '0 30px 60px rgba(0,0,0,0.35)' }} />
@@ -177,7 +177,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   const altura = 580;
   return (
     <FundoVivo paleta={cores.magenta} duracao={duracao}>
-      <Cabeca texto="*R$ 197* / até 5/12." em={a.ini} tamanho={130} />
+      <Cabeca texto="Tudo isso / *por R$ 197.*" em={a.ini} tamanho={130} />
       <div style={{ position: 'absolute', left: 140, top: 620, width: 800, height: 120, borderRadius: 34, background: 'linear-gradient(180deg, #4A4D57, #24262C 60%, #15161A)', boxShadow: 'inset 0 3px 0 rgba(255,255,255,0.18), 0 40px 70px rgba(0,0,0,0.45)', zIndex: 2 }}>
         <div style={{ position: 'absolute', left: 90, top: 70, width: 620, height: 16, borderRadius: 8, background: '#0F1014' }} />
         <div style={{ position: 'absolute', right: 40, top: 30, width: 24, height: 24, borderRadius: '50%', background: Math.floor(frame / 6) % 2 ? '#4ADE80' : '#166534', boxShadow: Math.floor(frame / 6) % 2 ? '0 0 16px #4ADE80' : 'none' }} />
