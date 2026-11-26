@@ -202,7 +202,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
               <div key={d} style={{ width: 160, height: 200, borderRadius: 30, background: ultimo ? 'linear-gradient(180deg, #FFE27A, #FFC233)' : 'linear-gradient(180deg, #FFFFFF, #ECEEF2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: ultimo ? `inset 0 2px 0 rgba(255,255,255,0.6), 0 9px 0 #D99A00, 0 0 50px ${cor.ouro}` : 'inset 0 2px 0 #fff, 0 9px 0 #C9CED6, 0 18px 26px rgba(0,0,0,0.2)', transform: ultimo ? 'scale(1.12)' : 'none' }}>
                 <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 26, color: cor.muted }}>{i < 5 ? 'NOV' : 'DEZ'}</div>
                 <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 90, lineHeight: 1, color: ultimo ? cor.vermelho : cor.tinta }}>{d}</div>
-                {ultimo ? <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 22, color: cor.vermelho }}>ÚLTIMO DIA</div> : null}
+                {ultimo ? <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 20, color: cor.vermelho, whiteSpace: 'nowrap' }}>FIM DO R$ 197</div> : null}
               </div>
             );
           })}
