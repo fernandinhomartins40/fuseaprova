@@ -1,34 +1,44 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v44/voz-mesa-1.wav",
-      "segundos": 3.153,
-      "texto": "Quanto custa por dia se preparar pro concurso de Palmital?"
-    },
+      "arquivo": "audio/v44/voz-gancho-1.wav",
+      "segundos": 4.456,
+      "texto": "Quanto custa, por dia, se preparar pro concurso da Prefeitura de Palmital?"
+    }
+  ],
+  "total": [
     {
-      "arquivo": "audio/v44/voz-mesa-2.wav",
-      "segundos": 3.744,
-      "texto": "Com trilha do cargo, mais de dez mil questões e simulados."
-    },
+      "arquivo": "audio/v44/voz-total-1.wav",
+      "segundos": 4.546,
+      "texto": "São cento e noventa e sete reais, com acesso até a prova, em fevereiro."
+    }
+  ],
+  "divide": [
     {
-      "arquivo": "audio/v44/voz-mesa-3.wav",
-      "segundos": 2.063,
-      "texto": "Até o dia da prova, em fevereiro."
-    },
+      "arquivo": "audio/v44/voz-divide-1.wav",
+      "segundos": 2.199,
+      "texto": "Dividindo pelos dias que faltam..."
+    }
+  ],
+  "revela": [
     {
-      "arquivo": "audio/v44/voz-mesa-4.wav",
-      "segundos": 5.846,
-      "texto": "Uns dois reais e cinquenta por dia. Cento e noventa e sete reais, em até seis vezes sem juros."
-    },
+      "arquivo": "audio/v44/voz-revela-1.wav",
+      "segundos": 2.564,
+      "texto": "...dá menos de dois e cinquenta por dia."
+    }
+  ],
+  "oferta": [
     {
-      "arquivo": "audio/v44/voz-mesa-5.wav",
-      "segundos": 1.944,
-      "texto": "Esse preço vai só até amanhã."
-    },
+      "arquivo": "audio/v44/voz-oferta-1.wav",
+      "segundos": 4.361,
+      "texto": "Em até seis vezes sem juros. E esse preço acaba amanhã."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v44/voz-mesa-6.wav",
-      "segundos": 0.982,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v44/voz-fecho-1.wav",
+      "segundos": 5.437,
+      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
     }
   ]
 }

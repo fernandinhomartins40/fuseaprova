@@ -1,29 +1,16 @@
 {
-  "voz": "2CECaLAGTS5NRGxgbcxr",
-  "nomeVoz": "Davi Andrei",
+  "voz": "GDzHdQOi6jjf8zaXhCYD",
+  "nomeVoz": "Raquel",
   "modelo": "eleven_v4",
-  "ajustes": {
-    "stability": 0.4,
-    "similarity_boost": 0.8,
-    "use_speaker_boost": true,
-    "speed": 1.08
-  },
-  "pronuncia": {
-    "Fuse": "Fúzi",
-    "Aprova": "Aprôva",
-    "FAU": "Fáu"
-  },
-  "semente": 321,
-  "titulo": "Quanto custa por dia",
-  "dia": "04/12",
+  "semente": 441,
+  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
+  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
   "falas": {
-    "mesa": [
-      "Quanto custa por dia se preparar pro concurso de Palmital?",
-      "Com trilha do cargo, mais de dez mil questões e simulados.",
-      "Até o dia da prova, em fevereiro.",
-      "Uns dois reais e cinquenta por dia. Cento e noventa e sete reais, em até seis vezes sem juros.",
-      "Esse preço vai só até amanhã.",
-      "O link tá na bio."
-    ]
+    "gancho": ["Quanto custa, por dia, se preparar pro concurso da Prefeitura de Palmital?"],
+    "total": ["São cento e noventa e sete reais, com acesso até a prova, em fevereiro."],
+    "divide": ["Dividindo pelos dias que faltam..."],
+    "revela": ["...dá menos de dois e cinquenta por dia."],
+    "oferta": ["Em até seis vezes sem juros. E esse preço acaba amanhã."],
+    "fecho": ["Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."]
   }
 }
