@@ -2,36 +2,36 @@
   "gancho": [
     {
       "arquivo": "audio/v46/voz-gancho-1.wav",
-      "segundos": 4.725,
-      "texto": "Últimas horas do preço especial do preparatório do concurso da Prefeitura de Palmital."
+      "segundos": 4.244,
+      "texto": "Últimas horas da promoção do preparatório do concurso da Prefeitura de Palmital."
     }
   ],
   "escolha": [
     {
       "arquivo": "audio/v46/voz-escolha-1.wav",
-      "segundos": 4.649,
-      "texto": "Pra prova da Prefeitura de Palmital, você pode estudar sozinho, ou com um plano pronto."
+      "segundos": 5.65,
+      "texto": "Daqui até a prova, você pode estudar sozinho, sem rumo. Ou seguir um plano pronto."
     }
   ],
   "plano": [
     {
       "arquivo": "audio/v46/voz-plano-1.wav",
-      "segundos": 5.698,
-      "texto": "Trilha do seu cargo, revisão dos erros e simulados no formato da prova, até vinte e um de fevereiro."
+      "segundos": 6.781,
+      "texto": "O plano: trilha do seu cargo, revisão dos erros e simulados no formato da prova, até vinte e um de fevereiro."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v46/voz-oferta-1.wav",
-      "segundos": 6.242,
-      "texto": "Até a meia-noite, cento e noventa e sete reais, em até seis vezes. Depois, duzentos e noventa e sete."
+      "segundos": 7.181,
+      "texto": "Até a meia-noite, cento e noventa e sete reais, em até seis vezes. Depois, o valor passa pra duzentos e noventa e sete."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v46/voz-fecho-1.wav",
-      "segundos": 4.872,
-      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 5.751,
+      "texto": "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }

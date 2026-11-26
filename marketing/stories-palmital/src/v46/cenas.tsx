@@ -53,8 +53,8 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
       <Ceu t={desce * 0.45}>
         <div style={{ position: 'absolute', left: 540 - 220, top: 980 + desce * 330, width: 440, height: 440, borderRadius: '50%', background: 'radial-gradient(circle, #FFF6C8 0%, #FFD54A 40%, #FF9A3D 75%, rgba(255,120,40,0) 100%)', boxShadow: '0 0 160px 60px rgba(255,170,60,0.45)' }} />
       </Ceu>
-      <Cabeca texto="Últimas horas / *do R$ 197.*" em={a.ini} tamanho={150} faixa={cor.ouro} corFaixa={cor.tinta} />
-      <ChipData em={em(a, 0.6)} y={720} texto="Preço especial do preparatório" fundo={cor.branco} tinta={cor.laranja} tamanho={40} />
+      <Cabeca texto="Últimas horas / *do R$ 197.*" em={a.ini} tamanho={124} faixa={cor.ouro} corFaixa={cor.tinta} />
+      <ChipData em={em(a, 0.6)} y={720} texto="Promoção termina hoje, 23h59" fundo={cor.branco} tinta={cor.laranja} tamanho={40} />
       <Efeito nome="whoosh" em={a.ini} volume={0.3} />
       <Aviso />
     </AbsoluteFill>
