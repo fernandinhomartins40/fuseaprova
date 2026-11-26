@@ -157,7 +157,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   const preco = useMola(para + 4, { damping: 11, stiffness: 160 });
   return (
     <FundoVivo paleta={cores.sol} duracao={duracao}>
-      <Cabeca texto="Tirou 6: / *6x sem juros.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.ouro} tamanho={116} />
+      <Cabeca texto="R$ 197 / *em 6x sem juros.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.ouro} tamanho={116} />
       <Em y={640}>
         <div style={{ width: 360, height: 360, borderRadius: 60, background: 'radial-gradient(circle at 30% 25%, #FFFFFF, #E1E4EA)', boxShadow: 'inset -14px -16px 0 rgba(0,0,0,0.07), inset 4px 4px 0 #fff, 0 40px 70px rgba(0,0,0,0.35)', position: 'relative', transform: `translate(${x}px, ${quica}px) rotate(${giro}deg)` }}>
           {PONTOS[face].map(([px, py], k) => (
