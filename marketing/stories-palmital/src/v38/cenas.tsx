@@ -159,7 +159,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   );
   return (
     <FundoVivo paleta={cores.sol} duracao={duracao}>
-      <Cabeca texto="Plante agora: / *R$ 197.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.ouro} tamanho={116} />
+      <Cabeca texto="Comece hoje: / *R$ 197.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.ouro} tamanho={116} />
       <Vaso g={1} x={420} y={800} escala={1.3} placa={placa} />
       <div style={{ position: 'absolute', left: 0, top: 1500, width: 1080, textAlign: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 44, color: cor.tinta }}>sem juros · depois de 05/12, R$ 297</div>
       <Efeito nome="pop" em={a.ini + 8} volume={0.5} />

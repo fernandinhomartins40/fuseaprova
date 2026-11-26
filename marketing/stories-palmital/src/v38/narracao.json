@@ -2,43 +2,43 @@
   "gancho": [
     {
       "arquivo": "audio/v38/voz-gancho-1.wav",
-      "segundos": 5.499,
+      "segundos": 5.502,
       "texto": "Não sabe nada da matéria do concurso da Prefeitura de Palmital? Dá pra começar assim mesmo."
     }
   ],
   "explica": [
     {
       "arquivo": "audio/v38/voz-explica-1.wav",
-      "segundos": 7.578,
-      "texto": "No Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital, cada questão vem com a explicação do tema, do zero."
+      "segundos": 4.636,
+      "texto": "No Fuse Aprova, cada questão vem com a explicação do tema, do zero."
     }
   ],
   "rega": [
     {
       "arquivo": "audio/v38/voz-rega-1.wav",
-      "segundos": 3.714,
+      "segundos": 3.711,
       "texto": "E o que você errou volta pra revisão, até fixar."
     }
   ],
   "cresce": [
     {
       "arquivo": "audio/v38/voz-cresce-1.wav",
-      "segundos": 3.005,
+      "segundos": 3.006,
       "texto": "Um pouco por dia, você evolui até a prova."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v38/voz-oferta-1.wav",
-      "segundos": 5.219,
-      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+      "segundos": 6.284,
+      "texto": "Começa hoje por cento e noventa e sete reais, em até seis vezes. Promoção até cinco de dezembro."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v38/voz-fecho-1.wav",
-      "segundos": 5.181,
-      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 6.473,
+      "texto": "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }
