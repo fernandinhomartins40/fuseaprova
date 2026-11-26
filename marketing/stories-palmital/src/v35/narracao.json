@@ -2,36 +2,36 @@
   "gancho": [
     {
       "arquivo": "audio/v35/voz-gancho-1.wav",
-      "segundos": 4.308,
-      "texto": "Em seis dias, o preparatório do concurso da Prefeitura de Palmital muda."
+      "segundos": 4.881,
+      "texto": "Em seis dias, o preparatório do concurso da Prefeitura de Palmital fica mais caro."
     }
   ],
   "igual": [
     {
       "arquivo": "audio/v35/voz-igual-1.wav",
-      "segundos": 7.808,
-      "texto": "A trilha, as questões e os simulados continuam iguais. E o acesso vale até a prova da Prefeitura de Palmital, em vinte e um de fevereiro."
+      "segundos": 7.401,
+      "texto": "Quem garantir antes paga menos e leva o mesmo: trilha, questões, simulados e acesso até a prova de vinte e um de fevereiro."
     }
   ],
   "revela": [
     {
       "arquivo": "audio/v35/voz-revela-1.wav",
-      "segundos": 4.652,
-      "texto": "O que muda é o preço: no dia seis, sobe pra duzentos e noventa e sete."
+      "segundos": 5.286,
+      "texto": "No dia seis, o valor passa de cento e noventa e sete pra duzentos e noventa e sete reais."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v35/voz-oferta-1.wav",
-      "segundos": 4.869,
-      "texto": "Até sábado, ainda é cento e noventa e sete reais, em até seis vezes sem juros."
+      "segundos": 5.217,
+      "texto": "Até sábado, você garante o seu por cento e noventa e sete, em até seis vezes sem juros."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v35/voz-fecho-1.wav",
-      "segundos": 4.854,
-      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 5.547,
+      "texto": "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }

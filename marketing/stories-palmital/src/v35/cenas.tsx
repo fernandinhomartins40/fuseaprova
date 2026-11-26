@@ -18,7 +18,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const cai = interpolate(frame, [em(a, 0.7), em(a, 0.7) + 10], [0, 1], { ...limita, easing: (t) => t * t });
   return (
     <FundoVivo paleta={cores.coral} duracao={duracao}>
-      <Cabeca texto="Em 6 dias, / *o valor sobe.*" em={a.ini} tamanho={140} />
+      <Cabeca texto="Em 6 dias, / *fica mais caro.*" em={a.ini} tamanho={140} />
       <div style={{ position: 'absolute', left: 60, top: 760, width: 960, height: 520, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 34 }}>
         {[6, 5, 4, 3, 2, 1].map((n, i) => {
           const entra = useMola(a.ini + i * 3, { damping: 12, stiffness: 170 });
@@ -38,39 +38,25 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   );
 };
 
-/* 2. O que continua igual: cadeados + ingresso ----------------------------- */
-const Cadeado: React.FC<{ fechado: number }> = ({ fechado }) => {
-  const frame = useCurrentFrame();
-  const f = interpolate(frame, [fechado, fechado + 6], [0, 1], limita);
-  return (
-    <svg width="70" height="80" viewBox="0 0 24 28">
-      <path d={`M7 ${12 - (1 - f) * 4} V8 a5 5 0 0 1 10 0 V${12 - (1 - f) * 0}`} fill="none" stroke={cor.tinta} strokeWidth="3" />
-      <defs>
-        <linearGradient id="cad35" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#FFE27A" />
-          <stop offset="1" stopColor="#D99A00" />
-        </linearGradient>
-      </defs>
-      <rect x="3" y="12" width="18" height="14" rx="3" fill="url(#cad35)" stroke={cor.tinta} strokeWidth="2" />
-      <circle cx="12" cy="18.5" r="2" fill={cor.tinta} />
-    </svg>
-  );
-};
-
+/* 2. O mesmo conteúdo pagando menos: itens inclusos + ingresso ------------- */
 export const CenaIgual: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   const itens = ['Trilha', 'Questões', 'Simulados'];
   const ingresso = useMola(em(a, 0.65), { damping: 12, stiffness: 130 });
   return (
     <FundoVivo paleta={cores.petroleo} duracao={duracao}>
-      <Cabeca texto="Garantindo antes, / *você leva tudo:*" em={a.ini} tamanho={130} />
+      <Cabeca texto="O mesmo conteúdo, / *pagando menos.*" em={a.ini} tamanho={96} />
       <div style={{ position: 'absolute', left: 0, top: 620, width: 1080, display: 'flex', justifyContent: 'center', gap: 30 }}>
         {itens.map((t, i) => (
           <Surge key={t} em={em(a, 0.05 + i * 0.13)}>
             <div style={{ width: 290, padding: '36px 0', borderRadius: 36, background: 'linear-gradient(180deg, #FFFFFF, #ECEEF2)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, boxShadow: 'inset 0 2px 0 #fff, 0 10px 0 #C9CED6, 0 26px 44px rgba(0,0,0,0.3)' }}>
-              <Cadeado fechado={em(a, 0.05 + i * 0.13) + 10} />
+              <div style={{ width: 70, height: 70, borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%, #4ADE80, #15803D)', boxShadow: '0 6px 12px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12.5l4.5 4.5L19 7.5" />
+                </svg>
+              </div>
               <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 52, color: cor.tinta }}>{t}</div>
-              <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 26, color: cor.verde }}>IGUAL</div>
+              <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 26, color: cor.verde }}>INCLUSO</div>
             </div>
             <Efeito nome="pop" em={em(a, 0.05 + i * 0.13) + 10} volume={0.3} />
           </Surge>
@@ -137,7 +123,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   return (
     <FundoVivo paleta={cores.lima} duracao={duracao}>
       <Cabeca texto="Até sábado: / *R$ 197.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.branco} tamanho={96} />
-      <div style={{ position: 'absolute', left: 190, top: 720, width: 700, height: 760, borderRadius: '30px 30px 0 0', background: `repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0 2px, transparent 2px 5px), linear-gradient(90deg, #6B7280, #C3CAD4 50%, #6B7280)`, padding: 26, boxShadow: 'inset 0 3px 0 rgba(255,255,255,0.3), 0 50px 80px rgba(0,0,0,0.38)' }}>
+      <div style={{ position: 'absolute', left: 190, top: 790, width: 700, height: 700, borderRadius: '30px 30px 0 0', background: `repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0 2px, transparent 2px 5px), linear-gradient(90deg, #6B7280, #C3CAD4 50%, #6B7280)`, padding: 26, boxShadow: 'inset 0 3px 0 rgba(255,255,255,0.3), 0 50px 80px rgba(0,0,0,0.38)' }}>
         <div style={{ position: 'absolute', left: 250, top: -90, width: 200, height: 70, borderRadius: 18, background: 'linear-gradient(180deg, #16181D, #050506)', border: '6px solid #9CA3AF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Consolas', monospace", fontWeight: 900, fontSize: 40, color: '#FFB020', textShadow: '0 0 12px #FFB020' }}>▲ 197</div>
         <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', borderRadius: 14, background: `linear-gradient(180deg, #FFF6EE, ${cor.ouro})` }}>
           <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
@@ -162,7 +148,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.azul} duracao={duracao}>
-      <FechoPalmital manchete="Entre *antes* / de subir." em={a.ini} len={a.fim - a.ini} />
+      <FechoPalmital manchete="Garanta *antes* / de subir." em={a.ini} len={a.fim - a.ini} />
     </FundoVivo>
   );
 };
