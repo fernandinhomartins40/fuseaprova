@@ -117,6 +117,7 @@ export const CenaApp: React.FC<PropsCena> = ({ falas, duracao }) => {
       <div style={{ position: 'absolute', left: 300, top: 660, transform: `translateY(${(1 - cel) * 1200 + Math.sin(frame / 22) * 8}px) perspective(1600px) rotateY(${14 - (1 - cel) * 20}deg) rotateX(4deg) rotate(2deg)` }}>
         <CelularApp largura={480} fim={duracao + 20} telas={[{ tipo: 'trilha', em: a.ini - 8 }, { tipo: 'licao', em: em(a, 0.55) }]} />
       </div>
+      <ChipData em={em(a, 0.6)} y={1420} texto="80 × 5 min = menos de 7 horas" fundo={cor.ouro} tinta={cor.tinta} tamanho={44} />
       <Aviso />
     </FundoVivo>
   );

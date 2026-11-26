@@ -2,43 +2,43 @@
   "gancho": [
     {
       "arquivo": "audio/v42/voz-gancho-1.wav",
-      "segundos": 2.134,
+      "segundos": 2.142,
       "texto": "Oitenta. Guarde esse número."
     }
   ],
   "dias": [
     {
       "arquivo": "audio/v42/voz-dias-1.wav",
-      "segundos": 5.267,
+      "segundos": 5.263,
       "texto": "São os dias até a prova do concurso da Prefeitura de Palmital, em vinte e um de fevereiro."
     }
   ],
   "treinos": [
     {
       "arquivo": "audio/v42/voz-treinos-1.wav",
-      "segundos": 2.976,
+      "segundos": 2.979,
       "texto": "Um treino por dia são oitenta treinos."
     }
   ],
   "app": [
     {
       "arquivo": "audio/v42/voz-app-1.wav",
-      "segundos": 3.116,
-      "texto": "E cada treino leva cinco minutos no Fuse Aprova."
+      "segundos": 5.743,
+      "texto": "No Fuse Aprova, cada treino leva cinco minutos. São menos de sete horas até a prova."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v42/voz-oferta-1.wav",
-      "segundos": 4.854,
-      "texto": "O preço de cento e noventa e sete reais, em até seis vezes, acaba no sábado."
+      "segundos": 6.624,
+      "texto": "Comece o primeiro hoje, por cento e noventa e sete reais em até seis vezes. Promoção só até sábado."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v42/voz-fecho-1.wav",
-      "segundos": 5.116,
-      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 6.294,
+      "texto": "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }
