@@ -2,43 +2,43 @@
   "gancho": [
     {
       "arquivo": "audio/v28/voz-gancho-1.wav",
-      "segundos": 3.939,
+      "segundos": 3.954,
       "texto": "Dá pra estudar pro concurso da Prefeitura de Palmital na fila do banco."
     }
   ],
   "sem": [
     {
       "arquivo": "audio/v28/voz-sem-1.wav",
-      "segundos": 3.823,
+      "segundos": 3.82,
       "texto": "Sem apostila pesada, e sem duas horas livres."
     }
   ],
   "treino": [
     {
       "arquivo": "audio/v28/voz-treino-1.wav",
-      "segundos": 6.697,
-      "texto": "São cinco minutos: cinco questões no estilo da FAU, a banca do concurso da Prefeitura de Palmital."
+      "segundos": 5.16,
+      "texto": "São cinco minutos: cinco questões no estilo da FAU, a banca do concurso."
     }
   ],
   "app": [
     {
       "arquivo": "audio/v28/voz-app-1.wav",
-      "segundos": 4.011,
-      "texto": "Acertou, ganha ponto. Errou, vem a explicação."
+      "segundos": 5.03,
+      "texto": "Tudo no celular: acertou, ganha ponto. Errou, vem a explicação."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v28/voz-oferta-1.wav",
-      "segundos": 5.322,
-      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+      "segundos": 7.138,
+      "texto": "Sua vez: cento e noventa e sete reais, em até seis vezes sem juros. Promoção até cinco de dezembro."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v28/voz-fecho-1.wav",
-      "segundos": 5.254,
-      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 6.526,
+      "texto": "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }
