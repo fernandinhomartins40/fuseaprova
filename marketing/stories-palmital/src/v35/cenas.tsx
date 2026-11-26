@@ -24,7 +24,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
           const entra = useMola(a.ini + i * 3, { damping: 12, stiffness: 170 });
           const giro = i === 0 ? -cai * 80 : 0;
           return (
-            <div key={n} style={{ width: 120, height: 420, borderRadius: 20, background: cor.tinta, border: `8px solid ${cor.branco}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-around', transformOrigin: '0% 100%', transform: `translateY(${(1 - entra) * 700}px) rotate(${giro}deg)`, opacity: i === 0 ? 1 - cai * 0.4 : 1, boxShadow: '0 20px 30px rgba(0,0,0,0.3)' }}>
+            <div key={n} style={{ width: 120, height: 420, borderRadius: 22, background: 'linear-gradient(100deg, #4A4D57 0%, #2D2F36 35%, #15161A 100%)', border: '8px solid #F3F4F6', boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.2), 10px 0 0 #9CA3AF, 10px 24px 30px rgba(0,0,0,0.35)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-around', transformOrigin: '0% 100%', transform: `translateY(${(1 - entra) * 700}px) rotate(${giro}deg)`, opacity: i === 0 ? 1 - cai * 0.4 : 1 }}>
               <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 90, color: i === 0 ? cor.ouro : cor.branco }}>{n}</div>
               <div style={{ width: 70, height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.6)' }} />
               <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 22, color: 'rgba(255,255,255,0.8)' }}>{n === 1 ? 'DIA' : 'DIAS'}</div>
@@ -45,7 +45,14 @@ const Cadeado: React.FC<{ fechado: number }> = ({ fechado }) => {
   return (
     <svg width="70" height="80" viewBox="0 0 24 28">
       <path d={`M7 ${12 - (1 - f) * 4} V8 a5 5 0 0 1 10 0 V${12 - (1 - f) * 0}`} fill="none" stroke={cor.tinta} strokeWidth="3" />
-      <rect x="3" y="12" width="18" height="14" rx="3" fill={cor.ouro} stroke={cor.tinta} strokeWidth="2" />
+      <defs>
+        <linearGradient id="cad35" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#FFE27A" />
+          <stop offset="1" stopColor="#D99A00" />
+        </linearGradient>
+      </defs>
+      <rect x="3" y="12" width="18" height="14" rx="3" fill="url(#cad35)" stroke={cor.tinta} strokeWidth="2" />
+      <circle cx="12" cy="18.5" r="2" fill={cor.tinta} />
     </svg>
   );
 };
@@ -60,7 +67,7 @@ export const CenaIgual: React.FC<PropsCena> = ({ falas, duracao }) => {
       <div style={{ position: 'absolute', left: 0, top: 620, width: 1080, display: 'flex', justifyContent: 'center', gap: 30 }}>
         {itens.map((t, i) => (
           <Surge key={t} em={em(a, 0.05 + i * 0.13)}>
-            <div style={{ width: 290, padding: '36px 0', borderRadius: 36, background: cor.branco, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, boxShadow: '0 20px 40px rgba(0,0,0,0.25)' }}>
+            <div style={{ width: 290, padding: '36px 0', borderRadius: 36, background: 'linear-gradient(180deg, #FFFFFF, #ECEEF2)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, boxShadow: 'inset 0 2px 0 #fff, 0 10px 0 #C9CED6, 0 26px 44px rgba(0,0,0,0.3)' }}>
               <Cadeado fechado={em(a, 0.05 + i * 0.13) + 10} />
               <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 52, color: cor.tinta }}>{t}</div>
               <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 26, color: cor.verde }}>IGUAL</div>
@@ -69,7 +76,7 @@ export const CenaIgual: React.FC<PropsCena> = ({ falas, duracao }) => {
           </Surge>
         ))}
       </div>
-      <div style={{ position: 'absolute', left: 140, top: 1080, width: 800, height: 260, borderRadius: 30, background: cor.ouro, display: 'flex', boxShadow: '0 30px 50px rgba(0,0,0,0.3)', transform: `translateX(${(1 - ingresso) * 1200}px) rotate(-3deg)` }}>
+      <div style={{ position: 'absolute', left: 140, top: 1080, width: 800, height: 260, borderRadius: 30, background: 'radial-gradient(circle at 20% 0%, rgba(255,255,255,0.5), transparent 45%), linear-gradient(180deg, #FFE27A, #FFC233 60%, #F0AE14)', WebkitMaskImage: 'radial-gradient(circle 28px at 578px 0, transparent 27px, #000 28px), radial-gradient(circle 28px at 578px 100%, transparent 27px, #000 28px)', WebkitMaskComposite: 'source-in', maskComposite: 'intersect', display: 'flex', filter: 'drop-shadow(0 30px 30px rgba(0,0,0,0.3))', transform: `translateX(${(1 - ingresso) * 1200}px) rotate(-3deg)` }}>
         <div style={{ flex: 1, padding: '34px 40px', borderRight: `6px dashed ${cor.tinta}` }}>
           <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 32, letterSpacing: 4, color: cor.ouroTinta }}>INGRESSO</div>
           <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 70, lineHeight: 1.05, color: cor.tinta }}>Acesso até a prova</div>
@@ -89,7 +96,7 @@ export const CenaIgual: React.FC<PropsCena> = ({ falas, duracao }) => {
 const Painel: React.FC<{ valor: string; subindo: boolean; corValor: string }> = ({ valor, subindo, corValor }) => {
   const frame = useCurrentFrame();
   return (
-    <div style={{ width: 680, padding: '30px 40px', borderRadius: 40, background: '#0E0F13', border: '10px solid #3B424E', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 30, boxShadow: '0 30px 60px rgba(0,0,0,0.5)' }}>
+    <div style={{ width: 680, padding: '30px 40px', borderRadius: 40, background: 'linear-gradient(180deg, #16181D, #050506)', border: '12px solid #6B7280', boxShadow: 'inset 0 0 30px rgba(255,77,61,0.15), 0 0 0 4px #1F2329, 0 40px 80px rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 30 }}>
       <svg width="110" height="110" viewBox="0 0 24 24" style={{ opacity: subindo ? (Math.floor(frame / 6) % 2 ? 1 : 0.35) : 0.2 }}>
         <path d="M12 3 L21 14 H15 V21 H9 V14 H3 Z" fill={cor.vermelho} />
       </svg>
@@ -130,18 +137,19 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   return (
     <FundoVivo paleta={cores.lima} duracao={duracao}>
       <Cabeca texto="Até sábado, / *ainda dá pra entrar.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.branco} tamanho={96} />
-      <div style={{ position: 'absolute', left: 190, top: 620, width: 700, height: 820, borderRadius: '30px 30px 0 0', background: '#5B6472', padding: 26, boxShadow: '0 40px 70px rgba(0,0,0,0.35)' }}>
+      <div style={{ position: 'absolute', left: 190, top: 720, width: 700, height: 760, borderRadius: '30px 30px 0 0', background: `repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0 2px, transparent 2px 5px), linear-gradient(90deg, #6B7280, #C3CAD4 50%, #6B7280)`, padding: 26, boxShadow: 'inset 0 3px 0 rgba(255,255,255,0.3), 0 50px 80px rgba(0,0,0,0.38)' }}>
+        <div style={{ position: 'absolute', left: 250, top: -90, width: 200, height: 70, borderRadius: 18, background: 'linear-gradient(180deg, #16181D, #050506)', border: '6px solid #9CA3AF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Consolas', monospace", fontWeight: 900, fontSize: 40, color: '#FFB020', textShadow: '0 0 12px #FFB020' }}>▲ 197</div>
         <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', borderRadius: 14, background: `linear-gradient(180deg, #FFF6EE, ${cor.ouro})` }}>
           <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
             <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 150, lineHeight: 1, color: cor.laranja }}>R$ 197</div>
             <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 50, color: cor.tinta }}>em até 6x</div>
             <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 50, color: cor.tinta }}>sem juros</div>
           </div>
-          <div style={{ position: 'absolute', left: 0, top: 0, width: '50%', height: '100%', background: 'linear-gradient(90deg, #AEB6C2, #D7DCE3)', borderRight: '3px solid #7C8594', transform: `translateX(${-abre * 100}%)` }} />
-          <div style={{ position: 'absolute', right: 0, top: 0, width: '50%', height: '100%', background: 'linear-gradient(270deg, #AEB6C2, #D7DCE3)', borderLeft: '3px solid #7C8594', transform: `translateX(${abre * 100}%)` }} />
+          <div style={{ position: 'absolute', left: 0, top: 0, width: '50%', height: '100%', background: `repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0 2px, transparent 2px 5px), linear-gradient(90deg, #9CA3AF, #E5E7EB 70%, #C3CAD4)`, borderRight: '3px solid #6B7280', boxShadow: 'inset -10px 0 20px rgba(0,0,0,0.18)', transform: `translateX(${-abre * 100}%)` }} />
+          <div style={{ position: 'absolute', right: 0, top: 0, width: '50%', height: '100%', background: `repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0 2px, transparent 2px 5px), linear-gradient(270deg, #9CA3AF, #E5E7EB 70%, #C3CAD4)`, borderLeft: '3px solid #6B7280', boxShadow: 'inset 10px 0 20px rgba(0,0,0,0.18)', transform: `translateX(${abre * 100}%)` }} />
         </div>
       </div>
-      <ChipData em={em(a, 0.7)} y={1480} texto="Último dia: sábado, 05/12" fundo={cor.tinta} />
+      <ChipData em={em(a, 0.7)} y={1530} texto="Último dia: sábado, 05/12" fundo={cor.tinta} />
       <Efeito nome="ding" em={a.ini + 2} volume={0.45} />
       <Efeito nome="whoosh" em={a.ini + 4} volume={0.35} />
       <Aviso corTexto="rgba(45,47,54,0.85)" />

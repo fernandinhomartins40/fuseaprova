@@ -13,18 +13,29 @@ import { FundoVivo } from '../vivo';
 // dourada PORTUGUÊS abre todas; pódio; a trilha no app; livro que folheia até a página do preço. Voz Keren.
 
 const Porta: React.FC<{ aberta: number; tam: number }> = ({ aberta, tam }) => (
-  <div style={{ width: tam, height: tam * 1.4, borderRadius: 10, background: '#2A1A10', perspective: 400 }}>
-    <div style={{ width: '100%', height: '100%', borderRadius: 10, background: aberta > 0.5 ? cor.ouro : '#8B5A33', border: '3px solid #5E3A1E', transformOrigin: '0 50%', transform: `rotateY(${-aberta * 70}deg)`, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: tam * 0.14 }}>
-      <div style={{ width: tam * 0.14, height: tam * 0.14, borderRadius: '50%', background: '#2A1A10' }} />
+  <div style={{ width: tam, height: tam * 1.4, borderRadius: 10, background: 'radial-gradient(circle at 50% 40%, #FFE9A8, #2A1A10 75%)', boxShadow: '0 0 0 4px #4A2E18, inset 0 0 12px rgba(0,0,0,0.6)', perspective: 400 }}>
+    <div style={{ width: '100%', height: '100%', borderRadius: 10, position: 'relative', background: aberta > 0.5 ? 'linear-gradient(160deg, #FFE27A, #E2A100)' : 'repeating-linear-gradient(90deg, rgba(0,0,0,0.07) 0 2px, transparent 2px 9px), linear-gradient(160deg, #A96B3C, #7A4B2A)', border: '3px solid #5E3A1E', boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.2)', transformOrigin: '0 50%', transform: `rotateY(${-aberta * 70}deg)`, display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: tam * 0.12 }}>
+      {[0.1, 0.55].map((y) => (
+        <div key={y} style={{ position: 'absolute', left: tam * 0.14, top: `${y * 100}%`, width: tam * 0.56, height: tam * 0.48, borderRadius: 6, boxShadow: 'inset 2px 2px 0 rgba(0,0,0,0.3), inset -2px -2px 0 rgba(255,255,255,0.18)' }} />
+      ))}
+      <div style={{ width: tam * 0.13, height: tam * 0.13, borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%, #FFF3B0, #C99A3A 55%, #7A5A10)', boxShadow: '0 2px 3px rgba(0,0,0,0.4)' }} />
     </div>
   </div>
 );
 
 const Chave: React.FC<{ tam: number; dourada: boolean; rotulo?: string }> = ({ tam, dourada, rotulo }) => (
   <div style={{ position: 'relative' }}>
-    <svg width={tam} height={tam * 0.45} viewBox="0 0 100 45" style={{ filter: dourada ? `drop-shadow(0 0 24px ${cor.ouro})` : 'none' }}>
-      <circle cx="20" cy="22" r="17" fill="none" stroke={dourada ? cor.ouro : 'rgba(255,255,255,0.35)'} strokeWidth="9" />
-      <path d="M36 22 H96 M78 22 V36 M90 22 V32" stroke={dourada ? cor.ouro : 'rgba(255,255,255,0.35)'} strokeWidth="9" strokeLinecap="round" />
+    <svg width={tam} height={tam * 0.45} viewBox="0 0 100 45" style={{ filter: dourada ? `drop-shadow(0 0 24px ${cor.ouro}) drop-shadow(0 10px 10px rgba(0,0,0,0.4))` : 'none' }}>
+      <defs>
+        <linearGradient id="ouro36" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#FFF3B0" />
+          <stop offset="0.45" stopColor="#FFC233" />
+          <stop offset="1" stopColor="#B07D10" />
+        </linearGradient>
+      </defs>
+      <circle cx="20" cy="22" r="17" fill="none" stroke={dourada ? 'url(#ouro36)' : 'rgba(255,255,255,0.35)'} strokeWidth="9" />
+      <path d="M36 22 H96 M78 22 V36 M90 22 V32" stroke={dourada ? 'url(#ouro36)' : 'rgba(255,255,255,0.35)'} strokeWidth="9" strokeLinecap="round" />
+      {dourada ? <path d="M40 19.5 H92" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round" /> : null}
     </svg>
     {rotulo ? (
       <div style={{ position: 'absolute', left: tam * 0.06, top: tam * 0.4, padding: '10px 24px', borderRadius: 16, background: cor.branco, fontFamily: fonte.display, fontWeight: 800, fontSize: tam * 0.1, color: cor.laranja, transform: 'rotate(-8deg)', boxShadow: '0 10px 20px rgba(0,0,0,0.3)' }}>{rotulo}</div>
@@ -104,7 +115,7 @@ export const CenaFrente: React.FC<PropsCena> = ({ falas, duracao }) => {
         {blocos.map(([n, h, c], i) => {
           const sobe = useMola(a.ini + 4 + i * 5, { damping: 13, stiffness: 140 });
           return (
-            <div key={n} style={{ flex: 1, height: h * sobe, overflow: 'hidden', borderRadius: '24px 24px 0 0', background: c, display: 'flex', justifyContent: 'center', paddingTop: 20, fontFamily: fonte.display, fontWeight: 800, fontSize: 120, color: cor.tinta, boxShadow: '0 20px 40px rgba(0,0,0,0.25)' }}>
+            <div key={n} style={{ flex: 1, height: h * sobe, overflow: 'hidden', borderRadius: '24px 24px 0 0', background: `linear-gradient(180deg, rgba(255,255,255,0.55) 0 18px, rgba(255,255,255,0.12) 18px 40%, rgba(0,0,0,0.12)), ${c}`, display: 'flex', justifyContent: 'center', paddingTop: 30, fontFamily: fonte.display, fontWeight: 800, fontSize: 120, color: cor.tinta, textShadow: '0 3px 0 rgba(255,255,255,0.6), 0 -2px 0 rgba(0,0,0,0.15)', boxShadow: 'inset -12px 0 0 rgba(0,0,0,0.08), 0 24px 44px rgba(0,0,0,0.3)' }}>
               {n}
             </div>
           );
@@ -150,13 +161,13 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
       <Cabeca texto="*R$ 197* / em até 6x." em={a.ini} tamanho={130} />
       <Em y={680}>
         <div style={{ position: 'relative', width: 900, height: 600, transform: `scale(${p})`, perspective: 2200 }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, width: 450, height: 600, borderRadius: '20px 0 0 20px', background: '#FFFDF7', boxShadow: '0 30px 60px rgba(0,0,0,0.3)', padding: 50, display: 'flex', flexDirection: 'column', gap: 22 }}>
+          <div style={{ position: 'absolute', left: 0, top: 0, width: 450, height: 600, borderRadius: '20px 0 0 20px', background: 'linear-gradient(90deg, #EDE7D8, #FFFDF7 10%, #FFFDF7 85%, #E9E3D3)', boxShadow: '-10px 0 0 #E6DFCC, -16px 6px 0 #8B2F1E, 0 40px 70px rgba(0,0,0,0.35)', padding: 50, display: 'flex', flexDirection: 'column', gap: 22 }}>
             <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 28, letterSpacing: 4, color: cor.muted }}>FUSE APROVA</div>
             {[0.9, 0.7, 0.85, 0.6, 0.8].map((w, i) => (
               <div key={i} style={{ height: 16, width: `${w * 100}%`, borderRadius: 8, background: '#E1E4E8' }} />
             ))}
           </div>
-          <div style={{ position: 'absolute', left: 450, top: 0, width: 450, height: 600, borderRadius: '0 20px 20px 0', background: '#FFFDF7', boxShadow: '0 30px 60px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+          <div style={{ position: 'absolute', left: 450, top: 0, width: 450, height: 600, borderRadius: '0 20px 20px 0', background: 'linear-gradient(270deg, #EDE7D8, #FFFDF7 10%, #FFFDF7 85%, #E9E3D3)', boxShadow: '10px 0 0 #E6DFCC, 16px 6px 0 #8B2F1E, 0 40px 70px rgba(0,0,0,0.35)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
             <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 120, lineHeight: 1, color: cor.laranja }}>R$ 197</div>
             <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 44, color: cor.tinta }}>6x de R$ 32,83</div>
             <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 32, color: cor.muted }}>sem juros · até 05/12</div>
