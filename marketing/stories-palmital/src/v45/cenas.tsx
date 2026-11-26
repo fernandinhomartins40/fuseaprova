@@ -2,7 +2,7 @@ import React from 'react';
 import { Img, interpolate, staticFile, useCurrentFrame } from 'remotion';
 import { Aviso, Em, limita, PropsCena } from '../comum';
 import { Efeito, useMola } from '../componentes';
-import { cores } from '../contagem';
+import { ChipData, cores } from '../contagem';
 import { Cabeca, em, FechoPalmital } from '../campanha/Cabeca';
 import { cor, fonte } from '../tema';
 import { FundoCinema, paletas, Surge } from '../v8/cinema';
@@ -44,11 +44,11 @@ const Painel: React.FC<{ linhas: { hora: string; texto: string; status: string; 
         const on = !l.pisca || Math.floor(frame / 8) % 2 === 0;
         return (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 18, padding: '14px 6px', borderBottom: i < linhas.length - 1 ? '2px solid rgba(255,255,255,0.06)' : 'none' }}>
-            <Letreiro texto={l.hora} em={l.em} tamanho={52} />
+            <Letreiro texto={l.hora} em={l.em} tamanho={44} />
             <div style={{ flex: 1 }}>
-              <Letreiro texto={l.texto} em={l.em + 4} tamanho={52} corTexto="#FFFFFF" />
+              <Letreiro texto={l.texto} em={l.em + 4} tamanho={44} corTexto="#FFFFFF" />
             </div>
-            <div style={{ padding: '8px 16px', borderRadius: 10, background: on ? l.corStatus : 'transparent', border: `3px solid ${l.corStatus}`, fontFamily: fonte.corpo, fontWeight: 900, fontSize: 26, color: on ? '#fff' : l.corStatus, whiteSpace: 'nowrap', boxShadow: on ? `0 0 24px ${l.corStatus}` : 'none', opacity: frame >= l.em + 10 ? 1 : 0 }}>{l.status}</div>
+            <div style={{ padding: '8px 16px', borderRadius: 10, background: on ? l.corStatus : 'transparent', border: `3px solid ${l.corStatus}`, fontFamily: fonte.corpo, fontWeight: 900, fontSize: 22, color: on ? '#fff' : l.corStatus, whiteSpace: 'nowrap', boxShadow: on ? `0 0 24px ${l.corStatus}` : 'none', opacity: frame >= l.em + 10 ? 1 : 0 }}>{l.status}</div>
           </div>
         );
       })}
@@ -62,7 +62,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const p = useMola(a.ini - 8, { damping: 14, stiffness: 110 });
   return (
     <FundoCinema paleta={paletas.noite} duracao={duracao}>
-      <Cabeca texto="Último dia / *do R$ 197.*" em={a.ini} tamanho={108} faixa={cor.coral} corFaixa={cor.branco} />
+      <Cabeca texto="Última chamada / *pro R$ 197.*" em={a.ini} tamanho={108} faixa={cor.coral} corFaixa={cor.branco} />
       <Em y={720}>
         <div style={{ transform: `perspective(1600px) rotateX(${8 + (1 - p) * 40}deg) scale(${interpolate(p, [0, 1], [0.6, 1])})`, opacity: Math.min(1, p * 2) }}>
           <Painel
@@ -160,11 +160,12 @@ export const CenaAgora: React.FC<PropsCena> = ({ falas, duracao }) => {
           </div>
         </div>
       </Em>
-      <div style={{ position: 'absolute', left: 300, top: 1040 }}>
+      <div style={{ position: 'absolute', left: 300, top: 1000 }}>
         <Surge em={em(a, 0.3)}>
-          <Img src={staticFile('img/capi-incentivando.webp')} style={{ height: 460, filter: 'drop-shadow(0 30px 40px rgba(0,0,0,0.35))' }} />
+          <Img src={staticFile('img/capi-incentivando.webp')} style={{ height: 420, filter: 'drop-shadow(0 30px 40px rgba(0,0,0,0.35))' }} />
         </Surge>
       </div>
+      <ChipData em={em(a, 0.65)} y={1460} texto="Acesso até a prova de 21/02" fundo={cor.branco} tinta={cor.laranja} tamanho={40} />
       <Aviso />
     </FundoVivo>
   );
