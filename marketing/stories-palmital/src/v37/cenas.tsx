@@ -25,11 +25,21 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
       <Cabeca texto="Dezembro é / *uma armadilha.*" em={a.ini} sobre="Concurso de Palmital" tamanho={116} faixa={cor.coral} corFaixa={cor.branco} />
       <Em y={820}>
         <div style={{ position: 'relative', width: 860, height: 520, transform: `scale(${p}) translateX(${treme}px)` }}>
-          <div style={{ position: 'absolute', left: 0, top: 300, width: 860, height: 180, borderRadius: 24, background: '#C68B50', boxShadow: 'inset 0 -24px 0 rgba(0,0,0,0.2), 0 40px 60px rgba(0,0,0,0.45)' }} />
-          <div style={{ position: 'absolute', left: 750, top: 240, width: 90, height: 80, borderRadius: 16, background: '#9AA3AE' }} />
+          <div style={{ position: 'absolute', left: 0, top: 300, width: 860, height: 180, borderRadius: 24, background: 'repeating-linear-gradient(176deg, rgba(110,60,20,0.16) 0 3px, transparent 3px 26px), linear-gradient(180deg, #E0A86A, #C68B50 45%, #9A6236)', boxShadow: 'inset 0 4px 0 rgba(255,255,255,0.25), inset 0 -24px 0 rgba(0,0,0,0.22), 0 50px 70px rgba(0,0,0,0.5)' }} />
+          {[120, 400, 680].map((x) => (
+            <div key={x} style={{ position: 'absolute', left: x, top: 312, width: 46, height: 16, borderRadius: 8, background: 'linear-gradient(180deg, #F3F4F6, #6B7280)' }} />
+          ))}
+          <div style={{ position: 'absolute', left: 750, top: 240, width: 90, height: 80, borderRadius: 16, background: 'repeating-linear-gradient(90deg, #6B7280 0 6px, #E5E7EB 6px 10px)', boxShadow: '0 8px 12px rgba(0,0,0,0.4)' }} />
           <div style={{ position: 'absolute', left: 120, top: 120, width: 330, height: 190 }}>
             <svg width="330" height="190" viewBox="0 0 33 19">
-              <path d="M2 18 L16 3 L31 18 Z" fill="#FFC233" stroke="#D99A00" strokeWidth="0.8" />
+              <defs>
+                <linearGradient id="queijo" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stopColor="#FFE27A" />
+                  <stop offset="1" stopColor="#F0A500" />
+                </linearGradient>
+              </defs>
+              <path d="M2 18 L16 3 L31 18 Z" fill="url(#queijo)" stroke="#D99A00" strokeWidth="0.8" />
+              <path d="M2 18 L31 18 L31 19 L2 19 Z" fill="#C98A00" />
               <circle cx="12" cy="13" r="1.6" fill="#D99A00" />
               <circle cx="20" cy="10" r="1.2" fill="#D99A00" />
               <circle cx="22" cy="15" r="1.4" fill="#D99A00" />
@@ -37,7 +47,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
             <div style={{ position: 'absolute', left: 30, top: -70, padding: '10px 22px', borderRadius: 16, background: cor.branco, fontFamily: fonte.display, fontWeight: 800, fontSize: 40, color: cor.tinta, whiteSpace: 'nowrap', transform: 'rotate(-6deg)' }}>Começo depois</div>
           </div>
           <div style={{ position: 'absolute', left: 150, top: 250, width: 640, height: 22, transformOrigin: '100% 50%', transform: `rotate(${arco}deg)` }}>
-            <div style={{ width: 640, height: 22, borderRadius: 11, background: '#D7DCE3', boxShadow: '0 0 0 4px #7C8594' }} />
+            <div style={{ width: 640, height: 24, borderRadius: 12, background: 'linear-gradient(180deg, #FFFFFF, #AEB5BF 55%, #6B7280)', boxShadow: '0 0 0 3px #4B5563, 0 10px 14px rgba(0,0,0,0.4)' }} />
           </div>
         </div>
       </Em>
@@ -115,8 +125,15 @@ export const CenaProva: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoVivo paleta={cores.coral} duracao={duracao}>
       <Cabeca texto="A prova é / *21 de fevereiro.*" em={a.ini} tamanho={112} faixa={cor.branco} corFaixa={cor.coral} />
       <Em y={700}>
-        <div style={{ width: 560, borderRadius: 50, overflow: 'hidden', background: cor.branco, boxShadow: '0 50px 90px rgba(0,0,0,0.4)', transform: `scale(${interpolate(bate, [0, 1], [3, 1])}) translateX(${treme}px) rotate(-4deg)`, opacity: Math.min(1, bate * 3) }}>
-          <div style={{ background: cor.vermelho, color: cor.branco, fontFamily: fonte.corpo, fontWeight: 900, fontSize: 70, letterSpacing: 10, textAlign: 'center', padding: '16px 0' }}>FEVEREIRO</div>
+        <div style={{ width: 560, borderRadius: 50, overflow: 'hidden', background: 'linear-gradient(180deg, #FFFFFF, #EEF0F3)', boxShadow: 'inset 0 -10px 0 rgba(0,0,0,0.05), 0 60px 100px rgba(0,0,0,0.42), 0 14px 24px rgba(0,0,0,0.25)', transform: `scale(${interpolate(bate, [0, 1], [3, 1])}) translateX(${treme}px) rotate(-4deg)`, opacity: Math.min(1, bate * 3) }}>
+          <div style={{ background: 'linear-gradient(180deg, #F0484D, #C81E2B)', color: cor.branco, fontFamily: fonte.corpo, fontWeight: 900, fontSize: 70, letterSpacing: 10, textAlign: 'center', padding: '34px 0 16px', boxShadow: 'inset 0 -4px 0 rgba(0,0,0,0.15)', position: 'relative' }}>
+            <div style={{ position: 'absolute', left: 60, right: 60, top: 10, display: 'flex', justifyContent: 'space-between' }}>
+              {Array.from({ length: 8 }, (_, k) => (
+                <div key={k} style={{ width: 16, height: 16, borderRadius: '50%', background: '#7F1010', boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.5)' }} />
+              ))}
+            </div>
+            FEVEREIRO
+          </div>
           <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 330, lineHeight: 1.05, color: cor.tinta, textAlign: 'center' }}>21</div>
           <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 44, color: cor.muted, textAlign: 'center', paddingBottom: 30 }}>prova objetiva · 2027</div>
         </div>
@@ -153,17 +170,20 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoVivo paleta={cores.magenta} duracao={duracao}>
       <Cabeca texto="Só até / *sábado.*" em={a.ini} tamanho={140} />
       <div style={{ position: 'absolute', left: 540 - 260, top: 1060, width: 520, height: 400, transform: `scale(${caixa})` }}>
-        <div style={{ position: 'absolute', left: 0, top: 0, width: 520, height: 400, borderRadius: 24, background: cor.vermelho, boxShadow: '0 40px 70px rgba(0,0,0,0.35)' }} />
-        <div style={{ position: 'absolute', left: 230, top: 0, width: 60, height: 400, background: cor.ouro }} />
+        <div style={{ position: 'absolute', left: 0, top: 0, width: 520, height: 400, borderRadius: 24, background: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 50%), linear-gradient(90deg, #B91C1C, #EF4444 40%, #DC2626 60%, #991B1B)', boxShadow: 'inset 0 -14px 0 rgba(0,0,0,0.18), 0 50px 80px rgba(0,0,0,0.4)' }} />
+        <div style={{ position: 'absolute', left: 230, top: 0, width: 60, height: 400, background: 'linear-gradient(90deg, #D99A00, #FFE27A 45%, #D99A00)' }} />
       </div>
-      <div style={{ position: 'absolute', left: 540 - 220, top: 1100 - sobe * 470, width: 440, padding: '30px 0', borderRadius: 34, background: cor.branco, textAlign: 'center', boxShadow: '0 30px 60px rgba(0,0,0,0.3)', opacity: sobe > 0.05 ? 1 : 0, zIndex: 1 }}>
+      <div style={{ position: 'absolute', left: 540 - 220, top: 1100 - sobe * 470, width: 440, padding: '30px 0', borderRadius: 34, background: 'linear-gradient(180deg, #FFFFFF, #F1F3F6)', textAlign: 'center', boxShadow: 'inset 0 2px 0 #fff, 0 10px 0 #C9CED6, 0 40px 70px rgba(0,0,0,0.35)', opacity: sobe > 0.05 ? 1 : 0, zIndex: 1 }}>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 120, lineHeight: 1, color: cor.laranja }}>R$ 197</div>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 44, color: cor.tinta }}>6x de R$ 32,83</div>
         <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 30, color: cor.muted }}>sem juros</div>
       </div>
-      <div style={{ position: 'absolute', left: 540 - 290, top: 1010, width: 580, height: 110, transform: `scale(${caixa}) translate(${-abre * 420}px, ${-abre * 380}px) rotate(${-abre * 35}deg)`, opacity: 1 - abre * 0.6, zIndex: 2 }}>
-        <div style={{ width: 580, height: 110, borderRadius: 20, background: '#F05252', boxShadow: '0 10px 20px rgba(0,0,0,0.2)' }} />
-        <div style={{ position: 'absolute', left: 260, top: 0, width: 60, height: 110, background: cor.ouro }} />
+      <div style={{ position: 'absolute', left: 540 - 290, top: 1010, width: 580, height: 110, transform: `scale(${caixa}) translate(${-abre * 900}px, ${-abre * 260}px) rotate(${-abre * 50}deg)`, opacity: 1 - abre, zIndex: 2 }}>
+        <div style={{ width: 580, height: 110, borderRadius: 20, background: 'linear-gradient(180deg, #F87171, #DC2626)', boxShadow: 'inset 0 3px 0 rgba(255,255,255,0.35), 0 14px 24px rgba(0,0,0,0.3)' }} />
+        <div style={{ position: 'absolute', left: 260, top: 0, width: 60, height: 110, background: 'linear-gradient(90deg, #D99A00, #FFE27A 45%, #D99A00)' }} />
+        {[-1, 1].map((l) => (
+          <div key={l} style={{ position: 'absolute', left: 290 - 70 + l * 60, top: -70, width: 140, height: 90, borderRadius: '50%', border: '22px solid #FFC233', boxShadow: 'inset 0 4px 0 rgba(255,255,255,0.5), 0 6px 10px rgba(0,0,0,0.25)', transform: `rotate(${l * 25}deg)` }} />
+        ))}
       </div>
       <ChipData em={em(a, 0.8)} y={1500} texto="Sábado, 05/12 · depois, R$ 297" fundo={cor.branco} tinta={cor.vermelho} />
       <Efeito nome="pop" em={a.ini + 10} volume={0.5} />

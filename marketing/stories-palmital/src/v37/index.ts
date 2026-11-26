@@ -8,7 +8,7 @@ import { CenaApp, CenaFecho, CenaGancho, CenaOferta, CenaProva, CenaVoa } from '
 import narracao from './narracao.json';
 
 // V37 · terça 01/12 · "A armadilha de dezembro" (ratoeira → festas/férias/janeiro voando → FEV 21 → 5 min no app → presente com o preço → link) — voz Lucas
-export const linha = montarLinha(narracao, ['gancho', 'voa', 'prova', 'app', 'oferta', 'fecho'], {}, true, { gancho: 20, voa: 30, prova: 20, app: 25, oferta: 15, fecho: 45 });
+export const linha = montarLinha(narracao, ['gancho', 'voa', 'prova', 'app', 'oferta', 'fecho'], {}, true, { gancho: 20, voa: 4, prova: 20, app: 25, oferta: 15, fecho: 45 });
 
 export const Video = criarVideo({
   linha,
