@@ -179,7 +179,7 @@ export const CenaUltimo: React.FC<PropsCena> = ({ falas, duracao }) => {
   const len = a.fim - a.ini;
   return (
     <FundoVivo paleta={cores.roxo} duracao={duracao}>
-      <Cabeca texto="A promoção / *terminava hoje.*" em={a.ini} />
+      <Cabeca texto="A promoção / *terminava dia 25.*" em={a.ini} tamanho={110} />
       <Em y={680}>
         <Calendario em={a.ini} circulo={a.ini + Math.round(len * 0.55)} />
       </Em>

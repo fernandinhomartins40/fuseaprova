@@ -2,7 +2,7 @@
   "gancho": [
     {
       "arquivo": "audio/v26/voz-gancho-1.wav",
-      "segundos": 3.461,
+      "segundos": 3.468,
       "texto": "Quanto custa se preparar pro concurso da Prefeitura de Palmital?"
     }
   ],
@@ -16,29 +16,29 @@
   "ate": [
     {
       "arquivo": "audio/v26/voz-ate-1.wav",
-      "segundos": 5.784,
-      "texto": "Tudo isso até o dia da prova do concurso da Prefeitura de Palmital, em vinte e um de fevereiro."
+      "segundos": 3.275,
+      "texto": "Com acesso até a prova, em vinte e um de fevereiro."
     }
   ],
   "revela": [
     {
       "arquivo": "audio/v26/voz-revela-1.wav",
-      "segundos": 2.82,
-      "texto": "Por trinta e dois e oitenta e três por mês."
+      "segundos": 3.089,
+      "texto": "Sai por trinta e dois e oitenta e três ao mês."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v26/voz-oferta-1.wav",
-      "segundos": 5.95,
-      "texto": "São cento e noventa e sete reais em até seis vezes sem juros, só até cinco de dezembro."
+      "segundos": 9.153,
+      "texto": "No total, cento e noventa e sete reais em até seis vezes sem juros. Promoção até cinco de dezembro. Depois, duzentos e noventa e sete."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v26/voz-fecho-1.wav",
-      "segundos": 5.136,
-      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 6.148,
+      "texto": "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }

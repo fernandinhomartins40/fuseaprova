@@ -176,7 +176,7 @@ export const CenaAte: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoVivo paleta={cores.azul} duracao={duracao}>
       <Cabeca texto="Até a prova / *de Palmital.*" em={a.ini} tamanho={130} />
       <div style={{ position: 'absolute', left: 70, top: 810 }}>
-        <Folhinha mes="HOJE" dia="25" corTopo={cor.laranjaVivo} em={a.ini} />
+        <Folhinha mes="COMEÇA" dia="JÁ" corTopo={cor.laranjaVivo} em={a.ini} />
       </div>
       <div style={{ position: 'absolute', right: 70, top: 810 }}>
         <Folhinha mes="FEV" dia="21" corTopo={cor.vermelho} em={em(a, 0.65)} />
