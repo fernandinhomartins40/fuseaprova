@@ -2,43 +2,43 @@
   "gancho": [
     {
       "arquivo": "audio/v32/voz-gancho-1.wav",
-      "segundos": 6.561,
+      "segundos": 6.567,
       "texto": "Dois candidatos, o mesmo concurso: o da Prefeitura de Palmital. Só um tem o foco certo."
     }
   ],
   "pista": [
     {
       "arquivo": "audio/v32/voz-pista-1.wav",
-      "segundos": 4.768,
+      "segundos": 4.774,
       "texto": "Um estuda tudo, sem rumo. O outro segue a trilha do cargo dele."
     }
   ],
   "cargos": [
     {
       "arquivo": "audio/v32/voz-cargos-1.wav",
-      "segundos": 5.641,
-      "texto": "São quarenta e nove cargos no edital da Prefeitura de Palmital, e cada um tem a sua prova."
+      "segundos": 4.252,
+      "texto": "São quarenta e nove cargos no edital, e cada um tem a sua prova."
     }
   ],
   "app": [
     {
       "arquivo": "audio/v32/voz-app-1.wav",
-      "segundos": 7.188,
-      "texto": "No Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital, você escolhe o cargo e estuda pela trilha dele."
+      "segundos": 4.874,
+      "texto": "No Fuse Aprova, você escolhe o seu cargo e estuda só o que cai na sua prova."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v32/voz-oferta-1.wav",
-      "segundos": 5.28,
-      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+      "segundos": 7.073,
+      "texto": "Garanta agora por cento e noventa e sete, em até seis vezes. A partir do dia seis, duzentos e noventa e sete."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v32/voz-fecho-1.wav",
-      "segundos": 5.237,
-      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 6.219,
+      "texto": "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }

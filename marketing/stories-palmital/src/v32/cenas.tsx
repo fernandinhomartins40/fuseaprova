@@ -155,7 +155,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   const capi = useMola(em(a, 0.2), { damping: 10, stiffness: 160 });
   return (
     <FundoVivo paleta={cores.laranja} duracao={duracao}>
-      <Cabeca texto="Suba agora: / *R$ 197.*" em={a.ini} tamanho={124} />
+      <Cabeca texto="Garanta agora: / *R$ 197.*" em={a.ini} tamanho={124} />
       <div style={{ position: 'absolute', left: 80, top: 1060, width: 440, height: 360, borderRadius: '36px 36px 0 0', background: 'linear-gradient(180deg, #FFFFFF, #ECEEF2)', boxShadow: 'inset 0 4px 0 #fff, inset -14px 0 0 rgba(0,0,0,0.05), 0 40px 70px rgba(0,0,0,0.3)', transform: `translateY(${(1 - d1) * 600}px)`, padding: 34, textAlign: 'center' }}>
         <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 32, color: cor.muted }}>ATÉ 05/12</div>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 120, lineHeight: 1, color: cor.laranja }}>R$ 197</div>
