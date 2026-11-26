@@ -80,7 +80,7 @@ export const CenaTotal: React.FC<PropsCena> = ({ falas, duracao }) => {
   const p = useMola(a.ini - 4, { damping: 13, stiffness: 110 });
   return (
     <FundoVivo paleta={cores.petroleo} duracao={duracao}>
-      <Cabeca texto="*R$ 197* até a / prova de Palmital." em={a.ini} tamanho={124} />
+      <Cabeca texto="*R$ 197* até a / prova de Palmital." em={a.ini} tamanho={98} />
       <Em y={720}>
         <div style={{ transform: `perspective(1600px) rotateX(${12 + (1 - p) * 50}deg) rotateZ(${-3 + Math.sin(frame / 30)}deg) scale(${interpolate(p, [0, 1], [0.5, 1])})`, filter: 'drop-shadow(0 50px 60px rgba(0,0,0,0.45))' }}>
           <Cedula />

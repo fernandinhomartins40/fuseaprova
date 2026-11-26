@@ -58,7 +58,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const selo = useMola(em(a, 0.65), { damping: 9, stiffness: 190 });
   return (
     <FundoVivo paleta={cores.roxo} duracao={duracao}>
-      <Cabeca texto="*4 passos* até a / prova de Palmital." em={a.ini} tamanho={130} />
+      <Cabeca texto="*4 passos* até a / prova de Palmital." em={a.ini} tamanho={98} />
       <Tabuleiro pos={0} dourada={em(a, 0.6)} />
       <div style={{ position: 'absolute', left: 650, top: 760, padding: '14px 26px', borderRadius: 22, background: cor.branco, fontFamily: fonte.display, fontWeight: 800, fontSize: 40, color: cor.vermelho, transform: `rotate(-6deg) scale(${selo})`, boxShadow: '0 12px 24px rgba(0,0,0,0.25)' }}>
         Quase ninguém faz

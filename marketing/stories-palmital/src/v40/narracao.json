@@ -2,15 +2,15 @@
   "gancho": [
     {
       "arquivo": "audio/v40/voz-gancho-1.wav",
-      "segundos": 5.002,
-      "texto": "São quatro passos até a prova. O último, quase ninguém faz."
+      "segundos": 7.147,
+      "texto": "São quatro passos até a prova do concurso da Prefeitura de Palmital. O último, quase ninguém faz."
     }
   ],
   "passos": [
     {
       "arquivo": "audio/v40/voz-passos-1.wav",
-      "segundos": 7.404,
-      "texto": "Um: descubra o seu cargo. Dois: um treino por dia. Três: revise o que errou."
+      "segundos": 8.14,
+      "texto": "Um: descubra o seu cargo no edital. Dois: um treino por dia. Três: revise o que errou."
     }
   ],
   "quatro": [
@@ -23,8 +23,8 @@
   "app": [
     {
       "arquivo": "audio/v40/voz-app-1.wav",
-      "segundos": 2.633,
-      "texto": "Os quatro passos estão no Fuse Aprova."
+      "segundos": 5.679,
+      "texto": "Os quatro passos estão no Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ],
   "oferta": [

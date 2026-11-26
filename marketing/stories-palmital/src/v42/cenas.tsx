@@ -69,7 +69,7 @@ export const CenaDias: React.FC<PropsCena> = ({ falas, duracao }) => {
   const enche = Math.floor(interpolate(frame, [a.ini, em(a, 0.8)], [0, 80], limita));
   return (
     <FundoVivo paleta={cores.azul} duracao={duracao}>
-      <Cabeca texto="*80 dias* até a / prova de Palmital." em={a.ini} tamanho={124} />
+      <Cabeca texto="*80 dias* até a / prova de Palmital." em={a.ini} tamanho={98} />
       <Em y={660}>
         <Grade enche={enche} verdes={0} t0={0} />
       </Em>
