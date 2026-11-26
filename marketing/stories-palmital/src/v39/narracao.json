@@ -2,36 +2,36 @@
   "gancho": [
     {
       "arquivo": "audio/v39/voz-gancho-1.wav",
-      "segundos": 1.727,
-      "texto": "Faltam quatro dias."
+      "segundos": 6.216,
+      "texto": "Faltam quatro dias pra garantir o preparatório do concurso da Prefeitura de Palmital pelo valor promocional."
     }
   ],
   "acaba": [
     {
       "arquivo": "audio/v39/voz-acaba-1.wav",
-      "segundos": 5.808,
-      "texto": "Pro preço de cento e noventa e sete reais do preparatório do concurso da Prefeitura de Palmital acabar."
+      "segundos": 7.361,
+      "texto": "Até sábado, ele sai por cento e noventa e sete reais. Depois, o valor passa pra duzentos e noventa e sete."
     }
   ],
   "inclui": [
     {
       "arquivo": "audio/v39/voz-inclui-1.wav",
-      "segundos": 4.731,
-      "texto": "Trilha do seu cargo, questões no estilo da FAU e simulado oficial."
+      "segundos": 6.769,
+      "texto": "É o mesmo preparatório: trilha do seu cargo, questões no estilo da FAU, revisão e simulados."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v39/voz-oferta-1.wav",
-      "segundos": 4.445,
-      "texto": "Em até seis vezes de trinta e dois e oitenta e três, sem juros."
+      "segundos": 5.343,
+      "texto": "Só que agora em até seis vezes de trinta e dois e oitenta e três, sem juros."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v39/voz-fecho-1.wav",
-      "segundos": 7.361,
-      "texto": "Sábado é o último dia. Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 7.135,
+      "texto": "Garanta o seu até sábado, no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }

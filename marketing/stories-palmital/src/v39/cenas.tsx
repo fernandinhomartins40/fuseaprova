@@ -39,7 +39,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const p = useMola(a.ini - 6, { damping: 12, stiffness: 140 });
   return (
     <FundoCinema paleta={paletas.alerta} duracao={duracao}>
-      <Cabeca texto="Faltam 4 dias / *pro fim do R$ 197.*" em={a.ini} tamanho={160} faixa={cor.coral} corFaixa={cor.branco} />
+      <Cabeca texto="Só mais 4 dias / *de R$ 197.*" em={a.ini} tamanho={116} faixa={cor.coral} corFaixa={cor.branco} />
       <Em y={860}>
         <div style={{ transform: `scale(${p})` }}>
           <Bateria barras={4} cheias={4} rotulos={DIAS} corBarra={cor.verde} pisca />
@@ -59,7 +59,7 @@ export const CenaAcaba: React.FC<PropsCena> = ({ falas, duracao }) => {
   const corB = cheias > 2 ? cor.ouro : cor.vermelho;
   return (
     <FundoCinema paleta={paletas.palco} duracao={duracao}>
-      <Cabeca texto="Depois de sábado, / *R$ 297.*" em={a.ini} tamanho={140} />
+      <Cabeca texto="Depois de sábado, / *R$ 297.*" em={a.ini} tamanho={110} />
       <Em y={860}>
         <Bateria barras={4} cheias={cheias} rotulos={DIAS} corBarra={corB} pisca />
       </Em>
@@ -133,7 +133,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.coral} duracao={duracao}>
-      <FechoPalmital manchete="Sábado é o / *último dia.*" em={a.ini} len={a.fim - a.ini} />
+      <FechoPalmital manchete="R$ 197 só / *até sábado.*" em={a.ini} len={a.fim - a.ini} />
     </FundoVivo>
   );
 };
