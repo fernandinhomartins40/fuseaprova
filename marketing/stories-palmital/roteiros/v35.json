@@ -3,13 +3,32 @@
   "nomeVoz": "Davi Andrei",
   "modelo": "eleven_v4",
   "semente": 351,
-  "ajustes": { "stability": 0.4, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.12 },
-  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.12
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
   "falas": {
-    "gancho": ["Em seis dias, o Fuse Aprova muda."],
-    "igual": ["A trilha, as questões e os simulados continuam iguais. E o acesso vale até o dia da prova."],
-    "revela": ["O que muda é o preço: no dia seis, sobe pra duzentos e noventa e sete."],
-    "oferta": ["Até sábado, ainda é cento e noventa e sete reais, em até seis vezes sem juros."],
-    "fecho": ["Link na bio."]
+    "gancho": [
+      "Em seis dias, o Fuse Aprova muda."
+    ],
+    "igual": [
+      "A trilha, as questões e os simulados continuam iguais. E o acesso vale até o dia da prova."
+    ],
+    "revela": [
+      "O que muda é o preço: no dia seis, sobe pra duzentos e noventa e sete."
+    ],
+    "oferta": [
+      "Até sábado, ainda é cento e noventa e sete reais, em até seis vezes sem juros."
+    ],
+    "fecho": [
+      "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+    ]
   }
 }

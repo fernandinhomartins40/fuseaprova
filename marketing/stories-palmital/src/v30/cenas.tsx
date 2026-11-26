@@ -200,7 +200,7 @@ export const CenaFecho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.lima} duracao={duracao}>
-      <FechoPalmital manchete="Pare de / *esquecer.*" em={a.ini} len={40} tinta={cor.tinta} />
+      <FechoPalmital manchete="Pare de / *esquecer.*" em={a.ini} len={a.fim - a.ini} tinta={cor.tinta} />
     </FundoVivo>
   );
 };

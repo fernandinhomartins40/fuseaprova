@@ -2,8 +2,8 @@
   "gancho": [
     {
       "arquivo": "audio/v24/voz-gancho-1.wav",
-      "segundos": 3.639,
-      "texto": "Uma letra só derruba muita gente na prova de Palmital."
+      "segundos": 4.977,
+      "texto": "Uma letra só derruba muita gente na prova do concurso da Prefeitura de Palmital."
     }
   ],
   "prova": [
@@ -44,8 +44,8 @@
   "fecho": [
     {
       "arquivo": "audio/v24/voz-fecho-1.wav",
-      "segundos": 1.034,
-      "texto": "Link na bio."
+      "segundos": 5.017,
+      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
     }
   ]
 }

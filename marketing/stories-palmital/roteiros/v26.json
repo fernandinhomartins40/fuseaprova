@@ -3,14 +3,35 @@
   "nomeVoz": "Raquel",
   "modelo": "eleven_v4",
   "semente": 261,
-  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
-  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
+  "ajustes": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.1
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
   "falas": {
-    "gancho": ["Quanto custa se preparar pro concurso de Palmital?"],
-    "inclui": ["Trilha do seu cargo, mais de dez mil questões, revisão e simulados."],
-    "ate": ["Tudo isso até o dia da prova, em fevereiro."],
-    "revela": ["Por trinta e dois e oitenta e três por mês."],
-    "oferta": ["São cento e noventa e sete reais em até seis vezes sem juros, só até cinco de dezembro."],
-    "fecho": ["Link na bio."]
+    "gancho": [
+      "Quanto custa se preparar pro concurso da Prefeitura de Palmital?"
+    ],
+    "inclui": [
+      "Trilha do seu cargo, mais de dez mil questões, revisão e simulados."
+    ],
+    "ate": [
+      "Tudo isso até o dia da prova, em fevereiro."
+    ],
+    "revela": [
+      "Por trinta e dois e oitenta e três por mês."
+    ],
+    "oferta": [
+      "São cento e noventa e sete reais em até seis vezes sem juros, só até cinco de dezembro."
+    ],
+    "fecho": [
+      "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+    ]
   }
 }

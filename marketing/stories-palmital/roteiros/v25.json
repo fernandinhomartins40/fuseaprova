@@ -3,15 +3,38 @@
   "nomeVoz": "Lucas",
   "modelo": "eleven_v4",
   "semente": 251,
-  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
-  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
+  "ajustes": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.1
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
   "falas": {
-    "gancho": ["Antes de estudar pra Palmital, responda uma pergunta."],
-    "pergunta": ["Você atende aos requisitos do seu cargo?"],
-    "exemplos": ["Tem cargo que exige CNH. Tem cargo que exige experiência."],
-    "risco": ["Quem não confere pode estudar meses à toa."],
-    "app": ["No Fuse Aprova, você escolhe o cargo e vê o que o edital pede."],
-    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."],
-    "fecho": ["Link na bio."]
+    "gancho": [
+      "Antes de estudar pro concurso da Prefeitura de Palmital, responda uma pergunta."
+    ],
+    "pergunta": [
+      "Você atende aos requisitos do seu cargo?"
+    ],
+    "exemplos": [
+      "Tem cargo que exige CNH. Tem cargo que exige experiência."
+    ],
+    "risco": [
+      "Quem não confere pode estudar meses à toa."
+    ],
+    "app": [
+      "No Fuse Aprova, você escolhe o cargo e vê o que o edital pede."
+    ],
+    "oferta": [
+      "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    ],
+    "fecho": [
+      "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+    ]
   }
 }

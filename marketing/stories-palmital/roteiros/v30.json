@@ -3,14 +3,35 @@
   "nomeVoz": "Keren",
   "modelo": "eleven_v4",
   "semente": 301,
-  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
-  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
+  "ajustes": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.1
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
   "falas": {
-    "gancho": ["Em poucos dias, você esquece boa parte do que estudou."],
-    "reler": ["E reler o resumo não resolve."],
-    "revela": ["O que resolve é revisar no tempo certo: um, três, sete e quinze dias depois."],
-    "app": ["O Fuse Aprova faz essa revisão sozinho, com o que você errou."],
-    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."],
-    "fecho": ["Link na bio."]
+    "gancho": [
+      "Em poucos dias, você esquece boa parte do que estudou."
+    ],
+    "reler": [
+      "E reler o resumo não resolve."
+    ],
+    "revela": [
+      "O que resolve é revisar no tempo certo: um, três, sete e quinze dias depois."
+    ],
+    "app": [
+      "O Fuse Aprova faz essa revisão sozinho, com o que você errou."
+    ],
+    "oferta": [
+      "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    ],
+    "fecho": [
+      "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+    ]
   }
 }

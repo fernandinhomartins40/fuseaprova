@@ -3,14 +3,35 @@
   "nomeVoz": "Ana Alice",
   "modelo": "eleven_v4",
   "semente": 341,
-  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
-  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
+  "ajustes": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.1
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
   "falas": {
-    "gancho": ["Domingo é o dia de montar a sua semana de estudo."],
-    "treinos": ["Segunda a sexta: um treino de cinco minutos por dia."],
-    "revisao": ["Todo dia, a revisão do que errou. No sábado, um simulado."],
-    "app": ["O Fuse Aprova já entrega esse plano pronto."],
-    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."],
-    "fecho": ["Link na bio."]
+    "gancho": [
+      "Domingo é o dia de montar a sua semana de estudo."
+    ],
+    "treinos": [
+      "Segunda a sexta: um treino de cinco minutos por dia."
+    ],
+    "revisao": [
+      "Todo dia, a revisão do que errou. No sábado, um simulado."
+    ],
+    "app": [
+      "O Fuse Aprova já entrega esse plano pronto."
+    ],
+    "oferta": [
+      "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    ],
+    "fecho": [
+      "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+    ]
   }
 }

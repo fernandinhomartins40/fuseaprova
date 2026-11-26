@@ -3,14 +3,35 @@
   "nomeVoz": "Keren",
   "modelo": "eleven_v4",
   "semente": 361,
-  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
-  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
+  "ajustes": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.1
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
   "falas": {
-    "gancho": ["Uma matéria cai em todos os quarenta e nove cargos de Palmital."],
-    "revela": ["É Português."],
-    "frente": ["Quem vai bem nela sai na frente, em qualquer cargo."],
-    "app": ["No Fuse Aprova, a sua trilha começa por ela, com explicação em cada questão."],
-    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."],
-    "fecho": ["Link na bio."]
+    "gancho": [
+      "Uma matéria cai em todos os quarenta e nove cargos do concurso da Prefeitura de Palmital."
+    ],
+    "revela": [
+      "É Português."
+    ],
+    "frente": [
+      "Quem vai bem nela sai na frente, em qualquer cargo."
+    ],
+    "app": [
+      "No Fuse Aprova, a sua trilha começa por ela, com explicação em cada questão."
+    ],
+    "oferta": [
+      "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    ],
+    "fecho": [
+      "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+    ]
   }
 }

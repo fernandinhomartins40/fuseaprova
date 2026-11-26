@@ -3,14 +3,35 @@
   "nomeVoz": "Davi Andrei",
   "modelo": "eleven_v4",
   "semente": 411,
-  "ajustes": { "stability": 0.4, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.12 },
-  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.12
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
   "falas": {
-    "gancho": ["Não tenho tempo. Essa desculpa acaba agora."],
-    "dia": ["O seu dia tem mil quatrocentos e quarenta minutos."],
-    "cinco": ["Um treino no Fuse Aprova leva cinco."],
-    "app": ["Cinco questões no estilo da FAU, com explicação."],
-    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até sábado."],
-    "fecho": ["Link na bio."]
+    "gancho": [
+      "Não tenho tempo. Essa desculpa acaba agora."
+    ],
+    "dia": [
+      "O seu dia tem mil quatrocentos e quarenta minutos."
+    ],
+    "cinco": [
+      "Um treino no Fuse Aprova leva cinco."
+    ],
+    "app": [
+      "Cinco questões no estilo da FAU, com explicação."
+    ],
+    "oferta": [
+      "Cento e noventa e sete reais, em até seis vezes sem juros, até sábado."
+    ],
+    "fecho": [
+      "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+    ]
   }
 }

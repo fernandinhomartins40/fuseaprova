@@ -2,8 +2,8 @@
   "gancho": [
     {
       "arquivo": "audio/v36/voz-gancho-1.wav",
-      "segundos": 3.985,
-      "texto": "Uma matéria cai em todos os quarenta e nove cargos de Palmital."
+      "segundos": 5.315,
+      "texto": "Uma matéria cai em todos os quarenta e nove cargos do concurso da Prefeitura de Palmital."
     }
   ],
   "revela": [
@@ -37,8 +37,8 @@
   "fecho": [
     {
       "arquivo": "audio/v36/voz-fecho-1.wav",
-      "segundos": 0.938,
-      "texto": "Link na bio."
+      "segundos": 5.078,
+      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
     }
   ]
 }

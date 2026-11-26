@@ -3,14 +3,35 @@
   "nomeVoz": "Raquel",
   "modelo": "eleven_v4",
   "semente": 321,
-  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
-  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
+  "ajustes": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.1
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
   "falas": {
-    "gancho": ["Dois candidatos, o mesmo concurso. Só um tem o foco certo."],
-    "pista": ["Um estuda tudo, sem rumo. O outro segue a trilha do cargo dele."],
-    "cargos": ["São quarenta e nove cargos, e cada um tem a sua prova."],
-    "app": ["No Fuse Aprova, você escolhe o cargo e estuda pela trilha dele."],
-    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."],
-    "fecho": ["Link na bio."]
+    "gancho": [
+      "Dois candidatos, o mesmo concurso. Só um tem o foco certo."
+    ],
+    "pista": [
+      "Um estuda tudo, sem rumo. O outro segue a trilha do cargo dele."
+    ],
+    "cargos": [
+      "São quarenta e nove cargos, e cada um tem a sua prova."
+    ],
+    "app": [
+      "No Fuse Aprova, você escolhe o cargo e estuda pela trilha dele."
+    ],
+    "oferta": [
+      "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    ],
+    "fecho": [
+      "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+    ]
   }
 }

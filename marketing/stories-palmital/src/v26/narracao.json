@@ -2,8 +2,8 @@
   "gancho": [
     {
       "arquivo": "audio/v26/voz-gancho-1.wav",
-      "segundos": 2.835,
-      "texto": "Quanto custa se preparar pro concurso de Palmital?"
+      "segundos": 3.461,
+      "texto": "Quanto custa se preparar pro concurso da Prefeitura de Palmital?"
     }
   ],
   "inclui": [
@@ -37,8 +37,8 @@
   "fecho": [
     {
       "arquivo": "audio/v26/voz-fecho-1.wav",
-      "segundos": 0.95,
-      "texto": "Link na bio."
+      "segundos": 5.136,
+      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
     }
   ]
 }

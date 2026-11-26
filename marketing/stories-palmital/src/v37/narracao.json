@@ -2,8 +2,8 @@
   "gancho": [
     {
       "arquivo": "audio/v37/voz-gancho-1.wav",
-      "segundos": 3.538,
-      "texto": "Dezembro é uma armadilha pra quem vai fazer o concurso de Palmital."
+      "segundos": 4.295,
+      "texto": "Dezembro é uma armadilha pra quem vai fazer o concurso da Prefeitura de Palmital."
     }
   ],
   "voa": [
@@ -37,8 +37,8 @@
   "fecho": [
     {
       "arquivo": "audio/v37/voz-fecho-1.wav",
-      "segundos": 0.886,
-      "texto": "Link na bio."
+      "segundos": 4.911,
+      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
     }
   ]
 }

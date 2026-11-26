@@ -3,14 +3,35 @@
   "nomeVoz": "Roberta",
   "modelo": "eleven_v4",
   "semente": 331,
-  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
-  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
+  "ajustes": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.1
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
   "falas": {
-    "gancho": ["Dá pra testar o Fuse Aprova sem arriscar o seu dinheiro."],
-    "sete": ["Você tem sete dias de garantia."],
-    "devolve": ["Não gostou? Devolvemos cem por cento do valor."],
-    "app": ["Nesses dias, faça os treinos, um simulado, e decida."],
-    "oferta": ["Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."],
-    "fecho": ["Link na bio."]
+    "gancho": [
+      "Dá pra testar o Fuse Aprova sem arriscar o seu dinheiro."
+    ],
+    "sete": [
+      "Você tem sete dias de garantia."
+    ],
+    "devolve": [
+      "Não gostou? Devolvemos cem por cento do valor."
+    ],
+    "app": [
+      "Nesses dias, faça os treinos, um simulado, e decida."
+    ],
+    "oferta": [
+      "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+    ],
+    "fecho": [
+      "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+    ]
   }
 }

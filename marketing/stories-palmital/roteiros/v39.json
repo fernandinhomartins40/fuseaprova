@@ -3,13 +3,32 @@
   "nomeVoz": "Roberta",
   "modelo": "eleven_v4",
   "semente": 391,
-  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
-  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
+  "ajustes": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.1
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
   "falas": {
-    "gancho": ["Faltam quatro dias."],
-    "acaba": ["Pro preço de cento e noventa e sete reais do Fuse Aprova acabar."],
-    "inclui": ["Trilha do seu cargo, questões no estilo da FAU e simulado oficial."],
-    "oferta": ["Em até seis vezes de trinta e dois e oitenta e três, sem juros."],
-    "fecho": ["Sábado é o último dia. Link na bio."]
+    "gancho": [
+      "Faltam quatro dias."
+    ],
+    "acaba": [
+      "Pro preço de cento e noventa e sete reais do Fuse Aprova acabar."
+    ],
+    "inclui": [
+      "Trilha do seu cargo, questões no estilo da FAU e simulado oficial."
+    ],
+    "oferta": [
+      "Em até seis vezes de trinta e dois e oitenta e três, sem juros."
+    ],
+    "fecho": [
+      "Sábado é o último dia. Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+    ]
   }
 }

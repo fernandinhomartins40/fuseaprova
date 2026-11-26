@@ -185,22 +185,36 @@ export const Cartao: React.FC<{ em: number }> = ({ em }) => {
   return (
     <div
       style={{
+        position: 'relative',
+        overflow: 'hidden',
         width: 560,
         height: 350,
         borderRadius: 36,
         padding: 40,
-        background: `linear-gradient(135deg, ${cor.laranjaVivo} 0%, ${cor.laranja} 55%, #7A2A08 100%)`,
-        boxShadow: '0 40px 80px rgba(0,0,0,0.45)',
-        transform: `perspective(1400px) rotateY(${interpolate(p, [0, 1], [70, -12]) + Math.sin(frame / 30) * 3}deg) rotate(-6deg)`,
+        background: `radial-gradient(circle at 85% 15%, rgba(255,255,255,0.22), transparent 40%), radial-gradient(circle at 10% 110%, rgba(0,0,0,0.25), transparent 50%), linear-gradient(135deg, ${cor.laranjaVivo} 0%, ${cor.laranja} 55%, #7A2A08 100%)`,
+        boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -3px 0 rgba(0,0,0,0.25), 0 50px 90px rgba(0,0,0,0.45), 0 12px 20px rgba(0,0,0,0.25)',
+        transform: `perspective(1400px) rotateY(${interpolate(p, [0, 1], [70, -12]) + Math.sin(frame / 30) * 3}deg) rotateX(${6 + Math.cos(frame / 34) * 2}deg) rotate(-6deg)`,
         opacity: Math.min(1, p * 2),
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
       }}
     >
-      <div style={{ width: 90, height: 66, borderRadius: 14, background: 'linear-gradient(135deg, #FFE27A, #D99A00)' }} />
-      <div style={{ fontFamily: fonte.corpo, fontWeight: 800, fontSize: 40, letterSpacing: 6, color: 'rgba(255,255,255,0.92)' }}>•••• •••• •••• 2026</div>
-      <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 34, color: cor.branco }}>Fuse Aprova</div>
+      {[0, 1, 2].map((k) => (
+        <div key={k} style={{ position: 'absolute', right: -120 + k * 40, top: -140 + k * 30, width: 380, height: 380, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.12)' }} />
+      ))}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ position: 'relative', width: 90, height: 66, borderRadius: 14, background: 'linear-gradient(135deg, #FFF0A8, #E2B33A 45%, #B07D10)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.3)' }}>
+          <div style={{ position: 'absolute', inset: '14px 0', borderTop: '2px solid rgba(120,80,0,0.45)', borderBottom: '2px solid rgba(120,80,0,0.45)' }} />
+          <div style={{ position: 'absolute', left: 30, right: 30, top: 0, bottom: 0, borderLeft: '2px solid rgba(120,80,0,0.45)', borderRight: '2px solid rgba(120,80,0,0.45)' }} />
+        </div>
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.85)" strokeWidth="2" strokeLinecap="round">
+          <path d="M8 7c2.5 3 2.5 7 0 10M12 5c3.5 4 3.5 10 0 14M16 3c4.5 5 4.5 13 0 18" />
+        </svg>
+      </div>
+      <div style={{ fontFamily: fonte.corpo, fontWeight: 800, fontSize: 40, letterSpacing: 6, color: 'rgba(255,255,255,0.95)', textShadow: '0 -1px 0 rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.35)' }}>•••• •••• •••• 2026</div>
+      <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 34, color: cor.branco, textShadow: '0 2px 0 rgba(0,0,0,0.2)' }}>Fuse Aprova</div>
+      <div style={{ position: 'absolute', top: -60, bottom: -60, left: `${interpolate(frame, [em + 14, em + 44], [-40, 140], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}%`, width: 110, background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)', transform: 'skewX(-18deg)' }} />
     </div>
   );
 };
