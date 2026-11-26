@@ -17,7 +17,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   const frame = useCurrentFrame();
   const entra = useMola(a.ini - 6, { damping: 11, stiffness: 150 });
-  const quebra = em(a, 0.6);
+  const quebra = em(a, 0.85);
   const t = Math.max(0, frame - quebra);
   const racha = interpolate(frame, [quebra - 12, quebra], [0, 1], limita);
   const treme = frame > quebra - 14 && frame < quebra ? Math.sin(frame * 3) * 8 : 0;
@@ -60,11 +60,12 @@ const Disco: React.FC<{ cheio: number; fatia: number; destaque: number }> = ({ c
     <div style={{ position: 'relative', width: 2 * R, height: 2 * R }}>
       <svg width={2 * R} height={2 * R} style={{ transform: 'rotate(-90deg)' }}>
         <circle cx={R} cy={R} r={R - 4} fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.6)" strokeWidth="8" />
-        {Array.from({ length: 24 }, (_, k) => (
-          <line key={k} x1={R} y1={10} x2={R} y2={k % 6 ? 34 : 50} stroke="rgba(45,47,54,0.35)" strokeWidth={k % 6 ? 4 : 8} strokeLinecap="round" transform={`rotate(${k * 15} ${R} ${R})`} />
-        ))}
         <circle cx={R} cy={R} r={R / 2} fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth={R} strokeDasharray={`${C * cheio} ${C}`} />
         <circle cx={R} cy={R} r={R / 2} fill="none" stroke={cor.laranjaVivo} strokeWidth={R} strokeDasharray={`${C * fatia} ${C}`} />
+        {/* marcações de hora por cima do preenchimento: 24 traços, maiores a cada 6 h */}
+        {Array.from({ length: 24 }, (_, k) => (
+          <line key={k} x1={R} y1={14} x2={R} y2={k % 6 ? 40 : 60} stroke="rgba(45,47,54,0.45)" strokeWidth={k % 6 ? 4 : 8} strokeLinecap="round" transform={`rotate(${k * 15} ${R} ${R})`} />
+        ))}
       </svg>
       <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'radial-gradient(circle at 35% 28%, rgba(255,255,255,0.45), transparent 45%)', boxShadow: '0 40px 70px rgba(0,0,0,0.3)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', left: R - 36, top: R - 36, width: 72, height: 72, borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%, #FFFFFF, #9CA3AF 55%, #4B5563)', boxShadow: '0 6px 12px rgba(0,0,0,0.35)' }} />
