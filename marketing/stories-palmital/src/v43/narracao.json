@@ -1,29 +1,37 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v43/voz-mesa-1.wav",
-      "segundos": 3.708,
-      "texto": "Amanhã, à meia-noite, uma coisa acaba no Fuse Aprova."
-    },
+      "arquivo": "audio/v43/voz-gancho-1.wav",
+      "segundos": 2.312,
+      "texto": "Amanhã, à meia-noite, acaba."
+    }
+  ],
+  "nao": [
     {
-      "arquivo": "audio/v43/voz-mesa-2.wav",
-      "segundos": 3.108,
-      "texto": "Não é o acesso: ele vale até o dia da prova."
-    },
+      "arquivo": "audio/v43/voz-nao-1.wav",
+      "segundos": 4.769,
+      "texto": "Não é o acesso: ele vale até a prova. E não é a garantia de sete dias."
+    }
+  ],
+  "revela": [
     {
-      "arquivo": "audio/v43/voz-mesa-3.wav",
-      "segundos": 2.176,
-      "texto": "E não é a garantia de sete dias."
-    },
+      "arquivo": "audio/v43/voz-revela-1.wav",
+      "segundos": 4.706,
+      "texto": "O que acaba é o preço de cento e noventa e sete reais, em até seis vezes sem juros."
+    }
+  ],
+  "sobe": [
     {
-      "arquivo": "audio/v43/voz-mesa-4.wav",
-      "segundos": 7.438,
-      "texto": "É o preço de cento e noventa e sete reais e o parcelamento em seis vezes sem juros. Domingo, sobe pra duzentos e noventa e sete."
-    },
+      "arquivo": "audio/v43/voz-sobe-1.wav",
+      "segundos": 2.918,
+      "texto": "Domingo, sobe pra duzentos e noventa e sete."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v43/voz-mesa-5.wav",
-      "segundos": 1.069,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v43/voz-fecho-1.wav",
+      "segundos": 4.899,
+      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
     }
   ]
 }
