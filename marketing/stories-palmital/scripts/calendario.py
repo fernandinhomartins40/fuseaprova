@@ -35,7 +35,7 @@ for n in range(23, 47):
     rot = json.loads((RAIZ / 'roteiros' / f'v{n}.json').read_text(encoding='utf-8'))
     gancho = rot['falas']['gancho'][0]
     linhas.append(f'{ordem}. **{TITULOS[n]}** (`v{n}`) · {hora} · arquivo `{dia}/{ordem}-v{n}.mp4`  ')
-    linhas.append(f'   Texto do post: "{gancho} Preparatório para o concurso da Prefeitura de Palmital: R$ 197 em até 6x sem juros até 05/12. Link na bio."')
+    linhas.append(f'   Texto do post: "{gancho} Fuse Aprova, preparatório do concurso da Prefeitura de Palmital. Valor promocional: R$ 197 em até 6x sem juros até 05/12; depois, R$ 297. Acesso até a prova de 21/02 e garantia de 7 dias. Garanta o seu no link da bio."')
 linhas += [
     '',
     '---',

@@ -39,7 +39,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const p = useMola(a.ini - 6, { damping: 12, stiffness: 140 });
   return (
     <FundoCinema paleta={paletas.alerta} duracao={duracao}>
-      <Cabeca texto="Faltam / *4 dias.*" em={a.ini} tamanho={160} faixa={cor.coral} corFaixa={cor.branco} />
+      <Cabeca texto="Faltam 4 dias / *pro fim do R$ 197.*" em={a.ini} tamanho={160} faixa={cor.coral} corFaixa={cor.branco} />
       <Em y={860}>
         <div style={{ transform: `scale(${p})` }}>
           <Bateria barras={4} cheias={4} rotulos={DIAS} corBarra={cor.verde} pisca />
@@ -59,11 +59,11 @@ export const CenaAcaba: React.FC<PropsCena> = ({ falas, duracao }) => {
   const corB = cheias > 2 ? cor.ouro : cor.vermelho;
   return (
     <FundoCinema paleta={paletas.palco} duracao={duracao}>
-      <Cabeca texto="Pro *R$ 197* / acabar." em={a.ini} tamanho={140} />
+      <Cabeca texto="Depois de sábado, / *R$ 297.*" em={a.ini} tamanho={140} />
       <Em y={860}>
         <Bateria barras={4} cheias={cheias} rotulos={DIAS} corBarra={corB} pisca />
       </Em>
-      <ChipData em={em(a, 0.6)} y={1360} texto="Último dia: sábado, 05/12" fundo={cor.vermelho} />
+      <ChipData em={em(a, 0.6)} y={1360} texto="R$ 197 até sábado, 05/12" fundo={cor.vermelho} />
       <Aviso />
     </FundoCinema>
   );

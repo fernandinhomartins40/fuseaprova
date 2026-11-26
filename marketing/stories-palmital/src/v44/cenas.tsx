@@ -151,7 +151,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.coral} duracao={duracao}>
-      <Cabeca texto="Em até 6x. / *Acaba amanhã.*" em={a.ini} tamanho={116} faixa={cor.branco} corFaixa={cor.coral} />
+      <Cabeca texto="Em até 6x. / *R$ 197 até amanhã.*" em={a.ini} tamanho={116} faixa={cor.branco} corFaixa={cor.coral} />
       <Em y={820}>
         <div style={{ filter: 'drop-shadow(0 20px 0 rgba(0,0,0,0.15))' }}>
           <SeisVezes em={a.ini + 4} />

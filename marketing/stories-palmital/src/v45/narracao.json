@@ -2,15 +2,15 @@
   "gancho": [
     {
       "arquivo": "audio/v45/voz-gancho-1.wav",
-      "segundos": 3.411,
-      "texto": "Última chamada: acaba hoje, à meia-noite."
+      "segundos": 6.292,
+      "texto": "Última chamada pra quem vai fazer o concurso da Prefeitura de Palmital: acaba hoje, à meia-noite."
     }
   ],
   "preco": [
     {
       "arquivo": "audio/v45/voz-preco-1.wav",
-      "segundos": 4.605,
-      "texto": "O preço de cento e noventa e sete reais, em até seis vezes sem juros."
+      "segundos": 5.915,
+      "texto": "O preço do preparatório: cento e noventa e sete reais, em até seis vezes sem juros."
     }
   ],
   "amanha": [

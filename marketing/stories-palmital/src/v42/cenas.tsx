@@ -140,7 +140,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoCinema paleta={paletas.palco} duracao={duracao}>
       <div style={{ position: 'absolute', inset: 0, backgroundColor: '#3A1A14', backgroundImage: `${TIJOLOS}, repeating-linear-gradient(0deg, #2A120E 0 6px, transparent 6px 60px), repeating-linear-gradient(90deg, #2A120E 0 6px, transparent 6px 120px)`, opacity: 0.85 }} />
       <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 55%, rgba(255,106,31,0.25), rgba(0,0,0,0.75) 70%)' }} />
-      <Cabeca texto="Acaba / *no sábado.*" em={a.ini} tamanho={124} />
+      <Cabeca texto="R$ 197 só / *até sábado.*" em={a.ini} tamanho={124} />
       <Em y={700}>
         <div style={{ padding: '50px 70px', borderRadius: 50, border: '4px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.35)', boxShadow: 'inset 0 0 60px rgba(255,106,31,0.15), 0 40px 80px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 30 }}>
           <Neon corNeon="#FF6A1F" liga={a.ini + 4} tamanho={210}>R$ 197</Neon>

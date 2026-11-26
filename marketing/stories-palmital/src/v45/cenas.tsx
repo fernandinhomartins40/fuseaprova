@@ -62,7 +62,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const p = useMola(a.ini - 8, { damping: 14, stiffness: 110 });
   return (
     <FundoCinema paleta={paletas.noite} duracao={duracao}>
-      <Cabeca texto="Última chamada: / *hoje, 23h59.*" em={a.ini} tamanho={108} faixa={cor.coral} corFaixa={cor.branco} />
+      <Cabeca texto="Último dia / *do R$ 197.*" em={a.ini} tamanho={108} faixa={cor.coral} corFaixa={cor.branco} />
       <Em y={720}>
         <div style={{ transform: `perspective(1600px) rotateX(${8 + (1 - p) * 40}deg) scale(${interpolate(p, [0, 1], [0.6, 1])})`, opacity: Math.min(1, p * 2) }}>
           <Painel

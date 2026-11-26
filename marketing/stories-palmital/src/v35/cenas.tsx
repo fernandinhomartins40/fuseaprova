@@ -18,7 +18,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const cai = interpolate(frame, [em(a, 0.7), em(a, 0.7) + 10], [0, 1], { ...limita, easing: (t) => t * t });
   return (
     <FundoVivo paleta={cores.coral} duracao={duracao}>
-      <Cabeca texto="Daqui a / *6 dias...*" em={a.ini} tamanho={140} />
+      <Cabeca texto="Em 6 dias, / *o valor sobe.*" em={a.ini} tamanho={140} />
       <div style={{ position: 'absolute', left: 60, top: 760, width: 960, height: 520, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 34 }}>
         {[6, 5, 4, 3, 2, 1].map((n, i) => {
           const entra = useMola(a.ini + i * 3, { damping: 12, stiffness: 170 });
@@ -63,7 +63,7 @@ export const CenaIgual: React.FC<PropsCena> = ({ falas, duracao }) => {
   const ingresso = useMola(em(a, 0.65), { damping: 12, stiffness: 130 });
   return (
     <FundoVivo paleta={cores.petroleo} duracao={duracao}>
-      <Cabeca texto="Isso *não muda.*" em={a.ini} tamanho={130} />
+      <Cabeca texto="Garantindo antes, / *você leva tudo:*" em={a.ini} tamanho={130} />
       <div style={{ position: 'absolute', left: 0, top: 620, width: 1080, display: 'flex', justifyContent: 'center', gap: 30 }}>
         {itens.map((t, i) => (
           <Surge key={t} em={em(a, 0.05 + i * 0.13)}>
@@ -113,7 +113,7 @@ export const CenaRevela: React.FC<PropsCena> = ({ falas, duracao }) => {
   const valor = frame < t0 ? 197 : frame < t1 ? Math.round(interpolate(frame, [t0, t1], [197, 297])) : 297;
   return (
     <FundoCinema paleta={paletas.alerta} duracao={duracao}>
-      <Cabeca texto="O que muda / *é o preço.*" em={a.ini} tamanho={120} faixa={cor.coral} corFaixa={cor.branco} />
+      <Cabeca texto="Dia 6, / *o valor sobe.*" em={a.ini} tamanho={120} faixa={cor.coral} corFaixa={cor.branco} />
       <Em y={680}>
         <Painel valor={`R$${valor}`} subindo={frame >= t0 && frame < t1 + 10} corValor={frame >= t1 ? '#FF4D3D' : '#FFB020'} />
       </Em>
@@ -136,7 +136,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   const abre = interpolate(frame, [a.ini + 4, a.ini + 24], [0, 1], { ...limita, easing: (t) => 1 - (1 - t) ** 3 });
   return (
     <FundoVivo paleta={cores.lima} duracao={duracao}>
-      <Cabeca texto="Até sábado, / *ainda dá pra entrar.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.branco} tamanho={96} />
+      <Cabeca texto="Até sábado: / *R$ 197.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.branco} tamanho={96} />
       <div style={{ position: 'absolute', left: 190, top: 720, width: 700, height: 760, borderRadius: '30px 30px 0 0', background: `repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0 2px, transparent 2px 5px), linear-gradient(90deg, #6B7280, #C3CAD4 50%, #6B7280)`, padding: 26, boxShadow: 'inset 0 3px 0 rgba(255,255,255,0.3), 0 50px 80px rgba(0,0,0,0.38)' }}>
         <div style={{ position: 'absolute', left: 250, top: -90, width: 200, height: 70, borderRadius: 18, background: 'linear-gradient(180deg, #16181D, #050506)', border: '6px solid #9CA3AF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Consolas', monospace", fontWeight: 900, fontSize: 40, color: '#FFB020', textShadow: '0 0 12px #FFB020' }}>▲ 197</div>
         <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', borderRadius: 14, background: `linear-gradient(180deg, #FFF6EE, ${cor.ouro})` }}>
@@ -149,7 +149,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
           <div style={{ position: 'absolute', right: 0, top: 0, width: '50%', height: '100%', background: `repeating-linear-gradient(90deg, rgba(255,255,255,0.07) 0 2px, transparent 2px 5px), linear-gradient(270deg, #9CA3AF, #E5E7EB 70%, #C3CAD4)`, borderLeft: '3px solid #6B7280', boxShadow: 'inset 10px 0 20px rgba(0,0,0,0.18)', transform: `translateX(${abre * 100}%)` }} />
         </div>
       </div>
-      <ChipData em={em(a, 0.7)} y={1530} texto="Último dia: sábado, 05/12" fundo={cor.tinta} />
+      <ChipData em={em(a, 0.7)} y={1530} texto="R$ 197 até sábado, 05/12" fundo={cor.tinta} />
       <Efeito nome="ding" em={a.ini + 2} volume={0.45} />
       <Efeito nome="whoosh" em={a.ini + 4} volume={0.35} />
       <Aviso corTexto="rgba(45,47,54,0.85)" />

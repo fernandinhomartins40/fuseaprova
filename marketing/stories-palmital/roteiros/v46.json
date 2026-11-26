@@ -3,13 +3,32 @@
   "nomeVoz": "Davi Andrei",
   "modelo": "eleven_v4",
   "semente": 461,
-  "ajustes": { "stability": 0.4, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.12 },
-  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
+  "ajustes": {
+    "stability": 0.4,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.12
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
   "falas": {
-    "gancho": ["Últimas horas do preço especial do preparatório do concurso da Prefeitura de Palmital."],
-    "escolha": ["Pra prova da Prefeitura de Palmital, você pode estudar sozinho, ou com um plano pronto."],
-    "plano": ["Trilha do seu cargo, revisão dos erros e simulados no formato da prova, até vinte e um de fevereiro."],
-    "oferta": ["Até a meia-noite, cento e noventa e sete reais, em até seis vezes. Depois, duzentos e noventa e sete."],
-    "fecho": ["Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."]
+    "gancho": [
+      "Últimas horas do valor promocional do preparatório do concurso da Prefeitura de Palmital."
+    ],
+    "escolha": [
+      "Pra prova da Prefeitura de Palmital, você pode estudar sozinho, ou com um plano pronto."
+    ],
+    "plano": [
+      "Trilha do seu cargo, revisão dos erros e simulados no formato da prova, até vinte e um de fevereiro."
+    ],
+    "oferta": [
+      "Até a meia-noite, cento e noventa e sete reais, em até seis vezes. Depois, o valor passa pra duzentos e noventa e sete."
+    ],
+    "fecho": [
+      "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
+    ]
   }
 }

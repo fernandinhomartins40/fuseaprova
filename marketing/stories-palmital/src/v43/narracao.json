@@ -2,22 +2,22 @@
   "gancho": [
     {
       "arquivo": "audio/v43/voz-gancho-1.wav",
-      "segundos": 2.312,
-      "texto": "Amanhã, à meia-noite, acaba."
+      "segundos": 5.724,
+      "texto": "Amanhã, à meia-noite, acaba a condição especial do preparatório do concurso da Prefeitura de Palmital."
     }
   ],
   "nao": [
     {
       "arquivo": "audio/v43/voz-nao-1.wav",
-      "segundos": 4.769,
-      "texto": "Não é o acesso: ele vale até a prova. E não é a garantia de sete dias."
+      "segundos": 5.992,
+      "texto": "Não é o acesso: ele vale até a prova da Prefeitura de Palmital. E não é a garantia de sete dias."
     }
   ],
   "revela": [
     {
       "arquivo": "audio/v43/voz-revela-1.wav",
-      "segundos": 4.706,
-      "texto": "O que acaba é o preço de cento e noventa e sete reais, em até seis vezes sem juros."
+      "segundos": 5.031,
+      "texto": "O que acaba é o preço: cento e noventa e sete reais, em até seis vezes sem juros."
     }
   ],
   "sobe": [
