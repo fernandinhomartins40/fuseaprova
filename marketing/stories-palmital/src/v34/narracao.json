@@ -2,7 +2,7 @@
   "gancho": [
     {
       "arquivo": "audio/v34/voz-gancho-1.wav",
-      "segundos": 5.065,
+      "segundos": 5.081,
       "texto": "Domingo é o dia de montar a semana de estudo pro concurso da Prefeitura de Palmital."
     }
   ],
@@ -16,29 +16,29 @@
   "revisao": [
     {
       "arquivo": "audio/v34/voz-revisao-1.wav",
-      "segundos": 4.314,
+      "segundos": 4.312,
       "texto": "Todo dia, a revisão do que errou. No sábado, um simulado."
     }
   ],
   "app": [
     {
       "arquivo": "audio/v34/voz-app-1.wav",
-      "segundos": 6.098,
-      "texto": "O Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital, já entrega esse plano pronto."
+      "segundos": 4.825,
+      "texto": "O Fuse Aprova já entrega esse plano pronto. Você só abre e faz."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v34/voz-oferta-1.wav",
-      "segundos": 5.471,
-      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+      "segundos": 6.464,
+      "texto": "Anota aí: cento e noventa e sete reais em até seis vezes, só até cinco de dezembro."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v34/voz-fecho-1.wav",
-      "segundos": 5.318,
-      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 6.476,
+      "texto": "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }
