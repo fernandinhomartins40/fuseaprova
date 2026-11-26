@@ -2,50 +2,50 @@
   "gancho": [
     {
       "arquivo": "audio/v25/voz-gancho-1.wav",
-      "segundos": 4.253,
+      "segundos": 4.254,
       "texto": "Antes de estudar pro concurso da Prefeitura de Palmital, responda uma pergunta."
     }
   ],
   "pergunta": [
     {
       "arquivo": "audio/v25/voz-pergunta-1.wav",
-      "segundos": 4.037,
-      "texto": "Você atende aos requisitos do seu cargo no concurso da Prefeitura de Palmital?"
+      "segundos": 2.464,
+      "texto": "Você atende aos requisitos do cargo que quer?"
     }
   ],
   "exemplos": [
     {
       "arquivo": "audio/v25/voz-exemplos-1.wav",
-      "segundos": 6.35,
-      "texto": "No edital da Prefeitura de Palmital, tem cargo que exige CNH. E tem cargo que exige experiência."
+      "segundos": 4.819,
+      "texto": "No edital, tem cargo que exige CNH. Tem cargo que exige experiência."
     }
   ],
   "risco": [
     {
       "arquivo": "audio/v25/voz-risco-1.wav",
-      "segundos": 2.625,
-      "texto": "Quem não confere pode estudar meses à toa."
+      "segundos": 3.937,
+      "texto": "Quem não confere pode estudar meses pra uma vaga que nem pode assumir."
     }
   ],
   "app": [
     {
       "arquivo": "audio/v25/voz-app-1.wav",
-      "segundos": 5.234,
-      "texto": "No Fuse Aprova, você escolhe o seu cargo e vê o que o edital da Prefeitura de Palmital pede."
+      "segundos": 4.063,
+      "texto": "No Fuse Aprova, você escolhe o cargo e vê na hora o que o edital pede."
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v25/voz-oferta-1.wav",
-      "segundos": 4.716,
-      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, até cinco de dezembro."
+      "segundos": 6.45,
+      "texto": "E estuda pela trilha dele, por cento e noventa e sete reais em até seis vezes. Promoção até cinco de dezembro."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v25/voz-fecho-1.wav",
-      "segundos": 4.906,
-      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 5.766,
+      "texto": "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }

@@ -137,7 +137,7 @@ export const CenaRisco: React.FC<PropsCena> = ({ falas, duracao }) => {
   const frame = useCurrentFrame();
   return (
     <FundoVivo paleta={cores.roxo} duracao={duracao}>
-      <Cabeca texto="Sem conferir: / *meses à toa.*" em={a.ini} tamanho={110} />
+      <Cabeca texto="Sem conferir: / *meses jogados fora.*" em={a.ini} tamanho={94} />
       {MESES.map((m, i) => {
         const t0 = a.ini + 6 + i * 12;
         const q = interpolate(frame, [t0, t0 + 26], [0, 1], { ...limita, easing: (x) => x * x });
@@ -196,7 +196,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   const seis = useMola(em(a, 0.45), { damping: 10, stiffness: 200 });
   return (
     <FundoVivo paleta={cores.lima} duracao={duracao}>
-      <Cabeca texto="Tudo por / *R$ 197.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.branco} tamanho={120} />
+      <Cabeca texto="A trilha do seu cargo / *por R$ 197.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.branco} tamanho={96} />
       <div style={{ position: 'absolute', left: 540, top: 650, width: 0, height: 0 }}>
         <div style={{ position: 'absolute', left: -14, top: -40, width: 28, height: 28, borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%, #FFFFFF, #9AA3AE 55%, #4B5563)', boxShadow: '0 6px 10px rgba(0,0,0,0.35)', zIndex: 2 }} />
         <div style={{ position: 'absolute', left: -380, top: 0, width: 760, transformOrigin: '380px -24px', transform: `rotate(${balanco}deg)` }}>
