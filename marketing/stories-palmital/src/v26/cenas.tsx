@@ -174,7 +174,7 @@ export const CenaAte: React.FC<PropsCena> = ({ falas, duracao }) => {
   const ponte = interpolate(frame, [em(a, 0.2), em(a, 0.7)], [0, 1], { ...limita, easing: (x) => 1 - (1 - x) ** 2 });
   return (
     <FundoVivo paleta={cores.azul} duracao={duracao}>
-      <Cabeca texto="Até o dia / *da prova.*" em={a.ini} tamanho={130} />
+      <Cabeca texto="Até a prova / *de Palmital.*" em={a.ini} tamanho={130} />
       <div style={{ position: 'absolute', left: 70, top: 810 }}>
         <Folhinha mes="HOJE" dia="25" corTopo={cor.laranjaVivo} em={a.ini} />
       </div>

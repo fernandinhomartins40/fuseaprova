@@ -9,15 +9,15 @@
   "pergunta": [
     {
       "arquivo": "audio/v25/voz-pergunta-1.wav",
-      "segundos": 2.264,
-      "texto": "Você atende aos requisitos do seu cargo?"
+      "segundos": 4.037,
+      "texto": "Você atende aos requisitos do seu cargo no concurso da Prefeitura de Palmital?"
     }
   ],
   "exemplos": [
     {
       "arquivo": "audio/v25/voz-exemplos-1.wav",
-      "segundos": 4.437,
-      "texto": "Tem cargo que exige CNH. Tem cargo que exige experiência."
+      "segundos": 6.35,
+      "texto": "No edital da Prefeitura de Palmital, tem cargo que exige CNH. E tem cargo que exige experiência."
     }
   ],
   "risco": [
@@ -30,8 +30,8 @@
   "app": [
     {
       "arquivo": "audio/v25/voz-app-1.wav",
-      "segundos": 3.845,
-      "texto": "No Fuse Aprova, você escolhe o cargo e vê o que o edital pede."
+      "segundos": 5.234,
+      "texto": "No Fuse Aprova, você escolhe o seu cargo e vê o que o edital da Prefeitura de Palmital pede."
     }
   ],
   "oferta": [

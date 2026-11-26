@@ -2,15 +2,15 @@
   "gancho": [
     {
       "arquivo": "audio/v38/voz-gancho-1.wav",
-      "segundos": 3.431,
-      "texto": "Não sabe nada da matéria? Dá pra começar assim mesmo."
+      "segundos": 5.499,
+      "texto": "Não sabe nada da matéria do concurso da Prefeitura de Palmital? Dá pra começar assim mesmo."
     }
   ],
   "explica": [
     {
       "arquivo": "audio/v38/voz-explica-1.wav",
-      "segundos": 4.626,
-      "texto": "No Fuse Aprova, cada questão vem com a explicação do tema, do zero."
+      "segundos": 7.578,
+      "texto": "No Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital, cada questão vem com a explicação do tema, do zero."
     }
   ],
   "rega": [

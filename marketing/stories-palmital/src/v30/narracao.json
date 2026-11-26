@@ -2,8 +2,8 @@
   "gancho": [
     {
       "arquivo": "audio/v30/voz-gancho-1.wav",
-      "segundos": 3.43,
-      "texto": "Em poucos dias, você esquece boa parte do que estudou."
+      "segundos": 6.214,
+      "texto": "Estudando pro concurso da Prefeitura de Palmital? Em poucos dias, você esquece boa parte do que estudou."
     }
   ],
   "reler": [
@@ -23,8 +23,8 @@
   "app": [
     {
       "arquivo": "audio/v30/voz-app-1.wav",
-      "segundos": 3.776,
-      "texto": "O Fuse Aprova faz essa revisão sozinho, com o que você errou."
+      "segundos": 6.889,
+      "texto": "No Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital, essa revisão é automática, com o que você errou."
     }
   ],
   "oferta": [

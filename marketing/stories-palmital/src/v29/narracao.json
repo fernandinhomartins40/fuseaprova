@@ -2,8 +2,8 @@
   "gancho": [
     {
       "arquivo": "audio/v29/voz-gancho-1.wav",
-      "segundos": 3.127,
-      "texto": "Toda banca tem um jeito de perguntar. A FAU também."
+      "segundos": 4.627,
+      "texto": "A FAU, banca do concurso da Prefeitura de Palmital, tem um jeito de perguntar."
     }
   ],
   "sorte": [
@@ -16,15 +16,15 @@
   "alvo": [
     {
       "arquivo": "audio/v29/voz-alvo-1.wav",
-      "segundos": 3.051,
-      "texto": "Quem treina nesse estilo reconhece a pegadinha na hora."
+      "segundos": 3.518,
+      "texto": "Quem treina nesse estilo reconhece a pegadinha na hora da prova."
     }
   ],
   "app": [
     {
       "arquivo": "audio/v29/voz-app-1.wav",
-      "segundos": 4.395,
-      "texto": "No Fuse Aprova, são mais de dez mil questões nesse estilo, com explicação."
+      "segundos": 7.353,
+      "texto": "No Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital, são mais de dez mil questões nesse estilo, com explicação."
     }
   ],
   "oferta": [

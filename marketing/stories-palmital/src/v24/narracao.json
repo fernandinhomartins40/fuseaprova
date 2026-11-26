@@ -9,8 +9,8 @@
   "prova": [
     {
       "arquivo": "audio/v24/voz-prova-1.wav",
-      "segundos": 1.84,
-      "texto": "Qual dessas duas está certa?"
+      "segundos": 5.693,
+      "texto": "Olha essa questão no estilo da prova da Prefeitura de Palmital: qual dessas duas está certa?"
     }
   ],
   "corrige": [
@@ -30,8 +30,8 @@
   "app": [
     {
       "arquivo": "audio/v24/voz-app-1.wav",
-      "segundos": 3.827,
-      "texto": "No Fuse Aprova, cada erro vem com a explicação na hora."
+      "segundos": 6.705,
+      "texto": "No Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital, cada erro vem com a explicação na hora."
     }
   ],
   "oferta": [

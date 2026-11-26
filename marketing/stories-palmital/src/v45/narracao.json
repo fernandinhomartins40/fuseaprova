@@ -1,29 +1,37 @@
 {
-  "mesa": [
+  "gancho": [
     {
-      "arquivo": "audio/v45/voz-mesa-1.wav",
-      "segundos": 2.229,
-      "texto": "Hoje, à meia-noite, acaba."
-    },
+      "arquivo": "audio/v45/voz-gancho-1.wav",
+      "segundos": 3.411,
+      "texto": "Última chamada: acaba hoje, à meia-noite."
+    }
+  ],
+  "preco": [
     {
-      "arquivo": "audio/v45/voz-mesa-2.wav",
-      "segundos": 4.09,
-      "texto": "Se você tava esperando a hora certa pra começar a estudar pro concurso de Palmital..."
-    },
+      "arquivo": "audio/v45/voz-preco-1.wav",
+      "segundos": 4.605,
+      "texto": "O preço de cento e noventa e sete reais, em até seis vezes sem juros."
+    }
+  ],
+  "amanha": [
     {
-      "arquivo": "audio/v45/voz-mesa-3.wav",
-      "segundos": 2.907,
-      "texto": "...com a trilha do seu cargo e simulado oficial..."
-    },
+      "arquivo": "audio/v45/voz-amanha-1.wav",
+      "segundos": 2.697,
+      "texto": "Amanhã, duzentos e noventa e sete."
+    }
+  ],
+  "agora": [
     {
-      "arquivo": "audio/v45/voz-mesa-4.wav",
-      "segundos": 6.927,
-      "texto": "Acaba hoje o preço de cento e noventa e sete reais, em até seis vezes sem juros. Amanhã, duzentos e noventa e sete."
-    },
+      "arquivo": "audio/v45/voz-agora-1.wav",
+      "segundos": 5.395,
+      "texto": "Se você ia começar a estudar pro concurso da Prefeitura de Palmital, a hora é agora."
+    }
+  ],
+  "fecho": [
     {
-      "arquivo": "audio/v45/voz-mesa-5.wav",
-      "segundos": 1.007,
-      "texto": "O link tá na bio."
+      "arquivo": "audio/v45/voz-fecho-1.wav",
+      "segundos": 5.205,
+      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
     }
   ]
 }

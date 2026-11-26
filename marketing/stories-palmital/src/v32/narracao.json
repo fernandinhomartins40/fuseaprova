@@ -2,8 +2,8 @@
   "gancho": [
     {
       "arquivo": "audio/v32/voz-gancho-1.wav",
-      "segundos": 4.655,
-      "texto": "Dois candidatos, o mesmo concurso. Só um tem o foco certo."
+      "segundos": 6.561,
+      "texto": "Dois candidatos, o mesmo concurso: o da Prefeitura de Palmital. Só um tem o foco certo."
     }
   ],
   "pista": [
@@ -16,15 +16,15 @@
   "cargos": [
     {
       "arquivo": "audio/v32/voz-cargos-1.wav",
-      "segundos": 3.823,
-      "texto": "São quarenta e nove cargos, e cada um tem a sua prova."
+      "segundos": 5.641,
+      "texto": "São quarenta e nove cargos no edital da Prefeitura de Palmital, e cada um tem a sua prova."
     }
   ],
   "app": [
     {
       "arquivo": "audio/v32/voz-app-1.wav",
-      "segundos": 4.439,
-      "texto": "No Fuse Aprova, você escolhe o cargo e estuda pela trilha dele."
+      "segundos": 7.188,
+      "texto": "No Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital, você escolhe o cargo e estuda pela trilha dele."
     }
   ],
   "oferta": [

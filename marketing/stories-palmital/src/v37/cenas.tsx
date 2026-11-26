@@ -123,7 +123,7 @@ export const CenaProva: React.FC<PropsCena> = ({ falas, duracao }) => {
   const treme = impacto > 4 && impacto < 16 ? Math.sin(impacto * 3) * (16 - impacto) : 0;
   return (
     <FundoVivo paleta={cores.coral} duracao={duracao}>
-      <Cabeca texto="A prova é / *21 de fevereiro.*" em={a.ini} tamanho={112} faixa={cor.branco} corFaixa={cor.coral} />
+      <Cabeca texto="Prova de Palmital: / *21 de fevereiro.*" em={a.ini} tamanho={112} faixa={cor.branco} corFaixa={cor.coral} />
       <Em y={700}>
         <div style={{ width: 560, borderRadius: 50, overflow: 'hidden', background: 'linear-gradient(180deg, #FFFFFF, #EEF0F3)', boxShadow: 'inset 0 -10px 0 rgba(0,0,0,0.05), 0 60px 100px rgba(0,0,0,0.42), 0 14px 24px rgba(0,0,0,0.25)', transform: `scale(${interpolate(bate, [0, 1], [3, 1])}) translateX(${treme}px) rotate(-4deg)`, opacity: Math.min(1, bate * 3) }}>
           <div style={{ background: 'linear-gradient(180deg, #F0484D, #C81E2B)', color: cor.branco, fontFamily: fonte.corpo, fontWeight: 900, fontSize: 70, letterSpacing: 10, textAlign: 'center', padding: '34px 0 16px', boxShadow: 'inset 0 -4px 0 rgba(0,0,0,0.15)', position: 'relative' }}>

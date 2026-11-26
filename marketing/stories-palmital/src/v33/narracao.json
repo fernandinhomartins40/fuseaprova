@@ -2,8 +2,8 @@
   "gancho": [
     {
       "arquivo": "audio/v33/voz-gancho-1.wav",
-      "segundos": 3.335,
-      "texto": "Dá pra testar o Fuse Aprova sem arriscar o seu dinheiro."
+      "segundos": 5.409,
+      "texto": "Dá pra testar o preparatório do concurso da Prefeitura de Palmital sem arriscar o seu dinheiro."
     }
   ],
   "sete": [
@@ -23,8 +23,8 @@
   "app": [
     {
       "arquivo": "audio/v33/voz-app-1.wav",
-      "segundos": 4.099,
-      "texto": "Nesses dias, faça os treinos, um simulado, e decida."
+      "segundos": 5.23,
+      "texto": "Nesses dias, faça os treinos, um simulado no formato da prova, e decida."
     }
   ],
   "oferta": [

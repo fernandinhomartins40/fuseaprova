@@ -1,28 +1,34 @@
 {
-  "voz": "2CECaLAGTS5NRGxgbcxr",
-  "nomeVoz": "Davi Andrei",
+  "voz": "ohZOfA9iwlZ5nOsoY7LB",
+  "nomeVoz": "Roberta",
   "modelo": "eleven_v4",
+  "semente": 451,
   "ajustes": {
-    "stability": 0.4,
+    "stability": 0.45,
     "similarity_boost": 0.8,
     "use_speaker_boost": true,
-    "speed": 1.08
+    "speed": 1.1
   },
   "pronuncia": {
     "Fuse": "Fúzi",
     "Aprova": "Aprôva",
     "FAU": "Fáu"
   },
-  "semente": 322,
-  "titulo": "Hoje à meia-noite",
-  "dia": "05/12",
   "falas": {
-    "mesa": [
-      "Hoje, à meia-noite, acaba.",
-      "Se você tava esperando a hora certa pra começar a estudar pro concurso de Palmital...",
-      "...com a trilha do seu cargo e simulado oficial...",
-      "Acaba hoje o preço de cento e noventa e sete reais, em até seis vezes sem juros. Amanhã, duzentos e noventa e sete.",
-      "O link tá na bio."
+    "gancho": [
+      "Última chamada pra quem vai fazer o concurso da Prefeitura de Palmital: acaba hoje, à meia-noite."
+    ],
+    "preco": [
+      "O preço do preparatório: cento e noventa e sete reais, em até seis vezes sem juros."
+    ],
+    "amanha": [
+      "Amanhã, duzentos e noventa e sete."
+    ],
+    "agora": [
+      "Se você ia começar a estudar pro concurso da Prefeitura de Palmital, a hora é agora."
+    ],
+    "fecho": [
+      "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
     ]
   }
 }

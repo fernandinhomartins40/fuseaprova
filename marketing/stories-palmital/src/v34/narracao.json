@@ -2,8 +2,8 @@
   "gancho": [
     {
       "arquivo": "audio/v34/voz-gancho-1.wav",
-      "segundos": 3.445,
-      "texto": "Domingo é o dia de montar a sua semana de estudo."
+      "segundos": 5.065,
+      "texto": "Domingo é o dia de montar a semana de estudo pro concurso da Prefeitura de Palmital."
     }
   ],
   "treinos": [
@@ -23,8 +23,8 @@
   "app": [
     {
       "arquivo": "audio/v34/voz-app-1.wav",
-      "segundos": 2.913,
-      "texto": "O Fuse Aprova já entrega esse plano pronto."
+      "segundos": 6.098,
+      "texto": "O Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital, já entrega esse plano pronto."
     }
   ],
   "oferta": [

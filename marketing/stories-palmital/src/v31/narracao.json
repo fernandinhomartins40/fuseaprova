@@ -2,15 +2,15 @@
   "gancho": [
     {
       "arquivo": "audio/v31/voz-gancho-1.wav",
-      "segundos": 2.779,
-      "texto": "No dia da prova, saber a matéria não basta."
+      "segundos": 4.54,
+      "texto": "No dia da prova do concurso da Prefeitura de Palmital, saber a matéria não basta."
     }
   ],
   "numeros": [
     {
       "arquivo": "audio/v31/voz-numeros-1.wav",
-      "segundos": 2.64,
-      "texto": "São quarenta questões em quatro horas."
+      "segundos": 3.512,
+      "texto": "São quarenta questões em quatro horas de prova objetiva."
     }
   ],
   "grade": [
@@ -23,8 +23,8 @@
   "app": [
     {
       "arquivo": "audio/v31/voz-app-1.wav",
-      "segundos": 5.062,
-      "texto": "No Fuse Aprova, você treina com simulado no formato oficial, quantas vezes quiser."
+      "segundos": 5.679,
+      "texto": "No Fuse Aprova, você faz simulados no formato da prova da Prefeitura de Palmital, quantas vezes quiser."
     }
   ],
   "oferta": [

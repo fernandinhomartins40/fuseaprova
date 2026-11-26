@@ -9,22 +9,22 @@
   "gaveta": [
     {
       "arquivo": "audio/v27/voz-gaveta-1.wav",
-      "segundos": 5.241,
-      "texto": "Requisitos, matérias, número de questões: cada cargo tem os seus."
+      "segundos": 7.576,
+      "texto": "Requisitos, matérias, número de questões: no concurso da Prefeitura de Palmital, cada cargo tem os seus."
     }
   ],
   "horas": [
     {
       "arquivo": "audio/v27/voz-horas-1.wav",
-      "segundos": 2.54,
-      "texto": "Achar isso sozinho leva horas."
+      "segundos": 3.144,
+      "texto": "Achar isso sozinho no edital leva horas."
     }
   ],
   "app": [
     {
       "arquivo": "audio/v27/voz-app-1.wav",
-      "segundos": 4.812,
-      "texto": "No Fuse Aprova, você pergunta, e a resposta vem com o item do edital."
+      "segundos": 6.619,
+      "texto": "No Fuse Aprova, você pergunta ao edital da Prefeitura de Palmital, e a resposta vem com o item citado."
     }
   ],
   "oferta": [

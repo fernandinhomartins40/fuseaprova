@@ -9,15 +9,15 @@
   "inclui": [
     {
       "arquivo": "audio/v26/voz-inclui-1.wav",
-      "segundos": 4.819,
-      "texto": "Trilha do seu cargo, mais de dez mil questões, revisão e simulados."
+      "segundos": 6.072,
+      "texto": "Trilha do seu cargo, mais de dez mil questões no estilo da banca, revisão e simulados."
     }
   ],
   "ate": [
     {
       "arquivo": "audio/v26/voz-ate-1.wav",
-      "segundos": 3.1,
-      "texto": "Tudo isso até o dia da prova, em fevereiro."
+      "segundos": 5.784,
+      "texto": "Tudo isso até o dia da prova do concurso da Prefeitura de Palmital, em vinte e um de fevereiro."
     }
   ],
   "revela": [

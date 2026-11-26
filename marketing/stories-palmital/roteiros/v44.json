@@ -3,14 +3,35 @@
   "nomeVoz": "Raquel",
   "modelo": "eleven_v4",
   "semente": 441,
-  "ajustes": { "stability": 0.45, "similarity_boost": 0.8, "use_speaker_boost": true, "speed": 1.1 },
-  "pronuncia": { "Fuse": "Fúzi", "Aprova": "Aprôva", "FAU": "Fáu" },
+  "ajustes": {
+    "stability": 0.45,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.1
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
   "falas": {
-    "gancho": ["Quanto custa, por dia, se preparar pro concurso da Prefeitura de Palmital?"],
-    "total": ["São cento e noventa e sete reais, com acesso até a prova, em fevereiro."],
-    "divide": ["Dividindo pelos dias que faltam..."],
-    "revela": ["...dá menos de dois e cinquenta por dia."],
-    "oferta": ["Em até seis vezes sem juros. E esse preço acaba amanhã."],
-    "fecho": ["Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."]
+    "gancho": [
+      "Quanto custa, por dia, se preparar pro concurso da Prefeitura de Palmital?"
+    ],
+    "total": [
+      "São cento e noventa e sete reais, com acesso até a prova da Prefeitura de Palmital, em vinte e um de fevereiro."
+    ],
+    "divide": [
+      "Dividindo pelos dias que faltam pra prova..."
+    ],
+    "revela": [
+      "...dá menos de dois e cinquenta por dia."
+    ],
+    "oferta": [
+      "Em até seis vezes sem juros. E esse preço acaba amanhã."
+    ],
+    "fecho": [
+      "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+    ]
   }
 }

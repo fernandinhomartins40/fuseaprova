@@ -2,15 +2,15 @@
   "gancho": [
     {
       "arquivo": "audio/v35/voz-gancho-1.wav",
-      "segundos": 2.575,
-      "texto": "Em seis dias, o Fuse Aprova muda."
+      "segundos": 4.308,
+      "texto": "Em seis dias, o preparatório do concurso da Prefeitura de Palmital muda."
     }
   ],
   "igual": [
     {
       "arquivo": "audio/v35/voz-igual-1.wav",
-      "segundos": 5.696,
-      "texto": "A trilha, as questões e os simulados continuam iguais. E o acesso vale até o dia da prova."
+      "segundos": 7.808,
+      "texto": "A trilha, as questões e os simulados continuam iguais. E o acesso vale até a prova da Prefeitura de Palmital, em vinte e um de fevereiro."
     }
   ],
   "revela": [
