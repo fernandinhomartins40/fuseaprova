@@ -159,7 +159,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   return (
     <FundoVivo paleta={cores.coral} duracao={duracao}>
-      <Cabeca texto="Perdeu o prazo? / *Notícia boa.*" em={a.ini} sobre="Edição extra · 25/11" />
+      <Cabeca texto="Perdeu a promoção? / *Notícia boa.*" tamanho={100} em={a.ini} sobre="Edição extra · 25/11" />
       <Em y={700}>
         <Jornal em={a.ini - 4} gira manchete="PRORROGADO!" sub="R$ 197 em até 6x sem juros vai até 5 de dezembro" nitido={99999} />
       </Em>
@@ -179,7 +179,7 @@ export const CenaUltimo: React.FC<PropsCena> = ({ falas, duracao }) => {
   const len = a.fim - a.ini;
   return (
     <FundoVivo paleta={cores.roxo} duracao={duracao}>
-      <Cabeca texto="R$ 197 / *acabava hoje.*" em={a.ini} />
+      <Cabeca texto="A promoção / *terminava hoje.*" em={a.ini} />
       <Em y={680}>
         <Calendario em={a.ini} circulo={a.ini + Math.round(len * 0.55)} />
       </Em>

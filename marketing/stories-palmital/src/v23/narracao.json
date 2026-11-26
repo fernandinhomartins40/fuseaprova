@@ -2,48 +2,48 @@
   "gancho": [
     {
       "arquivo": "audio/v23/voz-gancho-1.wav",
-      "segundos": 4.801,
-      "texto": "Perdeu o prazo do preparatório pro concurso da Prefeitura de Palmital? Tenho uma notícia boa."
+      "segundos": 4.96,
+      "texto": "Perdeu a promoção do preparatório pro concurso da Prefeitura de Palmital? Tenho uma notícia boa."
     }
   ],
   "ultimo": [
     {
       "arquivo": "audio/v23/voz-ultimo-1.wav",
-      "segundos": 3.268,
-      "texto": "O preço de cento e noventa e sete reais acabava hoje."
+      "segundos": 4.13,
+      "texto": "Ela terminava hoje, e o valor ia subir pra duzentos e noventa e sete."
     }
   ],
   "app": [
     {
       "arquivo": "audio/v23/voz-app-1.wav",
-      "segundos": 7.657,
-      "texto": "Preparatório completo pro concurso da Prefeitura de Palmital: trilha do seu cargo, questões no estilo da FAU e simulado oficial."
+      "segundos": 6.161,
+      "texto": "O preparatório completo: trilha do seu cargo, questões no estilo da FAU e simulados no formato da prova."
     }
   ],
   "revela": [
     {
       "arquivo": "audio/v23/voz-revela-1.wav",
-      "segundos": 2.152,
-      "texto": "Prorrogamos até cinco de dezembro!"
+      "segundos": 3.756,
+      "texto": "A notícia: prorrogamos a promoção até cinco de dezembro!"
     }
   ],
   "oferta": [
     {
       "arquivo": "audio/v23/voz-oferta-1.wav",
-      "segundos": 6.695,
-      "texto": "O preparatório do concurso da Prefeitura de Palmital sai por cento e noventa e sete reais, em até seis vezes sem juros."
+      "segundos": 5.827,
+      "texto": "Cento e noventa e sete reais, em até seis vezes sem juros, com acesso até a prova de vinte e um de fevereiro."
     },
     {
       "arquivo": "audio/v23/voz-oferta-2.wav",
-      "segundos": 3.192,
-      "texto": "No dia seis, sobe pra duzentos e noventa e sete."
+      "segundos": 3.904,
+      "texto": "A partir do dia seis, o valor passa pra duzentos e noventa e sete."
     }
   ],
   "fecho": [
     {
       "arquivo": "audio/v23/voz-fecho-1.wav",
-      "segundos": 4.858,
-      "texto": "Fuse Aprova, o preparatório pro concurso da Prefeitura de Palmital. Link na bio."
+      "segundos": 5.831,
+      "texto": "Garanta o seu no link da bio. Fuse Aprova, o preparatório do concurso da Prefeitura de Palmital."
     }
   ]
 }
