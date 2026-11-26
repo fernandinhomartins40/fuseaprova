@@ -28,14 +28,14 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoVivo paleta={cores.petroleo} duracao={duracao}>
       <Cabeca texto="2 candidatos. / *1 foco certo.*" em={a.ini} sobre="Concurso · Prefeitura de Palmital" tamanho={116} />
       <div style={{ position: 'absolute', left: 540 - 180 - separa * 140 - 170, top: 760, transform: `scale(${pa})`, opacity: 1 - foco * 0.45 }}>
-        <div style={{ width: 340, height: 340, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', border: '8px solid #fff', overflow: 'hidden', position: 'relative' }}>
+        <div style={{ width: 340, height: 340, borderRadius: '50%', background: 'radial-gradient(circle at 40% 30%, rgba(255,255,255,0.45), rgba(255,255,255,0.08))', border: '10px solid #fff', boxShadow: '0 0 0 6px rgba(0,0,0,0.12), 0 30px 50px rgba(0,0,0,0.35)', overflow: 'hidden', position: 'relative' }}>
           <div style={{ position: 'absolute', left: 0, bottom: -10 }}>
             <Pessoa {...A} tamanho={340} humor={foco > 0 ? 'triste' : 'neutro'} />
           </div>
         </div>
       </div>
       <div style={{ position: 'absolute', left: 540 + 180 + separa * 140 - 170, top: 760, transform: `scale(${pb * (1 + foco * 0.08)})` }}>
-        <div style={{ width: 340, height: 340, borderRadius: '50%', background: 'rgba(255,255,255,0.18)', border: `8px solid ${foco > 0 ? cor.ouro : '#fff'}`, boxShadow: foco > 0 ? `0 0 60px ${cor.ouro}` : 'none', overflow: 'hidden', position: 'relative' }}>
+        <div style={{ width: 340, height: 340, borderRadius: '50%', background: 'radial-gradient(circle at 40% 30%, rgba(255,255,255,0.45), rgba(255,255,255,0.08))', border: `10px solid ${foco > 0 ? cor.ouro : '#fff'}`, boxShadow: `0 0 0 6px rgba(0,0,0,0.12), 0 30px 50px rgba(0,0,0,0.35)${foco > 0 ? `, 0 0 70px ${cor.ouro}` : ''}`, overflow: 'hidden', position: 'relative' }}>
           <div style={{ position: 'absolute', left: 0, bottom: -10 }}>
             <Pessoa {...B} tamanho={340} humor={foco > 0 ? 'feliz' : 'neutro'} />
           </div>
@@ -60,7 +60,8 @@ const Raia: React.FC<{ y: number; progresso: number; cor1: string; pessoa: typeo
   const balanca = Math.sin(frame / (carga === 'livros' ? 6 : 3)) * (carga === 'livros' ? 4 : 8);
   return (
     <div style={{ position: 'absolute', left: 0, top: y, width: 1080, height: 330 }}>
-      <div style={{ position: 'absolute', left: 0, top: 40, width: 1080, height: 250, background: cor1, borderTop: '6px solid rgba(255,255,255,0.8)', borderBottom: '6px solid rgba(255,255,255,0.8)' }} />
+      <div style={{ position: 'absolute', left: 0, top: 40, width: 1080, height: 250, background: `radial-gradient(rgba(0,0,0,0.12) 1.5px, transparent 2px) 0 0 / 10px 10px, linear-gradient(180deg, rgba(255,255,255,0.18), rgba(0,0,0,0.22)), ${cor1}`, borderTop: '8px solid rgba(255,255,255,0.9)', borderBottom: '8px solid rgba(255,255,255,0.9)', boxShadow: 'inset 0 10px 20px rgba(0,0,0,0.25), 0 20px 30px rgba(0,0,0,0.2)' }} />
+      <div style={{ position: 'absolute', left: 0, top: 161, width: 1080, height: 6, backgroundImage: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.55) 0 50px, transparent 50px 90px)' }} />
       <div style={{ position: 'absolute', ...(direita ? { right: 110 } : { left: 40 }), top: -20, padding: '8px 22px', borderRadius: 18, background: cor.tinta, fontFamily: fonte.display, fontWeight: 800, fontSize: 40, color: cor.branco }}>{rotulo}</div>
       <div style={{ position: 'absolute', left: x, top: 60 + balanca }}>
         <Pessoa {...pessoa} tamanho={210} humor={carga === 'livros' ? 'triste' : 'feliz'} />
@@ -91,7 +92,7 @@ export const CenaPista: React.FC<PropsCena> = ({ falas, duracao }) => {
       <Cabeca texto="Sem rumo / *ou com trilha?*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.branco} tamanho={116} />
       <Raia y={640} progresso={lento} cor1="#C0503F" pessoa={A} carga="livros" rotulo="Estuda tudo, sem rumo" direita />
       <Raia y={1040} progresso={rapido} cor1="#1E8C7E" pessoa={B} carga="bandeira" rotulo="Segue a trilha do cargo" />
-      <div style={{ position: 'absolute', left: 1000, top: 640, width: 40, height: 760, backgroundImage: `repeating-linear-gradient(0deg, ${cor.tinta} 0 40px, ${cor.branco} 40px 80px)`, opacity: 0.9 }} />
+      <div style={{ position: 'absolute', left: 990, top: 640, width: 60, height: 760, backgroundImage: `repeating-linear-gradient(0deg, ${cor.tinta} 0 30px, ${cor.branco} 30px 60px), repeating-linear-gradient(90deg, transparent 0 30px, rgba(0,0,0,0) 30px 60px)`, backgroundSize: '30px 60px', boxShadow: '0 0 0 4px rgba(255,255,255,0.6), 0 20px 30px rgba(0,0,0,0.3)' }} />
       <Efeito nome="whoosh" em={em(a, 0.5)} volume={0.4} />
       <Aviso corTexto="rgba(45,47,54,0.85)" />
     </FundoVivo>
@@ -114,7 +115,7 @@ export const CenaCargos: React.FC<PropsCena> = ({ falas, duracao }) => {
           const ele = i === escolhido && frame >= fim;
           const apaga = frame >= fim && i !== escolhido;
           return (
-            <div key={i} style={{ aspectRatio: '1', borderRadius: 20, background: ele ? cor.ouro : acende ? cor.branco : 'rgba(255,255,255,0.2)', opacity: apaga ? 0.3 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 36, color: ele ? cor.tinta : cor.roxo, transform: `scale(${ele ? 1.5 : 1})`, zIndex: ele ? 2 : 1, boxShadow: ele ? `0 0 50px ${cor.ouro}` : 'none' }}>
+            <div key={i} style={{ aspectRatio: '1', borderRadius: 20, background: ele ? 'linear-gradient(180deg, #FFE27A, #FFC233)' : acende ? 'linear-gradient(180deg, #FFFFFF, #E9ECF1)' : 'rgba(255,255,255,0.2)', boxShadow: ele ? `0 7px 0 #D99A00, 0 0 50px ${cor.ouro}` : acende ? 'inset 0 2px 0 #fff, 0 6px 0 rgba(0,0,0,0.18)' : 'none', opacity: apaga ? 0.3 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 36, color: ele ? cor.tinta : cor.roxo, transform: `scale(${ele ? 1.5 : 1})`, zIndex: ele ? 2 : 1 }}>
               {i + 1}
             </div>
           );
@@ -155,12 +156,12 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   return (
     <FundoVivo paleta={cores.laranja} duracao={duracao}>
       <Cabeca texto="Suba agora: / *R$ 197.*" em={a.ini} tamanho={124} />
-      <div style={{ position: 'absolute', left: 80, top: 1060, width: 440, height: 360, borderRadius: '36px 36px 0 0', background: cor.branco, boxShadow: '0 30px 60px rgba(0,0,0,0.25)', transform: `translateY(${(1 - d1) * 600}px)`, padding: 34, textAlign: 'center' }}>
+      <div style={{ position: 'absolute', left: 80, top: 1060, width: 440, height: 360, borderRadius: '36px 36px 0 0', background: 'linear-gradient(180deg, #FFFFFF, #ECEEF2)', boxShadow: 'inset 0 4px 0 #fff, inset -14px 0 0 rgba(0,0,0,0.05), 0 40px 70px rgba(0,0,0,0.3)', transform: `translateY(${(1 - d1) * 600}px)`, padding: 34, textAlign: 'center' }}>
         <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 32, color: cor.muted }}>ATÉ 05/12</div>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 120, lineHeight: 1, color: cor.laranja }}>R$ 197</div>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 40, color: cor.tinta }}>6x de R$ 32,83</div>
       </div>
-      <div style={{ position: 'absolute', left: 560, top: 820, width: 440, height: 600, borderRadius: '36px 36px 0 0', background: 'rgba(255,255,255,0.55)', transform: `translateY(${(1 - d2) * 900}px)`, padding: 34, textAlign: 'center' }}>
+      <div style={{ position: 'absolute', left: 560, top: 820, width: 440, height: 600, borderRadius: '36px 36px 0 0', background: 'linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.4))', boxShadow: 'inset 0 4px 0 rgba(255,255,255,0.8), 0 40px 70px rgba(0,0,0,0.2)', transform: `translateY(${(1 - d2) * 900}px)`, padding: 34, textAlign: 'center' }}>
         <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 32, color: cor.tinta }}>A PARTIR DE 06/12</div>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 120, lineHeight: 1, color: cor.vermelho }}>R$ 297</div>
       </div>

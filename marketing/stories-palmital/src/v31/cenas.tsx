@@ -29,17 +29,22 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoCinema paleta={paletas.alerta} duracao={duracao}>
       <Cabeca texto="Saber a matéria / *não basta.*" em={a.ini} sobre="No dia da prova" tamanho={112} faixa={cor.coral} corFaixa={cor.branco} />
       <Em y={720}>
-        <div style={{ position: 'relative', width: 680, height: 460, transform: `scale(${p})` }}>
-          <svg width="680" height="460" style={{ position: 'absolute' }}>
+        <div style={{ position: 'relative', width: 680, height: 460, transform: `perspective(1600px) rotateX(10deg) scale(${p})` }}>
+          <div style={{ position: 'absolute', left: -50, top: -50, width: 780, height: 560, borderRadius: '390px 390px 70px 70px', background: 'radial-gradient(circle at 50% 75%, #2A2E36, #0E0F12 70%)', boxShadow: 'inset 0 0 0 14px #3B414C, inset 0 0 0 18px #15171B, inset 0 6px 30px rgba(255,255,255,0.08), 0 50px 90px rgba(0,0,0,0.6)' }} />
+          <svg width="680" height="460" style={{ position: 'absolute', filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.15))' }}>
+            {Array.from({ length: 13 }, (_, k) => {
+              const g = ((-120 + k * 20 - 90) * Math.PI) / 180;
+              return <line key={k} x1={340 + 238 * Math.cos(g)} y1={340 + 238 * Math.sin(g)} x2={340 + (k % 2 ? 222 : 210) * Math.cos(g)} y2={340 + (k % 2 ? 222 : 210) * Math.sin(g)} stroke="rgba(255,255,255,0.8)" strokeWidth={k % 2 ? 4 : 7} strokeLinecap="round" />;
+            })}
             {arco(-120, -40, cor.verde)}
             {arco(-40, 40, cor.ouro)}
             {arco(40, 120, cor.vermelho)}
           </svg>
-          <div style={{ position: 'absolute', left: 330, top: 100, width: 20, height: 250, borderRadius: 10, background: cor.branco, transformOrigin: '50% 240px', transform: `rotate(${ang}deg)`, boxShadow: '0 0 20px rgba(255,255,255,0.5)' }} />
-          <div style={{ position: 'absolute', left: 300, top: 310, width: 80, height: 80, borderRadius: '50%', background: cor.branco }} />
+          <div style={{ position: 'absolute', left: 322, top: 100, width: 36, height: 250, background: 'linear-gradient(90deg, #FF8A8A, #F04438 50%, #B42318)', clipPath: 'polygon(50% 0, 100% 92%, 50% 100%, 0 92%)', transformOrigin: '50% 240px', transform: `rotate(${ang}deg)`, filter: 'drop-shadow(0 0 14px rgba(240,68,56,0.8))' }} />
+          <div style={{ position: 'absolute', left: 296, top: 296, width: 88, height: 88, borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%, #FFFFFF, #9CA3AF 50%, #374151)', boxShadow: '0 8px 16px rgba(0,0,0,0.5)' }} />
         </div>
       </Em>
-      <Em y={1260}>
+      <Em y={1320}>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 90, color: cor.branco, opacity: interpolate(frame, [em(a, 0.8), em(a, 0.8) + 8], [0, 1], limita) }}>
           O que pesa é o <span style={{ color: cor.coral }}>ritmo</span>.
         </div>
@@ -60,14 +65,14 @@ export const CenaNumeros: React.FC<PropsCena> = ({ falas, duracao }) => {
   return (
     <FundoVivo paleta={cores.azul} duracao={duracao}>
       <Cabeca texto="A prova / *objetiva:*" em={a.ini} tamanho={120} />
-      <div style={{ position: 'absolute', left: 0, top: 700, width: 1080, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 40 }}>
+      <div style={{ position: 'absolute', left: 0, top: 820, width: 1080, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 40 }}>
         <div style={{ textAlign: 'center', width: 440 }}>
-          <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 300, lineHeight: 1, color: cor.branco, fontVariantNumeric: 'tabular-nums' }}>{n}</div>
+          <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 300, lineHeight: 1, color: cor.branco, fontVariantNumeric: 'tabular-nums', textShadow: Array.from({ length: 12 }, (_, k) => `0 ${k + 1}px 0 hsl(222, 60%, ${42 - k}%)`).join(', ') + ', 0 30px 40px rgba(0,0,0,0.3)' }}>{n}</div>
           <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 50, color: cor.ouro }}>questões</div>
         </div>
-        <div style={{ width: 10, height: 380, borderRadius: 5, background: 'rgba(255,255,255,0.5)' }} />
+        <div style={{ width: 8, height: 380, borderRadius: 4, background: 'linear-gradient(180deg, transparent, rgba(255,255,255,0.7), transparent)' }} />
         <div style={{ textAlign: 'center', width: 440 }}>
-          <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 300, lineHeight: 1, color: cor.branco, fontVariantNumeric: 'tabular-nums' }}>{h}h</div>
+          <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 300, lineHeight: 1, color: cor.branco, fontVariantNumeric: 'tabular-nums', textShadow: Array.from({ length: 12 }, (_, k) => `0 ${k + 1}px 0 hsl(222, 60%, ${42 - k}%)`).join(', ') + ', 0 30px 40px rgba(0,0,0,0.3)' }}>{h}h</div>
           <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 50, color: cor.ouro }}>de prova</div>
         </div>
       </div>
@@ -92,7 +97,7 @@ export const CenaGrade: React.FC<PropsCena> = ({ falas, duracao }) => {
           const feito = frame >= t0;
           const chute = i >= 32;
           return (
-            <div key={i} style={{ aspectRatio: '1', borderRadius: 18, background: feito ? (chute ? cor.vermelho : cor.verde) : 'rgba(255,255,255,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 40, color: feito ? cor.branco : cor.muted, transform: `scale(${feito ? 1 + Math.max(0, 1 - (frame - t0) / 6) * 0.2 : 1})`, boxShadow: '0 8px 16px rgba(0,0,0,0.12)' }}>
+            <div key={i} style={{ aspectRatio: '1', borderRadius: 18, background: feito ? (chute ? 'linear-gradient(180deg, #F87171, #DC2626)' : 'linear-gradient(180deg, #34D399, #15803D)') : 'linear-gradient(180deg, #FFFFFF, #E9ECF1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 40, color: feito ? cor.branco : cor.muted, transform: `scale(${feito ? 1 + Math.max(0, 1 - (frame - t0) / 6) * 0.2 : 1})`, boxShadow: `inset 0 2px 0 rgba(255,255,255,0.4), 0 7px 0 ${feito ? (chute ? '#991B1B' : '#0F5F2D') : '#C9CED6'}, 0 14px 18px rgba(0,0,0,0.18)` }}>
               {feito ? (chute ? '?' : '✓') : i + 1}
             </div>
           );
@@ -137,18 +142,19 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoVivo paleta={cores.lima} duracao={duracao}>
       <Cabeca texto="Chegue pronto / *por R$ 197.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.branco} tamanho={110} />
       <div style={{ position: 'absolute', left: 150, top: 640, transform: `translateY(${(1 - sobe) * 1000}px)` }}>
-        <div style={{ position: 'absolute', left: 0, top: 0, width: 22, height: 760, borderRadius: 11, background: cor.tinta }} />
+        <div style={{ position: 'absolute', left: 0, top: 0, width: 24, height: 760, borderRadius: 12, background: 'linear-gradient(90deg, #6B7280, #F3F4F6 45%, #4B5563)', boxShadow: '8px 10px 16px rgba(0,0,0,0.3)' }} />
+        <div style={{ position: 'absolute', left: -12, top: -36, width: 48, height: 48, borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%, #FFE27A, #E2A100 60%, #8A5A00)' }} />
         <div style={{ position: 'absolute', left: 22, top: 10, display: 'grid', gridTemplateColumns: 'repeat(8, 70px)' }}>
           {Array.from({ length: 40 }, (_, i) => {
             const c = i % 8;
             const l = Math.floor(i / 8);
-            return <div key={i} style={{ width: 70, height: 70, background: (c + l) % 2 ? cor.branco : cor.tinta, transform: `translateY(${onda(c)}px)` }} />;
+            return <div key={i} style={{ width: 70, height: 70, background: (c + l) % 2 ? cor.branco : cor.tinta, transform: `translateY(${onda(c)}px)`, filter: `brightness(${1 + Math.sin(frame / 5 - c * 0.7) * 0.18})` }} />;
           })}
         </div>
       </div>
       <Em y={1060}>
         <Quica em={em(a, 0.15)}>
-          <div style={{ padding: '30px 50px', borderRadius: 40, background: cor.branco, boxShadow: '0 30px 60px rgba(0,0,0,0.25)', textAlign: 'center' }}>
+          <div style={{ padding: '30px 50px', borderRadius: 40, background: 'linear-gradient(180deg, #FFFFFF, #F1F3F6)', boxShadow: 'inset 0 2px 0 #fff, 0 10px 0 #C9CED6, 0 34px 60px rgba(0,0,0,0.28)', textAlign: 'center' }}>
             <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 130, lineHeight: 1, color: cor.laranja }}>R$ 197</div>
             <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 52, color: cor.tinta }}>em até 6x sem juros</div>
           </div>
