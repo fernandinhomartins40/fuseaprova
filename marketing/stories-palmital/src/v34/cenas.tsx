@@ -17,10 +17,11 @@ const MAO = "'Segoe Print', 'Comic Sans MS', cursive";
 type Fases = { treinos: number[]; revisoes: number[]; simulado: number };
 const NUNCA: Fases = { treinos: [], revisoes: [], simulado: 99999 };
 
-const PostIt: React.FC<{ em: number; cor1: string; texto: string; de: number; alto?: number }> = ({ em: t0, cor1, texto, de, alto = 110 }) => {
+const PostIt: React.FC<{ em: number; cor1: string; texto: string; de: number; alto?: number }> = ({ em: t0, cor1, texto, de, alto = 150 }) => {
   const p = useMola(t0, { damping: 13, stiffness: 160 });
   return (
-    <div style={{ height: alto, borderRadius: 6, background: cor1, boxShadow: '0 8px 14px rgba(0,0,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', fontFamily: MAO, fontWeight: 700, fontSize: 30, lineHeight: 1.1, color: cor.tinta, padding: 6, whiteSpace: 'pre-line', transform: `translate(${(1 - p) * de}px, ${(1 - p) * -500}px) rotate(${(1 - p) * 40 + (de > 0 ? 2 : -2)}deg)`, opacity: p > 0.02 ? 1 : 0 }}>
+    <div style={{ position: 'relative', height: alto, borderRadius: '6px 6px 18px 6px', background: `linear-gradient(180deg, rgba(0,0,0,0.06) 0 14px, transparent 14px), linear-gradient(170deg, rgba(255,255,255,0.45), rgba(255,255,255,0) 40%), ${cor1}`, boxShadow: 'inset -6px -8px 10px rgba(0,0,0,0.08), 4px 10px 14px rgba(0,0,0,0.28)', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', fontFamily: MAO, fontWeight: 700, fontSize: 36, lineHeight: 1.1, color: cor.tinta, padding: 6, whiteSpace: 'pre-line', transform: `translate(${(1 - p) * de}px, ${(1 - p) * -500}px) rotate(${(1 - p) * 40 + (de > 0 ? 2 : -2)}deg)`, opacity: p > 0.02 ? 1 : 0 }}>
+      <div style={{ position: 'absolute', left: '50%', top: -8, width: 20, height: 20, marginLeft: -10, borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%, #fff, #E23A4B 50%, #8E0F1E)', boxShadow: '0 4px 4px rgba(0,0,0,0.35)' }} />
       {texto}
     </div>
   );
@@ -30,14 +31,14 @@ const PostIt: React.FC<{ em: number; cor1: string; texto: string; de: number; al
 const Quadro: React.FC<{ entra: number; f: Fases }> = ({ entra, f }) => {
   const p = useMola(entra, { damping: 14, stiffness: 120 });
   return (
-    <div style={{ width: 960, padding: 26, borderRadius: 30, background: '#B07A47', border: '22px solid #6B4423', boxShadow: '0 40px 70px rgba(0,0,0,0.35)', backgroundImage: 'radial-gradient(rgba(0,0,0,0.12) 2px, transparent 3px)', backgroundSize: '18px 18px', transform: `scale(${interpolate(p, [0, 1], [0.6, 1])})`, opacity: Math.min(1, p * 2) }}>
+    <div style={{ width: 960, padding: 26, borderRadius: 30, background: '#B07A47', border: '22px solid #7A4B2A', boxShadow: 'inset 0 0 0 4px #5A3519, inset 0 10px 30px rgba(0,0,0,0.35), 0 0 0 6px #9A6236, 0 50px 80px rgba(0,0,0,0.4)', backgroundImage: 'radial-gradient(rgba(70,40,10,0.28) 1.6px, transparent 2.4px), radial-gradient(rgba(255,230,190,0.18) 1.2px, transparent 2px), linear-gradient(160deg, #C48A55, #A06A38)', backgroundSize: '14px 14px, 22px 22px, 100% 100%', backgroundPosition: '0 0, 7px 9px, 0 0', transform: `scale(${interpolate(p, [0, 1], [0.6, 1])})`, opacity: Math.min(1, p * 2) }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 14 }}>
         {DIAS.map((d, i) => (
-          <div key={d} style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 330 }}>
-            <div style={{ background: cor.branco, borderRadius: 8, textAlign: 'center', fontFamily: fonte.corpo, fontWeight: 900, fontSize: 28, color: i === 5 ? cor.roxo : cor.tinta, padding: '6px 0' }}>{d}</div>
+          <div key={d} style={{ display: 'flex', flexDirection: 'column', gap: 16, minHeight: 560 }}>
+            <div style={{ background: 'linear-gradient(180deg, #FFFFFF, #ECEEF2)', boxShadow: '0 4px 0 rgba(0,0,0,0.2)', borderRadius: 8, textAlign: 'center', fontFamily: fonte.corpo, fontWeight: 900, fontSize: 28, color: i === 5 ? cor.roxo : cor.tinta, padding: '6px 0' }}>{d}</div>
             {i < 5 && f.treinos[i] !== undefined ? <PostIt em={f.treinos[i]} cor1="#FFD54A" texto={'Treino\n5 min'} de={(i - 2) * 120} /> : null}
-            {f.revisoes[i] !== undefined ? <PostIt em={f.revisoes[i]} cor1="#8FD3FF" texto="Revisão" de={(i - 2) * 100} alto={90} /> : null}
-            {i === 5 ? <PostIt em={f.simulado} cor1="#C4A7FF" texto="Simulado" de={300} alto={210} /> : null}
+            {f.revisoes[i] !== undefined ? <PostIt em={f.revisoes[i]} cor1="#8FD3FF" texto="Revisão" de={(i - 2) * 100} alto={120} /> : null}
+            {i === 5 ? <PostIt em={f.simulado} cor1="#C4A7FF" texto="Simulado" de={300} alto={290} /> : null}
           </div>
         ))}
       </div>
@@ -100,11 +101,12 @@ export const CenaRevisao: React.FC<PropsCena> = ({ falas, duracao }) => {
 /* 4. Plano pronto no app --------------------------------------------------- */
 export const CenaApp: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
+  const frame = useCurrentFrame();
   const cel = useMola(a.ini - 8, { damping: 14, stiffness: 110 });
   return (
     <FundoVivo paleta={cores.turquesa} duracao={duracao}>
       <Cabeca texto="Plano *pronto* / no app." em={a.ini} sobre="No Fuse Aprova" tamanho={124} />
-      <div style={{ position: 'absolute', left: 300, top: 660, transform: `scale(${interpolate(cel, [0, 1], [0.5, 1])}) rotate(${(1 - cel) * 30 + 3}deg)`, opacity: Math.min(1, cel * 2) }}>
+      <div style={{ position: 'absolute', left: 300, top: 660, transform: `translateY(${Math.sin(frame / 22) * 8}px) perspective(1600px) rotateY(${-14 + (1 - cel) * 30}deg) rotateX(4deg) scale(${interpolate(cel, [0, 1], [0.5, 1])}) rotate(${(1 - cel) * 30 + 3}deg)`, opacity: Math.min(1, cel * 2) }}>
         <CelularApp largura={480} fim={duracao + 20} telas={[{ tipo: 'trilha', em: a.ini - 8 }, { tipo: 'licao', em: em(a, 0.55) }]} />
       </div>
       <Aviso />
@@ -123,8 +125,8 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoVivo paleta={cores.azul} duracao={duracao}>
       <Cabeca texto="Anota aí: / *até 5/12.*" em={a.ini} tamanho={124} />
       <Em y={640}>
-        <div style={{ position: 'relative', width: 720, height: 720, background: '#FFD54A', boxShadow: '0 40px 70px rgba(0,0,0,0.35)', transform: `translateY(${(1 - p) * 900}px) rotate(${-4 + (1 - p) * 20}deg)`, padding: '90px 60px', display: 'flex', flexDirection: 'column', gap: 30, fontFamily: MAO, color: cor.tinta }}>
-          <div style={{ position: 'absolute', left: 330, top: -30, width: 60, height: 60, borderRadius: '50%', background: cor.vermelho, boxShadow: 'inset -6px -6px 0 rgba(0,0,0,0.25), 0 8px 12px rgba(0,0,0,0.3)', transform: `scale(${tacha})` }} />
+        <div style={{ position: 'relative', width: 720, height: 720, background: 'linear-gradient(180deg, rgba(0,0,0,0.05) 0 60px, transparent 60px), linear-gradient(165deg, #FFE68A, #FFD54A 45%, #F5C431)', borderRadius: '4px 4px 60px 4px', boxShadow: 'inset -20px -24px 30px rgba(0,0,0,0.08), 10px 40px 60px rgba(0,0,0,0.35)', transform: `translateY(${(1 - p) * 900}px) rotate(${-4 + (1 - p) * 20}deg)`, padding: '90px 60px', display: 'flex', flexDirection: 'column', gap: 30, fontFamily: MAO, color: cor.tinta }}>
+          <div style={{ position: 'absolute', left: 330, top: -30, width: 60, height: 60, borderRadius: '50%', background: 'radial-gradient(circle at 35% 30%, #FF9A9A, #DC2626 55%, #7F1010)', boxShadow: 'inset -4px -4px 0 rgba(0,0,0,0.2), 0 8px 12px rgba(0,0,0,0.3)', transform: `scale(${tacha})` }} />
           <div style={{ fontSize: 150, fontWeight: 700, lineHeight: 1, clipPath: `inset(0 ${100 - escrita(a.ini + 6)}% 0 0)` }}>R$ 197</div>
           <div style={{ fontSize: 62, fontWeight: 700, clipPath: `inset(0 ${100 - escrita(em(a, 0.4))}% 0 0)` }}>6x de R$ 32,83</div>
           <div style={{ fontSize: 50, fontWeight: 700, color: cor.vermelho, clipPath: `inset(0 ${100 - escrita(em(a, 0.75))}% 0 0)` }}>sem juros · até 05/12</div>
