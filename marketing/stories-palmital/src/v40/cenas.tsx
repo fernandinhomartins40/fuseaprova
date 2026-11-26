@@ -30,22 +30,23 @@ const Tabuleiro: React.FC<{ pos: number; dourada?: number }> = ({ pos, dourada =
   const brilho = frame >= dourada;
   return (
     <>
+      <div style={{ position: 'absolute', left: 50, top: 800, width: 980, height: 640, borderRadius: 60, background: 'radial-gradient(circle at 30% 20%, #FFFDF6, #F5E9CF 70%)', boxShadow: 'inset 0 0 0 14px #E2C48E, inset 0 0 0 18px #B8925A, inset 0 10px 30px rgba(0,0,0,0.12), 0 50px 90px rgba(0,0,0,0.35)', transform: 'perspective(1800px) rotateX(10deg)' }} />
       <svg width="1080" height="1920" style={{ position: 'absolute', left: 0, top: 0 }}>
-        <path d={`M ${CASAS.map((c) => `${c.x} ${c.y}`).join(' L ')}`} fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="14" strokeDasharray="4 30" strokeLinecap="round" />
+        <path d={`M ${CASAS.map((c) => `${c.x} ${c.y}`).join(' L ')}`} fill="none" stroke="rgba(120,85,40,0.45)" strokeWidth="16" strokeDasharray="4 30" strokeLinecap="round" />
       </svg>
       {CASAS.map((c, k) => {
         const ultima = k === 3;
         return (
-          <div key={c.t} style={{ position: 'absolute', left: c.x - 110, top: c.y - 60, width: 220, height: 120, borderRadius: '50%', background: ultima && brilho ? cor.ouro : c.c, border: '8px solid #fff', boxShadow: ultima && brilho ? `0 0 70px ${cor.ouro}` : '0 16px 0 rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 70, color: ultima ? cor.tinta : cor.branco }}>
+          <div key={c.t} style={{ position: 'absolute', left: c.x - 110, top: c.y - 60, width: 220, height: 120, borderRadius: '50%', background: `radial-gradient(ellipse at 40% 30%, rgba(255,255,255,0.45), transparent 55%), ${ultima && brilho ? cor.ouro : c.c}`, border: '8px solid #fff', boxShadow: ultima && brilho ? `0 14px 0 #B07D10, 0 0 70px ${cor.ouro}` : '0 14px 0 rgba(0,0,0,0.28), 0 26px 30px rgba(0,0,0,0.2)', textShadow: '0 3px 0 rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 70, color: ultima ? cor.tinta : cor.branco }}>
             {k + 1}
-            <div style={{ position: 'absolute', top: 120, fontFamily: fonte.display, fontWeight: 800, fontSize: 46, color: cor.branco, whiteSpace: 'nowrap', textShadow: '0 4px 0 rgba(0,0,0,0.2)' }}>{c.t}</div>
+            <div style={{ position: 'absolute', top: 120, fontFamily: fonte.display, fontWeight: 800, fontSize: 46, color: cor.tinta, whiteSpace: 'nowrap', textShadow: '0 2px 0 rgba(255,255,255,0.7)' }}>{c.t}</div>
           </div>
         );
       })}
       <div style={{ position: 'absolute', left: px - 50, top: py - 190, width: 100, height: 170 }}>
-        <div style={{ position: 'absolute', left: 25, top: 0, width: 50, height: 50, borderRadius: '50%', background: cor.laranjaVivo, border: '5px solid #fff' }} />
-        <div style={{ position: 'absolute', left: 10, top: 44, width: 80, height: 110, background: cor.laranjaVivo, clipPath: 'polygon(30% 0, 70% 0, 100% 100%, 0 100%)' }} />
-        <div style={{ position: 'absolute', left: 0, top: 145, width: 100, height: 26, borderRadius: 13, background: cor.laranja }} />
+        <div style={{ position: 'absolute', left: 25, top: 0, width: 50, height: 50, borderRadius: '50%', background: `radial-gradient(circle at 35% 30%, #FFC9A3, ${cor.laranjaVivo} 55%, ${cor.laranja})`, border: '5px solid #fff' }} />
+        <div style={{ position: 'absolute', left: 10, top: 44, width: 80, height: 110, background: `linear-gradient(90deg, ${cor.laranja}, #FFA066 40%, ${cor.laranjaVivo} 60%, ${cor.laranja})`, clipPath: 'polygon(30% 0, 70% 0, 100% 100%, 0 100%)' }} />
+        <div style={{ position: 'absolute', left: 0, top: 145, width: 100, height: 26, borderRadius: 13, background: `linear-gradient(180deg, ${cor.laranjaVivo}, #8A2E06)`, boxShadow: '0 10px 12px rgba(0,0,0,0.35)' }} />
       </div>
     </>
   );
@@ -158,9 +159,9 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoVivo paleta={cores.sol} duracao={duracao}>
       <Cabeca texto="Tirou 6: / *6x sem juros.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.ouro} tamanho={116} />
       <Em y={640}>
-        <div style={{ width: 360, height: 360, borderRadius: 60, background: cor.branco, boxShadow: '0 30px 60px rgba(0,0,0,0.3), inset 0 -16px 0 #E5E7EB', position: 'relative', transform: `translate(${x}px, ${quica}px) rotate(${giro}deg)` }}>
+        <div style={{ width: 360, height: 360, borderRadius: 60, background: 'radial-gradient(circle at 30% 25%, #FFFFFF, #E1E4EA)', boxShadow: 'inset -14px -16px 0 rgba(0,0,0,0.07), inset 4px 4px 0 #fff, 0 40px 70px rgba(0,0,0,0.35)', position: 'relative', transform: `translate(${x}px, ${quica}px) rotate(${giro}deg)` }}>
           {PONTOS[face].map(([px, py], k) => (
-            <div key={k} style={{ position: 'absolute', left: `${px}%`, top: `${py}%`, width: 64, height: 64, marginLeft: -32, marginTop: -32, borderRadius: '50%', background: face === 6 && !rolando ? cor.laranjaVivo : cor.tinta }} />
+            <div key={k} style={{ position: 'absolute', left: `${px}%`, top: `${py}%`, width: 64, height: 64, marginLeft: -32, marginTop: -32, borderRadius: '50%', background: face === 6 && !rolando ? `radial-gradient(circle at 40% 35%, #FFB27A, ${cor.laranjaVivo})` : 'radial-gradient(circle at 40% 35%, #555a66, #15161A)', boxShadow: 'inset 0 4px 6px rgba(0,0,0,0.5)' }} />
           ))}
         </div>
       </Em>

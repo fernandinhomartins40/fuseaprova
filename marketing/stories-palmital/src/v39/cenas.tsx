@@ -17,13 +17,14 @@ const DIAS = ['QUA', 'QUI', 'SEX', 'SÁB'];
 const Bateria: React.FC<{ barras: number; cheias: number; rotulos: string[]; corBarra: string; pisca?: boolean; largura?: number }> = ({ barras, cheias, rotulos, corBarra, pisca, largura = 880 }) => {
   const frame = useCurrentFrame();
   return (
-    <div style={{ position: 'relative', width: largura, height: 360, borderRadius: 50, border: '18px solid #fff', padding: 18, display: 'flex', gap: 14, boxShadow: '0 30px 60px rgba(0,0,0,0.35)' }}>
-      <div style={{ position: 'absolute', right: -52, top: 110, width: 34, height: 104, borderRadius: '0 16px 16px 0', background: '#fff' }} />
+    <div style={{ position: 'relative', width: largura, height: 360, borderRadius: 50, border: '18px solid #E5E7EB', background: 'linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.25))', padding: 18, display: 'flex', gap: 14, boxShadow: 'inset 0 0 0 3px rgba(255,255,255,0.6), inset 0 10px 30px rgba(0,0,0,0.5), 0 0 0 4px #9CA3AF, 0 40px 80px rgba(0,0,0,0.45)' }}>
+      <div style={{ position: 'absolute', left: 24, right: 24, top: 14, height: 60, borderRadius: 30, background: 'linear-gradient(180deg, rgba(255,255,255,0.35), rgba(255,255,255,0))', zIndex: 2, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', right: -56, top: 108, width: 38, height: 108, borderRadius: '0 18px 18px 0', background: 'linear-gradient(180deg, #FFFFFF, #9CA3AF 55%, #6B7280)', boxShadow: '6px 8px 14px rgba(0,0,0,0.35)' }} />
       {Array.from({ length: barras }, (_, i) => {
         const acesa = i < cheias;
         const piscando = pisca && i === cheias - 1 && Math.floor(frame / 8) % 2 === 0;
         return (
-          <div key={i} style={{ flex: 1, borderRadius: 22, background: acesa && !piscando ? corBarra : 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: barras > 4 ? 34 : 56, color: acesa && !piscando ? cor.branco : 'rgba(255,255,255,0.5)', textAlign: 'center', lineHeight: 1 }}>
+          <div key={i} style={{ flex: 1, borderRadius: 22, background: acesa && !piscando ? `linear-gradient(180deg, rgba(255,255,255,0.35), rgba(255,255,255,0) 45%, rgba(0,0,0,0.2)), ${corBarra}` : 'rgba(255,255,255,0.08)', boxShadow: acesa && !piscando ? `0 0 26px ${corBarra}, inset 0 2px 0 rgba(255,255,255,0.4)` : 'inset 0 2px 6px rgba(0,0,0,0.4)', textShadow: '0 2px 0 rgba(0,0,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: barras > 4 ? 34 : 56, color: acesa && !piscando ? cor.branco : 'rgba(255,255,255,0.5)', textAlign: 'center', lineHeight: 1 }}>
             {rotulos[i]}
           </div>
         );
@@ -39,7 +40,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   return (
     <FundoCinema paleta={paletas.alerta} duracao={duracao}>
       <Cabeca texto="Faltam / *4 dias.*" em={a.ini} tamanho={160} faixa={cor.coral} corFaixa={cor.branco} />
-      <Em y={760}>
+      <Em y={860}>
         <div style={{ transform: `scale(${p})` }}>
           <Bateria barras={4} cheias={4} rotulos={DIAS} corBarra={cor.verde} pisca />
         </div>
@@ -59,10 +60,10 @@ export const CenaAcaba: React.FC<PropsCena> = ({ falas, duracao }) => {
   return (
     <FundoCinema paleta={paletas.palco} duracao={duracao}>
       <Cabeca texto="Pro *R$ 197* / acabar." em={a.ini} tamanho={140} />
-      <Em y={760}>
+      <Em y={860}>
         <Bateria barras={4} cheias={cheias} rotulos={DIAS} corBarra={corB} pisca />
       </Em>
-      <ChipData em={em(a, 0.6)} y={1260} texto="Último dia: sábado, 05/12" fundo={cor.vermelho} />
+      <ChipData em={em(a, 0.6)} y={1360} texto="Último dia: sábado, 05/12" fundo={cor.vermelho} />
       <Aviso />
     </FundoCinema>
   );
@@ -86,7 +87,7 @@ export const CenaInclui: React.FC<PropsCena> = ({ falas, duracao }) => {
           const q = useMola(em(a, 0.05 + i * 0.22), { damping: 10, stiffness: 170 });
           return (
             <div key={t} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, transform: `scale(${q})` }}>
-              <div style={{ width: 280, height: 280, borderRadius: 70, background: cor.branco, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 24px 40px rgba(0,0,0,0.25)' }}>
+              <div style={{ width: 280, height: 280, borderRadius: 70, background: 'linear-gradient(180deg, #FFFFFF, #E9ECF1)', border: '4px solid rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 -8px 0 rgba(0,0,0,0.06), 0 12px 0 rgba(20,40,120,0.35), 0 30px 50px rgba(0,0,0,0.3)' }}>
                 <Icone nome={ic} tamanho={180} />
               </div>
               <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 48, color: cor.branco }}>{t}</div>
@@ -109,15 +110,15 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   return (
     <FundoVivo paleta={cores.lima} duracao={duracao}>
       <Cabeca texto="6x de / *R$ 32,83.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.branco} tamanho={130} />
-      <Em y={720}>
+      <Em y={820}>
         <div style={{ filter: cheio ? `drop-shadow(0 0 40px ${cor.branco})` : 'none' }}>
           <Bateria barras={6} cheias={cheias} rotulos={Array(6).fill('32,83')} corBarra={cor.verde} />
         </div>
       </Em>
-      <Em y={1150}>
+      <Em y={1250}>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 130, lineHeight: 1, color: cor.tinta, opacity: cheio ? 1 : 0.2, transform: `scale(${cheio ? 1 : 0.9})` }}>= R$ 197</div>
       </Em>
-      <ChipData em={em(a, 0.85)} y={1340} texto="sem juros · até 05/12" fundo={cor.tinta} />
+      <ChipData em={em(a, 0.85)} y={1440} texto="sem juros · até 05/12" fundo={cor.tinta} />
       {[0, 1, 2, 3, 4, 5].map((i) => (
         <Efeito key={i} nome="pop" em={Math.round(a.ini + 2 + ((em(a, 0.8) - a.ini - 2) * (i + 1)) / 7)} volume={0.25} />
       ))}
