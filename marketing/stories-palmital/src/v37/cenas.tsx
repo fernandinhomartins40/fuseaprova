@@ -97,7 +97,8 @@ export const CenaVoa: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoVivo paleta={cores.azul} duracao={duracao}>
       <Cabeca texto="E o tempo / *passa voando.*" em={a.ini} tamanho={120} />
       {itens.map(([ic, t, t0, y], i) => {
-        const freio = interpolate(frame, [t0, t0 + 14, t0 + 22, t0 + 50], [1200, 340, 300, -700], limita);
+        // o último (janeiro) fica na tela: é a imagem que segura a cena até a transição
+        const freio = i === 2 ? interpolate(frame, [t0, t0 + 14, t0 + 22], [1200, 340, 300], limita) : interpolate(frame, [t0, t0 + 14, t0 + 22, t0 + 50], [1200, 340, 300, -700], limita);
         return (
           <div key={t} style={{ position: 'absolute', left: freio, top: y, display: 'flex', alignItems: 'center', gap: 30, transform: `rotate(${Math.sin(frame / 4 + i) * 4}deg)` }}>
             {ic}
@@ -168,12 +169,12 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
   const sobe = useMola(a.ini + 16, { damping: 10, stiffness: 140 });
   return (
     <FundoVivo paleta={cores.magenta} duracao={duracao}>
-      <Cabeca texto="Só até / *sábado.*" em={a.ini} tamanho={140} />
+      <Cabeca texto="Começar agora / *custa menos.*" em={a.ini} tamanho={110} />
       <div style={{ position: 'absolute', left: 540 - 260, top: 1060, width: 520, height: 400, transform: `scale(${caixa})` }}>
         <div style={{ position: 'absolute', left: 0, top: 0, width: 520, height: 400, borderRadius: 24, background: 'radial-gradient(circle at 30% 20%, rgba(255,255,255,0.25), transparent 50%), linear-gradient(90deg, #B91C1C, #EF4444 40%, #DC2626 60%, #991B1B)', boxShadow: 'inset 0 -14px 0 rgba(0,0,0,0.18), 0 50px 80px rgba(0,0,0,0.4)' }} />
         <div style={{ position: 'absolute', left: 230, top: 0, width: 60, height: 400, background: 'linear-gradient(90deg, #D99A00, #FFE27A 45%, #D99A00)' }} />
       </div>
-      <div style={{ position: 'absolute', left: 540 - 220, top: 1100 - sobe * 470, width: 440, padding: '30px 0', borderRadius: 34, background: 'linear-gradient(180deg, #FFFFFF, #F1F3F6)', textAlign: 'center', boxShadow: 'inset 0 2px 0 #fff, 0 10px 0 #C9CED6, 0 40px 70px rgba(0,0,0,0.35)', opacity: sobe > 0.05 ? 1 : 0, zIndex: 1 }}>
+      <div style={{ position: 'absolute', left: 540 - 220, top: 1100 - sobe * 420, width: 440, padding: '30px 0', borderRadius: 34, background: 'linear-gradient(180deg, #FFFFFF, #F1F3F6)', textAlign: 'center', boxShadow: 'inset 0 2px 0 #fff, 0 10px 0 #C9CED6, 0 40px 70px rgba(0,0,0,0.35)', opacity: sobe > 0.05 ? 1 : 0, zIndex: 1 }}>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 120, lineHeight: 1, color: cor.laranja }}>R$ 197</div>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 44, color: cor.tinta }}>6x de R$ 32,83</div>
         <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 30, color: cor.muted }}>sem juros</div>
