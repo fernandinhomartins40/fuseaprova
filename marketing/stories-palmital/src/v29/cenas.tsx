@@ -23,7 +23,10 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoCinema paleta={paletas.verde} duracao={duracao}>
       <Cabeca texto="A FAU tem / *um jeito.*" em={a.ini} sobre="Banca do concurso de Palmital" tamanho={130} />
       <Em y={680}>
-        <div style={{ position: 'relative', width: 560, height: 680, borderRadius: 60, background: 'rgba(0,0,0,0.35)', border: `6px solid ${pronto ? verde : 'rgba(255,255,255,0.25)'}`, boxShadow: pronto ? `0 0 80px ${verde}` : 'none', transform: `scale(${p})`, overflow: 'hidden' }}>
+        <div style={{ position: 'relative', width: 560, height: 680, borderRadius: 60, background: 'linear-gradient(180deg, rgba(10,30,22,0.85), rgba(0,0,0,0.6))', backgroundImage: 'linear-gradient(rgba(61,255,162,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(61,255,162,0.07) 1px, transparent 1px)', backgroundSize: '28px 28px', border: `6px solid ${pronto ? verde : 'rgba(255,255,255,0.25)'}`, boxShadow: `inset 0 0 60px rgba(61,255,162,0.12), 0 40px 80px rgba(0,0,0,0.5)${pronto ? `, 0 0 90px ${verde}` : ''}`, transform: `perspective(1600px) rotateX(8deg) scale(${p})`, overflow: 'hidden' }}>
+          {[[0, 0], [1, 0], [0, 1], [1, 1]].map(([x, y]) => (
+            <div key={`${x}${y}`} style={{ position: 'absolute', [x ? 'right' : 'left']: 26, [y ? 'bottom' : 'top']: 26, width: 60, height: 60, [`border${y ? 'Bottom' : 'Top'}`]: `8px solid ${verde}`, [`border${x ? 'Right' : 'Left'}`]: `8px solid ${verde}`, borderRadius: 12, opacity: 0.9 }} />
+          ))}
           <svg width="560" height="680" viewBox="0 0 56 68">
             {Array.from({ length: 11 }, (_, i) => {
               const r = 4 + i * 2.4;
@@ -50,10 +53,10 @@ const Carta: React.FC<{ em: number; titulo: string; fundo: string; bom: boolean;
   const p = useMola(t0, { damping: 12, stiffness: 140 });
   const selo = useMola(t0 + 12, { damping: 9, stiffness: 220 });
   return (
-    <div style={{ position: 'relative', width: 420, height: 560, borderRadius: 50, background: fundo, boxShadow: '0 30px 60px rgba(0,0,0,0.3)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 30, transform: `perspective(1200px) rotateY(${interpolate(p, [0, 1], [180, 0])}deg)`, opacity: p > 0.5 ? 1 : 0, filter: bom ? 'none' : 'grayscale(0.5) brightness(0.85)' }}>
+    <div style={{ position: 'relative', width: 420, height: 560, borderRadius: 50, background: `radial-gradient(circle at 30% 15%, rgba(255,255,255,0.3), transparent 50%), linear-gradient(180deg, ${fundo}, ${fundo})`, boxShadow: 'inset 0 3px 0 rgba(255,255,255,0.35), inset 0 -10px 0 rgba(0,0,0,0.2), 0 40px 70px rgba(0,0,0,0.35)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 30, transform: `perspective(1200px) rotateY(${interpolate(p, [0, 1], [180, 0])}deg)`, opacity: p > 0.5 ? 1 : 0, filter: bom ? 'none' : 'grayscale(0.5) brightness(0.85)' }}>
       {children}
-      <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 80, color: cor.branco }}>{titulo}</div>
-      <div style={{ position: 'absolute', top: -40, right: -30, width: 130, height: 130, borderRadius: '50%', background: bom ? cor.verde : cor.vermelho, color: cor.branco, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 80, transform: `scale(${selo})`, boxShadow: '0 12px 24px rgba(0,0,0,0.3)' }}>{bom ? '✓' : '✕'}</div>
+      <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 80, color: cor.branco, textShadow: '0 5px 0 rgba(0,0,0,0.2)' }}>{titulo}</div>
+      <div style={{ position: 'absolute', top: -40, right: -30, width: 130, height: 130, borderRadius: '50%', background: bom ? 'radial-gradient(circle at 35% 30%, #4ADE80, #15803D)' : 'radial-gradient(circle at 35% 30%, #FF7A7A, #C81E1E)', border: '6px solid #fff', color: cor.branco, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 80, transform: `scale(${selo})`, boxShadow: '0 16px 28px rgba(0,0,0,0.35)' }}>{bom ? '✓' : '✕'}</div>
       <Efeito nome={bom ? 'ding' : 'pop'} em={t0 + 12} volume={0.45} />
     </div>
   );
@@ -66,19 +69,26 @@ export const CenaSorte: React.FC<PropsCena> = ({ falas, duracao }) => {
       <Cabeca texto="Não é sorte. / *É treino.*" em={a.ini} tamanho={120} />
       <div style={{ position: 'absolute', left: 0, top: 720, width: 1080, display: 'flex', justifyContent: 'center', gap: 60 }}>
         <Carta em={a.ini} titulo="Sorte" fundo="#6B6F7A" bom={false}>
-          <div style={{ width: 200, height: 200, borderRadius: 36, background: cor.branco, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', padding: 26, gap: 10 }}>
+          <div style={{ width: 200, height: 200, borderRadius: 40, background: 'radial-gradient(circle at 30% 25%, #FFFFFF, #E1E4EA)', boxShadow: 'inset -10px -12px 0 rgba(0,0,0,0.08), 0 18px 26px rgba(0,0,0,0.3)', transform: 'rotate(-12deg)', display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', padding: 26, gap: 10 }}>
             {[1, 0, 1, 0, 1, 0, 1, 0, 1].map((v, i) => (
-              <div key={i} style={{ borderRadius: '50%', background: v ? cor.tinta : 'transparent' }} />
+              <div key={i} style={{ borderRadius: '50%', background: v ? 'radial-gradient(circle at 40% 35%, #555a66, #15161A)' : 'transparent', boxShadow: v ? 'inset 0 2px 3px rgba(0,0,0,0.6)' : 'none' }} />
             ))}
           </div>
         </Carta>
         <Carta em={em(a, 0.5)} titulo="Treino" fundo={cor.laranjaVivo} bom>
-          <svg width="230" height="200" viewBox="0 0 46 40">
-            <rect x="2" y="12" width="8" height="16" rx="2" fill={cor.branco} />
-            <rect x="9" y="8" width="7" height="24" rx="2" fill={cor.branco} />
-            <rect x="15" y="18" width="16" height="4" rx="2" fill={cor.branco} />
-            <rect x="30" y="8" width="7" height="24" rx="2" fill={cor.branco} />
-            <rect x="36" y="12" width="8" height="16" rx="2" fill={cor.branco} />
+          <svg width="230" height="200" viewBox="0 0 46 40" style={{ filter: 'drop-shadow(0 10px 10px rgba(0,0,0,0.3))' }}>
+            <defs>
+              <linearGradient id="metal29" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#FFFFFF" />
+                <stop offset="0.5" stopColor="#C9CED6" />
+                <stop offset="1" stopColor="#7C8594" />
+              </linearGradient>
+            </defs>
+            <rect x="2" y="12" width="8" height="16" rx="2" fill="url(#metal29)" />
+            <rect x="9" y="8" width="7" height="24" rx="2" fill="url(#metal29)" />
+            <rect x="15" y="18" width="16" height="4" rx="2" fill="url(#metal29)" />
+            <rect x="30" y="8" width="7" height="24" rx="2" fill="url(#metal29)" />
+            <rect x="36" y="12" width="8" height="16" rx="2" fill="url(#metal29)" />
           </svg>
         </Carta>
       </div>
@@ -101,12 +111,13 @@ export const CenaAlvo: React.FC<PropsCena> = ({ falas, duracao }) => {
       <Em y={680}>
         <div style={{ position: 'relative', width: 640, height: 640, transform: `rotate(${treme * 0.4}deg)` }}>
           {[cor.vermelho, cor.branco, cor.vermelho, cor.branco, cor.vermelho].map((c, i) => (
-            <div key={i} style={{ position: 'absolute', inset: i * 64, borderRadius: '50%', background: c, boxShadow: i === 0 ? '0 30px 60px rgba(0,0,0,0.3)' : 'none' }} />
+            <div key={i} style={{ position: 'absolute', inset: i * 64, borderRadius: '50%', background: c === cor.vermelho ? 'radial-gradient(circle at 40% 35%, #F05252, #B91C1C)' : 'radial-gradient(circle at 40% 35%, #FFFFFF, #E5E7EB)', boxShadow: i === 0 ? 'inset 0 -14px 24px rgba(0,0,0,0.25), 0 10px 0 #7F1D1D, 0 40px 70px rgba(0,0,0,0.35)' : 'inset 0 4px 8px rgba(0,0,0,0.15)' }} />
           ))}
           <div style={{ position: 'absolute', inset: 320 - 300 * onda, borderRadius: '50%', border: `${12 * (1 - onda)}px solid ${cor.branco}`, opacity: onda > 0 && onda < 1 ? 1 : 0 }} />
           <div style={{ position: 'absolute', left: 320, top: 320, transform: `translate(${(1 - voo) * 700}px, ${(1 - voo) * -500}px) rotate(-35deg)` }}>
-            <div style={{ position: 'absolute', left: -6, top: -10, width: 300, height: 20, borderRadius: 10, background: cor.tinta, transformOrigin: '0 50%' }} />
-            <div style={{ position: 'absolute', left: 230, top: -40, width: 90, height: 80, background: cor.azul, clipPath: 'polygon(0 50%, 100% 0, 80% 50%, 100% 100%)' }} />
+            <div style={{ position: 'absolute', left: -6, top: -10, width: 300, height: 22, borderRadius: 11, background: 'linear-gradient(180deg, #F3F4F6, #6B7280 50%, #1F2937)', boxShadow: '0 8px 10px rgba(0,0,0,0.35)', transformOrigin: '0 50%' }} />
+            <div style={{ position: 'absolute', left: -20, top: -6, width: 30, height: 14, borderRadius: 7, background: '#111' }} />
+            <div style={{ position: 'absolute', left: 230, top: -40, width: 90, height: 80, background: 'linear-gradient(180deg, #60A5FA, #1D4ED8)', clipPath: 'polygon(0 50%, 100% 0, 80% 50%, 100% 100%)', filter: 'drop-shadow(0 6px 6px rgba(0,0,0,0.3))' }} />
           </div>
         </div>
       </Em>
@@ -131,7 +142,7 @@ export const CenaApp: React.FC<PropsCena> = ({ falas, duracao }) => {
       </Em>
       <div style={{ position: 'absolute', left: 540, top: 1500 }}>
         {[-3, -2, -1, 0, 1, 2, 3].map((k) => (
-          <div key={k} style={{ position: 'absolute', left: -170, top: -560, width: 340, height: 460, borderRadius: 30, background: cor.branco, boxShadow: '0 16px 30px rgba(0,0,0,0.25)', transformOrigin: '50% 120%', transform: `rotate(${k * 12 * leque}deg)`, padding: 26 }}>
+          <div key={k} style={{ position: 'absolute', left: -170, top: -560, width: 340, height: 460, borderRadius: 30, background: 'linear-gradient(180deg, #FFFFFF, #F1F3F6)', boxShadow: 'inset 0 2px 0 #fff, 0 18px 34px rgba(0,0,0,0.3)', transformOrigin: '50% 120%', transform: `rotate(${k * 12 * leque}deg)`, padding: 26 }}>
             <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 20, letterSpacing: 3, color: cor.teal }}>ESTILO FAU</div>
             {[0.95, 0.8, 0.6].map((w, i) => (
               <div key={i} style={{ height: 12, width: `${w * 100}%`, borderRadius: 6, background: '#E5E7EB', marginTop: 12 }} />
@@ -164,7 +175,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
           const t0 = a.ini + 4 + i * 6;
           const q = interpolate(frame, [t0, t0 + 10], [0, 1], { ...limita, easing: (x) => x * x });
           return (
-            <div key={i} style={{ position: 'absolute', left: 0, top: interpolate(q, [0, 1], [-900, 640 - i * 104]), width: 360, height: 120, borderRadius: '50%', background: `linear-gradient(180deg, ${cor.ouro}, ${cor.ouroSombra})`, border: `6px solid ${cor.ouroTinta}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 54, color: cor.ouroTinta, opacity: q > 0 ? 1 : 0 }}>
+            <div key={i} style={{ position: 'absolute', left: 0, top: interpolate(q, [0, 1], [-900, 640 - i * 104]), width: 360, height: 120, borderRadius: '50%', background: `repeating-linear-gradient(90deg, rgba(0,0,0,0.08) 0 3px, transparent 3px 10px), radial-gradient(ellipse at 40% 30%, #FFF3B0, ${cor.ouro} 45%, ${cor.ouroSombra})`, border: `6px solid ${cor.ouroTinta}`, boxShadow: `0 14px 0 ${cor.ouroTinta}, 0 22px 24px rgba(0,0,0,0.3), inset 0 3px 0 rgba(255,255,255,0.6)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: fonte.display, fontWeight: 800, fontSize: 54, color: cor.ouroTinta, opacity: q > 0 ? 1 : 0 }}>
               R$ 32,83
               <Efeito nome="pop" em={t0 + 10} volume={0.3} />
             </div>

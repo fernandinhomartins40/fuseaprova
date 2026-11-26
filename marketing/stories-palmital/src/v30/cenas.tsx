@@ -41,22 +41,38 @@ const Grafico: React.FC<{ progresso: number; revisoes: number[]; marcas?: number
     if (d > ate) break;
     pts.push(`${x(d).toFixed(1)},${y(memoria(d, revisoes)).toFixed(1)}`);
   }
+  const ult = pts[pts.length - 1]?.split(',').map(Number);
+  const area = pts.length > 1 ? `M ${pts[0]} L ${pts.join(' L ')} L ${ult[0]},${y(0)} L ${x(0)},${y(0)} Z` : '';
   return (
+    <div style={{ position: 'relative', padding: '40px 40px 60px 70px', borderRadius: 40, background: 'linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04))', border: '2px solid rgba(255,255,255,0.18)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.25), 0 40px 80px rgba(0,0,0,0.35)', backdropFilter: 'blur(6px)' }}>
     <svg width={W} height={H} style={{ overflow: 'visible' }}>
+      <defs>
+        <linearGradient id={`area${cor1.slice(1)}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor={cor1} stopOpacity="0.45" />
+          <stop offset="1" stopColor={cor1} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {[0.25, 0.5, 0.75].map((m) => (
+        <line key={m} x1={80} y1={y(m)} x2={W - 30} y2={y(m)} stroke="rgba(255,255,255,0.12)" strokeWidth="2" strokeDasharray="8 10" />
+      ))}
+      {area ? <path d={area} fill={`url(#area${cor1.slice(1)})`} /> : null}
       <line x1={80} y1={y(1)} x2={80} y2={y(0)} stroke="rgba(255,255,255,0.5)" strokeWidth="4" />
       <line x1={80} y1={y(0)} x2={W - 30} y2={y(0)} stroke="rgba(255,255,255,0.5)" strokeWidth="4" />
       <text x={-10} y={y(1) + 10} fill="rgba(255,255,255,0.8)" fontFamily="Nunito" fontWeight={900} fontSize="30">100%</text>
       <text x={W - 150} y={y(0) + 50} fill="rgba(255,255,255,0.8)" fontFamily="Nunito" fontWeight={900} fontSize="30">dias →</text>
       <polyline points={pts.join(' ')} fill="none" stroke={cor1} strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 12px ${cor1})` }} />
+      {ult ? <circle cx={ult[0]} cy={ult[1]} r="16" fill="#fff" stroke={cor1} strokeWidth="8" style={{ filter: `drop-shadow(0 0 14px ${cor1})` }} /> : null}
       {revisoes.map((r, i) =>
         ate >= r ? (
           <g key={r} transform={`translate(${x(r)}, ${y(1) - 40}) scale(${Math.min(1, (frame - (marcas[i] ?? 0)) / 8)})`}>
-            <circle r="40" fill={cor.ouro} />
+            <circle r="44" fill="#fff" opacity="0.9" />
+            <circle r="38" fill={cor.ouro} />
             <text y="14" textAnchor="middle" fontFamily="'Baloo 2'" fontWeight={800} fontSize="40" fill={cor.tinta}>{r}</text>
           </g>
         ) : null,
       )}
     </svg>
+    </div>
   );
 };
 
@@ -72,7 +88,7 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
       <Em y={720}>
         <Grafico progresso={prog} revisoes={[]} cor1={cor.coral} />
       </Em>
-      <Em y={1330}>
+      <Em y={1450}>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 110, color: cor.branco, fontVariantNumeric: 'tabular-nums' }}>
           memória: <span style={{ color: cor.coral }}>{pct}%</span>
         </div>
@@ -93,7 +109,12 @@ export const CenaReler: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoVivo paleta={cores.sol} duracao={duracao}>
       <Cabeca texto="Reler / *não resolve.*" em={a.ini} corTexto={cor.tinta} faixa={cor.tinta} corFaixa={cor.ouro} tamanho={140} />
       <Em y={700}>
-        <div style={{ position: 'relative', width: 800, padding: '50px 60px', borderRadius: 24, background: cor.branco, boxShadow: '0 40px 70px rgba(0,0,0,0.25)', transform: `translateY(${(1 - p) * 1200}px) rotate(1.5deg)` }}>
+        <div style={{ position: 'relative', width: 800, padding: '50px 60px', borderRadius: 24, background: 'repeating-linear-gradient(180deg, transparent 0 69px, rgba(80,130,220,0.22) 69px 72px), linear-gradient(180deg, #FFFEFA, #F5F1E6)', boxShadow: 'inset 0 0 40px rgba(150,120,60,0.12), 0 50px 80px rgba(0,0,0,0.28), 0 12px 20px rgba(0,0,0,0.15)', transform: `translateY(${(1 - p) * 1200}px) perspective(1600px) rotateX(8deg) rotate(1.5deg)` }}>
+          <div style={{ position: 'absolute', left: 36, top: 0, bottom: 0, width: 3, background: 'rgba(215,38,61,0.45)' }} />
+          <div style={{ position: 'absolute', right: 40 + (passadas.filter((t) => frame >= t).length % 2) * 0, top: 120 + ((frame - a.ini) % 14) * 30, width: 70, height: 220, transform: 'rotate(35deg)', opacity: frame >= a.ini && frame < a.ini + 42 ? 1 : 0, zIndex: 3, filter: 'drop-shadow(10px 14px 8px rgba(0,0,0,0.25))' }}>
+            <div style={{ width: 70, height: 170, borderRadius: '18px 18px 8px 8px', background: 'linear-gradient(90deg, #E2A100, #FFE27A 45%, #E2A100)' }} />
+            <div style={{ width: 52, height: 50, margin: '0 auto', background: 'linear-gradient(90deg, #FFD54A, #FFF3B0, #FFD54A)', clipPath: 'polygon(0 0, 100% 0, 80% 100%, 20% 100%)' }} />
+          </div>
           <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 56, color: cor.tinta, marginBottom: 24 }}>Resumo</div>
           {[0.95, 0.8, 0.9, 0.7, 0.85].map((w, i) => {
             const grifo = passadas.reduce((acc, t) => acc + interpolate(frame, [t + i * 2, t + i * 2 + 8], [0, 1], limita), 0) / 3;
@@ -128,7 +149,7 @@ export const CenaRevela: React.FC<PropsCena> = ({ falas, duracao }) => {
       <Em y={760}>
         <Grafico progresso={prog} revisoes={revisoes} marcas={marcas} cor1="#3DFFA2" />
       </Em>
-      <Em y={1380}>
+      <Em y={1480}>
         <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 70, color: cor.branco }}>
           dias <span style={{ color: cor.ouro }}>1 · 3 · 7 · 15</span>
         </div>
@@ -168,7 +189,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
     <FundoVivo paleta={cores.rosa} duracao={duracao}>
       <Cabeca texto="*R$ 197* / em até 6x." em={a.ini} tamanho={130} />
       <Em y={660}>
-        <div style={{ transform: `scale(${preco})`, padding: '30px 60px', borderRadius: 40, background: cor.branco, boxShadow: '0 30px 60px rgba(0,0,0,0.25)', textAlign: 'center' }}>
+        <div style={{ transform: `scale(${preco})`, padding: '30px 60px', borderRadius: 40, background: 'linear-gradient(180deg, #FFFFFF, #F1F3F6)', boxShadow: 'inset 0 2px 0 #fff, inset 0 -8px 0 rgba(0,0,0,0.05), 0 40px 70px rgba(0,0,0,0.3)', textAlign: 'center' }}>
           <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 90, lineHeight: 1, color: cor.laranja }}>6x R$ 32,83</div>
           <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 38, color: cor.muted }}>sem juros no cartão</div>
         </div>
@@ -178,7 +199,7 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
           {FITA.map((d, i) => {
             const ultimo = i === FITA.length - 1;
             return (
-              <div key={d} style={{ width: 160, height: 200, borderRadius: 30, background: ultimo ? cor.ouro : 'rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: ultimo ? `0 0 40px ${cor.ouro}` : 'none', transform: ultimo ? 'scale(1.12)' : 'none' }}>
+              <div key={d} style={{ width: 160, height: 200, borderRadius: 30, background: ultimo ? 'linear-gradient(180deg, #FFE27A, #FFC233)' : 'linear-gradient(180deg, #FFFFFF, #ECEEF2)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: ultimo ? `inset 0 2px 0 rgba(255,255,255,0.6), 0 9px 0 #D99A00, 0 0 50px ${cor.ouro}` : 'inset 0 2px 0 #fff, 0 9px 0 #C9CED6, 0 18px 26px rgba(0,0,0,0.2)', transform: ultimo ? 'scale(1.12)' : 'none' }}>
                 <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 26, color: cor.muted }}>{i < 5 ? 'NOV' : 'DEZ'}</div>
                 <div style={{ fontFamily: fonte.display, fontWeight: 800, fontSize: 90, lineHeight: 1, color: ultimo ? cor.vermelho : cor.tinta }}>{d}</div>
                 {ultimo ? <div style={{ fontFamily: fonte.corpo, fontWeight: 900, fontSize: 22, color: cor.vermelho }}>ÚLTIMO DIA</div> : null}
