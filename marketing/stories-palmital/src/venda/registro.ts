@@ -23,8 +23,6 @@ import * as v43 from '../v43';
 import * as v44 from '../v44';
 import * as v45 from '../v45';
 import * as v46 from '../v46';
-import * as v47 from '../v47';
-import * as v48 from '../v48';
 
 export const vendas = [
   { id: 'v23', ...v23 },
@@ -51,6 +49,4 @@ export const vendas = [
   { id: 'v44', ...v44 },
   { id: 'v45', ...v45 },
   { id: 'v46', ...v46 },
-  { id: 'v47', ...v47 },
-  { id: 'v48', ...v48 },
 ];

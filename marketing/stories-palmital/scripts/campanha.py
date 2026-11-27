@@ -231,36 +231,6 @@ VOZ = dict(voz='2CECaLAGTS5NRGxgbcxr', nomeVoz='Davi Andrei', modelo='eleven_v4'
            pronuncia={'Fuse': 'Fúzi', 'Aprova': 'Aprôva', 'FAU': 'Fáu'})
 
 
-# Vídeo de venda "As 5 coisas" (26/11, pedido do dono): benefícios + facilidade de pagar, fora do calendário da campanha.
-# A curiosidade abre na 1ª fala ("a quinta é a que mais surpreende") e se resolve no pagamento, colada na oferta.
-CINCO_COISAS = [
-    txt('Quem estuda pro concurso de Palmital com o Fuse Aprova faz CINCO coisas que quem estuda sozinho não faz! E a quinta... é a que mais surpreende!',
-        '*5 coisas* que quem estuda sozinho não faz', ['5 coisas', 'que quem estuda', 'sozinho não faz'], capi='acenando'),
-    f('Um: estuda só o que cai no seu cargo! A trilha já vem montada pelo edital.', '*1.* Só o que cai *no seu cargo*', 'trilha', capi='explicando'),
-    f('Dois: treina com mais de dez mil questões no estilo da FAU, a banca que vai aplicar a prova do concurso de Palmital!',
-      '*2.* +10 mil questões no estilo da *FAU, a banca da sua prova*', 'questao', capi='estudando'),
-    f('Três: quando erra, entende o porquê! Cada questão tem explicação e uma mini-aula do tema.', '*3.* Errou? *Entende o porquê*', 'erro', capi='explicando'),
-    f('E o erro volta no dia certo, até você parar de errar!', 'O erro volta *no dia certo*', 'revisao', capi='incentivando'),
-    f('Quatro: faz simulado no formato da prova da FAU! Não são as questões que vão cair, mas é como treinar com a prova na mão: '
-      'quarenta questões, quatro horas, no estilo que a banca cobra. E, no modo treino, dá pra fazer aos pouquinhos!',
-      '*4.* Simulado no *formato da prova*: treine *como se fosse o dia*', 'simulado', capi='estudando'),
-    f('Tudo no celular, dez minutinhos por dia!', '*10 min* por dia, *no celular*', 'licao', capi='celebrando'),
-    txt('E a quinta? É a mais fácil de todas!', 'E a *5ª*?', ['E a 5ª?'], AZUL, capi='constancia'),
-    f('Cinco: começar leva um minuto! No Pix ou no cartão, o acesso libera na hora. E, no cartão, você ainda divide em até seis vezes sem juros!',
-      '*5.* Acesso *na hora* · Pix ou *6x sem juros*', 'pagamento', capi='celebrando'),
-    txt('São seis de trinta e dois e oitenta e três!', '6x de *R$ 32,83*', ['6x de', 'R$ 32,83', 'sem juros'], ROXO, capi='incentivando'),
-    f('E tem sete dias de garantia. Não gostou? Devolvemos cem por cento!', '*7 dias* de garantia', 'garantia', capi='explicando'),
-    oferta('Cento e noventa e sete reais, só até cinco de dezembro! Depois, sobe pra duzentos e noventa e sete.', '*R$ 197* só até *5/12*', capi='incentivando'),
-    link('Corre, que o link tá na bio!', '*Link na bio*'),
-]
-ANIMADA = {'stability': 0.25, 'similarity_boost': 0.8, 'use_speaker_boost': True, 'speed': 1.12}
-# (vídeo, título, falas, voz, trilha)
-EXTRAS = [
-    ('v47', 'As 5 coisas (Will)', CINCO_COISAS, dict(VOZ, voz='1oZawzZ4adgYtgm1oMqN', nomeVoz='Will - Retail Announcer', ajustes=ANIMADA), 'v21'),
-    ('v48', 'As 5 coisas (Larissa)', CINCO_COISAS, dict(VOZ, voz='OjcGK1RXdMD1PFj2eIuN', nomeVoz='Larissa - Bright and Persuasive', ajustes=ANIMADA), 'v20'),
-]
-
-
 def nome(i: int) -> str:
     return f'v{23 + i}'
 
@@ -272,13 +242,12 @@ def main() -> None:
                   'Cada vídeo está na pasta do dia, já com o nome na ordem de postagem. Sugestão de horário: o 1º às 12h e o 2º às 19h',
                   '(no dia 25/11, os quatro: 12h, 15h, 18h e 21h).', '']
     dia_atual, n_dia = None, 0
-    todos = [(nome(i), dia, titulo, falas, VOZ, TRILHAS[i % len(TRILHAS)], 300 + i) for i, (dia, titulo, falas) in enumerate(VIDEOS)]
-    todos += [(v, '26/11', titulo, falas, voz, trilha, 400 + k) for k, (v, titulo, falas, voz, trilha) in enumerate(EXTRAS)]
-    for v, dia, titulo, falas, voz, trilha, semente in todos:
+    for i, (dia, titulo, falas) in enumerate(VIDEOS):
+        v = nome(i)
         for x in falas:
             assert x['tipo'] != 'texto' or x.get('linhas'), (v, x)
             assert 'salário' not in x['falado'].lower() and 'aprovad' not in x['falado'].lower(), (v, x)
-        roteiro = dict(voz, semente=semente, titulo=titulo, dia=dia, falas={'mesa': [x['falado'] for x in falas]})
+        roteiro = dict(VOZ, semente=300 + i, titulo=titulo, dia=dia, falas={'mesa': [x['falado'] for x in falas]})
         (RAIZ / 'roteiros' / f'{v}.json').write_text(json.dumps(roteiro, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
         pasta = RAIZ / 'src' / v
         pasta.mkdir(exist_ok=True)
@@ -289,11 +258,9 @@ def main() -> None:
             "import { criarVenda, Momento } from '../venda/cena';\n"
             "import momentos from './momentos.json';\n"
             "import narracao from './narracao.json';\n\n"
-            f"export const {{ linha, Video }} = criarVenda(narracao, momentos as Momento[], 'audio/{trilha}/trilha.wav');\n",
+            f"export const {{ linha, Video }} = criarVenda(narracao, momentos as Momento[], 'audio/{TRILHAS[i % len(TRILHAS)]}/trilha.wav');\n",
             encoding='utf-8')
         registro.append(v)
-        if v in {e[0] for e in EXTRAS}:
-            continue
         if dia != dia_atual:
             dia_atual, n_dia = dia, 0
             calendario += ['', f'## {dia}', '']

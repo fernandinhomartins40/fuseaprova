@@ -17,19 +17,33 @@
   "titulo": "As 5 coisas (Will)",
   "dia": "26/11",
   "falas": {
-    "mesa": [
-      "Quem estuda pro concurso de Palmital com o Fuse Aprova faz CINCO coisas que quem estuda sozinho não faz! E a quinta... é a que mais surpreende!",
-      "Um: estuda só o que cai no seu cargo! A trilha já vem montada pelo edital.",
-      "Dois: treina com mais de dez mil questões no estilo da FAU, a banca que vai aplicar a prova do concurso de Palmital!",
+    "gancho": [
+      "Quem estuda pro concurso de Palmital com o Fuse Aprova faz CINCO coisas que quem estuda sozinho não faz! E a quinta... é a que mais surpreende!"
+    ],
+    "um": [
+      "Um: estuda só o que cai no seu cargo! A trilha já vem montada pelo edital."
+    ],
+    "dois": [
+      "Dois: treina com mais de dez mil questões no estilo da FAU, a banca que vai aplicar a prova do concurso de Palmital!"
+    ],
+    "tres": [
       "Três: quando erra, entende o porquê! Cada questão tem explicação e uma mini-aula do tema.",
-      "E o erro volta no dia certo, até você parar de errar!",
+      "E o erro volta no dia certo, até você parar de errar!"
+    ],
+    "quatro": [
       "Quatro: faz simulado no formato da prova da FAU! Não são as questões que vão cair, mas é como treinar com a prova na mão: quarenta questões, quatro horas, no estilo que a banca cobra. E, no modo treino, dá pra fazer aos pouquinhos!",
-      "Tudo no celular, dez minutinhos por dia!",
+      "Tudo no celular, dez minutinhos por dia!"
+    ],
+    "cinco": [
       "E a quinta? É a mais fácil de todas!",
-      "Cinco: começar leva um minuto! No Pix ou no cartão, o acesso libera na hora. E, no cartão, você ainda divide em até seis vezes sem juros!",
+      "Cinco: começar leva um minuto! No Pix ou no cartão, o acesso libera na hora. E, no cartão, você ainda divide em até seis vezes sem juros!"
+    ],
+    "oferta": [
       "São seis de trinta e dois e oitenta e três!",
       "E tem sete dias de garantia. Não gostou? Devolvemos cem por cento!",
-      "Cento e noventa e sete reais, só até cinco de dezembro! Depois, sobe pra duzentos e noventa e sete.",
+      "Cento e noventa e sete reais, só até cinco de dezembro! Depois, sobe pra duzentos e noventa e sete."
+    ],
+    "fecho": [
       "Corre, que o link tá na bio!"
     ]
   }
