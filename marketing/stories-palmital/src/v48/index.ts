@@ -4,15 +4,15 @@ import { wipe } from '@remotion/transitions/wipe';
 import { CenaMarca } from '../comum';
 import { montarLinha } from '../linhaDoTempo';
 import { criarVideo } from '../Video';
-import { CenaCinco, CenaDois, CenaFecho, CenaGancho, CenaOferta, CenaQuatro, CenaTres, CenaUm } from '../v47/cenas';
+import { CenaCinco, CenaDois, CenaFecho, CenaGancho, CenaOferta, CenaQuatro, CenaTres, CenaUm } from './cenas';
 import narracao from './narracao.json';
 
-// V48 · venda "As 5 coisas" (painel de largada → 1 cargo → 2 questões FAU → 3 erro e revisão → 4 simulado → 5ª: largada verde e pagamento → 6x e garantia → link) — voz Larissa
+// V48 · venda "As 5 coisas" versão 2 (leque de cartas → uma carta por benefício → a 5ª, dourada, vira verde com o pagamento → bilhete → link) — voz Larissa
 export const linha = montarLinha(narracao, ['gancho', 'um', 'dois', 'tres', 'quatro', 'cinco', 'oferta', 'fecho'], {}, true, { gancho: 15, um: 10, dois: 10, tres: 10, quatro: 15, cinco: 25, oferta: 20, fecho: 45 });
 
 export const Video = criarVideo({
   linha,
   componentes: { gancho: CenaGancho, um: CenaUm, dois: CenaDois, tres: CenaTres, quatro: CenaQuatro, cinco: CenaCinco, oferta: CenaOferta, fecho: CenaFecho, marca: CenaMarca },
-  transicoes: [fade(), slide({ direction: 'from-right' }), slide({ direction: 'from-right' }), slide({ direction: 'from-right' }), wipe({ direction: 'from-left' }), slide({ direction: 'from-bottom' }), fade()],
+  transicoes: [wipe({ direction: 'from-right' }), fade(), fade(), fade(), slide({ direction: 'from-bottom' }), wipe({ direction: 'from-left' }), fade()],
   trilha: 'audio/v20/trilha.wav',
 });

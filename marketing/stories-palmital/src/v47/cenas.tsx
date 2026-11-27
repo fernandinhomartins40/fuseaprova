@@ -4,8 +4,7 @@ import { Aviso, Em, PropsCena } from '../comum';
 import { Confetes, Efeito, useMola } from '../componentes';
 import { ChipData, cores } from '../contagem';
 import { Cabeca, em, FechoPalmital, ItemCheck } from '../campanha/Cabeca';
-import { CelularApp } from '../campanha/CelularApp';
-import type { TipoTela } from '../venda/telas';
+import { GRADE, Palco, type Tela } from './grade';
 import { cor, fonte } from '../tema';
 import { Cartao, SeisVezes } from '../v7/cenas';
 import { Surge } from '../v8/cinema';
@@ -58,6 +57,10 @@ const Luzes: React.FC<{ acesas: number; em?: number; verde?: number; tam?: numbe
 };
 
 /* 1. Cinco coisas que quem estuda sozinho não faz --------------------------- */
+const Centro: React.FC<{ topo: number; children: React.ReactNode }> = ({ topo, children }) => (
+  <div style={{ position: 'absolute', left: 0, top: topo, width: 1080, display: 'flex', justifyContent: 'center' }}>{children}</div>
+);
+
 export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   const [a] = falas;
   const p = useMola(a.ini - 8, { damping: 14, stiffness: 110 });
@@ -65,19 +68,19 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
   return (
     <FundoVivo paleta={cores.roxo} duracao={duracao}>
       <Cabeca texto="*5 coisas* que quem / estuda sozinho não faz." em={a.ini} tamanho={92} />
-      <Em y={820}>
+      <Centro topo={660}>
         <div style={{ transform: `perspective(1600px) rotateX(${8 + (1 - p) * 40}deg) scale(${interpolate(p, [0, 1], [0.6, 1])})`, opacity: Math.min(1, p * 2) }}>
           <Luzes acesas={0} />
         </div>
-      </Em>
-      <div style={{ position: 'absolute', left: 600, top: 1000, padding: '14px 26px', borderRadius: 22, background: cor.branco, fontFamily: fonte.display, fontWeight: 800, fontSize: 44, color: cor.roxoSombra, transform: `rotate(-5deg) scale(${selo})`, boxShadow: '0 12px 24px rgba(0,0,0,0.25)' }}>
-        A 5ª surpreende
-      </div>
-      <div style={{ position: 'absolute', left: 120, top: 1080 }}>
+      </Centro>
+      <Centro topo={940}>
+        <div style={{ padding: '14px 30px', borderRadius: 22, background: cor.branco, fontFamily: fonte.display, fontWeight: 800, fontSize: 44, color: cor.roxoSombra, transform: `scale(${selo})`, boxShadow: '0 12px 24px rgba(0,0,0,0.25)' }}>A 5ª surpreende</div>
+      </Centro>
+      <Centro topo={1080}>
         <Surge em={em(a, 0.3)}>
           <Img src={staticFile('img/capi-acenando.webp')} style={{ height: 520, filter: 'drop-shadow(0 30px 40px rgba(0,0,0,0.35))' }} />
         </Surge>
-      </div>
+      </Centro>
       <Efeito nome="whoosh" em={a.ini - 8} volume={0.35} />
       <Efeito nome="pop" em={em(a, 0.62)} volume={0.5} />
       <Aviso />
@@ -86,26 +89,21 @@ export const CenaGancho: React.FC<PropsCena> = ({ falas, duracao }) => {
 };
 
 /* 2 a 5. Um benefício por cena: luz que acende, o app e os itens ao lado ------ */
-type Tela = { tipo: TipoTela; em: number };
-const cenaBeneficio = (n: number, paleta: PaletaViva, titulo: string, telas: (f: PropsCena['falas']) => Tela[], itens: (f: PropsCena['falas']) => { texto: string; em: number }[]): React.FC<PropsCena> => {
+type Itens = (f: PropsCena['falas']) => { texto: string; em: number }[];
+const cenaBeneficio = (n: number, paleta: PaletaViva, titulo: string, telas: (f: PropsCena['falas']) => Tela[], itens: Itens): React.FC<PropsCena> => {
   const Cena: React.FC<PropsCena> = ({ falas, duracao }) => {
     const [a] = falas;
-    const frame = useCurrentFrame();
-    const cel = useMola(a.ini - 4, { damping: 14, stiffness: 110 });
     return (
       <FundoVivo paleta={paleta} duracao={duracao}>
-        <Cabeca texto={titulo} em={a.ini} tamanho={104} />
-        <Em y={660}>
-          <Luzes acesas={n} em={a.ini + 2} tam={76} />
+        <Cabeca texto={titulo} em={a.ini} tamanho={100} />
+        <Em y={GRADE.marcador}>
+          <Luzes acesas={n} em={a.ini + 2} tam={64} />
         </Em>
-        <div style={{ position: 'absolute', left: 560, top: 760, transform: `translateX(${(1 - cel) * 900}px) translateY(${Math.sin(frame / 22) * 8}px) rotate(4deg)` }}>
-          <CelularApp largura={430} fim={duracao + 30} telas={telas(falas)} />
-        </div>
-        <div style={{ position: 'absolute', left: 50, top: 820, width: 480, display: 'flex', flexDirection: 'column', gap: 26 }}>
+        <Palco telas={telas(falas)} fim={duracao + 30} entra={a.ini - 4}>
           {itens(falas).map((it) => (
-            <ItemCheck key={it.texto} texto={it.texto} em={it.em} tamanho={38} />
+            <ItemCheck key={it.texto} texto={it.texto} em={it.em} tamanho={36} />
           ))}
-        </div>
+        </Palco>
         <Efeito nome="ding" em={a.ini + 2} volume={0.45} />
         <Aviso />
       </FundoVivo>
@@ -155,9 +153,9 @@ export const CenaQuatro = cenaBeneficio(
   '*4.* Simulado no / *formato da prova.*',
   ([a]) => [{ tipo: 'simulado', em: a.ini - 4 }],
   ([a, b]) => [
-    { texto: 'Treino no formato da FAU', em: em(a, 0.15) },
-    { texto: '40 questões · 4 horas', em: em(a, 0.55) },
-    { texto: 'Modo treino: aos pouquinhos', em: em(a, 0.8) },
+    { texto: 'No formato da FAU', em: em(a, 0.15) },
+    { texto: '40 questões em 4 horas', em: em(a, 0.55) },
+    { texto: 'Modo treino, aos poucos', em: em(a, 0.8) },
     { texto: '10 min por dia, no celular', em: b.ini },
   ],
 );
@@ -168,37 +166,33 @@ export const CenaCinco: React.FC<PropsCena> = ({ falas, duracao }) => {
   const frame = useCurrentFrame();
   const revela = b.ini + 4;
   const depois = frame >= b.ini;
-  const cel = useMola(em(b, 0.15), { damping: 14, stiffness: 110 });
   return (
     <FundoVivo paleta={depois ? cores.roxo : cores.sol} duracao={duracao}>
       <div key={depois ? 1 : 0}>
-        <Cabeca texto={depois ? '*5.* Começar leva / *1 minuto.*' : 'E a *5ª*?'} em={depois ? b.ini : a.ini} tamanho={depois ? 104 : 150} corTexto={depois ? cor.branco : cor.tinta} />
+        <Cabeca texto={depois ? '*5.* Começar leva / *1 minuto.*' : 'E a *5ª*?'} em={depois ? b.ini : a.ini} tamanho={depois ? 100 : 150} corTexto={depois ? cor.branco : cor.tinta} />
       </div>
       {depois ? (
         <>
-          <Em y={660}>
-            <Luzes acesas={4} verde={revela} tam={76} />
+          <Em y={GRADE.marcador}>
+            <Luzes acesas={4} verde={revela} tam={64} />
           </Em>
-          <div style={{ position: 'absolute', left: 70, top: 780, transform: `translateY(${(1 - cel) * 1200 + Math.sin(frame / 22) * 8}px) rotate(-4deg)` }}>
-            <CelularApp largura={430} fim={duracao + 30} telas={[{ tipo: 'pagamento', em: em(b, 0.15) }]} />
-          </div>
-          <div style={{ position: 'absolute', left: 540, top: 880, width: 490, display: 'flex', flexDirection: 'column', gap: 26 }}>
-            <ItemCheck texto="Pix: acesso na hora" em={em(b, 0.3)} tamanho={40} de="direita" />
-            <ItemCheck texto="Cartão: acesso na hora" em={em(b, 0.42)} tamanho={40} de="direita" />
-            <ItemCheck texto="No cartão, até 6x sem juros" em={em(b, 0.7)} tamanho={40} de="direita" />
-          </div>
+          <Palco telas={[{ tipo: 'pagamento', em: em(b, 0.1) }]} fim={duracao + 30} entra={em(b, 0.1)}>
+            <ItemCheck texto="Pix: acesso na hora" em={em(b, 0.3)} tamanho={36} />
+            <ItemCheck texto="Cartão: acesso na hora" em={em(b, 0.42)} tamanho={36} />
+            <ItemCheck texto="No cartão, até 6x sem juros" em={em(b, 0.7)} tamanho={36} />
+          </Palco>
           <Confetes inicio={revela} />
         </>
       ) : (
         <>
-          <Em y={780}>
+          <Centro topo={620}>
             <Luzes acesas={4} />
-          </Em>
-          <div style={{ position: 'absolute', left: 330, top: 960 }}>
+          </Centro>
+          <Centro topo={980}>
             <Surge em={a.ini}>
-              <Img src={staticFile('img/capi-constancia.webp')} style={{ height: 520, filter: 'drop-shadow(0 30px 40px rgba(0,0,0,0.3))' }} />
+              <Img src={staticFile('img/capi-constancia.webp')} style={{ height: 560, filter: 'drop-shadow(0 30px 40px rgba(0,0,0,0.3))' }} />
             </Surge>
-          </div>
+          </Centro>
         </>
       )}
       <Efeito nome="ding" em={revela} volume={0.55} />
@@ -217,14 +211,18 @@ export const CenaOferta: React.FC<PropsCena> = ({ falas, duracao }) => {
       <div key={fim ? 1 : 0}>
         <Cabeca texto={fim ? '*R$ 197* / só até 5/12.' : '*R$ 197* / em até 6x.'} em={fim ? c.ini : a.ini} tamanho={110} />
       </div>
-      <Em x={560} y={760}>
-        <Cartao em={a.ini - 4} />
+      <Em x={560} y={620}>
+        <div style={{ transform: 'scale(0.85)' }}>
+          <Cartao em={a.ini - 4} />
+        </div>
       </Em>
-      <Em y={1130}>
-        <SeisVezes em={a.ini + 6} />
+      <Em y={1040}>
+        <div style={{ transform: 'scale(0.85)' }}>
+          <SeisVezes em={a.ini + 6} />
+        </div>
       </Em>
-      <ChipData em={b.ini} y={1380} texto="7 dias de garantia · 100% de volta" fundo={cor.branco} tinta={cor.verde} tamanho={44} />
-      <ChipData em={em(c, 0.55)} y={1500} texto="Depois de 5/12, R$ 297" fundo={cor.branco} tinta={cor.vermelho} tamanho={44} />
+      <ChipData em={b.ini} y={1290} texto="7 dias de garantia · 100% de volta" fundo={cor.branco} tinta={cor.verde} tamanho={38} />
+      <ChipData em={em(c, 0.55)} y={1420} texto="Depois de 5/12, R$ 297" fundo={cor.branco} tinta={cor.vermelho} tamanho={38} />
       <Efeito nome="whoosh" em={a.ini - 4} volume={0.35} />
       <Efeito nome="pop" em={b.ini} volume={0.45} />
       <Efeito nome="ding" em={c.ini} volume={0.45} />
