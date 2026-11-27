@@ -29,6 +29,40 @@ export const CorrecaoRedacao = z.object({
 });
 export type CorrecaoRedacao = z.infer<typeof CorrecaoRedacao>;
 
+/**
+ * Um passo da aula interativa: a Capi explica, e o aluno responde (alternativa, completar a lacuna
+ * ou pôr em ordem). A correção é local, como o "Entenda o tema" (D28): não há nota em jogo.
+ */
+const Explicacao = z.string().min(1);
+export const PassoAulaRedacao = z.discriminatedUnion('tipo', [
+  z.object({ tipo: z.literal('explica'), titulo: z.string(), texto: z.string(), exemplo: z.string().nullable() }),
+  z.object({
+    tipo: z.literal('escolha'),
+    pergunta: z.string(),
+    /** Trecho para analisar (parágrafo de exemplo, comando de prova), mostrado acima da pergunta. */
+    apoio: z.string().nullable(),
+    alternativas: z.array(z.string().min(1)).min(2).max(5),
+    correta: z.number().int().min(0),
+    explicacao: Explicacao,
+  }),
+  z.object({
+    tipo: z.literal('lacuna'),
+    /** Frase com "___" no lugar da lacuna. */
+    frase: z.string(),
+    opcoes: z.array(z.string().min(1)).min(2).max(4),
+    correta: z.number().int().min(0),
+    explicacao: Explicacao,
+  }),
+  z.object({
+    tipo: z.literal('ordenar'),
+    pergunta: z.string(),
+    /** Na ordem certa; o app embaralha. */
+    itens: z.array(z.string().min(1)).min(3).max(6),
+    explicacao: Explicacao,
+  }),
+]);
+export type PassoAulaRedacao = z.infer<typeof PassoAulaRedacao>;
+
 export const AulaRedacao = z.object({
   id: z.string(),
   titulo: z.string(),
@@ -37,6 +71,8 @@ export const AulaRedacao = z.object({
   /** Cada seção tem um título e um texto em markdown simples (parágrafos, listas, negrito). */
   secoes: z.array(z.object({ titulo: z.string(), texto: z.string() })),
   fontes: z.array(z.object({ titulo: z.string(), url: z.string() })),
+  /** A aula interativa; as `secoes` ficam como o resumo para consulta. */
+  passos: z.array(PassoAulaRedacao).min(1),
 });
 export type AulaRedacao = z.infer<typeof AulaRedacao>;
 
@@ -90,6 +126,8 @@ export const RedacaoPainel = z.object({
   temas: z.array(TemaRedacao),
   redacoes: z.array(RedacaoResumo),
   cota: CotaRedacao,
+  /** Ids das aulas que o aluno já concluiu (a trilha libera a próxima). */
+  aulasConcluidas: z.array(z.string()),
 });
 export type RedacaoPainel = z.infer<typeof RedacaoPainel>;
 
@@ -108,3 +146,13 @@ export type RedacaoSalvarEntrada = z.infer<typeof RedacaoSalvarEntrada>;
 
 export const RedacaoCorrigirResposta = z.object({ redacao: Redacao, cota: CotaRedacao });
 export type RedacaoCorrigirResposta = z.infer<typeof RedacaoCorrigirResposta>;
+
+export const AulaRedacaoParams = z.object({ id: z.string().min(1).max(60) });
+export type AulaRedacaoParams = z.infer<typeof AulaRedacaoParams>;
+
+export const RedacaoAulaConcluirEntrada = z.object({ perfeita: z.boolean() });
+export type RedacaoAulaConcluirEntrada = z.infer<typeof RedacaoAulaConcluirEntrada>;
+
+/** XP só na primeira vez que a aula é concluída (refazer é treino livre). */
+export const RedacaoAulaConcluirResposta = z.object({ xpGanho: z.number().int(), primeiraVez: z.boolean() });
+export type RedacaoAulaConcluirResposta = z.infer<typeof RedacaoAulaConcluirResposta>;

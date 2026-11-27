@@ -318,8 +318,33 @@ const AULAS_RED = [
     minutos: 6,
     secoes: [{ titulo: 'Os três aspectos', texto: '- **Conteúdo**, até 50\n- **Estrutura**, até 40\n- **Expressão**, até 10' }],
     fontes: [{ titulo: 'Edital de Palmital', url: 'https://www.concursosfau.com.br' }],
+    passos: [
+      { tipo: 'explica' as const, titulo: 'Os três aspectos da nota', texto: 'Conteúdo até 50, Estrutura até 40 e Expressão até 10.', exemplo: null },
+      {
+        tipo: 'escolha' as const,
+        pergunta: 'Qual aspecto vale mais pontos?',
+        apoio: null,
+        alternativas: ['Expressão', 'Conteúdo', 'Estrutura'],
+        correta: 1,
+        explicacao: 'Conteúdo vale até 50 pontos.',
+      },
+      {
+        tipo: 'lacuna' as const,
+        frase: 'A escola tem biblioteca. ___, os alunos leem pouco.',
+        opcoes: ['No entanto', 'Portanto'],
+        correta: 0,
+        explicacao: 'É oposição.',
+      },
+      {
+        tipo: 'ordenar' as const,
+        pergunta: 'Ponha a planta em ordem:',
+        itens: ['Introdução', 'Desenvolvimento', 'Conclusão'],
+        explicacao: 'Introdução, desenvolvimento e conclusão.',
+      },
+    ],
   },
 ];
+const aulasRedFeitas = new Set<string>();
 const redacoesMock = new Map<string, Redacao>();
 function cotaRedMock() {
   const c = cotaRedacao([...redacoesMock.values()].filter((r) => r.status === 'corrigida').length, agora());
@@ -1207,7 +1232,16 @@ const H: Partial<Record<NomeRota, Handler>> = {
     temas: TEMAS_RED,
     redacoes: [...redacoesMock.values()].map(({ texto: _t, correcao: _c, ...r }) => r),
     cota: cotaRedMock(),
+    aulasConcluidas: [...aulasRedFeitas],
   }),
+  redacaoAulaConcluir: ({ params, corpo }) => {
+    if (!AULAS_RED.some((a) => a.id === params.id)) throw new Falha(404, 'nao_encontrado');
+    if (aulasRedFeitas.has(params.id!)) return { xpGanho: 0, primeiraVez: false };
+    aulasRedFeitas.add(params.id!);
+    const xp = (corpo as { perfeita: boolean }).perfeita ? 15 : 5;
+    estado.usuario.xpTotal += xp;
+    return { xpGanho: xp, primeiraVez: true };
+  },
   redacaoCriar: ({ corpo }) => {
     const { temaId, texto = '' } = corpo as { temaId: string; texto?: string };
     const tema = TEMAS_RED.find((t) => t.id === temaId);

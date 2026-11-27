@@ -1235,3 +1235,17 @@ export const redacoes = pgTable(
     check('redacoes_texto_ck', sql`char_length(${t.texto}) <= 4000`),
   ],
 );
+
+/** D49: aulas interativas de redação concluídas pelo aluno (libera a próxima na trilha). */
+export const redacaoAulas = pgTable(
+  'redacao_aulas',
+  {
+    usuarioId: uuid('usuario_id')
+      .notNull()
+      .references(() => usuarios.id, { onDelete: 'cascade' }),
+    aulaId: text('aula_id').notNull(),
+    perfeita: boolean('perfeita').notNull().default(false),
+    concluidaEm: criadoEm(),
+  },
+  (t) => [primaryKey({ columns: [t.usuarioId, t.aulaId] })],
+);

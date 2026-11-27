@@ -297,10 +297,10 @@ describe('telas do aluno contra a API simulada', () => {
     const api = ligarApiSimulada();
     await api.cenario('aluno');
     const { container } = abrir('/redacao');
-    expect(await screen.findByText('1. Como a FAU corrige a sua redação')).toBeInTheDocument();
+    expect(await screen.findByText('Como a FAU corrige a sua redação')).toBeInTheDocument();
     expect(screen.getByText(/Correções desta semana/)).toBeInTheDocument();
     expect(await violacoesSerias(container)).toEqual([]);
-    await userEvent.click(screen.getByRole('tab', { name: 'Temas' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Simulado' }));
     expect(screen.getByText('Já cobrados pela FAU')).toBeInTheDocument();
     await userEvent.click(screen.getByText('O brincar como eixo da aprendizagem'));
     expect(await screen.findByText('Tema Fuse Aprova · no estilo da FAU')).toBeInTheDocument();
@@ -320,6 +320,44 @@ ${paragrafo}`);
     expect(await screen.findByText('62')).toBeInTheDocument();
     expect(screen.getByText(/não a nota da banca/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'REESCREVER COM AS MELHORIAS' })).toBeInTheDocument();
+  }, 30000);
+
+  it('redação (D49): aula interativa com explicação, alternativa, lacuna e ordenar', async () => {
+    const trava = () => new Promise((ok) => setTimeout(ok, TRAVA_CONTINUAR_MS + 50));
+    const api = ligarApiSimulada();
+    await api.cenario('aluno');
+    abrir('/redacao');
+    await userEvent.click(await screen.findByRole('button', { name: /Como a FAU corrige.*disponível/ }));
+    expect(await screen.findByText('Os três aspectos da nota')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'ENTENDI, CONTINUAR' }));
+    // alternativa: erra de propósito, a pergunta volta no fim
+    await userEvent.click(await screen.findByText('Expressão'));
+    await userEvent.click(screen.getByRole('button', { name: /VERIFICAR/ }));
+    expect(await screen.findByText(/Esta pergunta volta no fim da aula/)).toBeInTheDocument();
+    await trava();
+    await userEvent.click(screen.getByRole('button', { name: 'ENTENDI' }));
+    // lacuna
+    await userEvent.click(await screen.findByRole('button', { name: 'No entanto' }));
+    await userEvent.click(screen.getByRole('button', { name: /VERIFICAR/ }));
+    expect(await screen.findByText('Mandou bem!')).toBeInTheDocument();
+    await trava();
+    await userEvent.click(screen.getByRole('button', { name: 'CONTINUAR' }));
+    // ordenar: toca os blocos na ordem certa
+    for (const b of ['Introdução', 'Desenvolvimento', 'Conclusão'])
+      await userEvent.click(await screen.findByRole('button', { name: b }));
+    await userEvent.click(screen.getByRole('button', { name: /VERIFICAR/ }));
+    await screen.findByRole('button', { name: 'CONTINUAR' });
+    await trava();
+    await userEvent.click(screen.getByRole('button', { name: 'CONTINUAR' }));
+    // a alternativa errada volta; agora acerta e a aula termina
+    await userEvent.click(await screen.findByText('Conteúdo'));
+    await userEvent.click(screen.getByRole('button', { name: /VERIFICAR/ }));
+    await screen.findByRole('button', { name: 'CONTINUAR' });
+    await trava();
+    await userEvent.click(screen.getByRole('button', { name: 'CONTINUAR' }));
+    expect(await screen.findByText('Aula concluída!')).toBeInTheDocument();
+    expect(await screen.findByText('5 XP')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'VER O RESUMO DA AULA' })).toBeInTheDocument();
   }, 30000);
 
   it('sair da lição pede confirmação', async () => {

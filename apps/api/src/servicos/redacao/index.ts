@@ -7,18 +7,27 @@ import { and, count, desc, eq, gte, lt, ne, or, sql } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import {
   LINHAS_MIN_PARA_CORRIGIR,
+  XP,
   contarLinhas,
   cotaRedacao,
 } from '@fuse/shared';
-import type { CorrecaoRedacao, CotaRedacao, Redacao, RedacaoPainel, RedacaoResumo } from '@fuse/shared/api';
+import type {
+  CorrecaoRedacao,
+  CotaRedacao,
+  Redacao,
+  RedacaoAulaConcluirResposta,
+  RedacaoPainel,
+  RedacaoResumo,
+} from '@fuse/shared/api';
 import type { Deps, Usuario } from '../../contexto.js';
 import { falha, ErroHttp } from '../../http/erros.js';
 import { contar, iso, type Db } from '../../util.js';
+import { creditarXp } from '../progresso.js';
 import { AULAS_REDACAO } from './curso.js';
 import { corrigirComIa } from './ia.js';
 import { TEMAS_REDACAO, temaRedacao } from './temas.js';
 
-const { redacoes } = schema;
+const { redacoes, redacaoAulas } = schema;
 
 /** Teto de redações guardadas por aluno, contra abuso. */
 export const LIMITE_REDACOES = 300;
@@ -79,7 +88,49 @@ export async function painelRedacao(db: Db, u: Usuario, agora: Date): Promise<Re
     .where(eq(redacoes.usuarioId, u.id))
     .orderBy(desc(redacoes.atualizadoEm))
     .limit(100);
-  return { aulas: AULAS_REDACAO, temas: TEMAS_REDACAO, redacoes: lista.map(resumo), cota: await cota(db, u, agora) };
+  const feitas = await db
+    .select({ aulaId: redacaoAulas.aulaId })
+    .from(redacaoAulas)
+    .where(eq(redacaoAulas.usuarioId, u.id));
+  return {
+    aulas: AULAS_REDACAO,
+    temas: TEMAS_REDACAO,
+    redacoes: lista.map(resumo),
+    cota: await cota(db, u, agora),
+    aulasConcluidas: feitas.map((f) => f.aulaId),
+  };
+}
+
+/**
+ * Conclui uma aula interativa. XP (conclusão e, sem erro, perfeição) só na primeira vez; refazer
+ * é treino livre. A correção dos passos é local, então o ganho fica limitado a uma vez por aula.
+ */
+export async function concluirAulaRedacao(
+  db: Db,
+  u: Usuario,
+  aulaId: string,
+  perfeita: boolean,
+  agora: Date,
+): Promise<RedacaoAulaConcluirResposta> {
+  if (!AULAS_REDACAO.some((a) => a.id === aulaId)) throw falha('nao_encontrado', 'Aula não encontrada.');
+  return db.transaction(async (tx) => {
+    const novas = await tx
+      .insert(redacaoAulas)
+      .values({ usuarioId: u.id, aulaId, perfeita, concluidaEm: agora })
+      .onConflictDoNothing()
+      .returning({ aulaId: redacaoAulas.aulaId });
+    if (novas.length === 0) return { xpGanho: 0, primeiraVez: false };
+    const xpGanho = await creditarXp(
+      tx,
+      u,
+      [
+        { tipo: 'licao_concluida', valor: XP.CONCLUIR_LICAO },
+        { tipo: 'licao_perfeita', valor: perfeita ? XP.LICAO_PERFEITA : 0 },
+      ],
+      agora,
+    );
+    return { xpGanho, primeiraVez: true };
+  });
 }
 
 export async function criarRedacao(db: Db, u: Usuario, temaId: string, texto: string): Promise<Redacao> {

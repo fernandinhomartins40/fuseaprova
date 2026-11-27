@@ -25,6 +25,7 @@ const {
   registrosAcesso,
   anotacoes,
   redacoes,
+  redacaoAulas,
   apostilasDownloads,
 } = schema;
 
@@ -38,7 +39,7 @@ export async function exportarDadosUsuario(db: Db, usuario: Usuario, agora: Date
   } = usuario as Usuario & { sessaoId?: string; sessaoDoisFatoresEm?: Date | null };
   delete (perfil as { sessaoId?: string }).sessaoId;
   delete (perfil as { sessaoDoisFatoresEm?: unknown }).sessaoDoisFatoresEm;
-  const [ped, tent, sess, sims, conq, revs, acessos, notas, downloads, reds] = await Promise.all([
+  const [ped, tent, sess, sims, conq, revs, acessos, notas, downloads, reds, aulasRed] = await Promise.all([
     db.select().from(pedidos).where(eq(pedidos.usuarioId, usuario.id)).orderBy(desc(pedidos.criadoEm)),
     db.select().from(tentativas).where(eq(tentativas.usuarioId, usuario.id)).orderBy(tentativas.respondidaEm),
     db.select().from(sessoesEstudo).where(eq(sessoesEstudo.usuarioId, usuario.id)).orderBy(sessoesEstudo.iniciadaEm),
@@ -58,6 +59,7 @@ export async function exportarDadosUsuario(db: Db, usuario: Usuario, agora: Date
       .where(eq(apostilasDownloads.usuarioId, usuario.id))
       .orderBy(desc(apostilasDownloads.criadoEm)),
     db.select().from(redacoes).where(eq(redacoes.usuarioId, usuario.id)).orderBy(redacoes.criadoEm),
+    db.select().from(redacaoAulas).where(eq(redacaoAulas.usuarioId, usuario.id)).orderBy(redacaoAulas.concluidaEm),
   ]);
   // Datas viram ISO na serialização JSON. A imagem do QR (base64) é omitida.
   return JSON.parse(
@@ -74,6 +76,7 @@ export async function exportarDadosUsuario(db: Db, usuario: Usuario, agora: Date
       anotacoes: notas,
       downloadsApostilas: downloads,
       redacoes: reds,
+      aulasRedacao: aulasRed,
     }),
   ) as ExportarResposta;
 }

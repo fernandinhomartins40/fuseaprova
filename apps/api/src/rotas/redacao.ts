@@ -4,6 +4,7 @@
  */
 import type { Registrador } from '../http/registrar.js';
 import {
+  concluirAulaRedacao,
   corrigirRedacao,
   criarRedacao,
   excluirRedacao,
@@ -17,6 +18,9 @@ const TETO_DIARIO = 500;
 
 export function rotasRedacao(r: Registrador): void {
   r.rota('redacaoPainel', async ({ usuario, deps, agora }) => painelRedacao(deps.db, usuario, agora));
+  r.rota('redacaoAulaConcluir', async ({ usuario, params, corpo, deps, agora }) =>
+    concluirAulaRedacao(deps.db, usuario, params.id, corpo.perfeita, agora),
+  );
   r.rota('redacaoCriar', async ({ usuario, corpo, deps }) => criarRedacao(deps.db, usuario, corpo.temaId, corpo.texto));
   r.rota('redacaoObter', async ({ usuario, params, deps }) => obterRedacao(deps.db, usuario, params.id));
   r.rota('redacaoSalvar', async ({ usuario, params, corpo, deps, agora }) =>

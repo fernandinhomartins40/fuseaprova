@@ -155,6 +155,13 @@
       "when": 1795794951940,
       "tag": "0021_redacoes",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1795819641304,
+      "tag": "0022_redacao_aulas",
+      "breakpoints": true
     }
   ]
 }

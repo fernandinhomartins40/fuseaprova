@@ -154,6 +154,41 @@ describe('preparatório de redação (D49)', () => {
     const [resto] = await t.db.select().from(schema.redacoes).where(eq(schema.redacoes.id, r.id));
     expect(resto).toBeUndefined();
   });
+
+  it('aulas interativas: passos válidos em todas as aulas', async () => {
+    const a = await t.alunoPago();
+    const p = (await t.chamar('redacaoPainel', { cookie: a.cookie })).json();
+    expect(p.aulasConcluidas).toEqual([]);
+    for (const aula of p.aulas) {
+      const exercicios = aula.passos.filter((x: { tipo: string }) => x.tipo !== 'explica');
+      expect(exercicios.length, aula.id).toBeGreaterThanOrEqual(5);
+      for (const x of exercicios) {
+        if (x.tipo === 'escolha') expect(x.correta).toBeLessThan(x.alternativas.length);
+        if (x.tipo === 'lacuna') {
+          expect(x.correta).toBeLessThan(x.opcoes.length);
+          expect(x.frase).toContain('___');
+        }
+      }
+    }
+  });
+
+  it('concluir aula: XP só na primeira vez e libera no painel', async () => {
+    const a = await t.alunoPago();
+    const xp = async () =>
+      (await t.db.select({ xp: schema.usuarios.xpTotal }).from(schema.usuarios).where(eq(schema.usuarios.id, a.id)))[0]!.xp;
+    const antes = await xp();
+    const c = (corpo: { perfeita: boolean }, id = 'introducao') =>
+      t.chamar('redacaoAulaConcluir', { cookie: a.cookie, params: { id }, corpo });
+    expect((await c({ perfeita: true }, 'nao-existe')).statusCode).toBe(404);
+    const r1 = await c({ perfeita: true });
+    expect(r1.statusCode, r1.body).toBe(200);
+    expect(r1.json()).toEqual({ xpGanho: 15, primeiraVez: true });
+    expect((await c({ perfeita: true })).json()).toEqual({ xpGanho: 0, primeiraVez: false });
+    expect(await xp()).toBe(antes + 15);
+    const p = (await t.chamar('redacaoPainel', { cookie: a.cookie })).json();
+    expect(p.aulasConcluidas).toEqual(['introducao']);
+    expect((await c({ perfeita: false }, 'coesao')).json()).toEqual({ xpGanho: 5, primeiraVez: true });
+  });
 });
 
 describe('lerCorrecao', () => {

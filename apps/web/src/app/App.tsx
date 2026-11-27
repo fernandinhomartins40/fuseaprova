@@ -36,6 +36,7 @@ const Simulado = lazy(() => import('../telas/simulado/Simulado'));
 const SimuladoProva = lazy(() => import('../telas/simulado/SimuladoProva'));
 const Redacao = lazy(() => import('../telas/redacao/Redacao'));
 const RedacaoAula = lazy(() => import('../telas/redacao/RedacaoAula'));
+const RedacaoResumo = lazy(() => import('../telas/redacao/RedacaoResumo'));
 const RedacaoTema = lazy(() => import('../telas/redacao/RedacaoTema'));
 const RedacaoFolha = lazy(() => import('../telas/redacao/RedacaoFolha'));
 const Liga = lazy(() => import('../telas/Liga'));
@@ -292,6 +293,14 @@ export function Rotas() {
           element={
             <Guarda nivel="acesso">
               <RedacaoAula />
+            </Guarda>
+          }
+        />
+        <Route
+          path="/redacao/aula/:id/resumo"
+          element={
+            <Guarda nivel="acesso">
+              <RedacaoResumo />
             </Guarda>
           }
         />

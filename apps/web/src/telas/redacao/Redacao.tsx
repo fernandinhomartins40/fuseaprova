@@ -1,6 +1,6 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { formatarDiaMes, diaSP } from '@fuse/shared';
-import type { TemaRedacao } from '@fuse/shared/api';
+import type { RedacaoPainel, TemaRedacao } from '@fuse/shared/api';
 import { mensagemDeErro } from '../../api/cliente';
 import { useMe, useRedacaoPainel } from '../../api/consultas';
 import {
@@ -11,15 +11,20 @@ import {
   ErroTela,
   Imagem,
   LinhaLista,
+  NoTrilha,
   Pagina,
   TituloSecao,
 } from '../../ui';
+import { TEMAS, iconeDaLicao, variaveisDoTema } from '../temaTrilha';
+import ap from '../Aprender.module.css';
 import s from './Redacao.module.css';
 
+const ZIGUE = [0, -56, -112, -56, 0, 56, 112, 56];
+
 const ABAS = [
-  { id: 'aulas', nome: 'Aulas' },
-  { id: 'temas', nome: 'Temas' },
-  { id: 'minhas', nome: 'Minhas redações' },
+  { id: 'aulas', nome: 'Aprender' },
+  { id: 'temas', nome: 'Simulado' },
+  { id: 'minhas', nome: 'Minhas' },
 ] as const;
 type Aba = (typeof ABAS)[number]['id'];
 
@@ -87,20 +92,18 @@ export default function Redacao() {
       ) : painel.isError ? (
         <ErroTela mensagem={mensagemDeErro(painel.error)} onTentar={() => painel.refetch()} />
       ) : aba === 'aulas' ? (
-        <ul className={s.lista}>
-          {painel.data.aulas.map((a) => (
-            <li key={a.id}>
-              <LinhaLista
-                icone={<Imagem nome="icone-dica" tamanho={30} />}
-                titulo={a.titulo}
-                subtitulo={`${a.resumo} · ${a.minutos} min`}
-                onClick={() => navegar(`/redacao/aula/${a.id}`)}
-              />
-            </li>
-          ))}
-        </ul>
+        <TrilhaAulas
+          aulas={painel.data.aulas}
+          concluidas={painel.data.aulasConcluidas}
+          onAbrir={(id) => navegar(`/redacao/aula/${id}`)}
+          onResumo={(id) => navegar(`/redacao/aula/${id}/resumo`)}
+        />
       ) : aba === 'temas' ? (
         <>
+          <p className={s.nota}>
+            Escolha um tema, escreva na folha de 20 a 30 linhas (com cronômetro, se quiser) e mande para a
+            correção no padrão da banca.
+          </p>
           <TituloSecao>Já cobrados pela FAU</TituloSecao>
           <ul className={s.lista}>{painel.data.temas.filter((t) => t.origem === 'fau').map(linhaTema)}</ul>
           <TituloSecao>Temas novos no estilo da FAU</TituloSecao>
@@ -111,7 +114,7 @@ export default function Redacao() {
           <ul className={s.lista}>{painel.data.temas.filter((t) => t.origem === 'fuse').map(linhaTema)}</ul>
         </>
       ) : painel.data.redacoes.length === 0 ? (
-        <Capi pose="estudando" tamanho={110} fala="Escolha um tema na aba Temas e escreva a sua primeira redação!" />
+        <Capi pose="estudando" tamanho={110} fala="Escolha um tema na aba Simulado e escreva a sua primeira redação!" />
       ) : (
         <ul className={s.lista}>
           {painel.data.redacoes.map((r) => (
@@ -134,5 +137,65 @@ export default function Redacao() {
         </ul>
       )}
     </Pagina>
+  );
+}
+
+/** A trilha das aulas interativas: concluídas, a atual (COMEÇAR) e as próximas bloqueadas. */
+function TrilhaAulas({
+  aulas,
+  concluidas,
+  onAbrir,
+  onResumo,
+}: {
+  aulas: RedacaoPainel['aulas'];
+  concluidas: string[];
+  onAbrir: (id: string) => void;
+  onResumo: (id: string) => void;
+}) {
+  const feitas = new Set(concluidas);
+  const atual = aulas.find((a) => !feitas.has(a.id))?.id ?? null;
+  const tema = TEMAS.portugues;
+  return (
+    <section style={variaveisDoTema(tema)} aria-label="Trilha das aulas de redação">
+      <p className={s.nota}>
+        {feitas.size} de {aulas.length} aulas concluídas. Cada aula tem explicação e exercícios, como as
+        lições do app.
+      </p>
+      <div className={ap.secao}>
+        <ol className={ap.nos}>
+          {aulas.map((a, k) => {
+            const estado = feitas.has(a.id) ? 'concluida' : a.id === atual ? 'atual' : 'bloqueada';
+            const desloc = ZIGUE[k % ZIGUE.length]!;
+            return (
+              <li key={a.id} className={ap.noLinha}>
+                <NoTrilha
+                  tipo="normal"
+                  estado={estado}
+                  titulo={a.titulo}
+                  deslocamento={desloc}
+                  podeAbrir={estado !== 'bloqueada'}
+                  imagem={iconeDaLicao(tema.nome, k)}
+                  balao={estado === 'atual' ? 'COMEÇAR' : null}
+                  onAbrir={() => onAbrir(a.id)}
+                />
+                <p className={s.noTitulo} style={{ transform: `translateX(${desloc}px)` }}>
+                  {a.titulo.replace(/^\d+\.\s*/, '')}
+                  {estado === 'concluida' ? (
+                    <button type="button" className={s.resumoLink} onClick={() => onResumo(a.id)}>
+                      ver resumo
+                    </button>
+                  ) : null}
+                </p>
+                {estado === 'atual' ? (
+                  <div className={[ap.capiLado, desloc <= 0 ? ap.capiDireita : ap.capiEsquerda].join(' ')}>
+                    <Capi pose="explicando" tamanho={96} />
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </section>
   );
 }

@@ -4,13 +4,14 @@
  * Os exemplos de parágrafo são nossos (autorais), nunca atribuídos à banca.
  */
 import type { AulaRedacao } from '@fuse/shared/api';
+import { PASSOS_REDACAO } from './passos.js';
 
 const EDITAL = {
   titulo: 'Edital de Abertura nº 01/2026 — Prefeitura de Palmital/PR (FAU), itens 10.28 a 10.41 e 14.3',
   url: 'https://www.concursosfau.com.br',
 };
 
-export const AULAS_REDACAO: AulaRedacao[] = [
+const AULAS: Omit<AulaRedacao, 'passos'>[] = [
   {
     id: 'como-a-fau-corrige',
     titulo: '1. Como a FAU corrige a sua redação',
@@ -393,3 +394,6 @@ export const AULAS_REDACAO: AulaRedacao[] = [
     fontes: [EDITAL],
   },
 ];
+
+/** As aulas com os passos interativos (`passos.ts`); as seções ficam como resumo. */
+export const AULAS_REDACAO: AulaRedacao[] = AULAS.map((a) => ({ ...a, passos: PASSOS_REDACAO[a.id] ?? [] }));

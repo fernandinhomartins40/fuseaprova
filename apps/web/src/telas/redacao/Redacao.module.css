@@ -303,3 +303,137 @@
 .textoFinal p + p {
   margin-top: 8px;
 }
+
+/* trilha das aulas */
+.noTitulo {
+  margin: 4px auto 6px;
+  max-width: 220px;
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--tema-tinta, var(--fa-ink));
+  line-height: 1.3;
+}
+.resumoLink {
+  display: block;
+  margin: 2px auto 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: 2px 6px;
+  color: var(--fa-muted);
+  font-size: 12.5px;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* aula interativa */
+.explicaTexto {
+  text-align: left;
+}
+.explicaTexto ul,
+.explicaTexto ol {
+  padding-left: 20px;
+}
+.lacunaFrase {
+  margin: 8px 0 18px;
+  padding: 16px;
+  border-radius: var(--fa-r-lg);
+  background: var(--fa-surface);
+  border: 2px solid var(--fa-line);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.8;
+}
+.vaga {
+  display: inline-block;
+  min-width: 90px;
+  margin: 0 1px 0 4px;
+  border-bottom: 3px solid var(--fa-line);
+  text-align: center;
+}
+.vagaCheia {
+  border-bottom-color: var(--fa-petroleo);
+  color: var(--fa-petroleo);
+}
+.opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.opcao {
+  padding: 10px 14px;
+  border-radius: var(--fa-r-lg);
+  border: 2px solid var(--fa-line);
+  background: var(--fa-surface);
+  box-shadow: 0 3px 0 var(--fa-line);
+  color: var(--fa-ink);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.3;
+  cursor: pointer;
+}
+.opcao:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--fa-line);
+}
+.opcao:disabled {
+  cursor: default;
+}
+.opcaoMarcada {
+  border-color: var(--fa-blue);
+  box-shadow: 0 3px 0 var(--fa-blue);
+  background: var(--fa-blue-soft, #e2edfe);
+}
+.opcaoCerta {
+  border-color: var(--fa-green);
+  box-shadow: 0 3px 0 var(--fa-green-shade);
+  background: var(--fa-green-soft);
+  color: var(--fa-green-shade);
+}
+.opcaoErrada {
+  border-color: var(--fa-red);
+  box-shadow: 0 3px 0 var(--fa-red-shade);
+  background: var(--fa-red-soft);
+  color: var(--fa-red-shade);
+}
+.ordem {
+  list-style: none;
+  margin: 4px 0 14px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ordemLinha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ordemNumero {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--fa-surface-soft);
+  border: 2px solid var(--fa-line);
+  font-weight: 900;
+  color: var(--fa-petroleo);
+}
+.ordemVazio {
+  flex: 1;
+  height: 46px;
+  border-radius: var(--fa-r-lg);
+  border: 2px dashed var(--fa-line);
+}
+.ordemItem {
+  flex: 1;
+  text-align: left;
+}
+.opcoes .ordemItem {
+  flex: 1 1 100%;
+}

@@ -554,3 +554,10 @@ Colunas novas em `simulados`: `modo`, `situacao` (corrigido, nao_concluido ou de
   A tela avisa que é uma estimativa para treino, não a nota da banca.
 - **Cota.** São 3 correções por aluno por semana, de segunda a domingo no horário de São Paulo (decisão do dono). A cota é conferida e reservada numa transação com `pg_advisory_xact_lock` por aluno. Se a IA falhar, a redação volta a rascunho e a cota não é gasta. Uma correção travada há mais de 3 minutos pode ser refeita. Redações corrigidas não podem ser apagadas, para que apagar não devolva cota. O servidor tem ainda um teto global de 500 correções por dia.
 - **Dados.** Tabela nova `redacoes` (migração 0021), que entra na exportação LGPD e é apagada na exclusão da conta. Rotas novas: `GET/POST /redacao`, `GET/PUT/DELETE /redacao/:id` e `POST /redacao/:id/corrigir`.
+- **Aulas interativas (27/11, pedido do dono).** A primeira versão mostrava as aulas como páginas de leitura. O dono pediu o formato das lições do app, e cada aula virou uma lição:
+  - a Capi explica em pílulas;
+  - o aluno responde em três formatos: alternativa, completar a lacuna ou pôr em ordem;
+  - a folha de acerto ou erro é a mesma das lições, e o exercício errado volta no fim da aula.
+  - As aulas ficam numa trilha (aba Aprender, com a próxima liberada ao concluir). A aba Simulado tem os temas e a folha.
+  - O texto completo de cada aula continua como "resumo", em `/redacao/aula/:id/resumo`.
+  - A correção dos exercícios é local, como no "Entenda o tema" (D28). O servidor guarda só a conclusão (tabela `redacao_aulas`, migração 0022, PK aluno + aula) e dá XP só na primeira vez que a aula é concluída: 5 pela conclusão e mais 10 se não houve erro. Por isso o ganho que o cliente pode declarar fica limitado a 15 XP por aula. Os passos estão em `servicos/redacao/passos.ts`; os parágrafos e temas de exemplo são autorais.

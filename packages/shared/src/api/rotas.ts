@@ -434,6 +434,16 @@ export const ROTAS = {
     descricao: 'Mini-curso, temas, minhas redações e a cota de correções da semana (D49).',
     resposta: red.RedacaoPainel,
   }),
+  redacaoAulaConcluir: rota({
+    metodo: 'POST',
+    caminho: '/redacao/aulas/:id/concluir',
+    guarda: 'acesso',
+    descricao: 'Marca a aula interativa de redação como concluída (XP na primeira vez).',
+    params: red.AulaRedacaoParams,
+    corpo: red.RedacaoAulaConcluirEntrada,
+    resposta: red.RedacaoAulaConcluirResposta,
+    limite: { max: 60, janelaMs: HORA, por: 'usuario' },
+  }),
   redacaoCriar: rota({
     metodo: 'POST',
     caminho: '/redacao',
