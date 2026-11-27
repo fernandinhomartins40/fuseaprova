@@ -3,7 +3,7 @@
  * por semana é conferida e reservada numa transação com trava por aluno (dois cliques ou duas
  * abas não passam da cota). Se a IA falhar, a redação volta a rascunho e a cota não é gasta.
  */
-import { and, count, desc, eq, gte, ne, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gte, lt, ne, or, sql } from 'drizzle-orm';
 import { schema } from '@fuse/db';
 import {
   LINHAS_MIN_PARA_CORRIGIR,
@@ -152,7 +152,7 @@ export async function corrigirRedacao(
           eq(redacoes.usuarioId, u.id),
           or(
             eq(redacoes.status, 'rascunho'),
-            and(eq(redacoes.status, 'corrigindo'), sql`${redacoes.atualizadoEm} < ${new Date(agora.getTime() - CORRIGINDO_EXPIRA_MS)}`),
+            and(eq(redacoes.status, 'corrigindo'), lt(redacoes.atualizadoEm, new Date(agora.getTime() - CORRIGINDO_EXPIRA_MS))),
           ),
         ),
       )
