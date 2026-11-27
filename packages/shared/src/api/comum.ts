@@ -59,6 +59,7 @@ export const CODIGOS_ERRO = {
   manutencao: 503,
   banco_indisponivel: 503,
   dois_fatores_bloqueado: 429,
+  cota_redacao: 429,
   interno: 500,
 } as const;
 export type CodigoErro = keyof typeof CODIGOS_ERRO;
@@ -101,6 +102,8 @@ export const MENSAGENS_ERRO: Record<CodigoErro, string> = {
     'O banco de dados não está respondendo. O app volta sozinho quando ele voltar; se passar de alguns minutos, confira a VPS.',
   dois_fatores_bloqueado:
     'Muitos códigos errados. Por segurança, a verificação ficou bloqueada por alguns minutos.',
+  cota_redacao:
+    'Você já usou as 3 correções desta semana. Elas voltam na segunda-feira; até lá, dá para escrever e salvar.',
   interno: 'Algo deu errado do nosso lado. Tente de novo em instantes.',
 };
 

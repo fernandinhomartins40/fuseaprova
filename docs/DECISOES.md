@@ -539,3 +539,18 @@ Regras escolhidas pelo dono:
 
 Colunas novas em `simulados`: `modo`, `situacao` (corrigido, nao_concluido ou descartado), `recompensa`, `ms_usados` e `ultimo_sinal_em`. Rotas novas: `POST /simulados/:id/sinal` e `POST /simulados/:id/descartar`. O resultado "não concluído" ou "descartado" vem sem as questões, e os apps antigos mostram uma tela de 0 ponto com o selo, sem quebrar.
 
+
+## D49. Preparatório de redação com correção por IA (27/11/2026, pedido do dono)
+
+- **Por quê.** No edital de Palmital, só o Professor Licenciatura Plena faz redação (itens 10.28 a 10.41). A nota final dele é (objetiva + redação) ÷ 2 + títulos (item 14.3), então a redação pesa o mesmo que a objetiva inteira.
+- **Quem vê.** Todos os alunos com acesso (decisão do dono). Para o Professor, a tela destaca que a redação vale metade da nota. Entradas: atalho na aba Simulados e no Perfil.
+- **Mini-curso.** São 10 aulas com fontes citadas: o edital, os cadernos de professor da FAU de 2023 a 2026, as leis no Planalto, o MEC, Nova Escola, UNESP e UFMG. O conteúdo fica só na API (`servicos/redacao/curso.ts`), atrás da guarda de acesso.
+- **Temas.** São 8 temas reais de provas de professor da FAU, com o texto do caderno e a prova de origem: Rio Azul e Borrazópolis 2026, Toledo 2025, Imbituva e Cruzeiro do Iguaçu 2023. A eles se somam 18 temas nossos, no formato FAU 2026 (enunciado + "abordando A, B e C", às vezes com proposta de intervenção) e com o conteúdo do Anexo II. Tema nosso nunca aparece como da FAU. No caderno de Imbituva 2023, o comando pedia "texto narrativo", mas os critérios pediam dissertativo; o app avisa isso e treina no formato dissertativo.
+- **Folha.** O aluno digita a redação (decisão do dono: não há foto). O contador de linhas é uma estimativa de 68 caracteres por linha, com recuo de parágrafo e alerta fora de 20 a 30 linhas. Há também um cronômetro opcional de 1h10 e o rascunho salva sozinho.
+- **Correção.** É feita por IA, com a mesma chave Fusai da D44 (DeepSeek). O prompt traz a Tabela 10.1 literal e os casos de nota zero do item 10.39. O servidor faz três ajustes na resposta:
+  - limita cada aspecto ao máximo (50/40/10);
+  - só aceita a nota zero quando há motivo;
+  - descarta trechos que não estão no texto do aluno.
+  A tela avisa que é uma estimativa para treino, não a nota da banca.
+- **Cota.** São 3 correções por aluno por semana, de segunda a domingo no horário de São Paulo (decisão do dono). A cota é conferida e reservada numa transação com `pg_advisory_xact_lock` por aluno. Se a IA falhar, a redação volta a rascunho e a cota não é gasta. Uma correção travada há mais de 3 minutos pode ser refeita. Redações corrigidas não podem ser apagadas, para que apagar não devolva cota. O servidor tem ainda um teto global de 500 correções por dia.
+- **Dados.** Tabela nova `redacoes` (migração 0021), que entra na exportação LGPD e é apagada na exclusão da conta. Rotas novas: `GET/POST /redacao`, `GET/PUT/DELETE /redacao/:id` e `POST /redacao/:id/corrigir`.

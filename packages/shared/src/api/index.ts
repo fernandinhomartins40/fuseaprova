@@ -18,5 +18,6 @@ export * from './superadmin.js';
 export * from './precos.js';
 export * from './lembretes.js';
 export * from './edital.js';
+export * from './redacao.js';
 export * from './rotas.js';
 export * from './zod-ptbr.js';

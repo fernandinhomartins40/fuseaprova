@@ -23,6 +23,7 @@ import * as sa from './superadmin.js';
 import * as pr from './precos.js';
 import * as lem from './lembretes.js';
 import * as edi from './edital.js';
+import * as red from './redacao.js';
 
 export const PREFIXO_API = '/api';
 
@@ -424,6 +425,58 @@ export const ROTAS = {
     descricao: 'Questão anotada com gabarito, explicação e a anotação.',
     params: IdParams,
     resposta: est.AnotacaoDetalheResposta,
+  }),
+  /* ------------------------------------------------------- redação (D49) */
+  redacaoPainel: rota({
+    metodo: 'GET',
+    caminho: '/redacao',
+    guarda: 'acesso',
+    descricao: 'Mini-curso, temas, minhas redações e a cota de correções da semana (D49).',
+    resposta: red.RedacaoPainel,
+  }),
+  redacaoCriar: rota({
+    metodo: 'POST',
+    caminho: '/redacao',
+    guarda: 'acesso',
+    descricao: 'Começa uma redação (rascunho) sobre um tema do banco.',
+    corpo: red.RedacaoCriarEntrada,
+    resposta: red.Redacao,
+    limite: { max: 30, janelaMs: HORA, por: 'usuario' },
+  }),
+  redacaoObter: rota({
+    metodo: 'GET',
+    caminho: '/redacao/:id',
+    guarda: 'acesso',
+    descricao: 'Uma redação do aluno, com a correção.',
+    params: IdParams,
+    resposta: red.Redacao,
+  }),
+  redacaoSalvar: rota({
+    metodo: 'PUT',
+    caminho: '/redacao/:id',
+    guarda: 'acesso',
+    descricao: 'Salva o texto do rascunho.',
+    params: IdParams,
+    corpo: red.RedacaoSalvarEntrada,
+    resposta: red.Redacao,
+    limite: { max: 120, janelaMs: MIN, por: 'usuario' },
+  }),
+  redacaoCorrigir: rota({
+    metodo: 'POST',
+    caminho: '/redacao/:id/corrigir',
+    guarda: 'acesso',
+    descricao: 'Correção por IA com a Tabela 10.1 do edital (3 por semana).',
+    params: IdParams,
+    resposta: red.RedacaoCorrigirResposta,
+    limite: { max: 10, janelaMs: HORA, por: 'usuario' },
+  }),
+  redacaoExcluir: rota({
+    metodo: 'DELETE',
+    caminho: '/redacao/:id',
+    guarda: 'acesso',
+    descricao: 'Apaga uma redação do aluno.',
+    params: IdParams,
+    resposta: null,
   }),
   sessaoConcluir: rota({
     metodo: 'POST',

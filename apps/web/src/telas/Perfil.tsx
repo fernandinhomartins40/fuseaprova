@@ -138,6 +138,17 @@ export default function Perfil() {
             <IconeTraco nome="chevron" tamanho={22} />
           </button>
 
+          <button type="button" className={s.edital} onClick={() => navegar('/redacao')}>
+            <span className={s.editalIcone}>
+              <Imagem nome="icone-portugues" tamanho={34} />
+            </span>
+            <span className={s.editalTextos}>
+              <span className={s.editalTitulo}>Preparatório de redação</span>
+              <span className={s.editalStatus}>Mini-curso, temas da FAU e correção da sua redação</span>
+            </span>
+            <IconeTraco nome="chevron" tamanho={22} />
+          </button>
+
           <button type="button" className={s.edital} onClick={() => navegar('/desempenho')}>
             <span className={s.editalIcone}>
               <Imagem nome="icone-alvo" tamanho={34} />

@@ -34,6 +34,10 @@ const Licao = lazy(() => import('../telas/licao/Licao'));
 const Revisar = lazy(() => import('../telas/Revisar'));
 const Simulado = lazy(() => import('../telas/simulado/Simulado'));
 const SimuladoProva = lazy(() => import('../telas/simulado/SimuladoProva'));
+const Redacao = lazy(() => import('../telas/redacao/Redacao'));
+const RedacaoAula = lazy(() => import('../telas/redacao/RedacaoAula'));
+const RedacaoTema = lazy(() => import('../telas/redacao/RedacaoTema'));
+const RedacaoFolha = lazy(() => import('../telas/redacao/RedacaoFolha'));
 const Liga = lazy(() => import('../telas/Liga'));
 const Perfil = lazy(() => import('../telas/Perfil'));
 const Configuracoes = lazy(() => import('../telas/Configuracoes'));
@@ -272,6 +276,38 @@ export function Rotas() {
           element={
             <Guarda nivel="acesso">
               <SimuladoProva />
+            </Guarda>
+          }
+        />
+        <Route
+          path="/redacao"
+          element={
+            <Guarda nivel="acesso">
+              <Redacao />
+            </Guarda>
+          }
+        />
+        <Route
+          path="/redacao/aula/:id"
+          element={
+            <Guarda nivel="acesso">
+              <RedacaoAula />
+            </Guarda>
+          }
+        />
+        <Route
+          path="/redacao/tema/:temaId"
+          element={
+            <Guarda nivel="acesso">
+              <RedacaoTema />
+            </Guarda>
+          }
+        />
+        <Route
+          path="/redacao/:id"
+          element={
+            <Guarda nivel="acesso">
+              <RedacaoFolha />
             </Guarda>
           }
         />

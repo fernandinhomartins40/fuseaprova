@@ -24,6 +24,7 @@ const {
   usuariosConcursos,
   registrosAcesso,
   anotacoes,
+  redacoes,
   apostilasDownloads,
 } = schema;
 
@@ -37,7 +38,7 @@ export async function exportarDadosUsuario(db: Db, usuario: Usuario, agora: Date
   } = usuario as Usuario & { sessaoId?: string; sessaoDoisFatoresEm?: Date | null };
   delete (perfil as { sessaoId?: string }).sessaoId;
   delete (perfil as { sessaoDoisFatoresEm?: unknown }).sessaoDoisFatoresEm;
-  const [ped, tent, sess, sims, conq, revs, acessos, notas, downloads] = await Promise.all([
+  const [ped, tent, sess, sims, conq, revs, acessos, notas, downloads, reds] = await Promise.all([
     db.select().from(pedidos).where(eq(pedidos.usuarioId, usuario.id)).orderBy(desc(pedidos.criadoEm)),
     db.select().from(tentativas).where(eq(tentativas.usuarioId, usuario.id)).orderBy(tentativas.respondidaEm),
     db.select().from(sessoesEstudo).where(eq(sessoesEstudo.usuarioId, usuario.id)).orderBy(sessoesEstudo.iniciadaEm),
@@ -56,6 +57,7 @@ export async function exportarDadosUsuario(db: Db, usuario: Usuario, agora: Date
       .from(apostilasDownloads)
       .where(eq(apostilasDownloads.usuarioId, usuario.id))
       .orderBy(desc(apostilasDownloads.criadoEm)),
+    db.select().from(redacoes).where(eq(redacoes.usuarioId, usuario.id)).orderBy(redacoes.criadoEm),
   ]);
   // Datas viram ISO na serialização JSON. A imagem do QR (base64) é omitida.
   return JSON.parse(
@@ -71,6 +73,7 @@ export async function exportarDadosUsuario(db: Db, usuario: Usuario, agora: Date
       registrosAcesso: acessos,
       anotacoes: notas,
       downloadsApostilas: downloads,
+      redacoes: reds,
     }),
   ) as ExportarResposta;
 }
@@ -103,6 +106,7 @@ export async function anonimizarUsuario(tx: Db, _segredo: string, usuarioId: str
   await tx.delete(codigosRecuperacao).where(eq(codigosRecuperacao.usuarioId, usuarioId));
   await tx.delete(usuariosConcursos).where(eq(usuariosConcursos.usuarioId, usuarioId));
   await tx.delete(anotacoes).where(eq(anotacoes.usuarioId, usuarioId));
+  await tx.delete(redacoes).where(eq(redacoes.usuarioId, usuarioId));
   await tx.delete(apostilasDownloads).where(eq(apostilasDownloads.usuarioId, usuarioId));
   await encerrarSessoesDoUsuario(tx, usuarioId);
   // S-21: a auditoria sobre a conta e os pedidos dela perde nome, e-mail, celular e CPF (o que

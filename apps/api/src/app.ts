@@ -46,6 +46,7 @@ import { rotasConteudo } from './rotas/conteudo.js';
 import { rotasAnotacoes } from './rotas/anotacoes.js';
 import { rotasApostilas } from './rotas/apostilas.js';
 import { rotasEdital } from './rotas/edital.js';
+import { rotasRedacao } from './rotas/redacao.js';
 import { rotasLembretes } from './rotas/lembretes.js';
 import { rotasEstudo } from './rotas/estudo.js';
 import { rotasMe } from './rotas/me.js';
@@ -351,6 +352,7 @@ export async function criarApp(opcoes: OpcoesApp): Promise<FastifyInstance> {
   rotasConteudo(r);
   rotasEstudo(r);
   rotasAnotacoes(r);
+  rotasRedacao(r);
   rotasLembretes(r);
   rotasOffline(r);
   rotasSimulados(r);

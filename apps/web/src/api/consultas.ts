@@ -22,6 +22,8 @@ export const CHAVES = {
   anotacoes: ['anotacoes'] as const,
   desempenho: ['desempenho'] as const,
   anotacao: (questaoId: string) => ['anotacoes', questaoId] as const,
+  redacao: ['redacao'] as const,
+  redacaoItem: (id: string) => ['redacao', id] as const,
 };
 
 export function criarQueryClient() {
@@ -124,6 +126,25 @@ export function useSimulado(id: string) {
     queryKey: CHAVES.simulado(id),
     queryFn: ({ signal }) => chamar('simuladoObter', { params: { id }, signal }),
     staleTime: 0,
+  });
+}
+
+/** D49: mini-curso, temas, minhas redações e a cota da semana. */
+export function useRedacaoPainel() {
+  return useQuery({
+    queryKey: CHAVES.redacao,
+    queryFn: ({ signal }) => chamar('redacaoPainel', { signal }),
+    staleTime: 0,
+  });
+}
+
+/** D49: uma redação. Enquanto a IA corrige, confere de 5 em 5 segundos. */
+export function useRedacao(id: string) {
+  return useQuery({
+    queryKey: CHAVES.redacaoItem(id),
+    queryFn: ({ signal }) => chamar('redacaoObter', { params: { id }, signal }),
+    staleTime: 0,
+    refetchInterval: (q) => (q.state.data?.status === 'corrigindo' ? 5000 : false),
   });
 }
 

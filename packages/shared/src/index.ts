@@ -33,3 +33,4 @@ export * from './validadeAcesso.js';
 export * from './areas.js';
 export * from './profissoes.js';
 export * from './velomail.js';
+export * from './redacao.js';

@@ -15,6 +15,8 @@ import {
   cifrarTexto,
   classificarTema,
   comboVisivel,
+  contarLinhas,
+  cotaRedacao,
   CONQUISTAS,
   corDoAvatar,
   diaSP,
@@ -50,6 +52,7 @@ import {
   type CodigoErro,
   type NomeRota,
   type QuestaoParaAluno,
+  type Redacao,
 } from '@fuse/shared/api';
 import {
   DISCIPLINAS,
@@ -283,6 +286,50 @@ const DATA_PROVA = '2027-03-14';
 /* ----------------------------------------------------------------- helpers */
 
 const agora = () => new Date();
+
+/* D49: redação (mini-curso e temas de amostra; a correção é fixa). */
+const TEMAS_RED = [
+  {
+    id: 'fau-amostra',
+    titulo: 'Ética e cidadania na atuação da escola na era digital',
+    eixo: 'Escola e cidadania',
+    apoio: ['A transformação digital tem impactado a escola.'],
+    fonteApoio: null,
+    comando: 'Redija um texto dissertativo-argumentativo sobre o tema.',
+    origem: 'fau' as const,
+    prova: 'Prefeitura de Borrazópolis/PR · Professor · 2026',
+  },
+  {
+    id: 'fuse-amostra',
+    titulo: 'O brincar como eixo da aprendizagem',
+    eixo: 'BNCC e Educação Infantil',
+    apoio: ['Na BNCC, as interações e a brincadeira são os eixos estruturantes.'],
+    fonteApoio: null,
+    comando: 'Redija um texto dissertativo-argumentativo sobre o tema.',
+    origem: 'fuse' as const,
+    prova: null,
+  },
+];
+const AULAS_RED = [
+  {
+    id: 'como-a-fau-corrige',
+    titulo: '1. Como a FAU corrige a sua redação',
+    resumo: 'Os três aspectos da nota.',
+    minutos: 6,
+    secoes: [{ titulo: 'Os três aspectos', texto: '- **Conteúdo**, até 50\n- **Estrutura**, até 40\n- **Expressão**, até 10' }],
+    fontes: [{ titulo: 'Edital de Palmital', url: 'https://www.concursosfau.com.br' }],
+  },
+];
+const redacoesMock = new Map<string, Redacao>();
+function cotaRedMock() {
+  const c = cotaRedacao([...redacoesMock.values()].filter((r) => r.status === 'corrigida').length, agora());
+  return { usadas: c.usadas, limite: c.limite, restantes: c.restantes, renovaEm: c.renovaEm.toISOString() };
+}
+function redacaoMock(id: string): Redacao {
+  const r = redacoesMock.get(id);
+  if (!r) throw new Falha(404, 'nao_encontrado');
+  return r;
+}
 const hoje = () => diaSP(agora());
 const uuid = () => crypto.randomUUID();
 
@@ -1154,6 +1201,65 @@ const H: Partial<Record<NomeRota, Handler>> = {
     if (estado.usuario.gemas < 5) throw new Falha(409, 'gemas_insuficientes');
     estado.usuario.gemas -= 5;
     return { dica: q.dica, gemas: estado.usuario.gemas };
+  },
+  redacaoPainel: () => ({
+    aulas: AULAS_RED,
+    temas: TEMAS_RED,
+    redacoes: [...redacoesMock.values()].map(({ texto: _t, correcao: _c, ...r }) => r),
+    cota: cotaRedMock(),
+  }),
+  redacaoCriar: ({ corpo }) => {
+    const { temaId, texto = '' } = corpo as { temaId: string; texto?: string };
+    const tema = TEMAS_RED.find((t) => t.id === temaId);
+    if (!tema) throw new Falha(404, 'nao_encontrado');
+    const quando = agora().toISOString();
+    const r: Redacao = {
+      id: crypto.randomUUID(),
+      temaId,
+      temaTitulo: tema.titulo,
+      status: 'rascunho',
+      linhas: contarLinhas(texto),
+      nota: null,
+      atualizadoEm: quando,
+      corrigidoEm: null,
+      texto,
+      correcao: null,
+    };
+    redacoesMock.set(r.id, r);
+    return r;
+  },
+  redacaoObter: ({ params }) => redacaoMock(params.id!),
+  redacaoSalvar: ({ params, corpo }) => {
+    const r = redacaoMock(params.id!);
+    if (r.status !== 'rascunho') throw new Falha(409, 'conflito');
+    const texto = (corpo as { texto: string }).texto;
+    Object.assign(r, { texto, linhas: contarLinhas(texto), atualizadoEm: agora().toISOString() });
+    return r;
+  },
+  redacaoCorrigir: ({ params }) => {
+    const r = redacaoMock(params.id!);
+    if (cotaRedMock().restantes === 0) throw new Falha(429, 'cota_redacao');
+    Object.assign(r, {
+      status: 'corrigida',
+      nota: 62,
+      corrigidoEm: agora().toISOString(),
+      correcao: {
+        nota: 62,
+        notas: { conteudo: 30, estrutura: 25, expressao: 7 },
+        zerada: false,
+        motivoZero: null,
+        resumo: 'Tese clara, mas os argumentos precisam de mais desenvolvimento.',
+        comentarios: { conteudo: 'Aprofunde o segundo argumento.', estrutura: 'Boa divisão de parágrafos.', expressao: 'Poucos desvios.' },
+        pontosFortes: ['Tese clara'],
+        melhorar: ['Use repertório pedagógico'],
+        trechos: [],
+      },
+    });
+    return { redacao: r, cota: cotaRedMock() };
+  },
+  redacaoExcluir: ({ params }) => {
+    redacoesMock.delete(params.id!);
+    return null;
   },
   anotacaoObter: ({ params }) => ({ anotacao: anotacaoMock(params.id!) }),
   anotacaoSalvar: ({ params, corpo }) => {

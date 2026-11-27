@@ -241,3 +241,29 @@
   opacity: 0.6;
   cursor: default;
 }
+
+/* D49: atalho para o preparatório de redação */
+.redacao {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: var(--fa-r-xl);
+  background: var(--fa-laranja-soft);
+  border: 1.5px solid var(--fa-laranja-line);
+  text-align: left;
+  color: var(--fa-ink);
+}
+.redacaoTextos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.redacaoTextos small {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fa-muted);
+}

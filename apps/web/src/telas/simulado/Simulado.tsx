@@ -174,6 +174,19 @@ export default function Simulado() {
         COMEÇAR SIMULADO
       </Botao3D>
 
+      <button type="button" className={s.redacao} onClick={() => navegar('/redacao')}>
+        <Imagem nome="icone-portugues" tamanho={34} />
+        <span className={s.redacaoTextos}>
+          <strong>Redação · preparatório</strong>
+          <small>
+            {/professor licenciatura/i.test(me.data?.cargo?.nome ?? '')
+              ? 'No seu cargo, a redação vale metade da nota final. Treine com correção.'
+              : 'Mini-curso, temas da FAU e correção da sua redação.'}
+          </small>
+        </span>
+        <IconeTraco nome="chevron" tamanho={22} />
+      </button>
+
       <TituloSecao>Seus simulados</TituloSecao>
       {lista.isPending ? (
         <Carregando />

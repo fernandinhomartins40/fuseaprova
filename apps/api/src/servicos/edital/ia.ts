@@ -22,7 +22,7 @@ type Mensagem = { role: 'system' | 'user'; content: string };
 export async function chamarFusai(
   cfg: Config['fusai'],
   messages: Mensagem[],
-  opcoes: { maxTokens: number; json?: boolean },
+  opcoes: { maxTokens: number; json?: boolean; timeoutMs?: number },
   fetchFn: typeof fetch = fetch,
 ): Promise<string> {
   if (!cfg.apiKey) throw falha('ia_indisponivel');
@@ -37,7 +37,7 @@ export async function chamarFusai(
         max_tokens: opcoes.maxTokens,
         ...(opcoes.json ? { response_format: { type: 'json_object' } } : {}),
       }),
-      signal: AbortSignal.timeout(45_000),
+      signal: AbortSignal.timeout(opcoes.timeoutMs ?? 45_000),
     });
     if (!r.ok) throw new Error(`Fusai ${r.status}`);
     const corpo = (await r.json()) as { choices?: { message?: { content?: string } }[] };

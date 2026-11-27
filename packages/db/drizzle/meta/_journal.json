@@ -148,6 +148,13 @@
       "when": 1795571969391,
       "tag": "0020_simulado_modos",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1795794951940,
+      "tag": "0021_redacoes",
+      "breakpoints": true
     }
   ]
 }

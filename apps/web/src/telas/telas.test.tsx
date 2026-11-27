@@ -293,6 +293,35 @@ describe('telas do aluno contra a API simulada', () => {
     expect(screen.getByText('Correta')).toBeInTheDocument();
   }, 30000);
 
+  it('redação (D49): aula, tema, folha com contador, correção e nota', async () => {
+    const api = ligarApiSimulada();
+    await api.cenario('aluno');
+    const { container } = abrir('/redacao');
+    expect(await screen.findByText('1. Como a FAU corrige a sua redação')).toBeInTheDocument();
+    expect(screen.getByText(/Correções desta semana/)).toBeInTheDocument();
+    expect(await violacoesSerias(container)).toEqual([]);
+    await userEvent.click(screen.getByRole('tab', { name: 'Temas' }));
+    expect(screen.getByText('Já cobrados pela FAU')).toBeInTheDocument();
+    await userEvent.click(screen.getByText('O brincar como eixo da aprendizagem'));
+    expect(await screen.findByText('Tema Fuse Aprova · no estilo da FAU')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'COMEÇAR A REDAÇÃO' }));
+    const folha = await screen.findByLabelText(/Sua redação/);
+    const envio = screen.getByRole('button', { name: 'ENVIAR PARA CORREÇÃO' });
+    expect(envio).toBeDisabled();
+    const paragrafo = 'O brincar organiza a aprendizagem da criança pequena e precisa de intenção pedagógica clara. '.repeat(6);
+    await userEvent.click(folha);
+    await userEvent.paste(`${paragrafo}
+${paragrafo}
+${paragrafo}`);
+    expect(screen.getByText(/cerca de \d+ linhas · 20 a 30/)).toBeInTheDocument();
+    await waitFor(() => expect(envio).toBeEnabled());
+    await userEvent.click(envio);
+    await userEvent.click(await screen.findByRole('button', { name: 'CORRIGIR' }));
+    expect(await screen.findByText('62')).toBeInTheDocument();
+    expect(screen.getByText(/não a nota da banca/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'REESCREVER COM AS MELHORIAS' })).toBeInTheDocument();
+  }, 30000);
+
   it('sair da lição pede confirmação', async () => {
     const api = ligarApiSimulada();
     await api.cenario('aluno');

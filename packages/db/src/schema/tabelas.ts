@@ -1205,3 +1205,33 @@ export const anotacoes = pgTable(
     check('anotacoes_texto_ck', sql`char_length(${t.texto}) between 1 and 2000`),
   ],
 );
+
+/**
+ * extra (D49): redação do aluno no preparatório (tema do banco, texto e a correção por IA).
+ * Só o dono lê e escreve (toda consulta filtra por `usuario_id`). A cota de 3 correções por semana
+ * conta `corrigido_em` na semana de São Paulo.
+ */
+export const redacoes = pgTable(
+  'redacoes',
+  {
+    id: id(),
+    usuarioId: uuid('usuario_id')
+      .notNull()
+      .references(() => usuarios.id, { onDelete: 'cascade' }),
+    temaId: text('tema_id').notNull(),
+    texto: text('texto').notNull().default(''),
+    /** rascunho → corrigindo (IA em andamento) → corrigida. */
+    status: text('status').$type<'rascunho' | 'corrigindo' | 'corrigida'>().notNull().default('rascunho'),
+    linhas: integer('linhas').notNull().default(0),
+    nota: integer('nota'),
+    correcao: jsonb('correcao').$type<Record<string, unknown>>(),
+    criadoEm: criadoEm(),
+    atualizadoEm: atualizadoEm(),
+    corrigidoEm: ts('corrigido_em'),
+  },
+  (t) => [
+    index('redacoes_usuario_atualizado_idx').on(t.usuarioId, t.atualizadoEm),
+    index('redacoes_usuario_corrigido_idx').on(t.usuarioId, t.corrigidoEm),
+    check('redacoes_texto_ck', sql`char_length(${t.texto}) <= 4000`),
+  ],
+);
