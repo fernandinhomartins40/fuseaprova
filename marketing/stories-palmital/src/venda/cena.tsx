@@ -49,6 +49,7 @@ const ALTURA: Record<TipoTela, number> = {
   texto: 200,
   datas: 340,
   garantia: 270,
+  pagamento: 420,
 };
 
 const COR_BRILHO: Record<TipoTela, string> = {
@@ -64,6 +65,7 @@ const COR_BRILHO: Record<TipoTela, string> = {
   texto: '#FF7A1A',
   datas: '#7cc8ff',
   garantia: '#34D399',
+  pagamento: '#34D399',
 };
 
 /* ------------------------------------------------------------- holograma HTML */

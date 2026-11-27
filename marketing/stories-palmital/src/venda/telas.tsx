@@ -387,6 +387,44 @@ export const TelaGarantia: React.FC<PropsTela> = ({ t }) => (
   </div>
 );
 
+/* ------------------------------------------------------------- pagamento */
+// QR ilustrativo (padrão fixo, não lê como código de verdade).
+const QR = Array.from({ length: 121 }, (_, i) => ((i * 37 + (i >> 3) * 11) % 7) < 3);
+const Canto: React.FC<{ s: React.CSSProperties }> = ({ s }) => (
+  <span style={{ position: 'absolute', width: 26, height: 26, border: '6px solid #111', borderRadius: 4, background: '#fff', boxShadow: 'inset 0 0 0 4px #fff, inset 0 0 0 10px #111', ...s }} />
+);
+export const TelaPagamento: React.FC<PropsTela> = ({ t }) => {
+  const liberado = p(t, 34, 44, sai);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ ...pop(t, 0), ...titulo, fontSize: 24 }}>Como você quer pagar?</div>
+      <div style={{ display: 'flex', gap: 12, ...pop(t, 5) }}>
+        <div style={{ flex: 1, background: '#fff', borderRadius: 18, padding: 12, border: '3px solid #0f6e70', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+          <Chip variante="acerto">PIX</Chip>
+          <div style={{ position: 'relative', width: 110, height: 110, display: 'grid', gridTemplateColumns: 'repeat(11, 1fr)', gap: 1 }}>
+            {QR.map((x, i) => <span key={i} style={{ background: x && p(t, 6 + (i % 11), 14 + (i % 11), sai) > 0.5 ? '#111' : 'transparent' }} />)}
+            <Canto s={{ left: 0, top: 0 }} /><Canto s={{ right: 0, top: 0 }} /><Canto s={{ left: 0, bottom: 0 }} />
+          </div>
+          <span style={{ fontWeight: 900, fontSize: 15, color: '#0f6e70' }}>à vista</span>
+        </div>
+        <div style={{ flex: 1, background: '#fff', borderRadius: 18, padding: 12, border: '3px solid #E8590C', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, ...pop(t, 12) }}>
+          <Chip variante="laranja">CARTÃO</Chip>
+          <div style={{ width: 120, height: 76, borderRadius: 12, background: 'linear-gradient(135deg,#E8590C,#7C3AED)', position: 'relative', boxShadow: '0 4px 0 rgba(0,0,0,0.15)' }}>
+            <span style={{ position: 'absolute', left: 12, top: 16, width: 22, height: 16, borderRadius: 4, background: '#FFD27A' }} />
+            <span style={{ position: 'absolute', left: 12, bottom: 12, color: '#fff', fontWeight: 900, fontSize: 12, letterSpacing: 2 }}>•••• 2026</span>
+          </div>
+          <span style={{ ...titulo, fontSize: 30, color: '#E8590C' }}>{conta(t, 14, 24, 6)}x</span>
+          <span style={{ fontWeight: 900, fontSize: 15, color: '#E8590C', marginTop: -8 }}>sem juros</span>
+        </div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: 'var(--fa-green)', color: '#fff', borderRadius: 16, padding: '12px 14px', opacity: liberado, transform: `scale(${0.8 + 0.2 * liberado + Math.sin(liberado * Math.PI) * 0.08})` }}>
+        <IconeTraco nome="check" tamanho={24} espessura={3.4} />
+        <span style={{ fontWeight: 900, fontSize: 19 }}>Acesso liberado na hora</span>
+      </div>
+    </div>
+  );
+};
+
 export const TELAS_HTML = {
   questao: TelaQuestao,
   erro: TelaErro,
@@ -400,5 +438,6 @@ export const TELAS_HTML = {
   texto: TelaTexto,
   datas: TelaDatas,
   garantia: TelaGarantia,
+  pagamento: TelaPagamento,
 };
 export type TipoTela = keyof typeof TELAS_HTML;

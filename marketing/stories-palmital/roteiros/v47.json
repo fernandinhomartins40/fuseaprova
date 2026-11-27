@@ -1,0 +1,36 @@
+{
+  "voz": "1oZawzZ4adgYtgm1oMqN",
+  "nomeVoz": "Will - Retail Announcer",
+  "modelo": "eleven_v4",
+  "ajustes": {
+    "stability": 0.25,
+    "similarity_boost": 0.8,
+    "use_speaker_boost": true,
+    "speed": 1.12
+  },
+  "pronuncia": {
+    "Fuse": "Fúzi",
+    "Aprova": "Aprôva",
+    "FAU": "Fáu"
+  },
+  "semente": 400,
+  "titulo": "As 5 coisas (Will)",
+  "dia": "26/11",
+  "falas": {
+    "mesa": [
+      "Quem estuda pro concurso de Palmital com o Fuse Aprova faz CINCO coisas que quem estuda sozinho não faz! E a quinta... é a que mais surpreende!",
+      "Um: estuda só o que cai no seu cargo! A trilha já vem montada pelo edital.",
+      "Dois: treina com mais de dez mil questões no estilo da FAU, a banca que vai aplicar a prova do concurso de Palmital!",
+      "Três: quando erra, entende o porquê! Cada questão tem explicação e uma mini-aula do tema.",
+      "E o erro volta no dia certo, até você parar de errar!",
+      "Quatro: faz simulado no formato da prova da FAU! Não são as questões que vão cair, mas é como treinar com a prova na mão: quarenta questões, quatro horas, no estilo que a banca cobra. E, no modo treino, dá pra fazer aos pouquinhos!",
+      "Tudo no celular, dez minutinhos por dia!",
+      "E a quinta? É a mais fácil de todas!",
+      "Cinco: começar leva um minuto! No Pix ou no cartão, o acesso libera na hora. E, no cartão, você ainda divide em até seis vezes sem juros!",
+      "São seis de trinta e dois e oitenta e três!",
+      "E tem sete dias de garantia. Não gostou? Devolvemos cem por cento!",
+      "Cento e noventa e sete reais, só até cinco de dezembro! Depois, sobe pra duzentos e noventa e sete.",
+      "Corre, que o link tá na bio!"
+    ]
+  }
+}
