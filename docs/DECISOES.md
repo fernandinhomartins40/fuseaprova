@@ -554,10 +554,13 @@ Colunas novas em `simulados`: `modo`, `situacao` (corrigido, nao_concluido ou de
   A tela avisa que é uma estimativa para treino, não a nota da banca.
 - **Cota.** São 3 correções por aluno por semana, de segunda a domingo no horário de São Paulo (decisão do dono). A cota é conferida e reservada numa transação com `pg_advisory_xact_lock` por aluno. Se a IA falhar, a redação volta a rascunho e a cota não é gasta. Uma correção travada há mais de 3 minutos pode ser refeita. Redações corrigidas não podem ser apagadas, para que apagar não devolva cota. O servidor tem ainda um teto global de 500 correções por dia.
 - **Dados.** Tabela nova `redacoes` (migração 0021), que entra na exportação LGPD e é apagada na exclusão da conta. Rotas novas: `GET/POST /redacao`, `GET/PUT/DELETE /redacao/:id` e `POST /redacao/:id/corrigir`.
-- **Aulas interativas (27/11, pedido do dono).** A primeira versão mostrava as aulas como páginas de leitura. O dono pediu o formato das lições do app, e cada aula virou uma lição:
-  - a Capi explica em pílulas;
-  - o aluno responde em três formatos: alternativa, completar a lacuna ou pôr em ordem;
-  - a folha de acerto ou erro é a mesma das lições, e o exercício errado volta no fim da aula.
-  - As aulas ficam numa trilha (aba Aprender, com a próxima liberada ao concluir). A aba Simulado tem os temas e a folha.
-  - O texto completo de cada aula continua como "resumo", em `/redacao/aula/:id/resumo`.
-  - A correção dos exercícios é local, como no "Entenda o tema" (D28). O servidor guarda só a conclusão (tabela `redacao_aulas`, migração 0022, PK aluno + aula) e dá XP só na primeira vez que a aula é concluída: 5 pela conclusão e mais 10 se não houve erro. Por isso o ganho que o cliente pode declarar fica limitado a 15 XP por aula. Os passos estão em `servicos/redacao/passos.ts`; os parágrafos e temas de exemplo são autorais.
+- **Aulas de técnica com escrita (27/11, pedido do dono).** A primeira versão das aulas eram páginas de leitura. A segunda virou um questionário sobre conteúdo. O dono pediu que cada aula ensine uma técnica de escrita e que o aluno escreva aquela parte da redação.
+  - **Estrutura:**
+    - a aula 1 é informativa (como a banca dá a nota);
+    - as aulas 2 a 10 são técnicas: ler o comando, tese, introdução, parágrafo argumentativo, repertório, conclusão com proposta, conectivos e retomadas, erros de expressão e planejamento e revisão.
+  - **Formato de cada aula:** a Capi explica a técnica com exemplo bom × ruim, faz uma checagem rápida (alternativa, lacuna ou ordenar) e pede que o aluno **escreva** a parte.
+  - **Tema de treino:** o aluno vai montando uma redação inteira sobre um mesmo tema de educação, a participação da família na vida escolar (autoral, no formato FAU 2026).
+  - **Avaliação da escrita:** a IA (Fusai, a mesma da correção) avalia o trecho pelos critérios da técnica. O aluno recebe nível, comentário, checklist ✓/✗, a resposta dele reescrita e sempre um exemplo de resposta (autoral). Se a IA falhar, a aula segue e mostra o exemplo para comparar.
+  - **Rota e limites:** `POST /redacao/aulas/:id/passos/:passo/avaliar`, com teto de 40 por hora e 120 por dia por aluno, e 5.000 por dia no geral. A avaliação não gasta a cota das 3 correções.
+  - **Progresso e XP:** a trilha fica na aba Aprender, com a próxima aula liberada ao concluir. O servidor guarda só a conclusão (tabela `redacao_aulas`, migração 0022) e dá XP só na primeira vez: 5 pela conclusão e mais 10 sem erro nas checagens.
+  - **Conteúdo:** fica em `servicos/redacao/curso.ts`. O resumo de cada aula sai das explicações e dos exemplos.

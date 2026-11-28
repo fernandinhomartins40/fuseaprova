@@ -155,21 +155,56 @@ describe('preparatório de redação (D49)', () => {
     expect(resto).toBeUndefined();
   });
 
-  it('aulas interativas: passos válidos em todas as aulas', async () => {
+  it('aulas: técnica com escrita em todas, menos a informativa; respostas válidas', async () => {
     const a = await t.alunoPago();
     const p = (await t.chamar('redacaoPainel', { cookie: a.cookie })).json();
     expect(p.aulasConcluidas).toEqual([]);
-    for (const aula of p.aulas) {
-      const exercicios = aula.passos.filter((x: { tipo: string }) => x.tipo !== 'explica');
-      expect(exercicios.length, aula.id).toBeGreaterThanOrEqual(5);
-      for (const x of exercicios) {
+    for (const [k, aula] of p.aulas.entries()) {
+      const tipos = aula.passos.map((x: { tipo: string }) => x.tipo);
+      if (k > 0) expect(tipos, aula.id).toContain('escrever');
+      expect(aula.secoes.length, aula.id).toBeGreaterThan(0);
+      for (const x of aula.passos) {
         if (x.tipo === 'escolha') expect(x.correta).toBeLessThan(x.alternativas.length);
         if (x.tipo === 'lacuna') {
           expect(x.correta).toBeLessThan(x.opcoes.length);
           expect(x.frase).toContain('___');
         }
+        if (x.tipo === 'escrever') {
+          expect(x.modelo.length).toBeGreaterThanOrEqual(x.minimo);
+          expect(x.modelo.length).toBeLessThanOrEqual(x.maximo);
+        }
       }
     }
+  });
+
+  it('avalia o trecho escrito na aula com os critérios da técnica', async () => {
+    const a = await t.alunoPago();
+    const chamadas = iaResponde({
+      nivel: 'quase',
+      comentario: 'Boa posição, falta o segundo motivo.',
+      criterios: [{ criterio: 'x', ok: true }, { criterio: 'y', ok: false }],
+      sugestao: 'A participação da família é decisiva, porque A e B.',
+    });
+    const av = (passo: number, texto = 'A família é decisiva para a aprendizagem.') =>
+      t.chamar('redacaoTrechoAvaliar', { cookie: a.cookie, params: { id: 'tese', passo: String(passo) }, corpo: { texto } });
+    const r = await av(4);
+    expect(r.statusCode, r.body).toBe(200);
+    const j = r.json();
+    expect(j.nivel).toBe('quase');
+    // critérios saem com o texto da aula, na ordem, e o que a IA não marcou fica false
+    expect(j.criterios).toHaveLength(4);
+    expect(j.criterios[0]).toMatchObject({ ok: true, criterio: 'Toma posição clara (não fica em cima do muro)' });
+    expect(j.criterios.slice(1).map((c: { ok: boolean }) => c.ok)).toEqual([false, false, false]);
+    expect(JSON.stringify(chamadas[0])).toContain('<<<RESPOSTA>>>');
+    // passo que não é de escrever, aula inexistente e texto vazio
+    expect((await av(0)).statusCode).toBe(404);
+    expect(
+      (await t.chamar('redacaoTrechoAvaliar', { cookie: a.cookie, params: { id: 'nao-existe', passo: '0' }, corpo: { texto: 'x' } })).statusCode,
+    ).toBe(404);
+    expect((await av(4, '   ')).statusCode).toBe(400);
+    // IA fora do ar não derruba: erro claro para o app mostrar o exemplo
+    iaResponde('isto não é json');
+    expect((await av(4)).statusCode).toBeGreaterThanOrEqual(500);
   });
 
   it('concluir aula: XP só na primeira vez e libera no painel', async () => {

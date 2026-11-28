@@ -158,8 +158,8 @@ function TrilhaAulas({
   return (
     <section style={variaveisDoTema(tema)} aria-label="Trilha das aulas de redação">
       <p className={s.nota}>
-        {feitas.size} de {aulas.length} aulas concluídas. Cada aula tem explicação e exercícios, como as
-        lições do app.
+        {feitas.size} de {aulas.length} aulas concluídas. Cada aula ensina uma técnica e você escreve aquela
+        parte da redação, com avaliação na hora.
       </p>
       <div className={ap.secao}>
         <ol className={ap.nos}>

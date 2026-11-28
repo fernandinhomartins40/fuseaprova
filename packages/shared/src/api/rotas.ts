@@ -444,6 +444,16 @@ export const ROTAS = {
     resposta: red.RedacaoAulaConcluirResposta,
     limite: { max: 60, janelaMs: HORA, por: 'usuario' },
   }),
+  redacaoTrechoAvaliar: rota({
+    metodo: 'POST',
+    caminho: '/redacao/aulas/:id/passos/:passo/avaliar',
+    guarda: 'acesso',
+    descricao: 'Avalia por IA o trecho que o aluno escreveu num exercício da aula (tese, introdução...).',
+    params: red.TrechoRedacaoParams,
+    corpo: red.TrechoRedacaoEntrada,
+    resposta: red.AvaliacaoTrecho,
+    limite: { max: 40, janelaMs: HORA, por: 'usuario' },
+  }),
   redacaoCriar: rota({
     metodo: 'POST',
     caminho: '/redacao',

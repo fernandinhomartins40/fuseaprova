@@ -322,7 +322,7 @@ ${paragrafo}`);
     expect(screen.getByRole('button', { name: 'REESCREVER COM AS MELHORIAS' })).toBeInTheDocument();
   }, 30000);
 
-  it('redação (D49): aula interativa com explicação, alternativa, lacuna e ordenar', async () => {
+  it('redação (D49): aula com explicação, alternativa, lacuna, escrita avaliada e ordenar', async () => {
     const trava = () => new Promise((ok) => setTimeout(ok, TRAVA_CONTINUAR_MS + 50));
     const api = ligarApiSimulada();
     await api.cenario('aluno');
@@ -340,6 +340,14 @@ ${paragrafo}`);
     await userEvent.click(await screen.findByRole('button', { name: 'No entanto' }));
     await userEvent.click(screen.getByRole('button', { name: /VERIFICAR/ }));
     expect(await screen.findByText('Mandou bem!')).toBeInTheDocument();
+    await trava();
+    await userEvent.click(screen.getByRole('button', { name: 'CONTINUAR' }));
+    // escrever: a IA avalia o trecho, com checklist, sugestão e o exemplo
+    await userEvent.type(await screen.findByLabelText('Sua resposta'), 'A família é decisiva para aprender bem.');
+    await userEvent.click(screen.getByRole('button', { name: /AVALIAR MINHA RESPOSTA/ }));
+    expect(await screen.findByText('Quase lá!')).toBeInTheDocument();
+    expect(screen.getByText(/Falta anunciar o segundo motivo/)).toBeInTheDocument();
+    expect(screen.getByText('Exemplo de resposta')).toBeInTheDocument();
     await trava();
     await userEvent.click(screen.getByRole('button', { name: 'CONTINUAR' }));
     // ordenar: toca os blocos na ordem certa

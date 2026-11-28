@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { LETRAS, type Letra } from '@fuse/shared';
-import type { AulaRedacao, PassoAulaRedacao } from '@fuse/shared/api';
+import type { AulaRedacao, AvaliacaoTrecho, PassoAulaRedacao } from '@fuse/shared/api';
 import { chamar, mensagemDeErro } from '../../api/cliente';
 import { CHAVES, useMe, useRedacaoPainel } from '../../api/consultas';
 import {
@@ -26,7 +26,8 @@ import { somAcerto, somErro } from '../licao/sons';
 import l from '../licao/Licao.module.css';
 import s from './Redacao.module.css';
 
-type Exercicio = Exclude<PassoAulaRedacao, { tipo: 'explica' }>;
+type Exercicio = Exclude<PassoAulaRedacao, { tipo: 'explica' } | { tipo: 'escrever' }>;
+type Escrever = Extract<PassoAulaRedacao, { tipo: 'escrever' }>;
 interface Resultado {
   acertou: boolean;
   explicacao: string;
@@ -86,7 +87,7 @@ function Aula({ aula, proxima }: { aula: AulaRedacao; proxima: AulaRedacao | nul
   const me = useMe();
   const sons = me.data?.sons ?? true;
   const passos = aula.passos;
-  const totalExercicios = passos.filter((p) => p.tipo !== 'explica').length;
+  const totalExercicios = passos.filter((p) => p.tipo !== 'explica' && p.tipo !== 'escrever').length;
 
   const [fila, setFila] = useState(() => passos.map((_, k) => k));
   const [pos, setPos] = useState(0);
@@ -99,6 +100,10 @@ function Aula({ aula, proxima }: { aula: AulaRedacao; proxima: AulaRedacao | nul
   const [letra, setLetra] = useState<Letra | null>(null);
   const [opcao, setOpcao] = useState<number | null>(null);
   const [montados, setMontados] = useState<number[]>([]);
+  // exercício de escrever: o texto e a avaliação da IA (ou o erro, que não trava a aula)
+  const [texto, setTexto] = useState('');
+  const [avaliando, setAvaliando] = useState(false);
+  const [avaliacao, setAvaliacao] = useState<AvaliacaoTrecho | { erro: string } | null>(null);
 
   const indice = fila[pos];
   const passo = indice === undefined ? null : passos[indice]!;
@@ -127,6 +132,8 @@ function Aula({ aula, proxima }: { aula: AulaRedacao; proxima: AulaRedacao | nul
     setLetra(null);
     setOpcao(null);
     setMontados([]);
+    setTexto('');
+    setAvaliacao(null);
     if (pos + 1 >= novaFila.length) {
       void concluir(errados.size === 0);
       return;
@@ -135,8 +142,24 @@ function Aula({ aula, proxima }: { aula: AulaRedacao; proxima: AulaRedacao | nul
     setPos(pos + 1);
   }
 
+  async function avaliar() {
+    setAvaliando(true);
+    try {
+      const r = await chamar('redacaoTrechoAvaliar', {
+        params: { id: aula.id, passo: String(indice) },
+        corpo: { texto },
+      });
+      if (r.nivel === 'boa') somAcerto(sons);
+      setAvaliacao(r);
+    } catch (e) {
+      setAvaliacao({ erro: mensagemDeErro(e) });
+    } finally {
+      setAvaliando(false);
+    }
+  }
+
   function verificar() {
-    if (!passo || passo.tipo === 'explica') return;
+    if (!passo || passo.tipo === 'explica' || passo.tipo === 'escrever') return;
     const acertou =
       passo.tipo === 'escolha'
         ? letra === LETRAS[passo.correta]
@@ -251,6 +274,54 @@ function Aula({ aula, proxima }: { aula: AulaRedacao; proxima: AulaRedacao | nul
             ENTENDI, CONTINUAR
           </Botao3D>
         </div>
+        {sair}
+      </Pagina>
+    );
+  }
+
+  if (passo.tipo === 'escrever') {
+    return (
+      <Pagina comRodapeFixo className={l.pagina} rotulo="Aula de redação">
+        {topo}
+        <EscreverTrecho
+          passo={passo}
+          texto={texto}
+          onTexto={setTexto}
+          bloqueado={!!avaliacao || avaliando}
+        />
+        {!avaliacao ? (
+          <div className={l.rodape}>
+            <Botao3D
+              disabled={texto.trim().length < passo.minimo}
+              carregando={avaliando}
+              onClick={() => void avaliar()}
+              iconeDireita={<IconeTraco nome="seta" tamanho={20} />}
+            >
+              AVALIAR MINHA RESPOSTA
+            </Botao3D>
+          </div>
+        ) : (
+          <FolhaFeedback
+            tipo={'erro' in avaliacao || avaliacao.nivel !== 'boa' ? 'erro' : 'acerto'}
+            titulo={
+              'erro' in avaliacao
+                ? 'Compare com o exemplo'
+                : avaliacao.nivel === 'boa'
+                  ? 'Ótima resposta!'
+                  : avaliacao.nivel === 'quase'
+                    ? 'Quase lá!'
+                    : 'Vamos refazer?'
+            }
+            explicacao={<RetornoTrecho passo={passo} avaliacao={avaliacao} />}
+            textoBotao="CONTINUAR"
+            onContinuar={() => avancar(true)}
+            rodape={
+              <button type="button" className={s.reescrever} onClick={() => setAvaliacao(null)}>
+                <IconeTraco nome="lapis" tamanho={16} /> Reescrever a minha resposta
+              </button>
+            }
+          />
+        )}
         {sair}
       </Pagina>
     );
@@ -417,5 +488,90 @@ function Ordenar({
           ))}
       </div>
     </>
+  );
+}
+
+function EscreverTrecho({
+  passo,
+  texto,
+  onTexto,
+  bloqueado,
+}: {
+  passo: Escrever;
+  texto: string;
+  onTexto: (t: string) => void;
+  bloqueado: boolean;
+}) {
+  const n = texto.trim().length;
+  return (
+    <>
+      {passo.apoio ? (
+        <div className={l.apoio} tabIndex={0} role="region" aria-label="Tema">
+          <Markdown texto={passo.apoio} />
+        </div>
+      ) : null}
+      <div className={l.enunciado}>
+        <Imagem nome="mascote-explicando" tamanho={84} className={l.enunciadoCapi} carregamento="eager" />
+        <div className={l.balao}>
+          <strong>{passo.titulo}</strong>
+        </div>
+      </div>
+      <div className={s.tarefa}>
+        <Markdown texto={passo.tarefa} />
+      </div>
+      <details className={s.criterios}>
+        <summary>O que a banca quer ver nesta parte</summary>
+        <ul>
+          {passo.criterios.map((c) => (
+            <li key={c}>{c}</li>
+          ))}
+        </ul>
+      </details>
+      <label className={s.folhaRotulo} htmlFor="trecho">
+        Sua resposta
+      </label>
+      <textarea
+        id="trecho"
+        className={[s.folha, s.folhaTrecho].join(' ')}
+        value={texto}
+        maxLength={passo.maximo}
+        readOnly={bloqueado}
+        onChange={(e) => onTexto(e.target.value)}
+        placeholder="Escreva aqui, como faria na folha da prova."
+      />
+      <p className={s.nota}>
+        {n < passo.minimo ? `Escreva pelo menos ${passo.minimo} caracteres (${n} até agora).` : `${n} caracteres.`}
+      </p>
+    </>
+  );
+}
+
+function RetornoTrecho({ passo, avaliacao }: { passo: Escrever; avaliacao: AvaliacaoTrecho | { erro: string } }) {
+  return (
+    <div className={s.retorno}>
+      {'erro' in avaliacao ? (
+        <p>{avaliacao.erro}</p>
+      ) : (
+        <>
+          <p>{avaliacao.comentario}</p>
+          <ul className={s.checklist} aria-label="Critérios da técnica">
+            {avaliacao.criterios.map((c) => (
+              <li key={c.criterio} className={c.ok ? s.checkOk : s.checkFalta}>
+                <span aria-hidden="true">{c.ok ? '✓' : '✗'}</span> {c.criterio}
+                <span className="sr-only">{c.ok ? ' (cumpriu)' : ' (faltou)'}</span>
+              </li>
+            ))}
+          </ul>
+          {avaliacao.sugestao ? (
+            <>
+              <h3>Como a sua resposta ficaria melhor</h3>
+              <p className={s.textoFinal}>{avaliacao.sugestao}</p>
+            </>
+          ) : null}
+        </>
+      )}
+      <h3>Exemplo de resposta</h3>
+      <p className={s.textoFinal}>{passo.modelo}</p>
+    </div>
   );
 }

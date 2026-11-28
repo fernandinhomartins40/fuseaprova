@@ -437,3 +437,69 @@
 .opcoes .ordemItem {
   flex: 1 1 100%;
 }
+
+/* exercício de escrever */
+.tarefa {
+  margin: 4px 0 10px;
+  font-size: 15.5px;
+  line-height: 1.55;
+}
+.criterios {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: var(--fa-r-lg);
+  background: var(--fa-surface-soft);
+  font-size: 14px;
+}
+.criterios summary {
+  font-weight: 800;
+  color: var(--fa-petroleo);
+  cursor: pointer;
+}
+.criterios ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  line-height: 1.5;
+}
+.folhaTrecho {
+  min-height: 34vh;
+}
+.reescrever {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  padding: 4px 0;
+  color: var(--fa-petroleo);
+  font-weight: 800;
+  text-decoration: underline;
+}
+.retorno {
+  line-height: 1.5;
+}
+.retorno h3 {
+  margin: 14px 0 6px;
+  font-size: 15px;
+  font-weight: 800;
+}
+.retorno .textoFinal {
+  white-space: pre-line;
+}
+.checklist {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.checkOk {
+  color: var(--fa-green-shade);
+}
+.checkFalta {
+  color: var(--fa-red-shade);
+}

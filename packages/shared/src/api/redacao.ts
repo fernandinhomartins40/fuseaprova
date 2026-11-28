@@ -34,6 +34,8 @@ export type CorrecaoRedacao = z.infer<typeof CorrecaoRedacao>;
  * ou pôr em ordem). A correção é local, como o "Entenda o tema" (D28): não há nota em jogo.
  */
 const Explicacao = z.string().min(1);
+/** Teto de um trecho escrito na aula (um parágrafo grande). */
+export const CARACTERES_MAX_TRECHO = 1500;
 export const PassoAulaRedacao = z.discriminatedUnion('tipo', [
   z.object({ tipo: z.literal('explica'), titulo: z.string(), texto: z.string(), exemplo: z.string().nullable() }),
   z.object({
@@ -52,6 +54,20 @@ export const PassoAulaRedacao = z.discriminatedUnion('tipo', [
     opcoes: z.array(z.string().min(1)).min(2).max(4),
     correta: z.number().int().min(0),
     explicacao: Explicacao,
+  }),
+  z.object({
+    tipo: z.literal('escrever'),
+    titulo: z.string(),
+    /** O que escrever (markdown). */
+    tarefa: z.string(),
+    /** Tema ou trecho de partida, mostrado acima da folha. */
+    apoio: z.string().nullable(),
+    /** O checklist da técnica, usado pela IA e mostrado ao aluno. */
+    criterios: z.array(z.string().min(1)).min(1).max(5),
+    /** Exemplo de resposta boa (autoral), mostrado depois que o aluno escreve. */
+    modelo: z.string(),
+    minimo: z.number().int().min(1),
+    maximo: z.number().int().max(CARACTERES_MAX_TRECHO),
   }),
   z.object({
     tipo: z.literal('ordenar'),
@@ -156,3 +172,24 @@ export type RedacaoAulaConcluirEntrada = z.infer<typeof RedacaoAulaConcluirEntra
 /** XP só na primeira vez que a aula é concluída (refazer é treino livre). */
 export const RedacaoAulaConcluirResposta = z.object({ xpGanho: z.number().int(), primeiraVez: z.boolean() });
 export type RedacaoAulaConcluirResposta = z.infer<typeof RedacaoAulaConcluirResposta>;
+
+export const TrechoRedacaoParams = z.object({
+  id: z.string().min(1).max(60),
+  passo: z.coerce.number().int().min(0).max(99),
+});
+export type TrechoRedacaoParams = z.infer<typeof TrechoRedacaoParams>;
+
+export const TrechoRedacaoEntrada = z.object({
+  texto: z.string().trim().min(1, 'Escreva a sua resposta.').max(CARACTERES_MAX_TRECHO, `Use no máximo ${CARACTERES_MAX_TRECHO} caracteres.`),
+});
+export type TrechoRedacaoEntrada = z.infer<typeof TrechoRedacaoEntrada>;
+
+/** Avaliação por IA de um trecho escrito na aula (tese, introdução, parágrafo...). */
+export const AvaliacaoTrecho = z.object({
+  nivel: z.enum(['boa', 'quase', 'refazer']),
+  comentario: z.string(),
+  criterios: z.array(z.object({ criterio: z.string(), ok: z.boolean() })),
+  /** A resposta do aluno reescrita com as melhorias (null se já está boa). */
+  sugestao: z.string().nullable(),
+});
+export type AvaliacaoTrecho = z.infer<typeof AvaliacaoTrecho>;

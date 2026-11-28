@@ -1,228 +1,366 @@
 /**
- * D49: mini-curso de redação. Conteúdo pesquisado (edital de Palmital, provas de professor da FAU
- * de 2023 a 2026 e as fontes de cada aula) e servido só pela API, atrás da guarda de acesso.
- * Os exemplos de parágrafo são nossos (autorais), nunca atribuídos à banca.
+ * D49: o curso de redação em formato de lição. A primeira aula explica como a banca dá a nota
+ * (informativo); as outras ensinam uma TÉCNICA de escrita cada, com exemplo bom × ruim, e pedem
+ * que o aluno ESCREVA aquela parte (tese, introdução, parágrafo, conclusão...), avaliada pela IA.
+ * Ao longo do curso, o aluno monta uma redação inteira sobre o mesmo tema de treino.
+ *
+ * Fontes: edital de Palmital (itens 10.28 a 10.41 e 14.3), cadernos de professor da FAU de 2023 a
+ * 2026 e as fontes listadas em cada aula. Tema de treino, parágrafos e modelos são autorais
+ * (Fuse Aprova), nunca atribuídos à banca. As `secoes` (o resumo) saem das explicações.
  */
-import type { AulaRedacao } from '@fuse/shared/api';
-import { PASSOS_REDACAO } from './passos.js';
+import type { AulaRedacao, PassoAulaRedacao } from '@fuse/shared/api';
 
 const EDITAL = {
   titulo: 'Edital de Abertura nº 01/2026 — Prefeitura de Palmital/PR (FAU), itens 10.28 a 10.41 e 14.3',
   url: 'https://www.concursosfau.com.br',
 };
+const DIRECAO = {
+  titulo: 'Direção Concursos — Redação para concursos públicos: como estruturar seu texto',
+  url: 'https://www.direcaoconcursos.com.br/artigos/redacao-para-concursos-publicos-como-estruturar-seu-texto',
+};
+const UNB = {
+  titulo: 'Universidade de Brasília — Aprenda a escrever redação (livro digital)',
+  url: 'https://www.repositorio.unb.br/bitstream/10482/54047/1/LIVRO_aprendaescreverredacao.pdf',
+};
+const LDB = { titulo: 'Lei nº 9.394/1996 (LDB) — Planalto', url: 'https://www.planalto.gov.br/ccivil_03/leis/l9394.htm' };
+const ECA = { titulo: 'Lei nº 8.069/1990 (ECA) — Planalto', url: 'https://www.planalto.gov.br/ccivil_03/leis/l8069.htm' };
 
-const AULAS: Omit<AulaRedacao, 'passos'>[] = [
+/** O tema de treino do curso (autoral, no formato das provas da FAU de 2026). */
+export const TEMA_TREINO =
+  '**Tema de treino (Fuse Aprova):** "Redija um texto dissertativo-argumentativo sobre a participação da família na vida escolar, abordando a sua importância para a aprendizagem, os obstáculos que a dificultam e o papel da escola em promovê-la."';
+
+const explica = (titulo: string, texto: string, exemplo: string | null = null): PassoAulaRedacao => ({
+  tipo: 'explica',
+  titulo,
+  texto,
+  exemplo,
+});
+const escolha = (
+  pergunta: string,
+  alternativas: string[],
+  correta: number,
+  explicacao: string,
+  apoio: string | null = null,
+): PassoAulaRedacao => ({ tipo: 'escolha', pergunta, apoio, alternativas, correta, explicacao });
+const lacuna = (frase: string, opcoes: string[], correta: number, explicacao: string): PassoAulaRedacao => ({
+  tipo: 'lacuna',
+  frase,
+  opcoes,
+  correta,
+  explicacao,
+});
+const ordenar = (pergunta: string, itens: string[], explicacao: string): PassoAulaRedacao => ({
+  tipo: 'ordenar',
+  pergunta,
+  itens,
+  explicacao,
+});
+const escrever = (p: {
+  titulo: string;
+  tarefa: string;
+  apoio?: string | null;
+  criterios: string[];
+  modelo: string;
+  minimo: number;
+  maximo: number;
+}): PassoAulaRedacao => ({ tipo: 'escrever', apoio: TEMA_TREINO, ...p });
+
+type Aula = Omit<AulaRedacao, 'secoes'>;
+
+const AULAS: Aula[] = [
   {
-    id: 'como-a-fau-corrige',
-    titulo: '1. Como a FAU corrige a sua redação',
-    resumo: 'Quem faz, quanto vale, os três aspectos da nota e o que zera.',
-    minutos: 6,
-    secoes: [
-      {
-        titulo: 'Quem faz a redação em Palmital',
-        texto:
-          'No concurso da Prefeitura de Palmital, a redação é **só para o cargo de Professor Licenciatura Plena** (item 10.29). Ela é feita **no mesmo dia e horário da prova objetiva** (item 10.29.1), à mão, com caneta esferográfica transparente de tinta azul ou preta.\n\nMesmo que você seja de outro cargo, treinar redação ajuda na interpretação de texto e na Língua Portuguesa da prova objetiva.',
-      },
-      {
-        titulo: 'Quanto ela pesa',
-        texto:
-          'A redação vale **100 pontos** e é **eliminatória e classificatória** (item 10.31). A nota final do professor é a soma da objetiva com a redação, dividida por dois, mais os títulos (item 14.3).\n\n**Na prática, a redação pesa o mesmo que a prova objetiva inteira.**',
-      },
-      {
-        titulo: 'Quem tem a redação corrigida',
-        texto:
-          'Só é corrigida a redação de quem fez pelo menos **50% da objetiva** (item 10.27) e ficou classificado até o **100º lugar** na ampla concorrência, o **5º** entre pessoas com deficiência ou o **10º** entre afrodescendentes, além dos empatados com o último (itens 10.30 e 10.30.1). Por isso, a objetiva continua sendo a porta de entrada.',
-      },
-      {
-        titulo: 'Os três aspectos da nota (Tabela 10.1)',
-        texto:
-          '- **Conteúdo, até 50 pontos:** a perspectiva adotada no tratamento do tema, a capacidade de análise e o senso crítico, e a consistência, clareza e coerência dos argumentos. A nota cai se a abordagem for tangencial, parcial, diluída em divagações ou feita com colagem dos textos da prova.\n- **Estrutura, até 40 pontos:** respeito ao gênero pedido (dissertativo-argumentativo), progressão do texto e encadeamento das ideias, e coesão entre frases e parágrafos.\n- **Expressão, até 10 pontos:** norma-padrão (estrutura das frases, concordância, regência, pontuação, pronomes, tempos verbais, grafia e acentuação) e linguagem adequada ao cargo.\n\nRepare: **90 dos 100 pontos são de ideias e organização.** Gramática importa, mas o que decide a nota é ter o que dizer e dizer em ordem.',
-      },
-      {
-        titulo: 'O que zera a redação (item 10.39)',
-        texto:
-          '- não atender ao tema proposto e ao conteúdo avaliado;\n- letra ilegível ou texto feito por outro meio que não o do edital;\n- acentuada desestruturação do texto ou ofensa ao pudor;\n- texto a lápis ou com tinta que não seja azul ou preta;\n- folha definitiva em branco ou redação fora dela;\n- qualquer marca que identifique você fora do lugar próprio: nome, rubrica, números, sinais, desenhos.\n\nO rascunho é opcional e **não vale nota**: só conta a folha definitiva (item 10.37).',
-      },
-      {
-        titulo: 'Depois da prova',
-        texto:
-          'Você pode pedir o **espelho** da correção no site da FAU, no dia marcado em edital, das 8h às 17h (item 10.40), e cabe **recurso** da nota (item 10.41).',
-      },
-    ],
+    id: 'como-a-banca-corrige',
+    titulo: '1. Como a banca dá a nota',
+    resumo: 'Quanto vale, os três aspectos da nota e o que zera.',
+    minutos: 4,
     fontes: [EDITAL],
+    passos: [
+      explica(
+        'A redação vale metade da nota',
+        'Em Palmital, a redação é **só para o Professor Licenciatura Plena** (item 10.29), no mesmo dia e horário da objetiva. Vale **100 pontos** e é **eliminatória e classificatória**.\n\nA nota final é **(objetiva + redação) ÷ 2**, mais os títulos (item 14.3).',
+        'Na prática, a redação pesa o mesmo que a prova objetiva inteira.',
+      ),
+      explica(
+        'Onde estão os pontos',
+        'A Tabela 10.1 divide os 100 pontos assim:\n\n- **Conteúdo, até 50:** tratar o tema pedido, com análise, senso crítico e argumentos consistentes.\n- **Estrutura, até 40:** respeitar o gênero dissertativo-argumentativo, fazer o texto progredir e ligar bem frases e parágrafos.\n- **Expressão, até 10:** norma-padrão e linguagem adequada.',
+        '90 dos 100 pontos são de ideias e organização. Por isso as próximas aulas são de técnica: tese, parágrafo, conclusão e coesão.',
+      ),
+      escolha(
+        'Onde está a maior parte da nota?',
+        ['Na gramática perfeita', 'Nas ideias e na organização do texto', 'Na letra bonita'],
+        1,
+        'Conteúdo (50) e Estrutura (40) somam 90 pontos. Gramática (Expressão) vale 10.',
+      ),
+      explica(
+        'O que zera (item 10.39)',
+        '- fugir do tema;\n- letra ilegível;\n- lápis ou tinta que não seja azul ou preta;\n- folha definitiva em branco;\n- **qualquer marca que identifique você** (nome, rubrica, desenho).',
+        'O rascunho não vale nota: só conta a folha definitiva (item 10.37).',
+      ),
+      escolha(
+        'Qual destas atitudes ZERA a redação?',
+        ['Escrever 26 linhas', 'Assinar o nome no fim do texto', 'Fazer um rascunho antes'],
+        1,
+        'Qualquer marca que identifique o candidato zera (item 10.39).',
+      ),
+    ],
   },
   {
-    id: 'como-a-fau-monta-o-tema',
-    titulo: '2. Como a FAU monta o tema',
-    resumo: 'O que as últimas provas de professor da FAU pediram e como ler o comando.',
+    id: 'ler-o-tema',
+    titulo: '2. Técnica: ler o comando e achar o recorte',
+    resumo: 'O passo que mais salva nota: entender exatamente o que a banca pediu.',
     minutos: 6,
-    secoes: [
-      {
-        titulo: 'O que o edital de Palmital diz',
-        texto:
-          'O item 10.29.2 diz que o conteúdo da redação será **"estritamente relacionado aos conhecimentos específicos e à área de atuação do cargo"**. O item 10.31 fala em "assunto de interesse geral". Juntando os dois e olhando as provas recentes da FAU, o mais provável é um **tema educacional de interesse geral**: algo que todo professor precisa saber discutir.',
-      },
-      {
-        titulo: 'Os temas que a FAU cobrou de professores',
-        texto:
-          '- **2026, Rio Azul (Professor):** a superação da educação "bancária", a partir de um trecho de *Pedagogia da autonomia*, de Paulo Freire.\n- **2026, Borrazópolis (Professor):** "Ética e cidadania na atuação da escola na era digital".\n- **2026, Borrazópolis (Professor de Educação Física):** o uso ético da tecnologia no setor público, com proposta de intervenção.\n- **2026, Rio Azul (Professor de Educação Física):** modelos tradicionais e contemporâneos no ensino dos esportes.\n- **2025, Toledo (Educação Infantil):** a importância dos eixos estruturantes da BNCC para o desenvolvimento integral.\n- **2025, Toledo (Educação Física):** a Educação Física na formação integral, segundo a BNCC.\n- **2023, Imbituva:** "A sombra do negacionismo". **2023, Cruzeiro do Iguaçu:** "Um problema real: Nomofobia".\n\nTodos estão no banco de temas do app, para você treinar com eles.',
-      },
-      {
-        titulo: 'O formato da proposta',
-        texto:
-          'Nas provas de 2026, a proposta vem assim: um **enunciado** de um ou dois parágrafos (às vezes com a citação de um autor ou documento) e depois um **comando**, por exemplo: *"redija um texto dissertativo-argumentativo sobre o tema X, abordando A, B e C"*. Em algumas, o comando termina com *"proponha uma intervenção viável"*.\n\nEm 2025, o formato era uma **pergunta**: *"Construa um texto dissertativo-argumentativo em que seja defendido seu ponto de vista sobre o questionamento: ..."*, seguida de um trecho curto de apoio.',
-      },
-      {
-        titulo: 'Como ler o comando (o passo que mais salva nota)',
-        texto:
-          '1. **Sublinhe o tema** (o que está entre aspas ou depois de "sobre").\n2. **Liste cada item do "abordando"**: cada um vira uma parte do seu texto. Se o comando pede A, B e C e você só fala de A, a abordagem é **parcial** e o Conteúdo cai.\n3. **Veja se pede proposta de intervenção.** Se pedir, ela é obrigatória na conclusão.\n4. **Use o texto de apoio como ponto de partida, nunca como cópia.** Copiar frases do enunciado é "colagem de textos", que a Tabela 10.1 penaliza.\n5. **Responda à pergunta, se houver uma.** Quando o tema é um questionamento, a sua tese precisa ser a resposta.',
-      },
-      {
-        titulo: 'Tangenciar não é fugir, mas custa caro',
-        texto:
-          '**Fuga ao tema** é escrever sobre outra coisa: zera. **Tangenciar** é falar do assunto geral sem enfrentar o recorte pedido: por exemplo, o tema é "ética e cidadania da escola na era digital" e o texto fala só de "tecnologia na sociedade". Não zera, mas derruba o Conteúdo, que vale metade da nota.',
-      },
-    ],
     fontes: [
       EDITAL,
       {
-        titulo: 'Cadernos de prova de professor da FAU (Rio Azul, Borrazópolis, Toledo, Imbituva, Cruzeiro do Iguaçu), 2023 a 2026',
+        titulo: 'Cadernos de prova de professor da FAU (Rio Azul, Borrazópolis, Toledo), 2025 e 2026',
         url: 'https://www.concursosfau.com.br',
       },
     ],
+    passos: [
+      explica(
+        'Como a FAU monta a proposta',
+        'Nas provas de professor de 2026, a FAU deu um **enunciado** curto e um **comando**: *"redija um texto dissertativo-argumentativo sobre X, abordando A, B e C"*. Às vezes ainda pede: *"proponha uma intervenção viável"*.',
+        'Cada item do "abordando" vira uma parte obrigatória do seu texto.',
+      ),
+      explica(
+        'A técnica em 3 passos',
+        '1. **Sublinhe o recorte:** não é "família", é "a participação da família **na vida escolar**".\n2. **Numere cada item do "abordando".** Esqueceu um? Abordagem **parcial**: o Conteúdo cai.\n3. **Veja se pede intervenção.** Se pedir, ela é obrigatória na conclusão.',
+        'Escreva a lista na margem do rascunho e risque cada item quando ele entrar no texto.',
+      ),
+      explica(
+        'Tangenciar custa caro',
+        'Tangenciar é falar do **assunto geral** sem enfrentar o **recorte**.\n\n- Recorte: participação da família **na vida escolar**.\n- Tangenciou: um texto sobre "a importância da família na sociedade".\n\nNão zera, mas derruba o Conteúdo, que vale metade da nota.',
+      ),
+      escolha(
+        'Um texto sobre o tema de treino fala só da importância da família e não cita obstáculos nem o papel da escola. A abordagem é:',
+        ['Completa', 'Parcial: o Conteúdo cai', 'Fuga ao tema: zera'],
+        1,
+        'O comando pede três itens; o texto tratou de um. Isso é abordagem parcial.',
+        TEMA_TREINO,
+      ),
+      escrever({
+        titulo: 'Sua vez: decifre o comando',
+        tarefa:
+          'Este é o tema que você vai usar em todo o curso. Escreva **o recorte do tema em uma frase** e, depois, **a lista numerada do que o comando manda abordar**.',
+        criterios: [
+          'O recorte fala da participação da família NA VIDA ESCOLAR (não da família em geral)',
+          'A lista traz os três itens: importância para a aprendizagem, obstáculos e papel da escola',
+          'Não inventa itens que o comando não pediu',
+        ],
+        modelo:
+          'Recorte: a participação da família na vida escolar e o efeito dela na aprendizagem.\n\n1. Por que essa participação é importante para a aprendizagem.\n2. Quais obstáculos dificultam essa participação.\n3. O que a escola pode fazer para promovê-la.',
+        minimo: 40,
+        maximo: 600,
+      }),
+    ],
   },
   {
-    id: 'dissertativo-argumentativo',
-    titulo: '3. O texto dissertativo-argumentativo',
-    resumo: 'Tese, impessoalidade e a planta de 4 parágrafos que cabe em 20 a 30 linhas.',
-    minutos: 5,
-    secoes: [
-      {
-        titulo: 'O que é',
-        texto:
-          'É o texto que **defende um ponto de vista** sobre um tema com **argumentos consistentes**, para convencer o leitor. Não é narração (contar uma história) nem só exposição (listar informações): você precisa **tomar posição** e sustentá-la.',
-      },
-      {
-        titulo: 'A tese',
-        texto:
-          'A tese é a sua resposta ao tema, em uma frase. Uma boa tese **toma posição clara** e já aponta os motivos.\n\n- Fraca: *"A tecnologia na escola tem pontos positivos e negativos."* (não diz nada)\n- Forte: *"A tecnologia só melhora a escola quando vem acompanhada de formação docente e de regras claras de proteção de dados."*',
-      },
-      {
-        titulo: 'Impessoalidade',
-        texto:
-          'Em concurso, prefira a **3ª pessoa** e evite "eu acho", "na minha opinião". A opinião aparece pela força dos argumentos, não pelo "eu". A 1ª pessoa do plural ("precisamos", "nossa sociedade") é aceita com moderação.',
-      },
-      {
-        titulo: 'A planta de 4 parágrafos',
-        texto:
-          'Para 20 a 30 linhas, a planta mais segura é:\n\n- **Introdução (5 a 6 linhas):** contexto + tema + tese.\n- **Desenvolvimento 1 (7 a 8 linhas):** primeiro argumento.\n- **Desenvolvimento 2 (7 a 8 linhas):** segundo argumento.\n- **Conclusão (5 a 6 linhas):** retomada da tese e encaminhamento (ou a proposta de intervenção, se pedida).\n\nIsso dá cerca de 26 linhas, com folga para não passar de 30. **Texto acima de 30 linhas** é risco: em outras provas, a FAU avisou que o que passa da 30ª linha é desconsiderado. **Abaixo de 20**, você descumpre o item 10.31.',
-      },
-    ],
-    fontes: [
-      EDITAL,
-      {
-        titulo: 'Direção Concursos — Redação para concursos públicos: como estruturar seu texto',
-        url: 'https://www.direcaoconcursos.com.br/artigos/redacao-para-concursos-publicos-como-estruturar-seu-texto',
-      },
-      {
-        titulo: 'Universidade de Brasília — Aprenda a escrever redação (livro digital)',
-        url: 'https://www.repositorio.unb.br/bitstream/10482/54047/1/LIVRO_aprendaescreverredacao.pdf',
-      },
+    id: 'tese',
+    titulo: '3. Técnica: a tese que dá nota',
+    resumo: 'A fórmula da tese: posição clara + os dois motivos que você vai desenvolver.',
+    minutos: 6,
+    fontes: [DIRECAO, UNB],
+    passos: [
+      explica(
+        'O que é a tese',
+        'A tese é **a sua resposta ao tema, numa frase**. É ela que o corretor procura para saber se você tem um ponto de vista. Sem tese clara, o texto vira só exposição, e o Conteúdo cai.',
+      ),
+      explica(
+        'A fórmula',
+        '**Posição + porque/quando + motivo A + motivo B.**\n\nOs dois motivos viram os dois parágrafos de desenvolvimento. Assim, a tese já é o mapa da sua redação.',
+        'Modelo: "A participação da família é decisiva para a aprendizagem, mas só acontece de fato quando a escola reconhece os obstáculos dos responsáveis e cria canais reais de diálogo."',
+      ),
+      explica(
+        'Os três erros de tese',
+        '- **Em cima do muro:** "A participação da família tem pontos positivos e negativos."\n- **Genérica:** "A família é muito importante nos dias de hoje."\n- **Em forma de pergunta:** "Será que a família participa da escola?"\n\nNenhuma delas diz o que você defende nem por quê.',
+      ),
+      escolha(
+        'Qual é a tese que mais pontua?',
+        [
+          'A família é a base de tudo na educação.',
+          'A participação da família tem vantagens e desvantagens para a escola.',
+          'A presença da família melhora a aprendizagem, mas depende de a escola adaptar horários e mudar a forma de se comunicar com os responsáveis.',
+        ],
+        2,
+        'A terceira toma posição e anuncia dois motivos, que viram os dois parágrafos. As outras são genérica e em cima do muro.',
+      ),
+      escrever({
+        titulo: 'Sua vez: escreva a sua tese',
+        tarefa:
+          'Escreva **uma frase** com a sua tese sobre o tema de treino, usando a fórmula: **posição + dois motivos**. Não copie o modelo: use as suas ideias.',
+        criterios: [
+          'Toma posição clara (não fica em cima do muro)',
+          'Anuncia dois motivos ou caminhos que podem virar parágrafos',
+          'Trata do recorte: a família na vida escolar',
+          'É uma frase só, impessoal (sem "eu acho")',
+        ],
+        modelo:
+          'A participação da família é decisiva para a aprendizagem, mas só acontece de fato quando a escola reconhece os obstáculos dos responsáveis e cria canais reais de diálogo com eles.',
+        minimo: 60,
+        maximo: 400,
+      }),
     ],
   },
   {
     id: 'introducao',
-    titulo: '4. Introdução que já pontua',
-    resumo: 'Contexto, tema e tese em 2 a 4 frases, com três jeitos de começar.',
-    minutos: 5,
-    secoes: [
-      {
-        titulo: 'Os três elementos',
-        texto:
-          '1. **Contextualização:** situa o leitor (uma lei, um dado, um conceito, um autor).\n2. **Apresentação do tema:** com as palavras-chave do comando.\n3. **Tese:** a sua posição, de preferência já anunciando os dois argumentos que virão.\n\nIntrodução de **uma frase só** é um dos erros que mais custam pontos: fica sem contexto ou sem tese.',
-      },
-      {
-        titulo: 'Três jeitos de começar',
-        texto:
-          '- **Pela lei ou documento:** *"A Lei de Diretrizes e Bases da Educação (Lei nº 9.394/1996) prevê a gestão democrática do ensino público..."*\n- **Pelo conceito:** *"Letramento é o uso da leitura e da escrita nas práticas sociais..."*\n- **Pelo autor:** *"Para Paulo Freire, ensinar não é transferir conhecimento..."*\n\nEvite começos vazios como "Hoje em dia..." ou "Desde os primórdios...": eles gastam linha e não dizem nada.',
-      },
-      {
-        titulo: 'Exemplo (autoral)',
-        texto:
-          'Tema: *"O Projeto Político-Pedagógico como instrumento de gestão democrática"*.\n\n*A Lei de Diretrizes e Bases da Educação estabelece a gestão democrática do ensino público e garante a participação dos profissionais da educação na elaboração do projeto pedagógico da escola. Nesse contexto, o Projeto Político-Pedagógico deixa de ser um documento burocrático e se torna um instrumento de decisão coletiva. Para que cumpra esse papel, porém, é preciso que a comunidade escolar participe de fato da sua construção e que o projeto seja revisto a partir da realidade da escola.*\n\nRepare: contexto (a lei), tema (PPP e gestão democrática) e tese com dois caminhos (participação real e revisão a partir da realidade), que serão os dois parágrafos de desenvolvimento.',
-      },
-    ],
+    titulo: '4. Técnica: introdução em três frases',
+    resumo: 'Contexto, tema e tese: a introdução que já mostra ao corretor que você sabe o que faz.',
+    minutos: 6,
     fontes: [
       {
         titulo: 'Folha Qconcursos — Redação para concurso: como fazer uma boa introdução',
         url: 'https://folha.qconcursos.com/n/redacao-para-concurso-como-fazer-introducao',
       },
-      {
-        titulo: 'Lei nº 9.394/1996 (LDB), art. 14 — Planalto',
-        url: 'https://www.planalto.gov.br/ccivil_03/leis/l9394.htm',
-      },
+      ECA,
+    ],
+    passos: [
+      explica(
+        'A receita: 3 frases',
+        '1. **Contexto:** situa o leitor com uma lei, um conceito ou um autor.\n2. **Tema:** apresenta o assunto com as palavras do comando.\n3. **Tese:** a sua posição com os dois motivos.\n\nDá umas 5 ou 6 linhas na folha.',
+      ),
+      explica(
+        'Comece forte, sem clichê',
+        'Três aberturas seguras:\n\n- **Pela lei:** "O ECA assegura aos pais o direito de conhecer o processo pedagógico..."\n- **Pelo conceito:** "Gestão democrática é..."\n- **Pelo autor:** "Para Paulo Freire, educar é um ato de diálogo..."',
+        'Corte: "Hoje em dia...", "Desde os primórdios...", "É notório que...". Gastam linha e não dizem nada.',
+      ),
+      ordenar(
+        'Monte esta introdução na ordem certa:',
+        [
+          'O ECA assegura aos pais o direito de conhecer o processo pedagógico e de participar das propostas educacionais.',
+          'Em muitas escolas, porém, a presença da família ainda se resume à entrega de boletins.',
+          'Essa participação é decisiva para a aprendizagem e só se concretiza quando a escola enfrenta os obstáculos dos responsáveis e abre canais de diálogo.',
+        ],
+        'Contexto (a lei), apresentação do problema no tema e, por último, a tese com os dois caminhos.',
+      ),
+      escrever({
+        titulo: 'Sua vez: escreva a introdução',
+        tarefa:
+          'Escreva a introdução da sua redação em **3 frases**: contexto (lei, conceito ou autor), apresentação do tema e a **sua tese** da aula anterior.',
+        criterios: [
+          'Começa com contexto (lei, conceito ou autor), sem clichê',
+          'Apresenta o tema: a participação da família na vida escolar',
+          'Termina com a tese, que anuncia dois caminhos',
+          'Tem de 2 a 4 frases, em linguagem formal e impessoal',
+        ],
+        modelo:
+          'O Estatuto da Criança e do Adolescente assegura aos pais o direito de conhecer o processo pedagógico e de participar da definição das propostas educacionais. Em muitas escolas, porém, a presença da família ainda se resume à entrega de boletins. Essa participação é decisiva para a aprendizagem e só se concretiza quando a escola reconhece os obstáculos enfrentados pelos responsáveis e cria canais reais de diálogo com eles.',
+        minimo: 200,
+        maximo: 900,
+      }),
     ],
   },
   {
-    id: 'desenvolvimento',
-    titulo: '5. Desenvolvimento: tópico frasal, fundamento e exemplo',
-    resumo: 'A receita de um parágrafo argumentativo e os tipos de argumento.',
-    minutos: 6,
-    secoes: [
-      {
-        titulo: 'A receita do parágrafo',
-        texto:
-          '1. **Tópico frasal:** a ideia central do parágrafo, ligada à tese.\n2. **Explicação:** por quê? como?\n3. **Fundamentação:** uma lei, um autor, um dado ou um conceito (o "repertório").\n4. **Exemplo:** uma situação concreta da escola.\n5. **Fechamento:** amarra o parágrafo de volta à tese.\n\nRepertório solto não vale: **cite, explique e ligue ao tema.**',
-      },
-      {
-        titulo: 'Tipos de argumento',
-        texto:
-          '- **Autoridade:** um autor ou documento reconhecido (Freire, Vygotsky, BNCC, LDB).\n- **Causa e consequência:** mostra o que gera o problema e o que ele provoca.\n- **Exemplificação:** uma situação real e plausível da sala de aula.\n- **Comparação:** o modelo tradicional × o modelo atual, por exemplo.\n- **Dados:** números de fontes oficiais. Só use números de que você tem certeza.',
-      },
-      {
-        titulo: 'Exemplo (autoral)',
-        texto:
-          '*Em primeiro lugar, a participação da comunidade é o que dá legitimidade ao projeto da escola. Quando professores, famílias e estudantes discutem juntos as metas e as prioridades, o documento passa a expressar a realidade daquela comunidade, e não um modelo copiado. É o que prevê a própria LDB, ao garantir a participação das comunidades escolar e local em conselhos escolares. Uma escola que ouve as famílias sobre a evasão no período da colheita, por exemplo, consegue ajustar o calendário e as estratégias de busca ativa. Assim, a participação transforma o PPP em ferramenta de gestão, e não em papel arquivado.*',
-      },
+    id: 'paragrafo',
+    titulo: '5. Técnica: o parágrafo argumentativo',
+    resumo: 'Tópico frasal, explicação, prova, exemplo e fechamento: o parágrafo que pontua.',
+    minutos: 8,
+    fontes: [DIRECAO, UNB],
+    passos: [
+      explica(
+        'A receita do parágrafo',
+        '1. **Tópico frasal:** a ideia central, ligada à tese.\n2. **Explicação:** por quê? como?\n3. **Prova:** lei, autor, conceito ou dado.\n4. **Exemplo:** uma cena concreta da escola.\n5. **Fechamento:** amarra de volta à tese.',
+        'São umas 7 ou 8 linhas. Dois parágrafos assim são o coração da sua nota.',
+      ),
+      explica(
+        'Tópico frasal: bom × ruim',
+        '- **Ruim:** "A família é importante." (vago, não diz por quê)\n- **Bom:** "Em primeiro lugar, o acompanhamento da família fortalece a aprendizagem porque dá continuidade, em casa, ao que a criança vive na escola."\n\nO bom já traz o argumento e o motivo, e liga com a tese.',
+      ),
+      ordenar(
+        'Ponha as partes do parágrafo na ordem da receita:',
+        ['Tópico frasal', 'Explicação', 'Prova (lei, autor ou conceito)', 'Exemplo concreto', 'Fechamento ligado à tese'],
+        'Ideia, porquê, prova, exemplo e amarração.',
+      ),
+      escrever({
+        titulo: 'Sua vez: o tópico frasal',
+        tarefa:
+          'Escreva o **tópico frasal** do seu primeiro argumento (o primeiro motivo da sua tese). Uma frase, começando com um conectivo de ordem, como "Em primeiro lugar".',
+        criterios: [
+          'É uma frase só, com a ideia central do argumento',
+          'Diz o motivo (não fica só em "a família é importante")',
+          'Está ligado à tese e ao tema',
+        ],
+        modelo:
+          'Em primeiro lugar, o acompanhamento da família fortalece a aprendizagem porque dá continuidade, em casa, ao que a criança vive na escola.',
+        minimo: 50,
+        maximo: 350,
+      }),
+      escrever({
+        titulo: 'Agora o parágrafo completo',
+        tarefa:
+          'Desenvolva o parágrafo inteiro a partir do seu tópico frasal: **explicação, uma prova (lei, autor ou conceito), um exemplo da escola e o fechamento**. De 5 a 8 linhas.',
+        criterios: [
+          'Abre com o tópico frasal',
+          'Explica o porquê da ideia',
+          'Usa uma prova (lei, autor ou conceito) e a liga ao argumento',
+          'Traz um exemplo concreto do dia a dia escolar',
+          'Fecha voltando à tese',
+        ],
+        modelo:
+          'Em primeiro lugar, o acompanhamento da família fortalece a aprendizagem porque dá continuidade, em casa, ao que a criança vive na escola. Quando os responsáveis perguntam sobre as atividades e valorizam o estudo, a criança percebe que aprender tem importância fora da sala de aula. Para Vygotsky, o desenvolvimento acontece na interação com o outro, e a família é a primeira dessas mediações. Um aluno que lê em voz alta para os pais, por exemplo, ganha fluência e confiança mais rápido. Assim, a participação familiar não substitui o professor, mas amplia o alcance do seu trabalho.',
+        minimo: 300,
+        maximo: 1500,
+      }),
     ],
+  },
+  {
+    id: 'repertorio',
+    titulo: '6. Técnica: repertório que pontua',
+    resumo: 'Citar, explicar e ligar: como usar lei e autor sem virar "citação solta".',
+    minutos: 7,
     fontes: [
+      LDB,
+      ECA,
       {
-        titulo: 'Direção Concursos — Redação para concursos públicos: como estruturar seu texto',
-        url: 'https://www.direcaoconcursos.com.br/artigos/redacao-para-concursos-publicos-como-estruturar-seu-texto',
+        titulo: 'UNESP (RPGE) — Educação bancária e educação problematizadora em Paulo Freire',
+        url: 'https://periodicos.fclar.unesp.br/rpge/article/download/15397/14399?inline=1',
       },
-      {
-        titulo: 'Lei nº 9.394/1996 (LDB), art. 14 — Planalto',
-        url: 'https://www.planalto.gov.br/ccivil_03/leis/l9394.htm',
-      },
+    ],
+    passos: [
+      explica(
+        'A técnica: citar, explicar, ligar',
+        '1. **Cite** a fonte com precisão (lei e artigo, ou autor).\n2. **Explique** o que ela diz, com as suas palavras.\n3. **Ligue** ao seu argumento: o que isso prova?',
+        'Solto: "Como dizia Paulo Freire, a educação é importante." Produtivo: cita, explica e tira uma conclusão para o tema.',
+      ),
+      explica(
+        'Repertório para temas de escola e família',
+        '- **ECA, art. 53, parágrafo único:** os pais têm direito a ter ciência do processo pedagógico e a participar da definição das propostas educacionais.\n- **LDB, art. 12, VI:** a escola deve articular-se com as famílias e a comunidade.\n- **LDB, art. 14:** gestão democrática, com conselhos escolares.',
+      ),
+      explica(
+        'Autores que a banca conhece',
+        '- **Paulo Freire:** educação dialógica, contra a educação "bancária".\n- **Vygotsky:** aprendizagem pela mediação do outro.\n- **Wallon:** a afetividade faz parte do desenvolvimento.',
+        'Só cite o que você tem certeza. Lei ou ano errado tira a confiança do corretor.',
+      ),
+      escolha(
+        'Para o tema de treino (família na escola), qual repertório é o mais pertinente?',
+        [
+          'O ECA, que garante aos pais participar das propostas educacionais',
+          'A teoria dos estágios de Piaget',
+          'Um dado sobre o PIB do Brasil',
+        ],
+        0,
+        'O ECA trata exatamente do direito dos pais de participar do processo pedagógico: é pertinente ao recorte.',
+      ),
+      escrever({
+        titulo: 'Sua vez: use um repertório',
+        tarefa:
+          'Escreva **uma ou duas frases** que usem o **ECA (art. 53)** ou a **LDB (art. 12)** para defender a participação da família, aplicando a técnica: cite, explique e ligue ao argumento.',
+        criterios: [
+          'Cita a lei com precisão (nome e artigo)',
+          'Explica o que a lei diz com palavras próprias',
+          'Liga a lei ao argumento com uma conclusão (logo, por isso, assim)',
+        ],
+        modelo:
+          'O ECA, em seu art. 53, garante aos pais o direito de conhecer o processo pedagógico e de participar da definição das propostas educacionais. Logo, uma escola que só chama a família para cobrar não cumpre o que a lei prevê.',
+        minimo: 80,
+        maximo: 600,
+      }),
     ],
   },
   {
-    id: 'conclusao-intervencao',
-    titulo: '6. Conclusão e proposta de intervenção',
+    id: 'conclusao',
+    titulo: '7. Técnica: conclusão com proposta completa',
     resumo: 'Retomar a tese e propor uma solução com agente, ação, meio, finalidade e detalhe.',
-    minutos: 5,
-    secoes: [
-      {
-        titulo: 'O que a conclusão faz',
-        texto:
-          'A conclusão **retoma a tese** (com outras palavras), **sintetiza** os argumentos e **encaminha** uma saída. Ela não traz argumento novo. Evite fechos vazios como "Portanto, conclui-se que é um tema muito importante".',
-      },
-      {
-        titulo: 'Quando o comando pede intervenção',
-        texto:
-          'Algumas provas da FAU de 2026 pediram: *"ao final, proponha uma intervenção viável"*. Nesse caso, a proposta é obrigatória. Uma proposta completa tem cinco elementos:\n\n- **Agente:** quem faz (Secretaria Municipal de Educação, equipe gestora, professores, conselho escolar).\n- **Ação:** o que será feito.\n- **Meio:** como (por meio de quê, de modo concreto).\n- **Finalidade:** para quê.\n- **Detalhamento:** um detalhe a mais sobre um dos elementos.\n\nModelo: *"Diante disso, cabe à [agente] [ação], por meio de [meio], a fim de [finalidade]."*',
-      },
-      {
-        titulo: 'Exemplo (autoral)',
-        texto:
-          '*Diante disso, o Projeto Político-Pedagógico só cumpre seu papel democrático quando é construído e revisto coletivamente. Para isso, cabe à equipe gestora de cada escola promover, no início do ano letivo, assembleias com professores, famílias e estudantes, por meio do conselho escolar, a fim de atualizar as metas do projeto com base nos resultados do ano anterior. Desse modo, o documento deixa de ser formalidade e passa a orientar, de fato, o trabalho da escola.*',
-      },
-      {
-        titulo: 'Erros comuns',
-        texto:
-          '- **Agente vago:** "alguém deve fazer algo". Diga quem.\n- **Meio vago:** "por meio de ações". Diga quais.\n- **Proposta impossível** ou que fere direitos: a banca pede intervenção **viável**.',
-      },
-    ],
+    minutos: 7,
     fontes: [
       {
         titulo: 'Toda Matéria — Proposta de intervenção: o que é e como fazer',
@@ -233,29 +371,49 @@ const AULAS: Omit<AulaRedacao, 'passos'>[] = [
         url: 'https://descomplica.com.br/blog/proposta-de-intervencao-para-a-redacao-em-5-passos-2/',
       },
     ],
+    passos: [
+      explica(
+        'O que a conclusão faz',
+        '1. **Retoma a tese** com outras palavras.\n2. **Sintetiza** os dois argumentos.\n3. **Propõe** uma saída.\n\n**Nada de argumento novo** e nada de "Portanto, conclui-se que o tema é muito importante".',
+      ),
+      explica(
+        'A proposta de intervenção completa',
+        'Cinco elementos:\n\n- **Agente:** quem faz (Secretaria de Educação, equipe gestora, professores, conselho escolar).\n- **Ação:** o que faz.\n- **Meio:** como, de modo concreto.\n- **Finalidade:** para quê.\n- **Detalhamento:** um detalhe a mais.',
+        'Fórmula: "Cabe à [agente] [ação], por meio de [meio], a fim de [finalidade]."',
+      ),
+      ordenar(
+        'Monte a proposta na ordem da fórmula:',
+        [
+          'Cabe à equipe gestora de cada escola',
+          'organizar encontros pedagógicos com as famílias',
+          'por meio de reuniões em horários alternativos, como aos sábados',
+          'a fim de aproximar os responsáveis do que os filhos aprendem',
+        ],
+        'Agente, ação, meio e finalidade.',
+      ),
+      escrever({
+        titulo: 'Sua vez: escreva a conclusão',
+        tarefa:
+          'Escreva a conclusão da sua redação: **retome a tese** e faça uma **proposta de intervenção** com agente, ação, meio e finalidade (e um detalhe, se couber). De 4 a 6 linhas.',
+        criterios: [
+          'Retoma a tese com outras palavras',
+          'Tem agente concreto (quem faz)',
+          'Tem ação e meio concretos (o que e como)',
+          'Tem finalidade (a fim de, para que)',
+          'Não traz argumento novo',
+        ],
+        modelo:
+          'Diante disso, a participação da família é condição para uma aprendizagem plena, e não um favor à escola. Para que ela aconteça, cabe à equipe gestora de cada escola, com o apoio da Secretaria Municipal de Educação, organizar encontros pedagógicos em horários alternativos, como no início da noite ou aos sábados, por meio de convites personalizados e rodas de conversa sobre o que os alunos estão aprendendo, a fim de aproximar os responsáveis do cotidiano escolar.',
+        minimo: 250,
+        maximo: 1200,
+      }),
+    ],
   },
   {
     id: 'coesao',
-    titulo: '7. Coesão: os conectivos certos',
-    resumo: 'Conectivos por função e como retomar ideias sem repetir palavras.',
-    minutos: 5,
-    secoes: [
-      {
-        titulo: 'Conectivos por função',
-        texto:
-          '- **Adição:** além disso, ademais, também, não só... mas também.\n- **Oposição:** no entanto, entretanto, contudo, todavia, embora (+ subjuntivo).\n- **Causa:** porque, visto que, uma vez que, já que.\n- **Consequência:** por isso, assim, de modo que, por conseguinte.\n- **Finalidade:** a fim de, para que, com o objetivo de.\n- **Exemplo:** por exemplo, como, a exemplo de.\n- **Conclusão:** portanto, logo, dessa forma, diante disso.\n- **Ordem:** em primeiro lugar, além disso, por fim.',
-      },
-      {
-        titulo: 'Os erros com conectivos',
-        texto:
-          '- **Relação errada:** "Os alunos leem pouco. *Portanto*, a escola tem biblioteca." (não é conclusão).\n- **Empilhar conectivos:** "Portanto, assim, desse modo, conclui-se..." Use um só.\n- **Usar no automático:** antes de escrever o conectivo, pergunte qual é a relação entre as ideias.',
-      },
-      {
-        titulo: 'Retomar sem repetir',
-        texto:
-          'Para não repetir "a escola" cinco vezes, use **pronomes** (ela, essa instituição), **sinônimos** (a instituição de ensino, o ambiente escolar) e **expressões resumidoras** (esse cenário, tal desafio). Isso também é coesão, e conta na Estrutura.',
-      },
-    ],
+    titulo: '8. Técnica: conectivos e retomadas',
+    resumo: 'Ligar as ideias com o conectivo certo e retomar sem repetir palavras.',
+    minutos: 6,
     fontes: [
       {
         titulo: 'Gran Cursos — Coesão e coerência: diferenças, exemplos e exercícios',
@@ -266,39 +424,64 @@ const AULAS: Omit<AulaRedacao, 'passos'>[] = [
         url: 'https://concursosnobrasil.com/escola/portugues/conectivos-para-redacao.html',
       },
     ],
+    passos: [
+      explica(
+        'Conectivo é relação, não enfeite',
+        '- **Adição:** além disso, ademais.\n- **Oposição:** no entanto, contudo, embora.\n- **Causa:** porque, visto que, já que.\n- **Consequência:** por isso, de modo que.\n- **Finalidade:** a fim de, para que.\n- **Conclusão:** portanto, diante disso.',
+        'Antes de escrever o conectivo, pergunte: qual é a relação entre as duas ideias?',
+      ),
+      lacuna(
+        'Os pais querem acompanhar os filhos. ___, as reuniões acontecem no horário de trabalho deles.',
+        ['No entanto', 'Por isso', 'Além disso'],
+        0,
+        'A segunda ideia contraria a expectativa da primeira: é oposição.',
+      ),
+      lacuna(
+        'Muitos responsáveis trabalham no comércio aos sábados; ___, a reunião de sábado não resolve para todos.',
+        ['embora', 'por isso', 'a fim de'],
+        1,
+        'Trabalhar aos sábados é a causa; a reunião não resolver é a consequência.',
+      ),
+      escrever({
+        titulo: 'Sua vez: ligue as ideias',
+        tarefa:
+          'Junte as duas frases **numa frase só**, com um conectivo de **oposição**:\n\n*"A família quer participar da escola. A escola só chama os pais para falar de notas baixas."*',
+        apoio: null,
+        criterios: [
+          'Forma uma frase só',
+          'Usa um conectivo de oposição (embora, no entanto, contudo, mas...)',
+          'Mantém o sentido das duas ideias, com a concordância e a pontuação certas',
+        ],
+        modelo: 'Embora a família queira participar da escola, ela só é chamada para falar de notas baixas.',
+        minimo: 30,
+        maximo: 300,
+      }),
+      explica(
+        'Retomar sem repetir',
+        'Repetir "a escola" cinco vezes deixa o texto pobre. Troque por:\n\n- **pronome:** ela;\n- **sinônimo:** a instituição, o ambiente escolar;\n- **expressão resumidora:** esse cenário, tal desafio.',
+      ),
+      escrever({
+        titulo: 'Sua vez: tire a repetição',
+        tarefa:
+          'Reescreva o trecho **sem repetir "a escola"**, usando pronome, sinônimo ou expressão resumidora:\n\n*"A escola precisa ouvir as famílias. A escola deve mudar o horário das reuniões. Assim, a escola fica mais próxima da comunidade."*',
+        apoio: null,
+        criterios: [
+          'Usa "a escola" no máximo uma vez',
+          'Troca as outras por pronome, sinônimo ou expressão resumidora',
+          'Mantém o sentido do trecho original',
+        ],
+        modelo:
+          'A escola precisa ouvir as famílias. Essa instituição deve, por exemplo, mudar o horário das reuniões. Assim, ela fica mais próxima da comunidade.',
+        minimo: 60,
+        maximo: 500,
+      }),
+    ],
   },
   {
     id: 'expressao',
-    titulo: '8. Expressão: os erros que tiram ponto',
-    resumo: 'Concordância, regência, crase, vírgula e linguagem formal.',
-    minutos: 7,
-    secoes: [
-      {
-        titulo: 'Concordância',
-        texto:
-          '- **Haver** no sentido de existir não vai ao plural: *houve* problemas (não "houveram").\n- **Fazer** indicando tempo também não: *faz* dois anos (não "fazem").\n- Sujeito depois do verbo continua mandando: *faltam* recursos às escolas.\n- *É necessário* paciência / *é necessária* a paciência (com artigo, concorda).',
-      },
-      {
-        titulo: 'Regência e crase',
-        texto:
-          '- *Assistir a* (ver): assistir **ao** filme. *Visar a* (ter como objetivo): visa **ao** desenvolvimento.\n- *Implicar* (acarretar) não pede "em": a decisão implica mudanças.\n- **Crase** é a preposição *a* + o artigo *a*: vou **à** escola; refiro-me **à** gestão.\n- **Não há crase** antes de palavra masculina (a pé), antes de verbo (começou a estudar) e antes de pronomes como esta, essa, ela (a esta escola).',
-      },
-      {
-        titulo: 'Vírgula',
-        texto:
-          '- **Nunca separe o sujeito do verbo:** "Os professores da rede, precisam..." está errado.\n- Use vírgula depois de expressões deslocadas no início: *Na Educação Infantil, as interações...*\n- Use vírgula antes de *mas*, *porém* e *contudo* no meio da frase.',
-      },
-      {
-        titulo: 'Palavras que confundem',
-        texto:
-          '- *Mal* (oposto de bem) × *mau* (oposto de bom).\n- *Há* (tempo passado ou existir) × *a* (futuro ou distância): há dois anos; daqui a dois anos.\n- *Onde* (lugar físico) — não use "onde" para tempo ou situação: prefira *em que*, *no qual*.\n- *Por que* (pergunta), *porque* (explicação), *por quê* (fim de frase), *porquê* (substantivo).',
-      },
-      {
-        titulo: 'Linguagem adequada',
-        texto:
-          'Sem gíria, abreviação ("vc", "tb"), "etc." no lugar de argumentos, frases feitas ("nos dias de hoje", "a educação é a base de tudo") e períodos enormes. Frases claras de 2 a 3 linhas são mais seguras.',
-      },
-    ],
+    titulo: '9. Técnica: os erros que mais tiram ponto',
+    resumo: 'Haver, crase, vírgula entre sujeito e verbo e o "onde" errado.',
+    minutos: 6,
     fontes: [
       EDITAL,
       {
@@ -306,94 +489,96 @@ const AULAS: Omit<AulaRedacao, 'passos'>[] = [
         url: 'https://www.direcaoconcursos.com.br/artigos/dicas-para-evitar-erros-em-redacao-heitor-ferreira',
       },
     ],
-  },
-  {
-    id: 'repertorio-pedagogico',
-    titulo: '9. Repertório pedagógico (Anexo II do professor)',
-    resumo: 'Leis, documentos e autores do conteúdo do cargo, prontos para argumentar.',
-    minutos: 9,
-    secoes: [
-      {
-        titulo: 'Leis e documentos',
-        texto:
-          '- **LDB (Lei nº 9.394/1996):** o art. 14 trata da **gestão democrática**: participação dos profissionais na elaboração do projeto pedagógico e das comunidades escolar e local em conselhos escolares.\n- **Lei nº 12.796/2013:** alterou a LDB e tornou a educação básica **obrigatória e gratuita dos 4 aos 17 anos**.\n- **ECA (Lei nº 8.069/1990):** proteção integral; é direito dos pais ou responsáveis ter ciência do processo pedagógico e participar da definição das propostas educacionais (art. 53, parágrafo único).\n- **ECA Digital (Lei nº 15.211/2025):** protege crianças e adolescentes no ambiente digital (redes sociais, jogos, vídeos); exige verificação de idade e ferramentas de supervisão parental; está em vigor desde março de 2026.\n- **Novo PNE (Lei nº 15.388/2026, para 2026–2036):** tem a **equidade** como princípio e metas para reduzir as desigualdades de aprendizagem; prevê, por exemplo, ampliar a educação em tempo integral e universalizar a pré-escola de 4 e 5 anos.',
-      },
-      {
-        titulo: 'BNCC e Referencial do Paraná',
-        texto:
-          '- **BNCC:** define as aprendizagens essenciais da educação básica, com **10 competências gerais**.\n- **Educação Infantil na BNCC:** os **eixos estruturantes** são as **interações e a brincadeira**; são **6 direitos de aprendizagem** (conviver, brincar, participar, explorar, expressar e conhecer-se) e **5 campos de experiência** (O eu, o outro e o nós; Corpo, gestos e movimentos; Traços, sons, cores e formas; Escuta, fala, pensamento e imaginação; Espaços, tempos, quantidades, relações e transformações).\n- **Referencial Curricular do Paraná (2018):** traz para o contexto paranaense os princípios, direitos e objetivos de aprendizagem da BNCC, preservando a autonomia das redes e escolas.',
-      },
-      {
-        titulo: 'Autores',
-        texto:
-          '- **Paulo Freire:** critica a **educação "bancária"**, em que o professor "deposita" conteúdos num aluno passivo (*Pedagogia do Oprimido*); defende a educação **problematizadora e dialógica**. Em *Pedagogia da autonomia* (1996): ensinar não é transferir conhecimento, mas criar as possibilidades para a sua construção.\n- **Vygotsky:** a aprendizagem é social e mediada; a **zona de desenvolvimento proximal** é a distância entre o que a criança faz sozinha e o que faz com ajuda.\n- **Piaget:** o conhecimento é construído pela criança na interação com o meio, em estágios de desenvolvimento.\n- **Wallon:** a **afetividade** é parte do desenvolvimento, junto com a cognição e o movimento.\n- **Magda Soares:** alfabetização (aprender o sistema de escrita) e letramento (usar a escrita nas práticas sociais) são diferentes, mas inseparáveis: o ideal é **alfabetizar letrando**.',
-      },
-      {
-        titulo: 'Como usar o repertório',
-        texto:
-          'Repertório **pertinente** (ligado ao tema), **explicado** (o que ele diz) e **aplicado** (o que isso prova no seu argumento). Uma lei ou autor bem usado vale mais que três citados de passagem. E só cite o que você tem certeza: número de lei ou ano errado tira a confiança do corretor.',
-      },
-    ],
-    fontes: [
-      { titulo: 'Lei nº 9.394/1996 (LDB) — Planalto', url: 'https://www.planalto.gov.br/ccivil_03/leis/l9394.htm' },
-      {
-        titulo: 'Lei nº 12.796/2013 — Câmara dos Deputados',
-        url: 'https://www2.camara.leg.br/legin/fed/lei/2013/lei-12796-4-abril-2013-775628-publicacaooriginal-139375-pl.html',
-      },
-      { titulo: 'Lei nº 15.211/2025 (ECA Digital) — Planalto', url: 'https://www.planalto.gov.br/ccivil_03/_Ato2023-2026/2025/Lei/L15211.htm' },
-      { titulo: 'Lei nº 15.388/2026 (PNE) — Planalto', url: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/l15388.htm' },
-      {
-        titulo: 'MEC — Governo sanciona novo Plano Nacional de Educação',
-        url: 'https://www.gov.br/mec/pt-br/assuntos/noticias/2026/abril/governo-do-brasil-sanciona-novo-plano-nacional-da-educacao',
-      },
-      {
-        titulo: 'Nova Escola — Os 6 direitos de aprendizagem da BNCC',
-        url: 'https://novaescola.org.br/bncc/conteudo/56/entenda-os-6-direitos-de-aprendizagem-propostos-pela-bncc',
-      },
-      {
-        titulo: 'Nova Escola — Os campos de experiência da Educação Infantil',
-        url: 'https://novaescola.org.br/bncc/conteudo/58/o-que-sao-os-campos-de-experiencia-da-educacao-infantil',
-      },
-      {
-        titulo: 'UNESP (RPGE) — Educação bancária e educação problematizadora em Paulo Freire',
-        url: 'https://periodicos.fclar.unesp.br/rpge/article/download/15397/14399?inline=1',
-      },
-      {
-        titulo: 'UFMG (FaE) — Alfabetização e letramento',
-        url: 'https://livrosabertos.fae.ufmg.br/wp-content/uploads/2022/04/Col_Alf.Let_.01_Alfabetizacao_Letramento.pdf',
-      },
+    passos: [
+      explica(
+        'Os quatro campeões de erro',
+        '- **Haver** (existir) fica no singular: *houve* problemas, não "houveram".\n- **Crase** só antes de palavra feminina que aceita artigo: refiro-me **à** escola; começou **a** estudar.\n- **Nunca** ponha vírgula entre sujeito e verbo: "Os pais, precisam" está errado.\n- **Onde** é só para lugar físico. Para situação, use *em que*, *na qual*.',
+      ),
+      lacuna(
+        '___ muitas faltas nas reuniões de pais neste ano.',
+        ['Houveram', 'Houve', 'Haviam'],
+        1,
+        'Haver no sentido de existir é impessoal: fica no singular.',
+      ),
+      lacuna(
+        'A escola enviou o convite ___ famílias dos alunos.',
+        ['as', 'às', 'à'],
+        1,
+        'Enviar algo a alguém: a (preposição) + as (artigo) = "às".',
+      ),
+      escrever({
+        titulo: 'Sua vez: corrija a frase',
+        tarefa:
+          'Reescreva a frase **corrigindo todos os erros**:\n\n*"Houveram muitas reuniões, onde os pais da turma, não puderam ir devido á falta de tempo."*',
+        apoio: null,
+        criterios: [
+          'Troca "Houveram" por "Houve"',
+          'Troca o "onde" por uma forma adequada (às quais, a que...)',
+          'Tira a vírgula entre o sujeito ("os pais da turma") e o verbo',
+          'Corrige a crase em "devido à" (ou troca a expressão)',
+        ],
+        modelo: 'Houve muitas reuniões às quais os pais da turma não puderam ir devido à falta de tempo.',
+        minimo: 30,
+        maximo: 300,
+      }),
     ],
   },
   {
-    id: 'dia-da-prova',
-    titulo: '10. No dia da prova e no seu treino',
-    resumo: 'Tempo, rascunho, folha definitiva e uma rotina semanal até 21/02.',
-    minutos: 5,
-    secoes: [
-      {
-        titulo: 'Tempo',
-        texto:
-          'A redação é no **mesmo horário** da objetiva (item 10.29.1), e a objetiva tem **4 horas** (item 10.21). O edital não separa o tempo de cada uma, então você divide. Uma sugestão: **reserve 1h10 para a redação** — 10 minutos para planejar, 35 para o rascunho, 20 para passar a limpo e 5 para revisar. Muita gente faz a redação primeiro, com a cabeça descansada.',
-      },
-      {
-        titulo: 'Rascunho e folha definitiva',
-        texto:
-          '- Planeje antes: tese e o tópico frasal de cada parágrafo, em tópicos.\n- Só a **folha definitiva** vale (item 10.37). Não deixe para passar a limpo nos últimos minutos.\n- **Caneta azul ou preta**, transparente; **letra legível**; nada de lápis.\n- **Não se identifique** em lugar nenhum do texto: nem nome, nem assinatura, nem desenho.\n- O edital não pede título. Se a proposta não pedir, não ponha: ele gasta linha.\n- Respeite **20 a 30 linhas**.',
-      },
-      {
-        titulo: 'Rotina de treino aqui no app',
-        texto:
-          'Você tem **3 correções por semana**. Uma rotina que funciona:\n\n1. **Uma redação nova por semana**, com cronômetro de 1h10.\n2. **Leia a correção** com calma: comece pelo aspecto com a menor nota.\n3. **Reescreva** a mesma redação corrigindo os pontos apontados e peça nova correção.\n4. Use a terceira correção para um **tema diferente** ou uma segunda reescrita.\n\nAté 21/02/2027 dá para fazer mais de 30 redações corrigidas.',
-      },
-      {
-        titulo: 'Sobre a correção do app',
-        texto:
-          'A correção é feita por **inteligência artificial** com os critérios da Tabela 10.1 do edital. É uma **estimativa para treino**: mostra onde melhorar, mas não é a nota da banca nem garante resultado.',
-      },
-    ],
+    id: 'planejar-e-revisar',
+    titulo: '10. Técnica: planejar em 10 minutos e revisar',
+    resumo: 'O esqueleto antes de escrever, o tempo da prova e o checklist final.',
+    minutos: 7,
     fontes: [EDITAL],
+    passos: [
+      explica(
+        'Divida o tempo',
+        'A objetiva e a redação dividem **4 horas** (itens 10.21 e 10.29.1). Reserve **1h10** para a redação:\n\n- 10 min para planejar;\n- 35 min de rascunho;\n- 20 min para passar a limpo;\n- 5 min para revisar.',
+      ),
+      explica(
+        'O esqueleto antes de escrever',
+        'Em tópicos, no rascunho:\n\n1. **Recorte** e itens do "abordando".\n2. **Tese** (posição + 2 motivos).\n3. **Argumento 1:** tópico frasal + prova + exemplo.\n4. **Argumento 2:** tópico frasal + prova + exemplo.\n5. **Proposta:** agente, ação, meio, finalidade.',
+        'Com o esqueleto pronto, a redação sai sem travar e sem fugir do tema.',
+      ),
+      escrever({
+        titulo: 'Sua vez: monte o esqueleto',
+        tarefa:
+          'Monte o esqueleto, **em tópicos**, para um tema novo: tese, argumento 1, argumento 2 (cada um com uma prova) e a proposta.',
+        apoio:
+          '**Tema novo (Fuse Aprova):** "Redija um texto dissertativo-argumentativo sobre o brincar na Educação Infantil, abordando o seu papel no desenvolvimento da criança e a função do professor nas brincadeiras."',
+        criterios: [
+          'Tem tese com posição clara',
+          'Tem dois argumentos diferentes, que cobrem os dois itens do comando',
+          'Cada argumento tem uma prova (lei, documento, autor ou conceito)',
+          'Termina com uma proposta com agente e ação',
+        ],
+        modelo:
+          'Tese: o brincar é eixo do desenvolvimento infantil, desde que o professor o planeje com intenção pedagógica.\nArgumento 1: brincar desenvolve linguagem, corpo e convivência; prova: a BNCC tem as interações e a brincadeira como eixos estruturantes da Educação Infantil.\nArgumento 2: o professor observa, organiza o espaço e media; prova: Vygotsky e a mediação.\nProposta: a Secretaria de Educação oferece formação sobre o brincar, por meio de oficinas nas escolas, a fim de qualificar o planejamento das atividades.',
+        minimo: 150,
+        maximo: 1200,
+      }),
+      explica(
+        'Checklist antes de entregar',
+        '- Atendi **todos** os itens do "abordando"?\n- A tese está clara na introdução?\n- Cada parágrafo tem tópico frasal e prova?\n- A proposta tem agente, ação, meio e finalidade?\n- Entre **20 e 30 linhas**, caneta azul ou preta, **sem identificação**?',
+        'Agora junte tudo: vá ao Simulado e escreva a redação inteira com o cronômetro.',
+      ),
+      escolha(
+        'Na folha definitiva, é preciso dar título à redação?',
+        ['Sim, sempre', 'Não, se a proposta não pedir: ele só gasta linha', 'Sim, e vale ponto extra'],
+        1,
+        'O edital não pede título. Se a proposta não pedir, deixe de fora.',
+      ),
+    ],
   },
 ];
 
-/** As aulas com os passos interativos (`passos.ts`); as seções ficam como resumo. */
-export const AULAS_REDACAO: AulaRedacao[] = AULAS.map((a) => ({ ...a, passos: PASSOS_REDACAO[a.id] ?? [] }));
+/** As aulas, com o resumo (`secoes`) montado das explicações de cada uma. */
+export const AULAS_REDACAO: AulaRedacao[] = AULAS.map((a) => ({
+  ...a,
+  secoes: a.passos.flatMap((p) =>
+    p.tipo === 'explica'
+      ? [{ titulo: p.titulo, texto: p.exemplo ? `${p.texto}\n\n**Macete:** ${p.exemplo}` : p.texto }]
+      : p.tipo === 'escrever'
+        ? [{ titulo: `Exemplo de resposta: ${p.titulo.replace(/^Sua vez: /, '')}`, texto: p.modelo }]
+        : [],
+  ),
+}));

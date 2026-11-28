@@ -336,6 +336,16 @@ const AULAS_RED = [
         explicacao: 'É oposição.',
       },
       {
+        tipo: 'escrever' as const,
+        titulo: 'Sua vez: escreva a sua tese',
+        tarefa: 'Escreva a sua tese em uma frase.',
+        apoio: 'Tema de treino: a participação da família na vida escolar.',
+        criterios: ['Toma posição clara', 'Anuncia dois motivos'],
+        modelo: 'A participação da família é decisiva para a aprendizagem, mas depende de a escola abrir canais de diálogo.',
+        minimo: 20,
+        maximo: 400,
+      },
+      {
         tipo: 'ordenar' as const,
         pergunta: 'Ponha a planta em ordem:',
         itens: ['Introdução', 'Desenvolvimento', 'Conclusão'],
@@ -1242,6 +1252,15 @@ const H: Partial<Record<NomeRota, Handler>> = {
     estado.usuario.xpTotal += xp;
     return { xpGanho: xp, primeiraVez: true };
   },
+  redacaoTrechoAvaliar: () => ({
+    nivel: 'quase' as const,
+    comentario: 'Boa posição. Falta anunciar o segundo motivo.',
+    criterios: [
+      { criterio: 'Toma posição clara', ok: true },
+      { criterio: 'Anuncia dois motivos', ok: false },
+    ],
+    sugestao: 'A participação da família é decisiva para a aprendizagem, porque reforça o estudo em casa e aproxima a escola da realidade do aluno.',
+  }),
   redacaoCriar: ({ corpo }) => {
     const { temaId, texto = '' } = corpo as { temaId: string; texto?: string };
     const tema = TEMAS_RED.find((t) => t.id === temaId);

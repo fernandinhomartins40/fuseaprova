@@ -12,6 +12,7 @@ import {
   cotaRedacao,
 } from '@fuse/shared';
 import type {
+  AvaliacaoTrecho,
   CorrecaoRedacao,
   CotaRedacao,
   Redacao,
@@ -24,7 +25,7 @@ import { falha, ErroHttp } from '../../http/erros.js';
 import { contar, iso, type Db } from '../../util.js';
 import { creditarXp } from '../progresso.js';
 import { AULAS_REDACAO } from './curso.js';
-import { corrigirComIa } from './ia.js';
+import { avaliarTrechoComIa, corrigirComIa } from './ia.js';
 import { TEMAS_REDACAO, temaRedacao } from './temas.js';
 
 const { redacoes, redacaoAulas } = schema;
@@ -99,6 +100,19 @@ export async function painelRedacao(db: Db, u: Usuario, agora: Date): Promise<Re
     cota: await cota(db, u, agora),
     aulasConcluidas: feitas.map((f) => f.aulaId),
   };
+}
+
+/** Avalia por IA o trecho que o aluno escreveu num exercício "escrever" da aula. */
+export async function avaliarTrecho(
+  deps: Deps,
+  aulaId: string,
+  passo: number,
+  texto: string,
+  fetchFn?: typeof fetch,
+): Promise<AvaliacaoTrecho> {
+  const p = AULAS_REDACAO.find((a) => a.id === aulaId)?.passos[passo];
+  if (p?.tipo !== 'escrever') throw falha('nao_encontrado', 'Exercício não encontrado.');
+  return avaliarTrechoComIa(deps.config.fusai, p, texto, fetchFn);
 }
 
 /**
